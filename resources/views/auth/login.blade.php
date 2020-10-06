@@ -77,9 +77,9 @@
 @endsection
 
 @push('scripts')
-    <script>
+    {{-- <script>
         $(document).ready(function() {
             demo.checkFullPageBackgroundImage();
         });
-    </script>
+    </script> --}}
 @endpush

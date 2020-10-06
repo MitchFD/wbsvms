@@ -15,12 +15,19 @@ class UsersTableSeeder extends Seeder
     public function run()
     {
         DB::table('users')->insert([
-            'name' => 'Admin Admin',
-            'email' => 'admin@paper.com',
+            'id'                => '201839485',
+            'email'             => 'mfodesierto2@gmail.com',
             'email_verified_at' => now(),
-            'password' => Hash::make('secret'),
-            'created_at' => now(),
-            'updated_at' => now()
+            'password'          => Hash::make('admin123'),
+            'user_role'         => 'Administrator',
+            'user_status'       => 'active',
+            'user_role_status'  => 'active',
+            'user_type'         => 'employee',
+            'user_image'        => 'ewan',
+            'user_lname'        => 'Desierto',
+            'user_fname'        => 'Mitch Frankein',
+            'registered_by'     => '201839485',
+            'created_at'        => now()
         ]);
     }
 }

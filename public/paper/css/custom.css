@@ -1,0 +1,8 @@
+
+
+/* text customization */
+.text_svms_red,
+a.text_svms_red:focus,
+a.text_svms_red:hover {
+  color: #BD171B !important;
+}
