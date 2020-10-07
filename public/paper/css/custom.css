@@ -1,8 +1,276 @@
+:root {
+  --white: #ffffff;
+  --svms_red: #BD171B;
+  --svms_med_dark_red: #a00305;
+  --svms_dark_red: #6E0406;
+  --svms_blue: #242333;
+  --svms_med_dark_blue: #1d1c29;
+  --svms_input_txt: #66615B;
+  --svms_txt_gray: #c4c4c4;
+}
 
+/* login page */
+.login_bg{
+  background-repeat: no-repeat !important;
+  -webkit-background-size: cover !important;
+  -moz-background-size: cover !important;
+  -o-background-size: cover !important;
+  background-size: cover !important;
+  background-attachment: fixed !important;
+  height: 100vh !important;
+}
+.login_img_logo{
+  height: 80px;
+  width: auto !important;
+  display: block !important;
+  margin: 0 auto;
+}
+.login_title_txt{
+  color: var(--svms_blue) !important;
+  text-transform: none !important;
+  font-size: 18px !important;
+  display: block !important;
+  font-weight: normal !important;
+  margin-top: 10px !important;
+}
+.paswrd_inpt_fld i.fa-eye{
+  /* margin-left: -30px !important; */
+  position: absolute;
+  cursor: pointer !important;
+  right: 15px;
+  top: 12px;
+  z-index: 100;
+  color: var(--svms_input_txt);
+}
+.frgtPwd_button{
+  margin: 0 !important;
+  color: var(--svms_txt_gray);
+  text-decoration: none !important;
+}
+.frgtPwd_button:hover{
+  color: var(--svms_input_txt);
+}
+/* login page end */
+
+/* hover button show icon */
+.btn_show_icon{
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+/* show on right */
+.btn_icon_show_right{
+  opacity: 0;
+  -webkit-transition: all 0.3s ease-out;
+   -moz-transition: all 0.3s ease-out;
+   -o-transition: all 0.3s ease-out;
+   -ms-transition: all 0.3s ease-out;
+   transition: all 0.3s ease-out;
+   padding-left: 0;
+   margin-left: -13px;
+}
+.btn_show_icon:hover .btn_icon_show_right {
+  opacity: 1;
+  padding-left: 10px;
+  margin-left: 1px;
+  transition: padding 0.3s margin 0.3s;
+}
+/* show on left */
+.btn_icon_show_left{
+  opacity: 0;
+  -webkit-transition: all 0.3s ease-out;
+   -moz-transition: all 0.3s ease-out;
+   -o-transition: all 0.3s ease-out;
+   -ms-transition: all 0.3s ease-out;
+   transition: all 0.3s ease-out;
+   padding-right: 0;
+   margin-right: -13px;
+}
+.btn_show_icon:hover .btn_icon_show_left {
+  opacity: 1;
+  padding-right: 10px;
+  margin-right: 1px;
+  transition: padding 0.3s margin 0.3s;
+}
+/* hover button show icon end */
+
+/* buttons */
+/* btn_svms_red */
+.btn_svms_red {
+  background-color: var(--svms_red);
+  color: var(--white);
+}
+.btn_svms_red:hover,
+.btn_svms_red:focus,
+.btn_svms_red:active,
+.btn_svms_red.active,
+.btn_svms_red:active:focus,
+.btn_svms_red:active:hover,
+.btn_svms_red.active:focus,
+.btn_svms_red.active:hover,
+.show>.btn_svms_red.dropdown-toggle,
+.show>.btn_svms_red.dropdown-toggle:focus,
+.show>.btn_svms_red.dropdown-toggle:hover {
+  background-color: var(--svms_med_dark_red) !important;
+  color: var(--white) !important;
+  box-shadow: none !important;
+}
+.btn_svms_red:not([data-action]):hover {
+  box-shadow: none;
+}
+.btn_svms_red.disabled,
+.btn_svms_red.disabled:hover,
+.btn_svms_red.disabled:focus,
+.btn_svms_red.disabled.focus,
+.btn_svms_red.disabled:active,
+.btn_svms_red.disabled.active,
+.btn_svms_red:disabled,
+.btn_svms_red:disabled:hover,
+.btn_svms_red:disabled:focus,
+.btn_svms_red:disabled.focus,
+.btn_svms_red:disabled:active,
+.btn_svms_red:disabled.active,
+.btn_svms_red[disabled],
+.btn_svms_red[disabled]:hover,
+.btn_svms_red[disabled]:focus,
+.btn_svms_red[disabled].focus,
+.btn_svms_red[disabled]:active,
+.btn_svms_red[disabled].active,
+fieldset[disabled] .btn_svms_red,
+fieldset[disabled] .btn_svms_red:hover,
+fieldset[disabled] .btn_svms_red:focus,
+fieldset[disabled] .btn_svms_red.focus,
+fieldset[disabled] .btn_svms_red:active,
+fieldset[disabled] .btn_svms_red.active {
+  background-color: var(--svms_red);
+  border-color: var(--svms_red);
+}
+.btn_svms_red.btn-simple {
+  color: var(--svms_red);
+  border-color: var(--svms_red);
+}
+.btn_svms_red.btn-simple:hover,
+.btn_svms_red.btn-simple:focus,
+.btn_svms_red.btn-simple:active {
+  background-color: transparent;
+  color: var(--svms_med_dark_red);
+  border-color: var(--svms_med_dark_red);
+  box-shadow: none;
+}
+.btn_svms_red.btn-link {
+  color: var(--svms_red);
+}
+.btn_svms_red.btn-link:hover,
+.btn_svms_red.btn-link:focus,
+.btn_svms_red.btn-link:active,
+.btn_svms_red.btn-link:active:focus {
+  background-color: transparent;
+  color: var(--svms_med_dark_red);
+  text-decoration: none;
+  box-shadow: none;
+}
+.btn-neutral.btn_svms_red {
+  color: var(--svms_red) !important;
+}
+.btn-neutral.btn_svms_red:hover,
+.btn-neutral.btn_svms_red:focus,
+.btn-neutral.btn_svms_red:active,
+.btn-neutral.btn_svms_red:active:focus {
+  color: var(--svms_med_dark_red) !important;
+}
+/* btn_smvs_blue */
+.btn_svms_blue {
+  background-color: var(--svms_blue);
+  color: var(--white);
+}
+.btn_svms_blue:hover,
+.btn_svms_blue:focus,
+.btn_svms_blue:active,
+.btn_svms_blue.active,
+.btn_svms_blue:active:focus,
+.btn_svms_blue:active:hover,
+.btn_svms_blue.active:focus,
+.btn_svms_blue.active:hover,
+.show>.btn_svms_blue.dropdown-toggle,
+.show>.btn_svms_blue.dropdown-toggle:focus,
+.show>.btn_svms_blue.dropdown-toggle:hover {
+  background-color: var(--svms_med_dark_blue) !important;
+  color: var(--white) !important;
+  box-shadow: none !important;
+}
+.btn_svms_blue:not([data-action]):hover {
+  box-shadow: none;
+}
+.btn_svms_blue.disabled,
+.btn_svms_blue.disabled:hover,
+.btn_svms_blue.disabled:focus,
+.btn_svms_blue.disabled.focus,
+.btn_svms_blue.disabled:active,
+.btn_svms_blue.disabled.active,
+.btn_svms_blue:disabled,
+.btn_svms_blue:disabled:hover,
+.btn_svms_blue:disabled:focus,
+.btn_svms_blue:disabled.focus,
+.btn_svms_blue:disabled:active,
+.btn_svms_blue:disabled.active,
+.btn_svms_blue[disabled],
+.btn_svms_blue[disabled]:hover,
+.btn_svms_blue[disabled]:focus,
+.btn_svms_blue[disabled].focus,
+.btn_svms_blue[disabled]:active,
+.btn_svms_blue[disabled].active,
+fieldset[disabled] .btn_svms_blue,
+fieldset[disabled] .btn_svms_blue:hover,
+fieldset[disabled] .btn_svms_blue:focus,
+fieldset[disabled] .btn_svms_blue.focus,
+fieldset[disabled] .btn_svms_blue:active,
+fieldset[disabled] .btn_svms_blue.active {
+  background-color: var(--svms_blue);
+  border-color: var(--svms_blue);
+}
+.btn_svms_blue.btn-simple {
+  color: var(--svms_blue);
+  border-color: var(--svms_blue);
+}
+.btn_svms_blue.btn-simple:hover,
+.btn_svms_blue.btn-simple:focus,
+.btn_svms_blue.btn-simple:active {
+  background-color: transparent;
+  color: var(--svms_med_dark_blue);
+  border-color: var(--svms_med_dark_blue);
+  box-shadow: none;
+}
+.btn_svms_blue.btn-link {
+  color: var(--svms_blue);
+}
+.btn_svms_blue.btn-link:hover,
+.btn_svms_blue.btn-link:focus,
+.btn_svms_blue.btn-link:active,
+.btn_svms_blue.btn-link:active:focus {
+  background-color: transparent;
+  color: var(--svms_med_dark_blue);
+  text-decoration: none;
+  box-shadow: none;
+}
+.btn-neutral.btn_svms_blue {
+  color: var(--svms_blue) !important;
+}
+.btn-neutral.btn_svms_blue:hover,
+.btn-neutral.btn_svms_blue:focus,
+.btn-neutral.btn_svms_blue:active,
+.btn-neutral.btn_svms_blue:active:focus {
+  color: var(--svms_med_dark_blue) !important;
+}
+/* buttons end */
+
+/* global card border radius */
+.card_gbr{
+  border-radius: 15px !important;
+}
 
 /* text customization */
 .text_svms_red,
 a.text_svms_red:focus,
 a.text_svms_red:hover {
-  color: #BD171B !important;
+  color: var(--svms_red) !important;
 }

@@ -2797,7 +2797,8 @@ a[data-toggle="collapse"][aria-expanded="true"] .caret,
   display: inline-block;
   position: relative;
   cursor: pointer;
-  padding-left: 35px;
+  /* padding-left: 35px; */
+  padding-left: 20px;
   line-height: 26px;
   margin-bottom: 0;
 }
@@ -2807,11 +2808,15 @@ a[data-toggle="collapse"][aria-expanded="true"] .caret,
   content: " ";
   display: inline-block;
   position: absolute;
-  width: 24px;
-  height: 24px;
+  /* width: 24px;
+  height: 24px; */
+  width: 15px;
+  height: 15px;
+  margin-top: 5px;
   left: 0;
   cursor: pointer;
-  border-radius: 6px;
+  border-radius: 5px;
+  padding: 0;
   top: 0;
   background-color: #AAA7A4;
   -webkit-transition: opacity 0.3s linear;
@@ -2824,9 +2829,10 @@ a[data-toggle="collapse"][aria-expanded="true"] .caret,
 .form-check .form-check-sign::after {
   font-family: 'FontAwesome';
   content: "\f00c";
-  top: -1px;
+  top: -5px;
   text-align: center;
-  font-size: 15px;
+  /* font-size: 15px; */
+  font-size: 12px;
   opacity: 0;
   color: #FFF;
   border: 0;
@@ -3857,6 +3863,11 @@ a[data-toggle="collapse"][aria-expanded="true"] .caret,
 
 .alert.alert-danger {
   background-color: #f1926e;
+}
+
+/* svms alert danger */
+.alert.alert_smvs_danger {
+  background-color: #ee6c6e;
 }
 
 .alert.alert-warning {

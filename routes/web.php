@@ -38,7 +38,14 @@ Route::group(['middleware' => 'auth'], function () {
 		Route::put('profile/password', ['as' => 'profile.password', 'uses' => 'App\Http\Controllers\ProfileController@password']);
 	});
 
+// violation entry
+	Route::group(['middleware' => 'auth'], function () {
+		Route::get('violation_entry/index', ['as' => 'violation_entry.index', 'uses' => 'App\Http\Controllers\ViolationEntriesController@index']);
+	});
+
 Route::group(['middleware' => 'auth'], function () {
 	Route::get('{page}', ['as' => 'page.index', 'uses' => 'App\Http\Controllers\PageController@index']);
 });
 
+
+// Route::put('/log_me_out', 'App\Http\Controllers\Auth\LoginController@get_logout');
