@@ -118,12 +118,7 @@ class LoginController extends Controller
             $record_act->act_details           = 'logged out from the system';
             $record_act->act_affected_id       = $user_id;
             $record_act->save();
-            
-        // echo 'logged out user: <br />';
-        // echo 'user id: ' .$user_id. '<br />' ;
-        // echo 'user first name: ' .$user_fname. '<br />' ;
-        // echo 'user last name: ' .$user_lname. '<br />' ;
-
+        // log out user an dredirect to login page
         Auth::logout();
         return redirect('/');
     }

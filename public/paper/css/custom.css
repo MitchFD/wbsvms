@@ -5,8 +5,11 @@
   --svms_dark_red: #6E0406;
   --svms_blue: #242333;
   --svms_med_dark_blue: #1d1c29;
+  --svms_btn_light_gray: #e4e4e4;
+  --svms_btn_light_gray_txt: #c5c5c5;
   --svms_input_txt: #66615B;
   --svms_txt_gray: #c4c4c4;
+  --svms_light_card: #f1f1f1;
 }
 
 /* login page */
@@ -51,6 +54,53 @@
   color: var(--svms_input_txt);
 }
 /* login page end */
+
+/* registration page */
+.full-page .registration_content{
+  padding-top: 11vh !important;
+}
+.register_img_logo{
+  height: 80px;
+  width: auto !important;
+  display: block !important;
+  margin: 0;
+}
+.registration_title_txt{
+  color: var(--svms_blue) !important;
+  text-transform: none !important;
+  font-size: 14px !important;
+  display: block !important;
+  font-weight: bold !important;
+  text-transform: uppercase !important;
+  margin-top: 5px !important;
+  margin-bottom: 15px !important;
+}
+.custom_nav_link_blue,
+.custom_nav_link_blue:hover{
+  color: var(--svms_blue);
+}
+.nav-pills .custom_nav_link_blue.active,
+.nav-pills .show > .custom_nav_link_blue {
+    color: var(--white) !important;
+    background-color: var(--svms_blue) !important;
+}
+.custom_nav_link_red,
+.custom_nav_link_red:hover{
+  color: var(--svms_blue);
+}
+.nav-pills .custom_nav_link_red.active,
+.nav-pills .show > .custom_nav_link_red {
+    color: var(--white) !important;
+    background-color: var(--svms_red) !important;
+}
+/* registration page end */
+
+/* custom card-bodies */
+.cust_card_body_ligth_bg {
+  padding: 15px 15px 10px 15px !important;
+  background-color: var(--svms_light_card) !important;
+}
+/* custom card-bodies end */
 
 /* hover button show icon */
 .btn_show_icon{
@@ -272,5 +322,17 @@ fieldset[disabled] .btn_svms_blue.active {
 .text_svms_red,
 a.text_svms_red:focus,
 a.text_svms_red:hover {
+  color: var(--svms_red) !important;
+}
+.text_svms_blue,
+a.text_svms_blue:focus,
+a.text_svms_blue:hover {
+  color: var(--svms_blue) !important;
+}
+
+/* inputs customizations */
+.input-group-prepend .is_invalid{
+  border-right: none !important;
+  border-color: var(--svms_red) !important;
   color: var(--svms_red) !important;
 }

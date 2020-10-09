@@ -22,7 +22,7 @@ class Userstudents extends Model
         'uStud_program',
         'uStud_yearlvl',
         'uStud_section',
-        'uEmp_phnum',
+        'uStud_phnum',
     ];
     public $primaryKey = 'uStud_num';
     public $timestamps = false;

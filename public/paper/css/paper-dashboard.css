@@ -2139,7 +2139,8 @@ fieldset[disabled] .btn-link.active {
 
 .input-group-append .input-group-text,
 .input-group-prepend .input-group-text {
-  background-color: transparent;
+  /* background-color: transparent; */
+  background-color: #FFFFFF;
   border: 1px solid #E3E3E3;
   color: #66615B;
   border-top-right-radius: 4px;

@@ -20,7 +20,7 @@ class CreateUserstudentsTable extends Migration
             $table->string('uStud_program');    
             $table->string('uStud_yearlvl');    
             $table->string('uStud_section');    
-            $table->string('uEmp_phnum')->nullable();    
+            $table->string('uStud_phnum')->nullable();    
             $table->timestamp('created_at')->format('Y-m-d H:i:s')->nullable();
         });
     }
