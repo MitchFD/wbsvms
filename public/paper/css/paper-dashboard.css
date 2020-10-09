@@ -4989,7 +4989,8 @@ License - nucleoapp.com/license/
 /* sidenav data-color and data-active-color */
 .sidebar[data-color="svms_data_color"]:after,
 .off-canvas-sidebar[data-color="svms_data_color"]:after {
-  background: #2F2E41;
+  /* background: #2F2E41; */
+  background: #242333;
 }
 
 .sidebar[data-color="svms_data_color"] .nav li a,

@@ -10,6 +10,11 @@ class Useremployees extends Model
 {
     use HasFactory, Notifiable;
 
+    public function user()
+    {
+        return $this->belongsTo('App\Models\Users');
+    }
+
     /**
      * The attributes that are mass assignable.
      *

@@ -19,6 +19,29 @@ class ProfileController extends Controller
     }
 
     /**
+     * Show the form for editing the profile.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function index()
+    {
+        // get user type
+        // $user_type = auth()->user()->user_type;
+        // if($user_type == 'student'){
+        //     $this_user = DB::table('users')
+        //     ->join('user_students_tbl', 'users.id', '=', 'user_students_tbl.uStud_num')
+        //     ->get();
+        //     return view('profile.student_user_profile')->with('this_user');
+        // }else{
+        //     $this_user = DB::table('users')
+        //     ->join('user_employees_tbl', 'users.id', '=', 'user_employees_tbl.uEmp_id')
+        //     ->get();
+        //     return view('profile.employee_user_profile')->with('this_user');
+        // }
+        return view('profile.index');
+    }
+
+    /**
      * Update the profile
      *
      * @param  \App\Http\Requests\ProfileRequest  $request

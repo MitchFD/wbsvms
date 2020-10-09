@@ -5,11 +5,13 @@
   --svms_dark_red: #6E0406;
   --svms_blue: #242333;
   --svms_med_dark_blue: #1d1c29;
+  --svms_light_blue: #7d7c8d;
   --svms_btn_light_gray: #e4e4e4;
   --svms_btn_light_gray_txt: #c5c5c5;
   --svms_input_txt: #66615B;
   --svms_txt_gray: #c4c4c4;
   --svms_light_card: #f1f1f1;
+  --svms_success: #51CBCE;
 }
 
 /* login page */
@@ -75,9 +77,12 @@
   margin-top: 5px !important;
   margin-bottom: 15px !important;
 }
-.custom_nav_link_blue,
+.custom_nav_link_blue{
+  color: var(--svms_blue);
+}
 .custom_nav_link_blue:hover{
   color: var(--svms_blue);
+  background-color: #F4F4F5;
 }
 .nav-pills .custom_nav_link_blue.active,
 .nav-pills .show > .custom_nav_link_blue {
@@ -313,9 +318,94 @@ fieldset[disabled] .btn_svms_blue.active {
 }
 /* buttons end */
 
-/* global card border radius */
+/* global card customization */
+/* padding: 15px 25px */
+.cb_p15x25{
+  padding: 15px 25px !important;
+}
+/* border-radius */
 .card_gbr{
   border-radius: 15px !important;
+}
+/* overflow:hidden */
+.card_ofh{
+  overflow: hidden !important;
+}
+/* gray card-body */
+.card_body_bg_gray{
+  background-color: #e7e7e7 !important;
+}
+.card_body_title{
+  display: block;
+  font-size: 25px !important;
+  font-weight: bold !important;
+  text-decoration: none !important;
+  text-transform: uppercase !important;
+  color: var(--svms_blue);
+}
+.card_body_subtitle{
+  display: block;
+  font-size: 16px !important;
+  font-weight: normal !important;
+  text-decoration: none !important;
+  text-transform: normal !important;
+  color: var(--svms_light_blue);
+}
+
+/* directory link */
+.directory_link{
+  font-size: 12px !important;
+  font-weight: bold !important;
+  text-decoration: none !important;
+  text-transform: uppercase !important;
+  color: #b1afbd !important;
+}
+.directory_link:hover{
+  color: var(--svms_blue) !important;
+}
+
+/* page intro card */
+.card_intro{
+  display: flex;
+  padding: 0 !important;
+  line-height: 1.5;
+  height: auto;
+  -ms-flex-pack: justify !important;
+  justify-content: space-between !important;
+}
+.page_intro{
+  position: relative;
+  margin-top: 10px;
+  margin-left: 25px;
+  width: 800px;
+}
+.page_intro_title{
+  display: block;
+  font-size: 60px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: var(--svms_blue);
+}
+.page_intro_subtitle{
+  display: block;
+  font-size: 16px;
+  font-weight: normal;
+  text-transform: none;
+  color: var(--svms_light_blue);
+}
+.page_illustration{
+  position: relative;
+  right: 0;
+  height: auto;
+  width: auto;
+  float: right !important;
+  border-bottom-right-radius: 15px !important;
+}
+.illustration_svg{
+  margin-top: -67px !important;
+  height: 290px;
+  width: auto;
+  border-bottom-right-radius: 15px !important;
 }
 
 /* text customization */
@@ -335,4 +425,59 @@ a.text_svms_blue:hover {
   border-right: none !important;
   border-color: var(--svms_red) !important;
   color: var(--svms_red) !important;
+}
+
+/* profile page */
+.nav_link_svms_blue{
+  background-color: var(--svms_blue) !important;
+  color: var(--white) !important;
+}
+.up_img_div{
+  text-decoration: none !important;
+  color:  var(--svms_blue);
+}
+.up_img:hover{
+  text-decoration: none !important;
+  color:  var(--svms_blue);
+}
+.up_user_image{
+  width: 150px;
+  height: 150px;
+  overflow: hidden;
+  border-radius: 50%;
+  margin-bottom: 15px;
+  border: 4px solid var(--svms_blue);
+  position: relative;
+}
+.up_fullname_txt{
+  display: block;
+  text-transform: capitalize;
+  font-size: 20px;
+  color:  var(--svms_blue);
+  font-weight: bold;
+}
+.up_role_txt{
+  display: block;
+  font-size: 14px;
+  font-weight: normal;
+  color: var(--svms_light_blue);
+  text-transform: uppercase;
+  margin-bottom: 15px;
+}
+.cat_title_txt{
+  display: block;
+  display: block;
+  font-size: 13px;
+  text-transform: uppercase;
+  font-weight: bold;
+  color: var(--svms_light_blue);
+  margin-bottom: 0;
+}
+.up_info_txt{
+  display: block;
+  font-size: 14px;
+  font-weight: normal;
+  color: var(--svms_light_blue);
+  margin-bottom: 15px;
+  align-items: center;
 }

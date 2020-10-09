@@ -16,12 +16,30 @@ class UserRolesTableSeeder extends Seeder
     public function run()
     {
         DB::table('user_roles_tbl')->insert([
-            'uRole_status' => 'active',
-            'uRole_type'   => 'employee',
-            'uRole'        => 'Administrator',
-            'uRole_access' => '["dshb", "prfl", "vletr", "vlrds", "umgt"]',
-            'created_by'   => '201839485',
-            'created_at'   => now()
+            [
+                'uRole_status' => 'active',
+                'uRole_type'   => 'employee',
+                'uRole'        => 'administrator',
+                'uRole_access' => '["dashboard", "profile", "violation entry", "violation records", "user management", "student handbook"]',
+                'created_by'   => '201839485',
+                'created_at'   => now()
+            ],
+            [
+                'uRole_status' => 'active',
+                'uRole_type'   => 'employee',
+                'uRole'        => 'security guard',
+                'uRole_access' => '["dashboard", "profile", "violation entry", "violation records", "user management", "student handbook"]',
+                'created_by'   => '201839485',
+                'created_at'   => now()
+            ],
+            [
+                'uRole_status' => 'active',
+                'uRole_type'   => 'student',
+                'uRole'        => 'student',
+                'uRole_access' => '["profile", "violation entry", "violation records", "student handbook"]',
+                'created_by'   => '201839485',
+                'created_at'   => now()
+            ]
         ]);
     }
 }

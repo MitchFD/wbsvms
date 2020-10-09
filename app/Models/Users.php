@@ -11,6 +11,18 @@ class Users extends Model
     use HasFactory, Notifiable;
 
     /**
+     * Get the user's information accociated with the user
+     */
+    public function user_employee()
+    {
+        return $this->hasMany(Useremployees::class,'id','uEmp_id');
+    }
+    public function user_student()
+    {
+        return $this->hasMany(Userstudents::class,'id','uStud_num');
+    }
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array

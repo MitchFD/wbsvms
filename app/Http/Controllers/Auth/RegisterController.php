@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Models\Users;
 use App\Models\Useremployees;
 use App\Models\Userstudents;
+use Illuminate\Support\Facades\Auth;
 
 class RegisterController extends Controller
 {

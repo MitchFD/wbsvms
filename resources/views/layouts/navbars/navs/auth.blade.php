@@ -8,7 +8,7 @@
                     <span class="navbar-toggler-bar bar3"></span>
                 </button>
             </div>
-            <a class="navbar-brand" href="#pablo">{{ __('Paper Dashboard') }}</a>
+            <a class="navbar-brand" href="#pablo">{{ __('Student Violation Management System') }}</a>
         </div>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation"
             aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
@@ -17,7 +17,7 @@
             <span class="navbar-toggler-bar navbar-kebab"></span>
         </button>
         <div class="collapse navbar-collapse justify-content-end" id="navigation">
-            <form>
+            {{-- <form>
                 <div class="input-group no-border">
                     <input type="text" value="" class="form-control" placeholder="Search...">
                     <div class="input-group-append">
@@ -26,9 +26,9 @@
                         </div>
                     </div>
                 </div>
-            </form>
+            </form> --}}
             <ul class="navbar-nav">
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a class="nav-link btn-magnify" href="#pablo">
                         <i class="nc-icon nc-layout-11"></i>
                         <p>
@@ -49,7 +49,7 @@
                         <a class="dropdown-item" href="#">{{ __('Another action') }}</a>
                         <a class="dropdown-item" href="#">{{ __('Something else here') }}</a>
                     </div>
-                </li>
+                </li> --}}
                 <li class="nav-item btn-rotate dropdown">
                     <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink2"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

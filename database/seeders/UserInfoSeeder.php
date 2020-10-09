@@ -29,7 +29,19 @@ class UserInfoSeeder extends Seeder
                 'uEmp_dept'     => 'Security Department',
                 'uEmp_phnum'    => '09266993636',
                 'created_at'    => now()
-                ]
+            ]
+        ]);
+
+        DB::table('user_students_tbl')->insert([
+            [
+                'uStud_num'     => '20159846',
+                'uStud_school'  => 'SBCS',
+                'uStud_program' => 'BSIT',
+                'uStud_yearlvl' => 'FOURTH YEAR',
+                'uStud_section' => '4A',
+                'uStud_phnum'   => '09266993636',
+                'created_at'    => now()
+            ]
         ]);
     }
 }
