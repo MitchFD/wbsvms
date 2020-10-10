@@ -15,11 +15,11 @@ class Users extends Model
      */
     public function user_employee()
     {
-        return $this->hasMany(Useremployees::class,'id','uEmp_id');
+        return $this->hasMany(Useremployees::class,'user_sdca_id','uEmp_id');
     }
     public function user_student()
     {
-        return $this->hasMany(Userstudents::class,'id','uStud_num');
+        return $this->hasMany(Userstudents::class,'user_sdca_id','uStud_num');
     }
 
     /**
@@ -29,13 +29,13 @@ class Users extends Model
      */
     protected $table = 'users';
     protected $fillable = [
-        'id',
         'email',
         'password',
         'user_role',
         'user_status',
         'user_role_status',
         'user_type',
+        'user_sdca_id',
         'user_image',
         'user_lname',
         'user_fname',

@@ -96,12 +96,11 @@ class RegisterController extends Controller
             $now_timestamp  = now();
             $pending_txt    = 'pending';
             $employee_txt   = 'employee';
-            $employee_image = 'employee.jpg';
+            $employee_image = 'employee_user_image.jpg';
             $sq             = "'";
 
         // add new user to users and user_employees_tbl
             $reg_emp_user = new Users;
-            $reg_emp_user->id                = $reg_empId;
             $reg_emp_user->email             = $reg_empEmail;
             $reg_emp_user->email_verified_at = $now_timestamp;
             $reg_emp_user->password          = Hash::make($reg_empPassword);
@@ -109,6 +108,7 @@ class RegisterController extends Controller
             $reg_emp_user->user_status       = $pending_txt;
             $reg_emp_user->user_role_status  = $pending_txt;
             $reg_emp_user->user_type         = $employee_txt;
+            $reg_emp_user->user_sdca_id      = $reg_empId;
             $reg_emp_user->user_image        = $employee_image;
             $reg_emp_user->user_lname        = $reg_empLname;
             $reg_emp_user->user_fname        = $reg_empFname;
@@ -124,19 +124,26 @@ class RegisterController extends Controller
             $reg_emp_info->created_at    = $now_timestamp;
             $reg_emp_info->save();
 
-
         // if registration was success
             if($reg_emp_user AND $reg_emp_info){
-                // record activity
-                $record_act = new Useractivites;
-                $record_act->created_at            = $now_timestamp;
-                $record_act->act_respo_user_id     = $reg_empId;
-                $record_act->act_respo_users_lname = $reg_empLname;
-                $record_act->act_respo_users_fname = $reg_empFname;
-                $record_act->act_type              = 'register';
-                $record_act->act_details           = $reg_empFname. ' ' .$reg_empLname.$sq.'s Account Registration.';
-                $record_act->act_affected_id       = $reg_empId;
-                $record_act->save();
+                // get new registerd user's id
+                $get_new_emp_user_id = Users::select('id')->where('user_sdca_id', $reg_empId)->latest('created_at')->first();
+                $new_reg_user_id     = $get_new_emp_user_id->id;
+                
+                if($new_reg_user_id){
+                    // record activity
+                    $record_act = new Useractivites;
+                    $record_act->created_at            = $now_timestamp;
+                    $record_act->act_respo_user_id     = $new_reg_user_id;
+                    $record_act->act_respo_users_lname = $reg_empLname;
+                    $record_act->act_respo_users_fname = $reg_empFname;
+                    $record_act->act_type              = 'register';
+                    $record_act->act_details           = $reg_empFname. ' ' .$reg_empLname.$sq.'s Account Registration.';
+                    $record_act->act_affected_id       = $new_reg_user_id;
+                    $record_act->save();
+                }else{
+                    echo 'recording registration activity failed';
+                }
             }else{
                 return back()->withAccountRegistrationFailedStatus('Account Registration Failed! try again later.');
             }
@@ -172,12 +179,11 @@ class RegisterController extends Controller
             $now_timestamp = now();
             $pending_txt   = 'pending';
             $student_txt   = 'student';
-            $student_image = 'student.jpg';
+            $student_image = 'student_user_image.jpg';
             $sq            = "'";
         
         // add new user to users and user_employees_tbl
             $reg_stud_user = new Users;
-            $reg_stud_user->id                = $reg_studNum;
             $reg_stud_user->email             = $reg_studEmail;
             $reg_stud_user->email_verified_at = $now_timestamp;
             $reg_stud_user->password          = Hash::make($reg_studPassword);
@@ -185,6 +191,7 @@ class RegisterController extends Controller
             $reg_stud_user->user_status       = $pending_txt;
             $reg_stud_user->user_role_status  = $pending_txt;
             $reg_stud_user->user_type         = $student_txt;
+            $reg_stud_user->user_sdca_id      = $reg_studNum;
             $reg_stud_user->user_image        = $student_image;
             $reg_stud_user->user_lname        = $reg_studLname;
             $reg_stud_user->user_fname        = $reg_studFname;
@@ -204,15 +211,19 @@ class RegisterController extends Controller
         
         // if registration was success
             if($reg_stud_user AND $reg_stud_info){
+                // get new registerd user's id
+                $get_new_stud_user_id = Users::select('id')->where('user_sdca_id', $reg_studNum)->latest('created_at')->first();
+                $new_reg_user_id     = $get_new_stud_user_id->id;
+
                 // record activity
                 $record_act = new Useractivites;
                 $record_act->created_at            = $now_timestamp;
-                $record_act->act_respo_user_id     = $reg_studNum;
+                $record_act->act_respo_user_id     = $new_reg_user_id;
                 $record_act->act_respo_users_lname = $reg_studLname;
                 $record_act->act_respo_users_fname = $reg_studFname;
                 $record_act->act_type              = 'register';
                 $record_act->act_details           = $reg_studFname. ' ' .$reg_studLname.$sq.'s Account Registration.';
-                $record_act->act_affected_id       = $reg_studNum;
+                $record_act->act_affected_id       = $new_reg_user_id;
                 $record_act->save();
             }else{
                 return back()->withAccountRegistrationFailedStatus('Account Registration Failed! try again later.');

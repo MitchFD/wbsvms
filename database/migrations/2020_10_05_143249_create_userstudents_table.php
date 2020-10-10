@@ -15,11 +15,11 @@ class CreateUserstudentsTable extends Migration
     {
         Schema::create('user_students_tbl', function (Blueprint $table) {
             $table->unsignedBigInteger('uStud_num')->primary();
-                // $table->foreign('uStud_num')->references('id')->on('users')->onDelete('cascade');
-            $table->string('uStud_school');    
-            $table->string('uStud_program');    
-            $table->string('uStud_yearlvl');    
-            $table->string('uStud_section');    
+                // $table->foreign('uStud_num')->references('user_sdca_id')->on('users')->onDelete('cascade');
+            $table->string('uStud_school')->nullable();    
+            $table->string('uStud_program')->nullable();    
+            $table->string('uStud_yearlvl')->nullable();    
+            $table->string('uStud_section')->nullable();    
             $table->string('uStud_phnum')->nullable();    
             $table->timestamp('created_at')->format('Y-m-d H:i:s')->nullable();
         });

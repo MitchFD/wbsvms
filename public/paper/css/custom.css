@@ -323,6 +323,16 @@ fieldset[disabled] .btn_svms_blue.active {
 .cb_p15x25{
   padding: 15px 25px !important;
 }
+.cb_pt15{
+  padding-top: 15px !important;
+}
+.cb_pb15{
+  padding-bottom: 15px !important;
+}
+.cb_px25{
+  padding-left: 25px !important;
+  padding-right: 25px !important;
+}
 /* border-radius */
 .card_gbr{
   border-radius: 15px !important;
@@ -346,6 +356,22 @@ fieldset[disabled] .btn_svms_blue.active {
 .card_body_subtitle{
   display: block;
   font-size: 16px !important;
+  font-weight: normal !important;
+  text-decoration: none !important;
+  text-transform: normal !important;
+  color: var(--svms_light_blue);
+}
+.sec_card_body_title{
+  display: block;
+  font-size: 20px !important;
+  font-weight: bold !important;
+  text-decoration: none !important;
+  text-transform: uppercase !important;
+  color: var(--svms_blue);
+}
+.sec_card_body_subtitle{
+  display: block;
+  font-size: 14px !important;
   font-weight: normal !important;
   text-decoration: none !important;
   text-transform: normal !important;
@@ -426,6 +452,18 @@ a.text_svms_blue:hover {
   border-color: var(--svms_red) !important;
   color: var(--svms_red) !important;
 }
+.input-group-text .is_invalid{
+  border-right: none !important;
+  border-color: var(--svms_red) !important;
+  color: var(--svms_red) !important;
+}
+
+/* .custom-select.is-invalid,
+.form-control.is-invalid,
+.was-validated .custom-select:invalid,
+.was-validated .form-control:invalid {
+    border-color: #dc3545;
+} */
 
 /* profile page */
 .nav_link_svms_blue{
@@ -479,5 +517,16 @@ a.text_svms_blue:hover {
   font-weight: normal;
   color: var(--svms_light_blue);
   margin-bottom: 15px;
-  align-items: center;
+  align-items: center !important;
+}
+.up_info_txt i{
+  position: relative;
+  top: 1px;
+  right: 1px;
+}
+.active_stat{
+  color: #28a745 !important;
+}
+.nactive_stat{
+  color: var(--svms_red) !important;
 }

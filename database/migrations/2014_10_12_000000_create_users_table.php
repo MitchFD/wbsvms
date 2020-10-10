@@ -15,16 +15,18 @@ class CreateUsersTable extends Migration
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->primary();
+            // $table->unsignedBigInteger('id')->primary();
+            $table->id();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
-            $table->string('user_role');
-            $table->string('user_status');    
-            $table->string('user_role_status');    
-            $table->string('user_type');    
-            $table->string('user_image');    
+            $table->string('user_role')->nullable();
+            $table->string('user_status')->nullable();    
+            $table->string('user_role_status')->nullable();    
+            $table->string('user_type');  
+            $table->unsignedBigInteger('user_sdca_id'); 
+            $table->string('user_image')->nullable();    
             $table->string('user_lname');    
             $table->string('user_fname'); 
             $table->unsignedBigInteger('registered_by'); 

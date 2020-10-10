@@ -37,6 +37,7 @@ Route::group(['middleware' => 'auth'], function () {
 
 	// custom profile
 	Route::get('profile/index', ['as' => 'profile.index', 'uses' => 'App\Http\Controllers\ProfileController@index']);
+	Route::post('profile/update_emp_user_profile', ['as' => 'profile.update_emp_user_profile', 'uses' => 'App\Http\Controllers\ProfileController@update_emp_user_profile']);
 });
 
 // user management

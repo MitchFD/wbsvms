@@ -6,7 +6,11 @@
             </div>
         </a>
         <a href="http://www.creative-tim.com" class="simple-text logo-normal">
-            {{ auth()->user()->user_role }}
+            @if(auth()->user()->user_role == 'pending')
+                {{auth()->user()->user_type }} User
+            @else
+                {{ auth()->user()->user_role }}
+            @endif
         </a>
     </div>
     <div class="sidebar-wrapper">
@@ -78,12 +82,12 @@
                     <p>{{ __('Typography') }}</p>
                 </a>
             </li>
-            <li class="active-pro {{ $elementActive == 'upgrade' ? 'active' : '' }}">
+            {{-- <li class="active-pro {{ $elementActive == 'upgrade' ? 'active' : '' }}">
                 <a href="{{ route('page.index', 'upgrade') }}" class="bg-danger">
                     <i class="nc-icon nc-spaceship text-white"></i>
                     <p class="text-white">{{ __('Upgrade to PRO') }}</p>
                 </a>
-            </li>
+            </li> --}}
         </ul>
     </div>
 </div>
