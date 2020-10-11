@@ -1,6 +1,6 @@
 @extends('layouts.app', [
     'class' => 'login-page',
-    'backgroundImagePath' => 'svms/sys/img/sdca_bg1.jpg'
+    'backgroundImagePath' => 'svms/background_images/svms_bg3.jpg'
 ])
 
 @section('content')
@@ -25,7 +25,7 @@
                         <div class="card-header">
                             <div class="row d-flex justify-content-center">
                                 <div class="col-lg-12 col-md-12 col-sm-12 align-items-center text-center">
-                                    <img class="login_img_logo" src="../storage/svms/sys/logos/svms_logo_title_red.png" alt="svms logo">
+                                    <img class="login_img_logo" src="storage/svms/logos/svms_logo_title_red.png" alt="svms logo">
                                     <span class="login_title_txt">{{ __('User Login Credentials') }}</span>
                                 </div>
                             </div>

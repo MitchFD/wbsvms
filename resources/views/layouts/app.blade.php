@@ -21,8 +21,8 @@ The above copyright notice and this permission notice shall be included in all c
 
 <head>
     <meta charset="utf-8" />
-    <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('svms') }}/sys/svms_logo.png">
-    <link rel="icon" type="image/png" href="{{ asset('svms') }}/sys/svms_logo.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('storage/svms/svms_logos/logo.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('storage/svms/logos/svms_logo.png') }}">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 
     <!-- Extra details for Live View on GitHub Pages -->

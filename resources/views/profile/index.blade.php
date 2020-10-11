@@ -5,6 +5,7 @@
 
 @section('content')
     <div class="content">
+        {{-- notifications --}}
         @if (session('status'))
             <div class="alert alert-success" role="alert">
                 {{ session('status') }}
@@ -15,6 +16,31 @@
                 {{ session('password_status') }}
             </div>
         @endif
+        @if (session('success_status'))
+            <div class="row d-flex justify-content-center">
+                <div class="col-lg-12 col-md-12 col-sm-12 align-items-center mx-auto">
+                    <div class="alert alert-success alert-dismissible login_alert fade show" role="alert">
+                        <button type="button" aria-hidden="true" class="close" data-dismiss="alert" aria-label="Close">
+                            <i class="nc-icon nc-simple-remove"></i>
+                        </button>
+                        {{ session('success_status') }}
+                    </div>
+                </div>
+            </div>
+        @endif
+        @if (session('failed_status'))
+            <div class="row d-flex justify-content-center">
+                <div class="col-lg-12 col-md-12 col-sm-12 align-items-center mx-auto">
+                    <div class="alert alert_smvs_danger alert-dismissible login_alert fade show" role="alert">
+                        <button type="button" aria-hidden="true" class="close" data-dismiss="alert" aria-label="Close">
+                            <i class="nc-icon nc-simple-remove"></i>
+                        </button>
+                        {{ session('failed_status') }}
+                    </div>
+                </div>
+            </div>
+        @endif
+
         {{-- directory link --}}
         <div class="row mb-3">
             <div class="col-lg-12 col-md-12 col-sm-12">
@@ -43,7 +69,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-4 col-md-4 col-sm-4">
+            <div class="col-lg-4 col-md-5 col-sm-12">
                 <div class="card card_gbr card_ofh shadow-none">
                     <div class="card-body card_body_bg_gray cb_p15x25">
                         <div class="card-header p-0">
@@ -73,7 +99,13 @@
                                             <div class="card-body">
                                                 <div class="author">
                                                     <a href="#" class="up_img_div">
-                                                        <img class="up_user_image shadow border-gray" src="{{asset('storage/svms/user_images/'.auth()->user()->user_image)}}" alt="{{auth()->user()->user_fname }} {{ auth()->user()->user_lname}}'s profile image'">
+                                                        <img class="up_user_image shadow border-gray"
+                                                        @if(!is_null(auth()->user()->user_image))
+                                                            src="{{asset('storage/svms/user_images/'.auth()->user()->user_image)}}" alt="{{auth()->user()->user_fname }} {{ auth()->user()->user_lname}}'s profile image'"
+                                                        @else
+                                                            src="{{asset('storage/svms/user_images/employee_user_image.jpg')}}" alt="default employee user's profile image"
+                                                        @endif
+                                                        >
                                                     </a>
                                                     <span class="up_fullname_txt">{{auth()->user()->user_fname }}  {{auth()->user()->user_lname}}</span>
                                                     @if(!is_null(auth()->user()->user_role) AND auth()->user()->user_role != 'pending') <h5 class="up_role_txt">{{ __(auth()->user()->user_role)}}</h5> @endif
@@ -117,13 +149,17 @@
                                             <span class="sec_card_body_title">Edit Profile</span>
                                             <span class="sec_card_body_subtitle">Click the <span class="font-weight-bold">'Save Changes'</span> button to save the changes you've made and this will update your profile.</span>
                                         </div>
-                                        <form id="form_empUpdateProfile" class="form" method="POST" action="{{route('profile.update_emp_user_profile')}}">
+                                        <form id="form_empUpdateProfile" class="form" method="POST" action="{{route('profile.update_emp_user_profile')}}" enctype="multipart/form-data">
                                             @csrf
                                             <div class="cb_px25 cb_pb15">
                                                 <div class="row d-flex justify-content-center">
                                                     <div class="col-lg-12 col-md-12 col-sm-12 align-items-center">
-                                                        <div class="up_img_div align-items-center">
-                                                            <img class="up_user_image shadow border-gray" src="{{asset('storage/svms/user_images/'.auth()->user()->user_image)}}" alt="{{auth()->user()->user_fname }} {{ auth()->user()->user_lname}}'s profile image'">
+                                                        <div class="up_img_div text-center">
+                                                            <img class="up_user_image emp_imgUpld_targetImg shadow border-gray" src="{{asset('public/storage/svms/user_images/'.auth()->user()->user_image)}}" alt="{{auth()->user()->user_fname }} {{ auth()->user()->user_lname}}'s profile image'">
+                                                        </div>
+                                                        <div class="user_image_upload_input_div">
+                                                            <i class="nc-icon nc-image emp_imgUpld_TrgtBtn"></i>
+                                                            <input name="upd_emp_user_image" class="file_upload_input emp_img_imgUpld_fileInpt" type="file" accept="image/*"/>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -143,7 +179,7 @@
                                                             <i class="nc-icon nc-badge" aria-hidden="true"></i>
                                                         </span>
                                                     </div>
-                                                    <input id="upd_emp_id" name="upd_emp_id" type="number" class="form-control" @if(auth()->user()->user_sdca_id != 'null') value="{{auth()->user()->user_sdca_id}}" @else placeholder="Type Employee ID" @endif required>
+                                                    <input id="upd_emp_id" name="upd_emp_id" type="number" min="0" oninput="validity.valid||(value='');" class="form-control" @if(auth()->user()->user_sdca_id != 'null') value="{{auth()->user()->user_sdca_id}}" @else placeholder="Type Employee ID" @endif required>
                                                 </div>
                                                 <label for="upd_emp_lname">Last Name</label>
                                                 <div class="input-group">
@@ -188,7 +224,7 @@
                                                             <i class="fa fa-mobile" aria-hidden="true"></i>
                                                         </span>
                                                     </div>
-                                                    <input name="upd_emp_phnum" type="number" pattern="[0-9]{11}" class="form-control" @if($user_info->uEmp_phnum != 'null') value="{{$user_info->uEmp_phnum}}" @else placeholder="Type Contact Number" @endif required>
+                                                    <input name="upd_emp_phnum" type="number" pattern="[0-9]{11}" min="0" oninput="validity.valid||(value='');" class="form-control" @if($user_info->uEmp_phnum != 'null') value="{{$user_info->uEmp_phnum}}" @else placeholder="Type Contact Number" @endif required>
                                                 </div>
                                                 <div class="d-flex justify-content-center">
                                                     <input type="hidden" name="selected_user_id" value="{{auth()->user()->id}}"/>
@@ -270,17 +306,55 @@
     </script>
 {{-- avtive tab on page refresh end --}}
 
-{{-- on change of input values = enable submit button --}}
+{{-- user profile image upload --}}
+    {{-- employee profile image --}}
     <script>
-        $(document).ready(function(){
-            $('#form_empUpdateProfile').each(function(){
-                    $(this).data('serialized', $(this).serialize())
-                }).on('change input', function(){
-                    $(this).find('#update_empInfoBtn').attr('disabled', $(this).serialize() == $(this).data('serialized'));
-                }).find('#update_empInfoBtn').attr('disabled', true);
+        $(document).ready(function() {
+            var readURL = function(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        $('.emp_imgUpld_targetImg').attr('src', e.target.result);
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+            $(".emp_img_imgUpld_fileInpt").on('change', function(){
+                readURL(this);
+            });
+            $(".emp_imgUpld_TrgtBtn").on('click', function() {
+                $(".emp_img_imgUpld_fileInpt").click();
+            });
         });
     </script>
-{{-- on change of input values = enable submit button end --}}
+{{-- user profile image upload end --}}
+
+{{-- disable update button on employee profile update if any of inputs have chagned --}}
+    <script>
+        // $(document).ready(function(){
+        //     $('#form_empUpdateProfile').each(function(){
+        //             $(this).data('serialized', $(this).serialize())
+        //         }).on('change input', function(){
+        //             $(this).find('#update_empInfoBtn').attr('disabled', $(this).serialize() == $(this).data('serialized'));
+        //         }).find('#update_empInfoBtn').attr('disabled', true);
+        // });
+        $(window).on('load', function(e){
+            $('#form_empUpdateProfile').each(function(){
+                $(this).data('serialized', $(this).serialize())
+            }).on('change input', function(){
+                $(this).find('#update_empInfoBtn').prop('disabled', $(this).serialize() == $(this).data('serialized'));
+                /* Check if input with type files has changed */
+                var changedFiles = $( ":file" ).filter(function( index ) {
+                    return this.value != this.defaultValue;
+                }).length;
+                if ( changedFiles > 0) {
+                    $(this).find('#update_empInfoBtn, input[type="file"]')
+                        .prop('disabled', false);
+                }
+            }).find('#update_empInfoBtn').prop('disabled', true);
+        });
+    </script>
+{{-- disable update button on employee profile update if any of inputs have chagned end --}}
 
 {{-- paswword toggle visibility --}}
     {{-- employee user password update --}}

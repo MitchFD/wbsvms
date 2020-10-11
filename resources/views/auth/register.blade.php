@@ -1,6 +1,6 @@
 @extends('layouts.app', [
     'class' => 'register-page',
-    'backgroundImagePath' => 'svms/sys/img/sdca_bg1.jpg'
+    'backgroundImagePath' => 'svms/background_images/sdca_bg1.jpg'
 ])
 
 @section('content')
@@ -58,7 +58,7 @@
                     <div class="info-area info-horizontal">
                         <div class="row d-flex justify-content-start mb-2">
                             <div class="col-lg-12 col-md-12 col-sm-12 align-items-center text-left">
-                                <img class="register_img_logo" src="../storage/svms/sys/logos/svms_logo_title_red.png" alt="svms logo">
+                                <img class="register_img_logo" src="storage/svms/logos/svms_logo_title_red.png" alt="svms logo">
                                 {{-- <span class="login_title_txt">{{ __('Registration') }}</span> --}}
                             </div>
                         </div>

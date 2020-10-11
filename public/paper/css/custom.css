@@ -486,6 +486,10 @@ a.text_svms_blue:hover {
   margin-bottom: 15px;
   border: 4px solid var(--svms_blue);
   position: relative;
+  object-fit: cover !important;
+  background-size: cover !important;
+  background-position: 50% 50% !important;
+  background-repeat: no-repeat !important;
 }
 .up_fullname_txt{
   display: block;
@@ -530,3 +534,26 @@ a.text_svms_blue:hover {
 .nactive_stat{
   color: var(--svms_red) !important;
 }
+
+.user_image_upload_input_div{
+  position: absolute;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background-color: var(--svms_blue);
+  color: var(--white);
+  top: 95px;
+  right: 140px;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  font-size: 16px;
+  padding: 13px 15px;
+  cursor: pointer;
+  z-index: 2;
+}
+.user_image_upload_input_div:hover{
+  box-shadow: none;
+}
+.file_upload_input{
+  display: none !important;
+}
+
