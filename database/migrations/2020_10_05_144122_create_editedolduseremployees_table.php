@@ -26,6 +26,7 @@ class CreateEditedolduseremployeesTable extends Migration
             $table->string('eOld_user_image');    
             $table->string('eOld_user_lname');    
             $table->string('eOld_user_fname'); 
+            $table->string('eOld_user_gender'); 
             $table->unsignedBigInteger('eOld_sdca_id'); 
             $table->string('eOld_job_desc');    
             $table->string('eOld_dept');    

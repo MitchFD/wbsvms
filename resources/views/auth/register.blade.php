@@ -54,7 +54,7 @@
                         </div>
                     </div>
                 </div> --}}
-                <div class="col-lg-6 col-md-6 ml-auto">
+                <div class="col-lg-6 col-md-6 ml-auto mt-3">
                     <div class="info-area info-horizontal">
                         <div class="row d-flex justify-content-start mb-2">
                             <div class="col-lg-12 col-md-12 col-sm-12 align-items-center text-left">
@@ -112,7 +112,7 @@
                             </div>
                         </div> --}}
                         <div class="card-body px-0">
-                            <ul class="nav nav-pills custom_nav_pills mt-3 mb-3 d-flex justify-content-center" id="pills-tab" role="tablist">
+                            <ul class="nav nav-pills custom_nav_pills mt-1 mb-2 d-flex justify-content-center" id="pills-tab" role="tablist">
                                 <li class="nav-item">
                                     <a class="nav-link custom_nav_link_red active" id="employeeRegistrationFormTab" data-toggle="pill" href="#employeeRegistrationForm" role="tab" aria-controls="employeeRegistrationForm" aria-selected="true">Employee</a>
                                 </li>
@@ -138,7 +138,7 @@
                                                         <i class="nc-icon nc-badge" aria-hidden="true"></i>
                                                     </span>
                                                 </div>
-                                                <input id="reg_empId" name="reg_empId" type="number" class="form-control" placeholder="Type Employee ID" value="{{ old('reg_empId') }}" required>
+                                                <input id="reg_empId" name="reg_empId" type="number" min="0" oninput="validity.valid||(value='');" class="form-control" placeholder="Type Employee ID" value="{{ old('reg_empId') }}" required>
                                             </div>
                                             <div class="input-group">
                                                 <div class="input-group-prepend">
@@ -155,6 +155,18 @@
                                                     </span>
                                                 </div>
                                                 <input id="reg_empFname" name="reg_empFname" type="text" class="form-control" placeholder="Type First Name" value="{{ old('reg_empFname') }}" required>
+                                            </div>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">
+                                                        <i class="nc-icon nc-single-02"></i>
+                                                    </span>
+                                                </div>
+                                                <input id="reg_empGender" list="genderOptions" pattern="Male|Female" name="reg_empGender" type="text" class="form-control" placeholder="Select Gender" value="{{ old('reg_empGender') }}" required>
+                                                <datalist id="genderOptions">
+                                                    <option value="Male">
+                                                    <option value="Female">
+                                                </datalist>
                                             </div>
                                             <div class="input-group">
                                                 <div class="input-group-prepend">
@@ -178,7 +190,7 @@
                                                         <i class="fa fa-mobile" aria-hidden="true"></i>
                                                     </span>
                                                 </div>
-                                                <input name="reg_empPhnum" type="number" pattern="[0-9]{11}" class="form-control" placeholder="Type Contact Number" value="{{ old('reg_empPhnum') }}" required>
+                                                <input name="reg_empPhnum" type="number" min="0" oninput="validity.valid||(value='');" pattern="[0-9]{11}" class="form-control" placeholder="Type Contact Number" value="{{ old('reg_empPhnum') }}" required>
                                             </div>
                                         </div>
                                         <div class="cust_card_body_ligth_bg">
@@ -246,7 +258,7 @@
                                                         <i class="nc-icon nc-badge" aria-hidden="true"></i>
                                                     </span>
                                                 </div>
-                                                <input id="reg_studNum" name="reg_studNum" type="number" class="form-control" placeholder="Type Student Number" value="{{ old('reg_studNum') }}" required>
+                                                <input id="reg_studNum" name="reg_studNum" type="number" min="0" oninput="validity.valid||(value='');" class="form-control" placeholder="Type Student Number" value="{{ old('reg_studNum') }}" required>
                                             </div>
                                             <div class="input-group">
                                                 <div class="input-group-prepend">
@@ -267,10 +279,14 @@
                                             <div class="input-group">
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text">
-                                                        <i class="nc-icon nc-badge" aria-hidden="true"></i>
+                                                        <i class="nc-icon nc-single-02"></i>
                                                     </span>
                                                 </div>
-                                                <input id="reg_studSchool" name="reg_studSchool" type="text" class="form-control" placeholder="Type School" value="{{ old('reg_studSchool') }}" required>
+                                                <input id="reg_studGender" list="studGenderOptions" pattern="Male|Female" name="reg_studGender" type="text" class="form-control" placeholder="Select Gender" value="{{ old('reg_studGender') }}" required>
+                                                <datalist id="studGenderOptions">
+                                                    <option value="Male">
+                                                    <option value="Female">
+                                                </datalist>
                                             </div>
                                             <div class="input-group">
                                                 <div class="input-group-prepend">
@@ -278,7 +294,13 @@
                                                         <i class="nc-icon nc-badge" aria-hidden="true"></i>
                                                     </span>
                                                 </div>
-                                                <input id="reg_studProgram" name="reg_studProgram" type="text" class="form-control" placeholder="Type Program" value="{{ old('reg_studProgram') }}" required>
+                                                <input id="reg_studSchool" list="regStudSchoolOptions" pattern="SASE|SBCS|SIHTM|SHSP" name="reg_studSchool" type="text" class="form-control" placeholder="Type School" value="{{ old('reg_studSchool') }}" required>
+                                                <datalist id="regStudSchoolOptions">
+                                                    <option value="SASE">
+                                                    <option value="SBCS">
+                                                    <option value="SIHTM">
+                                                    <option value="SHSP">
+                                                </datalist>
                                             </div>
                                             <div class="input-group">
                                                 <div class="input-group-prepend">
@@ -286,7 +308,21 @@
                                                         <i class="nc-icon nc-badge" aria-hidden="true"></i>
                                                     </span>
                                                 </div>
-                                                <input id="reg_studYearlvl" name="reg_studYearlvl" type="text" class="form-control" placeholder="Type Year level" value="{{ old('reg_studYearlvl') }}" required>
+                                                <input id="reg_studProgram" list="regStudProgramOptions" pattern="BS Psychology|BS Education|BA Communication|BSBA|BSA|BSIT|BSCS|BMA|BSHM|BSTM|BS Biology|BS Pharmacy|BS Radiologic Technology|BS Physical Therapy|BS Medical Technology|BS Nursing" name="reg_studProgram" type="text" class="form-control" placeholder="Type Program" value="{{ old('reg_studProgram') }}" required>
+                                                <datalist id="regStudProgramOptions">
+                                                        
+                                                </datalist>
+                                            </div>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">
+                                                        <i class="nc-icon nc-badge" aria-hidden="true"></i>
+                                                    </span>
+                                                </div>
+                                                <input id="reg_studYearlvl" list="regStudYearlvlOptions" pattern="FIRST YEAR|SECOND YEAR|THIRD YEAR|FOURTH YEAR|FIFTH YEAR" name="reg_studYearlvl" type="text" class="form-control" placeholder="Type Year level" value="{{ old('reg_studYearlvl') }}" required>
+                                                <datalist id="regStudYearlvlOptions">
+
+                                                </datalist>
                                             </div>
                                             <div class="input-group">
                                                 <div class="input-group-prepend">
@@ -302,7 +338,7 @@
                                                         <i class="fa fa-mobile" aria-hidden="true"></i>
                                                     </span>
                                                 </div>
-                                                <input name="reg_studPhnum" type="number" pattern="[0-9]{11}" class="form-control" placeholder="Type Contact Number" value="{{ old('reg_studPhnum') }}" required>
+                                                <input name="reg_studPhnum" type="number" min="0" oninput="validity.valid||(value='');" pattern="[0-9]{11}" class="form-control" placeholder="Type Contact Number" value="{{ old('reg_studPhnum') }}" required>
                                             </div>
                                         </div>
                                         <div class="cust_card_body_ligth_bg">
@@ -331,7 +367,7 @@
                                                     </span>
                                                 @endif
                                             </div>
-                                            <div class="input-group paswrd_inpt_fld">
+                                            <div class="input-group paswrd_inpt_fld mb-1">
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text">
                                                         <i class="nc-icon nc-lock-circle-open"></i>
@@ -501,6 +537,67 @@
             });
         </script>
     {{-- pasword toggle visibility end --}}
+
+    {{-- display datalist options based on previous selected option --}}
+        {{-- selected school --}}
+        <script>
+            $(document).ready(function() {
+                $("#reg_studSchool").on("change paste keyup", function() {
+                    var selectedSchool = $(this).val();
+                    if(selectedSchool != ''){
+                        if(selectedSchool == 'SASE'){
+                            $("#regStudProgramOptions").html('<option value="BS Psychology"> \
+                                                        <option value="BS Education"> \
+                                                        <option value="BA Communication">');
+                        }else if(selectedSchool == 'SBCS'){
+                            $("#regStudProgramOptions").html('<option value="BSBA"> \
+                                                        <option value="BSA"> \
+                                                        <option value="BSIT"> \
+                                                        <option value="BMA">');
+                        }else if(selectedSchool == 'SIHTM'){
+                            $("#regStudProgramOptions").html('<option value="BSHM"> \
+                                                        <option value="BSTM">');
+                        }else if(selectedSchool == 'SHSP'){
+                            $("#regStudProgramOptions").html('<option value="BS Biology"> \
+                                                        <option value="BS Pharmacy"> \
+                                                        <option value="BS Radiologic Technology"> \
+                                                        <option value="BS Physical Therapy"> \
+                                                        <option value="BS Medical Technology"> \
+                                                        <option value="BS Nursing">');
+                        }else{
+                            $("#regStudProgramOptions").html('<option value="Select School First"></option>');
+                        }
+                    }else{
+                        $("#regStudProgramOptions").html('<option value="Select School First"></option>');
+                    }
+                });
+            });
+        </script>
+        {{-- selected program --}}
+        <script>
+            $(document).ready(function() {
+                $("#reg_studProgram").on("change paste keyup", function() {
+                    var selectedProgram = $(this).val();
+                    if(selectedProgram != ''){
+                        if(selectedProgram == 'BSA' || selectedProgram == 'BS Physical Therapy'){
+                            $("#regStudYearlvlOptions").html('<option value="FIRST YEAR"> \
+                                                    <option value="SECOND YEAR"> \
+                                                    <option value="THIRD YEAR"> \
+                                                    <option value="FOURTH YEAR"> \
+                                                    <option value="FIFTH YEAR">');
+                        }else{
+                            $("#regStudYearlvlOptions").html('<option value="FIRST YEAR"> \
+                                                    <option value="SECOND YEAR"> \
+                                                    <option value="THIRD YEAR"> \
+                                                    <option value="FOURTH YEAR">');
+                        }
+                    }else{
+                        $("#regStudYearlvlOptions").html('<option value="Select Program First"></option>');
+                    }
+                });
+            });
+        </script>
+    {{-- display datalist options based on previous selected option --}}
 
     {{-- email check --}}
         {{-- employee email --}}

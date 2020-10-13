@@ -39,6 +39,7 @@ class Users extends Model
         'user_image',
         'user_lname',
         'user_fname',
+        'user_gender',
         'registered_by',
     ];
     public $primaryKey = 'id';

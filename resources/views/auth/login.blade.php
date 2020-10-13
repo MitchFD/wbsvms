@@ -5,19 +5,31 @@
 
 @section('content')
     <div class="content">
-        @if (session('deactivated_account_status'))
-            <div class="row d-flex justify-content-center">
-                <div class="col-lg-4 col-md-8 col-sm-10 align-items-center mx-auto">
-                    <div class="alert alert_smvs_danger alert-dismissible login_alert fade show" role="alert">
-                        <button type="button" aria-hidden="true" class="close" data-dismiss="alert" aria-label="Close">
-                            <i class="nc-icon nc-simple-remove"></i>
-                        </button>
-                        {{ session('deactivated_account_status') }}
+        <div class="container">
+            @if (session('deactivated_account_status'))
+                <div class="row d-flex justify-content-center">
+                    <div class="col-lg-4 col-md-8 col-sm-10 align-items-center mx-auto">
+                        <div class="alert alert_smvs_danger alert-dismissible login_alert fade show" role="alert">
+                            <button type="button" aria-hidden="true" class="close" data-dismiss="alert" aria-label="Close">
+                                <i class="nc-icon nc-simple-remove"></i>
+                            </button>
+                            {{ session('deactivated_account_status') }}
+                        </div>
                     </div>
                 </div>
-            </div>
-        @endif
-        <div class="container">
+            @endif
+            @if (session('success_status'))
+                <div class="row d-flex justify-content-center">
+                    <div class="col-lg-4 col-md-8 col-sm-10 align-items-center mx-auto">
+                        <div class="alert alert-success alert-dismissible login_alert fade show" role="alert">
+                            <button type="button" aria-hidden="true" class="close" data-dismiss="alert" aria-label="Close">
+                                <i class="nc-icon nc-simple-remove"></i>
+                            </button>
+                            {{ session('success_status') }}
+                        </div>
+                    </div>
+                </div>
+            @endif
             <div class="col-lg-4 col-md-6 ml-auto mr-auto">
                 <form class="form" method="POST" action="{{ route('login') }}">
                     @csrf
@@ -70,7 +82,7 @@
                                     </label>
                                 </div>
                             </div> --}}
-                            <div class="form-group mt-2">
+                            {{-- <div class="form-group mt-2">
                                 <div class="form-check">
                                      <label class="form-check-label">
                                         <input class="form-check-input custom-control-input" name="remember" type="checkbox" value="" {{ old('remember') ? 'checked' : '' }}>
@@ -78,7 +90,7 @@
                                         {{ __('Remember me') }}
                                     </label>
                                 </div>
-                            </div>
+                            </div> --}}
                             {{-- <a href="{{ route('password.request') }}" class="frgtPwd_button">
                                 {{ __('Forgot password') }}
                             </a> --}}

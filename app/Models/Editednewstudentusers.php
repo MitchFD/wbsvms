@@ -27,6 +27,7 @@ class Editednewstudentusers extends Model
         'eNew_user_image',
         'eNew_user_lname',
         'eNew_user_fname',
+        'eNew_user_gender',
         'eNew_sdca_id',
         'eNew_school',
         'eNew_program',

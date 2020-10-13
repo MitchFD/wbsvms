@@ -27,6 +27,7 @@ class UsersTableSeeder extends Seeder
                 'user_image'        => 'employee_user_image.jpg',
                 'user_lname'        => 'Desierto',
                 'user_fname'        => 'Mitch Frankein',
+                'user_gender'       => 'male',
                 'registered_by'     => '1',
                 'created_at'        => now()
             ],
@@ -42,6 +43,7 @@ class UsersTableSeeder extends Seeder
                 'user_image'        => 'employee_user_image.jpg',
                 'user_lname'        => 'Guard',
                 'user_fname'        => 'Kuya',
+                'user_gender'       => 'male',
                 'registered_by'     => '1',
                 'created_at'        => now()
             ],
@@ -57,6 +59,7 @@ class UsersTableSeeder extends Seeder
                 'user_image'        => 'student_user_image.jpg',
                 'user_lname'        => 'Doe',
                 'user_fname'        => 'John',
+                'user_gender'       => 'female',
                 'registered_by'     => '1',
                 'created_at'        => now()
             ]

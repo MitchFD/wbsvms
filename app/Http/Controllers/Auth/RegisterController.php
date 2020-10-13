@@ -13,6 +13,7 @@ use App\Models\Users;
 use App\Models\Useremployees;
 use App\Models\Userstudents;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class RegisterController extends Controller
 {
@@ -86,12 +87,22 @@ class RegisterController extends Controller
             $reg_empId       = $request->get('reg_empId');
             $reg_empLname    = $request->get('reg_empLname');
             $reg_empFname    = $request->get('reg_empFname');
+            $reg_empGender   = $request->get('reg_empGender');
             $reg_empJobDesc  = $request->get('reg_empJobDesc');
             $reg_empDept     = $request->get('reg_empDept');
             $reg_empPhnum    = $request->get('reg_empPhnum');
             $reg_empEmail    = $request->get('email');
             $reg_empPassword = $request->get('password');
 
+        // determine user's gender
+            $user_gender = Str::lower($reg_empGender);
+            if($user_gender == 'male'){
+                $userGenderTxt = 'himself';
+            }elseif($user_gender == 'female'){
+                $userGenderTxt = 'herself';
+            }else{
+                $userGenderTxt = 'himself/herself';
+            }
         // custom values
             $now_timestamp  = now();
             $pending_txt    = 'pending';
@@ -112,6 +123,7 @@ class RegisterController extends Controller
             $reg_emp_user->user_image        = $employee_image;
             $reg_emp_user->user_lname        = $reg_empLname;
             $reg_emp_user->user_fname        = $reg_empFname;
+            $reg_emp_user->user_gender       = $user_gender;
             $reg_emp_user->registered_by     = $reg_empId;
             $reg_emp_user->created_at        = $now_timestamp;
             $reg_emp_user->save();
@@ -138,23 +150,33 @@ class RegisterController extends Controller
                     $record_act->act_respo_users_lname = $reg_empLname;
                     $record_act->act_respo_users_fname = $reg_empFname;
                     $record_act->act_type              = 'register';
-                    $record_act->act_details           = $reg_empFname. ' ' .$reg_empLname.$sq.'s Account Registration.';
+                    $record_act->act_details           = $reg_empFname. ' ' .$reg_empLname. ' registered ' .$userGenderTxt. ' as an Employee Type User.';
                     $record_act->act_affected_id       = $new_reg_user_id;
                     $record_act->save();
+
+                    return redirect('/')->withSuccessStatus('Account Registration was Successful. Login your account.');
+
+                    // $login_this_user = Auth::loginUsingId($new_reg_user_id);
+                    // if($login_this_user){
+                    //     $record_act = new Useractivites;
+                    //     $record_act->created_at            = $now_timestamp;
+                    //     $record_act->act_respo_user_id     = $new_reg_user_id;
+                    //     $record_act->act_respo_users_lname = $reg_empLname;
+                    //     $record_act->act_respo_users_fname = $reg_empFname;
+                    //     $record_act->act_type              = 'login';
+                    //     $record_act->act_details           = $reg_empFname. ' ' .$reg_empLname. ' logged in.';
+                    //     $record_act->act_affected_id       = $new_reg_user_id;
+                    //     $record_act->save();
+                    //     return view('profile.index')->withSuccessStatus('Account Registration was Successful. Welcome to SVMS!');
+                    // }else{
+                    //     return view('/')->withSuccessStatus('Account Registration was Successful. Try Loging in to the system.');
+                    // }
                 }else{
-                    echo 'recording registration activity failed';
+                    return back()->withAccountRegistrationFailedStatus('Account Registration Failed! try again later.');
                 }
             }else{
                 return back()->withAccountRegistrationFailedStatus('Account Registration Failed! try again later.');
             }
-        // echo 'register new employee user: <br/>';
-        // echo 'Employee ID: ' .$reg_empId. '<br/>';
-        // echo 'Employee name: ' .$reg_empFname. ' ' .$reg_empLname. '<br/>';
-        // echo 'Job Description: ' .$reg_empJobDesc. '<br/>';
-        // echo 'Job Department: ' .$reg_empDept. '<br/>';
-        // echo 'Phone Number: ' .$reg_empPhnum. '<br/>';
-        // echo 'Email: ' .$reg_empEmail. '<br/>';
-        // echo 'Password: ' .$reg_empPassword. '<br/>';
     }
 
     // register student type user
@@ -167,6 +189,7 @@ class RegisterController extends Controller
             $reg_studNum      = $request->get('reg_studNum');
             $reg_studLname    = $request->get('reg_studLname');
             $reg_studFname    = $request->get('reg_studFname');
+            $reg_studGender   = $request->get('reg_studGender');
             $reg_studSchool   = $request->get('reg_studSchool');
             $reg_studProgram  = $request->get('reg_studProgram');
             $reg_studYearlvl  = $request->get('reg_studYearlvl');
@@ -174,6 +197,16 @@ class RegisterController extends Controller
             $reg_studPhnum    = $request->get('reg_studPhnum');
             $reg_studEmail    = $request->get('student_email');
             $reg_studPassword = $request->get('student_password');
+
+        // determine user's gender
+            $user_gender = Str::lower($reg_studGender);
+            if($user_gender == 'male'){
+                $userGenderTxt = 'himself';
+            }elseif($user_gender == 'female'){
+                $userGenderTxt = 'herself';
+            }else{
+                $userGenderTxt = 'himself/herself';
+            }
 
         // custom values
             $now_timestamp = now();
@@ -195,6 +228,7 @@ class RegisterController extends Controller
             $reg_stud_user->user_image        = $student_image;
             $reg_stud_user->user_lname        = $reg_studLname;
             $reg_stud_user->user_fname        = $reg_studFname;
+            $reg_stud_user->user_gender       = $user_gender;
             $reg_stud_user->registered_by     = $reg_studNum;
             $reg_stud_user->created_at        = $now_timestamp;
             $reg_stud_user->save();
@@ -215,16 +249,22 @@ class RegisterController extends Controller
                 $get_new_stud_user_id = Users::select('id')->where('user_sdca_id', $reg_studNum)->latest('created_at')->first();
                 $new_reg_user_id     = $get_new_stud_user_id->id;
 
-                // record activity
-                $record_act = new Useractivites;
-                $record_act->created_at            = $now_timestamp;
-                $record_act->act_respo_user_id     = $new_reg_user_id;
-                $record_act->act_respo_users_lname = $reg_studLname;
-                $record_act->act_respo_users_fname = $reg_studFname;
-                $record_act->act_type              = 'register';
-                $record_act->act_details           = $reg_studFname. ' ' .$reg_studLname.$sq.'s Account Registration.';
-                $record_act->act_affected_id       = $new_reg_user_id;
-                $record_act->save();
+                if($new_reg_user_id){
+                    // record activity
+                    $record_act = new Useractivites;
+                    $record_act->created_at            = $now_timestamp;
+                    $record_act->act_respo_user_id     = $new_reg_user_id;
+                    $record_act->act_respo_users_lname = $reg_studLname;
+                    $record_act->act_respo_users_fname = $reg_studFname;
+                    $record_act->act_type              = 'register';
+                    $record_act->act_details           = $reg_studFname. ' ' .$reg_studLname. ' registered ' .$userGenderTxt. ' as a Student Type User.';
+                    $record_act->act_affected_id       = $new_reg_user_id;
+                    $record_act->save();
+
+                    return redirect('/')->withSuccessStatus('Account Registration was Successful. Login your account.');
+                }else{
+                    return back()->withAccountRegistrationFailedStatus('Account Registration Failed! try again later.');
+                }
             }else{
                 return back()->withAccountRegistrationFailedStatus('Account Registration Failed! try again later.');
             }

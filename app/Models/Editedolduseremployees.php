@@ -27,6 +27,7 @@ class Editedolduseremployees extends Model
         'eOld_user_image',
         'eOld_user_lname',
         'eOld_user_fname',
+        'eOld_user_gender',
         'eOld_sdca_id',
         'eOld_job_desc',
         'eOld_dept',

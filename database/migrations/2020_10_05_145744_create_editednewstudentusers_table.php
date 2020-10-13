@@ -26,6 +26,7 @@ class CreateEditednewstudentusersTable extends Migration
             $table->string('eNew_user_image');    
             $table->string('eNew_user_lname');    
             $table->string('eNew_user_fname'); 
+            $table->string('eNew_user_gender'); 
             $table->unsignedBigInteger('eNew_sdca_id'); 
             $table->string('eNew_school');    
             $table->string('eNew_program');    

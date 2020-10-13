@@ -76,7 +76,7 @@ class LoginController extends Controller
                     $record_act->act_respo_users_lname = $user_lname;
                     $record_act->act_respo_users_fname = $user_fname;
                     $record_act->act_type              = 'login';
-                    $record_act->act_details           = 'logged in to system';
+                    $record_act->act_details           = $user_fname. ' ' .$user_lname. ' logged in.';
                     $record_act->act_affected_id       = $user_id;
                     $record_act->save();
                     // redirect to admin dashboard
@@ -89,15 +89,30 @@ class LoginController extends Controller
                     $record_act->act_respo_users_lname = $user_lname;
                     $record_act->act_respo_users_fname = $user_fname;
                     $record_act->act_type              = 'login';
-                    $record_act->act_details           = 'logged in to system';
+                    $record_act->act_details           = $user_fname. ' ' .$user_lname. ' logged in.';
                     $record_act->act_affected_id       = $user_id;
                     $record_act->save();
                     // redirect to violation entry
-                    return redirect('violation_entry/index');
+                    return redirect('profile/index');
                 }
             }else{
-                Auth::logout();
-                return back()->withDeactivatedAccountStatus('Your account has been deactivated by the administrator. Please contact your administrator or head to Student Discipline Office to regain access to your account.');
+                if($user_status == 'pending'){
+                    // record login to activity
+                    $record_act = new Useractivites;
+                    $record_act->created_at            = $now_timestamp;
+                    $record_act->act_respo_user_id     = $user_id;
+                    $record_act->act_respo_users_lname = $user_lname;
+                    $record_act->act_respo_users_fname = $user_fname;
+                    $record_act->act_type              = 'login';
+                    $record_act->act_details           = $user_fname. ' ' .$user_lname. ' logged in.';
+                    $record_act->act_affected_id       = $user_id;
+                    $record_act->save();
+                    // redirect to violation entry
+                    return redirect('profile/index');
+                }else{
+                    Auth::logout();
+                    return back()->withDeactivatedAccountStatus('Your account has been deactivated by the administrator. Please contact your administrator or head to Student Discipline Office to regain access to your account.');
+                }
             }
     }
     
@@ -115,7 +130,7 @@ class LoginController extends Controller
             $record_act->act_respo_users_lname = $user_lname;
             $record_act->act_respo_users_fname = $user_fname;
             $record_act->act_type              = 'logout';
-            $record_act->act_details           = 'logged out from the system';
+            $record_act->act_details           =  $user_fname. ' ' .$user_lname. ' logged out.';
             $record_act->act_affected_id       = $user_id;
             $record_act->save();
         // log out user an dredirect to login page

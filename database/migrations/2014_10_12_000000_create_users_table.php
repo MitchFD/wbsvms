@@ -29,6 +29,7 @@ class CreateUsersTable extends Migration
             $table->string('user_image')->nullable();    
             $table->string('user_lname');    
             $table->string('user_fname'); 
+            $table->string('user_gender'); 
             $table->unsignedBigInteger('registered_by'); 
                 // $table->foreign('registered_by')->references('id')->on('users')->onDelete('cascade');
             $table->timestamp('created_at')->format('Y-m-d H:i:s')->nullable();
