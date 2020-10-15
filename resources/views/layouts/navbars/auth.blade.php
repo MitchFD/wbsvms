@@ -28,6 +28,12 @@
                         <p>{{ __('Dashboard') }}</p>
                     </a>
                 </li>
+                <li class="{{ $elementActive == 'user_management' ? 'active' : '' }}">
+                    <a href="{{ route('user_management.index', 'user_management') }}">
+                        <i class="nc-icon nc-circle-10"></i>
+                        <p>{{ __('User Management') }}</p>
+                    </a>
+                </li>
                 {{-- <li class="{{ $elementActive == 'user' || $elementActive == 'profile' ? 'active' : '' }}">
                     <a data-toggle="collapse" aria-expanded="true" href="#laravelExamples">
                         <i class="nc-icon"><img src="{{ asset('paper/img/laravel.svg') }}"></i>

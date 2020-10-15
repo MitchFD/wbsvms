@@ -587,9 +587,9 @@
                                                 </tr>
                                             </thead>
                                             <tbody class="tbody_svms_white">
-                                            @foreach($user_activities as $user_activity)
+                                            @foreach($user_activities->sortByDesc('created_at') as $user_activity)
                                                 <tr>
-                                                    <td class="p12 w35prcnt">{{date('F d, Y', strtotime($user_activity->created_at)) }} - {{date('l', strtotime($user_activity->created_at)) }} at {{ date('g:i A', strtotime($user_activity->created_at))}}</td>
+                                                    <td class="p12 w35prcnt">{{date('F d, Y', strtotime($user_activity->created_at)) }} - {{date('D', strtotime($user_activity->created_at)) }} at {{ date('g:i A', strtotime($user_activity->created_at))}}</td>
                                                     <td>
                                                         @if($user_activity->act_type == 'login')
                                                             You logged in to the system.
@@ -611,7 +611,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-12 col-md-12 col-sm-12">
-                                        <span class="cust_info_txtwicon"><i class="fa fa-history" aria-hidden="true"></i> You made {{$transactions_count}} @if($transactions_count > 1) transactions @else transaction @endif with the system.</span>
+                                        <span class="cust_info_txtwicon"><i class="fa fa-history" aria-hidden="true"></i> You made {{$transactions_count}} @if($transactions_count > 1) transactions @else transaction @endif in the system.</span>
                                     </div>
                                 </div>
                                 @else
