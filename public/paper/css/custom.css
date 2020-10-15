@@ -1,11 +1,13 @@
 :root {
   --white: #ffffff;
+  --svms_light_red: #D0585B;
   --svms_red: #BD171B;
   --svms_med_dark_red: #a00305;
   --svms_dark_red: #6E0406;
   --svms_blue: #242333;
   --svms_med_dark_blue: #1d1c29;
   --svms_light_blue: #7d7c8d;
+  --svms_light_blue2: #6A6977;
   --svms_btn_light_gray: #e4e4e4;
   --svms_btn_light_gray_txt: #c5c5c5;
   --svms_text_gray: #a1a1a1;
@@ -362,6 +364,12 @@ fieldset[disabled] .btn_svms_blue.active {
   padding: 12px !important;
 }
 
+/* margin customizations */
+.my15br15{
+  margin: 15px 0px !important;
+  border-radius: 15px !important;
+}
+
 /* global card customization */
 .cb_p15x25{
   padding: 15px 25px !important;
@@ -445,6 +453,9 @@ fieldset[disabled] .btn_svms_blue.active {
   color: var(--svms_blue);
   margin: 0 0 5px 0;
 }
+.grayed_txt{
+  color: var(--svms_light_blue2) !important;
+}
 .lightBlue_cardBody_listCount{
   font-size: 14px !important;
   text-transform: none !important;
@@ -454,11 +465,12 @@ fieldset[disabled] .btn_svms_blue.active {
 }
 .lightBlue_cardBody_list{
   display: block;
-  font-size: 14px !important;
+  font-size: 14px;
   text-transform: none !important;
   font-weight: normal !important;
-  color: var(--svms_blue);
+  color: var(--svms_light_blue2);
   margin: 0;
+  align-items: center !important;
 }
 .lightBlue_cardBody_notice{
   display: block;
@@ -511,7 +523,7 @@ fieldset[disabled] .btn_svms_blue.active {
   margin: 0 !important;
   padding: 3px 0 0 0 !important;
   cursor: pointer !important;
-  transition: all 0.3s ease-in-out;
+  transition: all 0.2s ease-in-out;
 }
 .lightGreen_cardBody_chckboxLabel:hover{
   color: #195333 !important;
@@ -527,7 +539,7 @@ fieldset[disabled] .btn_svms_blue.active {
   border-radius: 12px !important;
   margin: 0;
 }
-.lightRed_cardBody_greenTitle{
+.lightRed_cardBody_redTitle{
   display: block;
   font-size: 12px !important;
   font-weight: bold !important;
@@ -549,6 +561,30 @@ fieldset[disabled] .btn_svms_blue.active {
   font-weight: normal !important;
   color: var(--svms_red);
   margin: 0;
+}
+.lightRed_cardBody_notice{
+  display: block;
+  font-size: 13px !important;
+  text-transform: none !important;
+  font-weight: normal;
+  font-style: normal;
+  color: var(--svms_light_red);
+  margin: 0;
+}
+.lightRed_cardBody_chckboxLabel{
+  display: block;
+  font-size: 14px !important;
+  text-transform: none !important;
+  font-weight: normal !important;
+  color: var(--svms_red) !important;
+  margin: 0 !important;
+  padding: 3px 0 0 0 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease-in-out;
+}
+.lightRed_cardBody_chckboxLabel:hover{
+  color: var(--svms_med_dark_red) !important;
+  font-weight: bold !important;
 }
 
 
@@ -665,7 +701,7 @@ a.text_svms_blue:hover {
   align-items: center;
 }
 .cust_info_icon{
-  font-size: 12px !important;
+  font-size: 14px !important;
   align-self: center !important;
   margin: 0;
   cursor: pointer;
@@ -815,7 +851,8 @@ a.text_svms_blue:hover {
 }
 .custom_accordion_card{
   border-bottom: 1px solid #F8F9FA !important;
-  margin: 0 !important;
+  margin: 0;
+  transition: all 0.2s;
 }
 .custom2_btn_collapse{
   line-height: 1.5;
@@ -824,9 +861,11 @@ a.text_svms_blue:hover {
   text-transform: none;
   text-align: left !important;
   margin: 0 !important;
+  border-radius: 15px;
 }
 .custom2_btn_collapse:hover{
   background-color: #F8F9FA !important;
+  overflow: hidden;
 }
 .custom2_btn_collapse:focus,
 .custom2_btn_collapse:active,
@@ -857,6 +896,22 @@ a.text_svms_blue:hover {
   text-transform: normal !important;
   color: var(--svms_light_blue);
 }
+.accordion_title_gray{
+  display: block;
+  font-size: 15px !important;
+  font-weight: bold !important;
+  text-decoration: none !important;
+  text-transform: uppercase !important;
+  color: var(--svms_text_gray);
+}
+.accordion_subtitle_gray{
+  display: block;
+  font-size: 13px !important;
+  font-weight: normal !important;
+  text-decoration: none !important;
+  text-transform: normal !important;
+  color: var(--svms_text_gray);
+}
 
 
 /* user management page */
@@ -866,6 +921,14 @@ a.text_svms_blue:hover {
   border: 0 !important;
 }
 
+/* system roles */
+.roleStatusToggleIcon{
+  font-size: 20px;
+  margin: 0 0 -3px 0;
+  padding: 0;
+  cursor: pointer;
+  color: var(--svms_blue) !important;
+}
 
 /* custom user image display */
 .display_user_image_div{

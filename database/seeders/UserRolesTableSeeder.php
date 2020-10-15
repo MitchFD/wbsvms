@@ -20,7 +20,7 @@ class UserRolesTableSeeder extends Seeder
                 'uRole_status' => 'active',
                 'uRole_type'   => 'employee',
                 'uRole'        => 'administrator',
-                'uRole_access' => '["profile", "dashboard", "user management", "violation entry", "violation records", "student handbook"]',
+                'uRole_access' => json_encode(["profile", "dashboard", "user management", "violation entry", "violation records", "student handbook"]),
                 'created_by'   => '201839485',
                 'created_at'   => now()
             ],
@@ -28,7 +28,7 @@ class UserRolesTableSeeder extends Seeder
                 'uRole_status' => 'active',
                 'uRole_type'   => 'employee',
                 'uRole'        => 'security guard',
-                'uRole_access' => '["profile", "violation entry", "student handbook"]',
+                'uRole_access' => json_encode(["profile", "violation entry", "student handbook"]),
                 'created_by'   => '201839485',
                 'created_at'   => now()
             ],
@@ -36,7 +36,7 @@ class UserRolesTableSeeder extends Seeder
                 'uRole_status' => 'active',
                 'uRole_type'   => 'student',
                 'uRole'        => 'student',
-                'uRole_access' => '["profile", "violation entry", "violation records", "student handbook"]',
+                'uRole_access' => json_encode(["profile", "violation entry", "violation records", "student handbook"]),
                 'created_by'   => '201839485',
                 'created_at'   => now()
             ]
