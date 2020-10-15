@@ -1,5 +1,5 @@
 <h5>Capstone 2 Project</h5>
-<h1>Development of Web-Based Student Violation Management System for SDCA</h1>
+<h1>Development of Web-Based Student Violation Management System for St. Dominic College of Asia</h1>
 <br />
 <br />
 <br />
