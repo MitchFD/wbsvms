@@ -681,7 +681,64 @@
                                     </div>
                                     @endif
                                     
-
+                                    {{-- deleted roles --}}
+                                    @if(count($deleted_roles) > 0)
+                                    <div class="row mt-4">
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <span class="cust_status_title">Deleted Roles <i class="fa fa-info-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Roles that are temporarily deleted from the system which can be recovered back again or be deleted permanently from the system."></i></span>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div class="accordion cust_accordion_div" id="deletedURolesAccordion_Parent">
+                                                @foreach($deleted_roles->sortBy('uRole_id') as $deleted_role)
+                                                @php
+                                                    $assigned_users_d = App\Models\Users::where('user_role', $deleted_role->uRole)->get();
+                                                @endphp
+                                                <div class="card custom_accordion_card">
+                                                    <div class="card-header p-0" id="deletedURoleCollapse_heading{{$deleted_role->uRole_id}}">
+                                                        <h2 class="mb-0">
+                                                        <button class="btn btn-block custom2_btn_collapse d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#deletedURoleCollapse_Div{{$deleted_role->uRole_id}}" aria-expanded="true" aria-controls="deletedURoleCollapse_Div{{$deleted_role->uRole_id}}">
+                                                            <div>
+                                                                <span class="accordion_title_gray">{{$deleted_role->uRole}}</span>
+                                                                <span class="accordion_subtitle_gray">@if(count($assigned_users_d) > 0) {{count($assigned_users_d) }} Assigned @if(count($assigned_users_d) > 1) Users @else User @endif Found. @else No Assigned Users. @endif</span>
+                                                            </div>
+                                                            <i class="nc-icon nc-minimal-down custom2_btn_collapse_icon"></i>
+                                                        </button>
+                                                        </h2>
+                                                    </div>
+                                                    <div id="deletedURoleCollapse_Div{{$deleted_role->uRole_id}}" class="collapse cb_t0b12y20" aria-labelledby="deletedURoleCollapse_heading{{$deleted_role->uRole_id}}" data-parent="#deletedURolesAccordion_Parent">
+                                                        <div class="card-body lightBlue_cardBody mt-2">
+                                                            @if(count($assigned_users_d) > 0)
+                                                                @if(count($assigned_users_d) > 1)
+                                                                <span class="lightBlue_cardBody_blueTitle grayed_txt">Assigned Users:</span>
+                                                                @else
+                                                                <span class="lightBlue_cardBody_blueTitle grayed_txt">Assigned User:</span>
+                                                                @endif
+                                                                @foreach($assigned_users_d as $index => $assigned_user_d)
+                                                                <span class="lightBlue_cardBody_list"><span class="lightBlue_cardBody_listCount grayed_txt">{{$index+1}}.</span> {{ $assigned_user_d->user_fname }} {{ $assigned_user_d->user_lname }}</span>
+                                                                @endforeach
+                                                            @else
+                                                                <span class="lightBlue_cardBody_list font-italic">No assigned users found.</span>
+                                                            @endif
+                                                        </div>
+                                                        <div class="card-body lightBlue_cardBody mt-2">
+                                                            <span class="lightBlue_cardBody_blueTitle grayed_txt">Access Controls:</span>
+                                                            @if(!is_null($deleted_role->uRole_access))
+                                                                @foreach(json_decode(json_encode($deleted_role->uRole_access), true) as $index => $uRole_access)
+                                                                <span class="lightBlue_cardBody_list"><span class="lightBlue_cardBody_listCount grayed_txt">{{$index+1}}.</span> {{ ucwords($uRole_access) }}</span>
+                                                                @endforeach
+                                                            @else
+                                                            <span class="lightBlue_cardBody_notice"><i class="fa fa-lock" aria-hidden="true"></i> No access controls found.</span>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endif
 
 
                                     @if(count($active_roles) > 0)
@@ -701,7 +758,7 @@
                                     @if(count($deleted_roles) > 0)
                                     <div class="row">
                                         <div class="col-lg-12 col-md-12 col-sm-12">
-                                            <span class="cust_info_txtwicon"><i class="fa fa-clock-o" aria-hidden="true"></i> {{ count($deleted_roles) }} Pending @if(count($deleted_roles) > 1) Roles @else Role @endif found.</span>
+                                            <span class="cust_info_txtwicon"><i class="fa fa-trash" aria-hidden="true"></i> {{ count($deleted_roles) }} Deleted @if(count($deleted_roles) > 1) Roles @else Role @endif found.</span>
                                         </div>
                                     </div>
                                     @endif
