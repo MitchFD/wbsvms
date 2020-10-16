@@ -1,0 +1,8 @@
+TO DO
+
+1. activate/deactivate roles               ~ done
+2. delete roles temporary/permanent        ~
+3. activate/deactivate users               ~
+4. create users / send link                ~
+5. view user profile                       ~
+6. delete user account temporary/permanent ~

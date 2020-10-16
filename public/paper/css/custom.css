@@ -370,6 +370,32 @@ fieldset[disabled] .btn_svms_blue.active {
   border-radius: 15px !important;
 }
 
+/* modal customizations */
+.cust_modal{
+  border-radius: 15px;
+  border: 0 none !important;
+  overflow: hidden !important;
+}
+.cust_modal_title{
+  font-size: 16px !important;
+  color: var(--svms_blue);
+  font-weight: normal;
+  font-style: normal;
+  text-transform: uppercase !important;
+  margin: 0;
+}
+.cust_close_modal_btn:hover,
+.cust_close_modal_btn:focus,
+.cust_close_modal_btn:active,
+.cust_close_modal_btn:active:focus {
+  outline: none !important;
+  background-color: #faf9ff !important;
+}
+.cust_modal_body_gray{
+  padding: 16px !important;
+  background-color: #e7e7e7 !important;
+}
+
 /* global card customization */
 .cb_p15x25{
   padding: 15px 25px !important;
@@ -528,6 +554,15 @@ fieldset[disabled] .btn_svms_blue.active {
 .lightGreen_cardBody_chckboxLabel:hover{
   color: #195333 !important;
   font-weight: bold !important;
+}
+.lightGreen_cardBody_notice{
+  display: block;
+  font-size: 13px !important;
+  text-transform: none !important;
+  font-weight: normal;
+  font-style: normal;
+  color: #6CB88E !important;
+  margin: 0;
 }
 /* light red card body */
 .lightRed_cardBody{

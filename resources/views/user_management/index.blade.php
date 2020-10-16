@@ -308,8 +308,10 @@
                                                         </div>
                                                         <div class="li_options_div">
                                                             <button class="btn cust_btn_smcircle" data-toggle="tooltip" data-placement="top" title="View {{ $active_user->user_lname}}'s Account Information?"><i class="fa fa-eye" aria-hidden="true"></i></button>
-                                                            <button class="btn cust_btn_smcircle" data-toggle="tooltip" data-placement="top" title="Deactivate {{ $active_user->user_lname}}'s Account?"><i class="fa fa-toggle-on" aria-hidden="true"></i></button>
+                                                            @if($active_user->user_role !== 'administrator')
+                                                            <button id="{{$active_user->id}}" onclick="deactivateUserAccount(this.id)" class="btn cust_btn_smcircle" data-toggle="tooltip" data-placement="top" title="Deactivate {{ $active_user->user_lname}}'s Account?"><i class="fa fa-toggle-on" aria-hidden="true"></i></button>
                                                             <button class="btn cust_btn_smcircle" data-toggle="tooltip" data-placement="top" title="Delete {{ $active_user->user_lname}}'s Account?"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                            @endif
                                                         </div>
                                                     </a>
                                                     @endforeach
@@ -335,7 +337,7 @@
                                         </div>
                                         <div class="row mt-2">
                                             <div class="col-lg-12 col-md-12 col-sm-12">
-                                                <div class="list-group shadow" id="registeredUsers_listGroup">
+                                                <div class="list-group" id="registeredUsers_listGroup">
                                                     @foreach($deactivated_users->sortBy('id') as $deactivated_user)
                                                     <a href="#" class="list-group-item list-group-item-action cust_list_group_item">
                                                         <div class="display_user_image_div text-center">
@@ -347,7 +349,7 @@
                                                         </div>
                                                         <div class="li_options_div">
                                                             <button class="btn cust_btn_smcircle" data-toggle="tooltip" data-placement="top" title="View {{ $deactivated_user->user_lname}}'s Account Information?"><i class="fa fa-eye" aria-hidden="true"></i></button>
-                                                            <button class="btn cust_btn_smcircle" data-toggle="tooltip" data-placement="top" title="Activate {{ $deactivated_user->user_lname}}'s Account?"><i class="fa fa-toggle-off" aria-hidden="true"></i></button>
+                                                            <button id="{{$deactivated_user->id}}" onclick="activateUserAccount(this.id)" class="btn cust_btn_smcircle" data-toggle="tooltip" data-placement="top" title="Activate {{ $deactivated_user->user_lname}}'s Account?"><i class="fa fa-toggle-off" aria-hidden="true"></i></button>
                                                             <button class="btn cust_btn_smcircle" data-toggle="tooltip" data-placement="top" title="Delete {{ $deactivated_user->user_lname}}'s Account?"><i class="fa fa-trash" aria-hidden="true"></i></button>
                                                         </div>
                                                     </a>
@@ -357,7 +359,7 @@
                                         </div>
                                     @endif
 
-                                    {{-- penind users --}}
+                                    {{-- pending users --}}
                                     @if(count($pending_users) > 0)
                                         <div class="row mt-4">
                                             <div class="col-lg-12 col-md-12 col-sm-12">
@@ -366,7 +368,7 @@
                                         </div>
                                         <div class="row mt-2">
                                             <div class="col-lg-12 col-md-12 col-sm-12">
-                                                <div class="list-group shadow" id="registeredUsers_listGroup">
+                                                <div class="list-group" id="registeredUsers_listGroup">
                                                     @foreach($pending_users->sortBy('id') as $pending_user)
                                                     <a href="#" class="list-group-item list-group-item-action cust_list_group_item">
                                                         <div class="display_user_image_div text-center">
@@ -475,14 +477,14 @@
                                                             <span class="lightBlue_cardBody_list font-italic">No assigned users found.</span>
                                                             @endif
                                                         </div>
-                                                        <div class="card-body lightGreen_cardBody mt-2">
+                                                        <div class="card-body lightGreen_cardBody mt-2 mb-2">
                                                             <span class="lightGreen_cardBody_greenTitle">Access Controls:</span>
                                                             @if(!is_null($active_role->uRole_access))
                                                                 @foreach(json_decode(json_encode($active_role->uRole_access), true) as $index => $uRole_access)
                                                                 <span class="lightGreen_cardBody_list"><span class="lightGreen_cardBody_listCount">{{$index+1}}.</span> {{ ucwords($uRole_access) }}</span>
                                                                 @endforeach
                                                             @else
-                                                            <span class="lightBlue_cardBody_notice"><i class="fa fa-lock" aria-hidden="true"></i> No access controls found.</span>
+                                                            <span class="lightGreen_cardBody_notice"><i class="fa fa-lock" aria-hidden="true"></i> No access controls found.</span>
                                                             @endif
                                                         </div>
                                                         <div class="card-body lightBlue_cardBody mt-2">
@@ -504,11 +506,7 @@
                                                                 <div class="tab-pane fade show active" id="previewUserRoleLink_{{$active_role->uRole_id}}" role="tabpanel" aria-labelledby="previewUserRoleTab_{{$active_role->uRole_id}}">
                                                                     <div class="card-body lightBlue_cardBody">
                                                                         <span class="lightBlue_cardBody_blueTitle">Role Status:</span>
-                                                                        @if($active_role->uRole_status === 'active')
-                                                                        <span class="lightBlue_cardBody_list"><i class="fa fa-toggle-on roleStatusToggleIcon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Deactivate {{ ucwords($active_role->uRole) }} Role?"></i> {{ ucwords($active_role->uRole) }} Role is Activated.</span>
-                                                                        @else
-                                                                        <span class="lightBlue_cardBody_list"><i class="fa fa-toggle-off roleStatusToggleIcon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Activate {{ ucwords($active_role->uRole) }} Role?"></i> {{ ucwords($active_role->uRole) }} Role is Deactivated.</span>
-                                                                        @endif
+                                                                        <span class="lightBlue_cardBody_list"><i id="{{$active_role->uRole_id}}" onclick="deactivateRoleModal(this.id)" class="fa fa-toggle-on roleStatusToggleIcon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Deactivate {{ ucwords($active_role->uRole) }} Role?"></i> {{ ucwords($active_role->uRole) }} Role is Activated.</span>
                                                                     </div>
                                                                     <div class="card-body lightBlue_cardBody mt-2">
                                                                     @if(count($assigned_users) > 0)
@@ -524,7 +522,7 @@
                                                                         <span class="lightBlue_cardBody_list font-italic">No assigned users found.</span>
                                                                     @endif
                                                                     </div>
-                                                                    <div class="card-body lightGreen_cardBody mt-2">
+                                                                    <div class="card-body lightGreen_cardBody mt-2 mb-2">
                                                                         <span class="lightGreen_cardBody_greenTitle">Access Controls:</span>
                                                                         @if(!is_null($active_role->uRole_access))
                                                                             @foreach(json_decode(json_encode($active_role->uRole_access), true) as $index => $uRole_access)
@@ -603,7 +601,7 @@
                                                                                 <input type="hidden" name="respo_user_id" value="{{auth()->user()->id}}">
                                                                                 <input type="hidden" name="respo_user_lname" value="{{auth()->user()->user_lname}}">
                                                                                 <input type="hidden" name="respo_user_fname" value="{{auth()->user()->user_fname}}">
-                                                                                <button type="submit" class="btn saveChangesEdtRole btn_svms_blue btn-round btn_show_icon">{{ __('Save Changes') }}<i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true" disabled></i></button>
+                                                                                <button type="submit" class="btn saveChangesEdtRole btn_svms_blue btn-round btn_show_icon" disabled>{{ __('Save Changes') }}<i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
                                                                             </div>
                                                                         </div>
                                                                     </form>
@@ -627,12 +625,12 @@
                                     </div>
                                     <div class="row mt-2">
                                         <div class="col-lg-12 col-md-12 col-sm-12">
-                                            <div class="accordion cust_accordion_div" id="deactvdURolesAccordion_Parent">
+                                            <div class="accordion cust_accordion_active_target2 cust_accordion_div" id="deactvdURolesAccordion_Parent">
                                                 @foreach($deactivated_roles->sortBy('uRole_id') as $deactivated_role)
                                                 @php
                                                     $assigned_users_d = App\Models\Users::where('user_role', $deactivated_role->uRole)->get();
                                                 @endphp
-                                                <div class="card custom_accordion_card">
+                                                <div class="card custom_accordion_card cust_accordion_active2">
                                                     <div class="card-header p-0" id="deactvdURoleCollapse_heading{{$deactivated_role->uRole_id}}">
                                                         <h2 class="mb-0">
                                                         <button class="btn btn-block custom2_btn_collapse d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#deactvdURoleCollapse_Div{{$deactivated_role->uRole_id}}" aria-expanded="true" aria-controls="deactvdURoleCollapse_Div{{$deactivated_role->uRole_id}}">
@@ -644,10 +642,10 @@
                                                         </button>
                                                         </h2>
                                                     </div>
-                                                    <div id="deactvdURoleCollapse_Div{{$deactivated_role->uRole_id}}" class="collapse cb_t0b12y20" aria-labelledby="deactvdURoleCollapse_heading{{$deactivated_role->uRole_id}}" data-parent="#deactvdURolesAccordion_Parent">
+                                                    <div id="deactvdURoleCollapse_Div{{$deactivated_role->uRole_id}}" class="collapse cust_collapse_active2 cb_t0b12y20" aria-labelledby="deactvdURoleCollapse_heading{{$deactivated_role->uRole_id}}" data-parent="#deactvdURolesAccordion_Parent">
                                                         <div class="card-body lightBlue_cardBody">
                                                             <span class="lightBlue_cardBody_blueTitle grayed_txt">Role Status:</span>
-                                                            <span class="lightBlue_cardBody_list"><i class="fa fa-toggle-off roleStatusToggleIcon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Activate {{ ucwords($deactivated_role->uRole) }} Role?"></i> {{ ucwords($active_role->uRole) }} Role is Deactivated.</span>
+                                                            <span class="lightBlue_cardBody_list"><i id="{{$deactivated_role->uRole_id}}" onclick="activateRoleModal(this.id)" class="fa fa-toggle-off roleStatusToggleIcon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Activate {{ ucwords($deactivated_role->uRole) }} Role?"></i> {{ ucwords($active_role->uRole) }} Role is Deactivated.</span>
                                                         </div>
                                                         <div class="card-body lightBlue_cardBody mt-2">
                                                             @if(count($assigned_users_d) > 0)
@@ -784,6 +782,77 @@
             </div>
         </div>
     </div>
+
+    {{-- modals --}}
+    {{-- deactivate role modal --}}
+        <div class="modal fade" id="deactivateRoleModal" tabindex="-1" role="dialog" aria-labelledby="deactivateRoleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="deactivateRoleModalLabel">Deactivate System Role?</span>
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="deactivateRoleHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{-- deactivate role modal end --}}
+    {{-- activate role modal --}}
+        <div class="modal fade" id="activateRoleModal" tabindex="-1" role="dialog" aria-labelledby="activateRoleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="activateRoleModalLabel">Active System Role?</span>
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="activeRoleHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{-- activate role modal end --}}
+
+    {{-- deactivate user account modal --}}
+        <div class="modal fade" id="deactivateUserAccountModal" tabindex="-1" role="dialog" aria-labelledby="deactivateUserAccountModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="deactivateUserAccountModalLabel">Deactivate User Account?</span>
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="deactivateUserAccountHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{-- deactivate user account modal end --}}
+    {{-- deactivate user account modal --}}
+        <div class="modal fade" id="activateUserAccountModal" tabindex="-1" role="dialog" aria-labelledby="activateUserAccountModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="activateUserAccountModalLabel">Activate User Account?</span>
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="activateUserAccountHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{-- deactivate user account modal end --}}
 @endsection
 
 @push('scripts')
@@ -813,6 +882,7 @@
 {{-- avtive tab on page refresh end --}}
 
 {{-- for active collapse add class --}}
+    {{-- first --}}
     <script>
         $(document).ready(function() {
             $('.cust_collapse_active').on('shown.bs.collapse', function () {
@@ -822,6 +892,19 @@
             $('.cust_collapse_active').on('hidden.bs.collapse', function () {
                 $('.cust_accordion_active').removeClass('my15br15');
                 $('.cust_accordion_active_target').addClass('shadow');
+            });
+        });
+    </script>
+    {{-- secind --}}
+    <script>
+        $(document).ready(function() {
+            $('.cust_collapse_active2').on('shown.bs.collapse', function () {
+                $('.cust_accordion_active2').addClass('my15br15');
+                // $('.cust_accordion_active_target2').removeClass('shadow');
+            });
+            $('.cust_collapse_active2').on('hidden.bs.collapse', function () {
+                $('.cust_accordion_active2').removeClass('my15br15');
+                // $('.cust_accordion_active_target2').addClass('shadow');
             });
         });
     </script>
@@ -959,4 +1042,70 @@
         });
     </script>
 {{-- edit role form on change enable 'Save Changes' button end --}}
+
+{{-- activate/deactivate role open modal for confirmation--}}
+    <script>
+        function deactivateRoleModal(deactivated_uRole_id){
+            var deactivated_uRole_id = deactivated_uRole_id;
+            var _token = $('input[name="_token"]').val();
+            $.ajax({
+                url:"{{ route('user_management.deactivate_role_modal') }}",
+                method:"GET",
+                data:{deactivated_uRole_id:deactivated_uRole_id, _token:_token},
+                success: function(data){
+                    $('#deactivateRoleHtmlData').html(data); 
+                    $('#deactivateRoleModal').modal('show');
+                }
+            });
+        }
+    </script>
+    <script>
+        function activateRoleModal(activate_uRole_id){
+            var activate_uRole_id = activate_uRole_id;
+            var _token = $('input[name="_token"]').val();
+            $.ajax({
+                url:"{{ route('user_management.activate_role_modal') }}",
+                method:"GET",
+                data:{activate_uRole_id:activate_uRole_id, _token:_token},
+                success: function(data){
+                    $('#activeRoleHtmlData').html(data); 
+                    $('#activateRoleModal').modal('show');
+                }
+            });
+        }
+    </script>
+{{-- activate/deactivate role open modal for confirmation end --}}
+
+{{-- activate/deactivate user account open modal for confirmation --}}
+    <script>
+        function deactivateUserAccount(deactivate_user_id){
+            var deactivate_user_id = deactivate_user_id;
+            var _token = $('input[name="_token"]').val();
+            $.ajax({
+                url:"{{ route('user_management.deactivate_user_account_modal') }}",
+                method:"GET",
+                data:{deactivate_user_id:deactivate_user_id, _token:_token},
+                success: function(data){
+                    $('#deactivateUserAccountHtmlData').html(data); 
+                    $('#deactivateUserAccountModal').modal('show');
+                }
+            });
+        }
+    </script>
+    <script>
+        function activateUserAccount(activate_user_id){
+            var activate_user_id = activate_user_id;
+            var _token = $('input[name="_token"]').val();
+            $.ajax({
+                url:"{{ route('user_management.activate_user_account_modal') }}",
+                method:"GET",
+                data:{activate_user_id:activate_user_id, _token:_token},
+                success: function(data){
+                    $('#activateUserAccountHtmlData').html(data); 
+                    $('#activateUserAccountModal').modal('show');
+                }
+            });
+        }
+    </script>
+{{-- activate/deactivate user account open modal for confirmation end --}}
 @endpush

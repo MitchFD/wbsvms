@@ -76,7 +76,7 @@ class LoginController extends Controller
                     $record_act->act_respo_users_lname = $user_lname;
                     $record_act->act_respo_users_fname = $user_fname;
                     $record_act->act_type              = 'login';
-                    $record_act->act_details           = $user_fname. ' ' .$user_lname. ' logged in.';
+                    $record_act->act_details           = 'Logged in.';
                     $record_act->act_affected_id       = $user_id;
                     $record_act->save();
                     // redirect to admin dashboard
@@ -89,7 +89,7 @@ class LoginController extends Controller
                     $record_act->act_respo_users_lname = $user_lname;
                     $record_act->act_respo_users_fname = $user_fname;
                     $record_act->act_type              = 'login';
-                    $record_act->act_details           = $user_fname. ' ' .$user_lname. ' logged in.';
+                    $record_act->act_details           = 'Logged in.';
                     $record_act->act_affected_id       = $user_id;
                     $record_act->save();
                     // redirect to violation entry
@@ -104,7 +104,7 @@ class LoginController extends Controller
                     $record_act->act_respo_users_lname = $user_lname;
                     $record_act->act_respo_users_fname = $user_fname;
                     $record_act->act_type              = 'login';
-                    $record_act->act_details           = $user_fname. ' ' .$user_lname. ' logged in.';
+                    $record_act->act_details           = 'Logged in.';
                     $record_act->act_affected_id       = $user_id;
                     $record_act->save();
                     // redirect to violation entry
@@ -130,7 +130,7 @@ class LoginController extends Controller
             $record_act->act_respo_users_lname = $user_lname;
             $record_act->act_respo_users_fname = $user_fname;
             $record_act->act_type              = 'logout';
-            $record_act->act_details           =  $user_fname. ' ' .$user_lname. ' logged out.';
+            $record_act->act_details           = 'Logged out.';
             $record_act->act_affected_id       = $user_id;
             $record_act->save();
         // log out user an dredirect to login page
