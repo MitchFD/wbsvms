@@ -710,7 +710,6 @@ class UserManagementController extends Controller
     }
     // process user account deactivation
     public function process_deactivate_user_account(Request $request){
-        // get request
         // now timestamp
             $now_timestamp   = now();
             $deactivated_txt = 'deactivated';
@@ -776,12 +775,26 @@ class UserManagementController extends Controller
             $get_user_details_tbl = Users::where('id', $get_selected_user_id)->first();
             $get_user_email       = $get_user_details_tbl->email;
             $get_user_role        = $get_user_details_tbl->user_role;
+            $get_user_status      = $get_user_details_tbl->user_status;
+            $get_user_role_status = $get_user_details_tbl->user_role_status;
             $get_user_type        = $get_user_details_tbl->user_type;
             $get_user_sdca_id     = $get_user_details_tbl->user_sdca_id;
             $get_user_image       = $get_user_details_tbl->user_image;
             $get_user_lname       = $get_user_details_tbl->user_lname;
             $get_user_fname       = $get_user_details_tbl->user_fname;
             $get_user_gender      = $get_user_details_tbl->user_gender;
+
+        // his/her txt based on user's gender
+            if($get_user_gender === 'male'){
+                $gender_txt = 'his';
+            }elseif($get_user_gender === 'female'){
+                $gender_txt = 'her';
+            }else{
+                $gender_txt = 'his/her';
+            }
+        
+        // custom values
+            $sq = "'";
 
         $output = '';
         $output .= '
@@ -886,78 +899,156 @@ class UserManagementController extends Controller
                     </div>
                 </div>
             </div>
-            <form action="'.route('user_management.process_activate_user_account').'" class="activateUserAccountConfirmationForm" method="POST">
-                <div class="modal-body pb-0">';
-                    // get reason of account deactivation from user_status_updates_tbl
-                    $get_deactivation_details_tbl = Userupdatesstatus::where('from_user_id', $get_selected_user_id)->latest('updated_at')->first();
-                    if($get_deactivation_details_tbl){
-                        $get_deact_det_reason_update  = $get_deactivation_details_tbl->reason_update;
-                        $get_deact_det_updated_at     = $get_deactivation_details_tbl->updated_at;
-                        $get_deact_det_updated_by     = $get_deactivation_details_tbl->updated_by;
+            <div class="modal-body pb-0">';
+                // get reason of account deactivation from user_status_updates_tbl
+                $get_deactivation_details_tbl = Userupdatesstatus::where('from_user_id', $get_selected_user_id)->latest('updated_at')->first();
+                if($get_deactivation_details_tbl){
+                    $get_deact_det_reason_update  = $get_deactivation_details_tbl->reason_update;
+                    $get_deact_det_updated_at     = $get_deactivation_details_tbl->updated_at;
+                    $get_deact_det_updated_by     = $get_deactivation_details_tbl->updated_by;
 
-                        // get details of responsible user for deactivating this account
-                        $get_respo_deact_this_account_tbl = Users::select('user_role', 'user_lname', 'user_fname')->where('id', $get_deact_det_updated_by)->first();
-                        
-                        if($get_respo_deact_this_account_tbl){
-                            $get_respo_deact_user_role  = $get_respo_deact_this_account_tbl->user_role;
-                            $get_respo_deact_user_lname = $get_respo_deact_this_account_tbl->user_lname;
-                            $get_respo_deact_user_fname = $get_respo_deact_this_account_tbl->user_fname;
-                            $output .= ' 
-                            <div class="card-body lightBlue_cardBody shadow-none">
-                                <span class="lightBlue_cardBody_blueTitle mb-0">Deactivated by:</span>
-                                <span class="lightBlue_cardBody_notice mb-2">
-                                '.ucwords($get_respo_deact_user_role).': ' .$get_respo_deact_user_fname. ' ' .$get_respo_deact_user_lname. ' ';
-                                if(auth()->user()->id === $get_deact_det_updated_by){
-                                    $output .= ' <span class="font-italic font-weight-bold"> ~ You</span>';
-                                }
+                    // get details of responsible user for deactivating this account
+                    $get_respo_deact_this_account_tbl = Users::select('user_role', 'user_lname', 'user_fname')->where('id', $get_deact_det_updated_by)->first();
+                    
+                    if($get_respo_deact_this_account_tbl){
+                        $get_respo_deact_user_role  = $get_respo_deact_this_account_tbl->user_role;
+                        $get_respo_deact_user_lname = $get_respo_deact_this_account_tbl->user_lname;
+                        $get_respo_deact_user_fname = $get_respo_deact_this_account_tbl->user_fname;
+                        $output .= ' 
+                        <div class="card-body lightBlue_cardBody shadow-none">
+                            <span class="lightBlue_cardBody_blueTitle mb-0">Deactivated by:</span>
+                            <span class="lightBlue_cardBody_notice mb-2">
+                            '.ucwords($get_respo_deact_user_role).': ' .$get_respo_deact_user_fname. ' ' .$get_respo_deact_user_lname. ' ';
+                            if(auth()->user()->id === $get_deact_det_updated_by){
+                                $output .= ' <span class="font-italic font-weight-bold"> ~ You</span>';
+                            }
+                            $output .= '
+                            </span>';
+                            if($get_deactivation_details_tbl){
                                 $output .= '
-                                </span>';
-                                if($get_deactivation_details_tbl){
+                                <span class="lightBlue_cardBody_blueTitle mb-0">Deactivated at:</span>
+                                <span class="lightBlue_cardBody_notice mb-2">'.date('F d, Y', strtotime($get_deact_det_updated_at)). ' - ' .date('D', strtotime($get_deact_det_updated_at)). ' at ' .date('g:i A', strtotime($get_deact_det_updated_at)).'</span>
+                                ';
+                                if(!is_null($get_deact_det_reason_update)){
                                     $output .= '
-                                    <span class="lightBlue_cardBody_blueTitle mb-0">Deactivated at:</span>
-                                    <span class="lightBlue_cardBody_notice mb-2">'.date('F d, Y', strtotime($get_deact_det_updated_at)). ' - ' .date('D', strtotime($get_deact_det_updated_at)). ' at ' .date('g:i A', strtotime($get_deact_det_updated_at)).'</span>
+                                    <span class="lightBlue_cardBody_blueTitle mb-0">Reason of Deactivation:</span>
+                                    <span class="lightBlue_cardBody_notice">'.$get_deact_det_reason_update. '</span>
                                     ';
-                                    if(!is_null($get_deact_det_reason_update)){
-                                        $output .= '
-                                        <span class="lightBlue_cardBody_blueTitle mb-0">Reason of Deactivation:</span>
-                                        <span class="lightBlue_cardBody_notice">'.$get_deact_det_reason_update. '</span>
-                                        ';
-                                    }
                                 }
-                                $output .= '
-                            </div>
-                            ';
-                        }
-                    }
-                    $output .= '
-                    <div class="card-body lightGreen_cardBody shadow-none mt-2">
-                        <span class="lightGreen_cardBody_notice"><i class="fa fa-lock" aria-hidden="true"></i> <span class="font-weight-bold"> ' .$get_user_fname. ' ' .$get_user_lname. ' </span> will be able to access the system again effective immediately after account activation.</span>
-                    </div>
-                    <div class="card-body lightBlue_cardBody shadow-none mt-2">
-                        <span class="lightBlue_cardBody_blueTitle">Reason for Activating ' .$get_user_lname.'s Account:</span>
-                        <div class="form-group">
-                            <textarea class="form-control" id="activate_user_account_reason" name="activate_user_account_reason" rows="3" placeholder="Type reason for Account Activation (optional)"></textarea>
+                            }
+                            $output .= '
                         </div>
+                        ';
+                    }
+                }
+                if($get_user_status === 'deactivated' AND $get_user_role_status === 'deactivated'){
+                    $output .= '
+                    <div class="card-body lightBlue_cardBody shadow-none mt-2">
+                        <span class="lightBlue_cardBody_blueTitle">Activate ' .ucwords($get_user_role).' Role First:</span>
+                        <span class="lightBlue_cardBody_notice"><i class="fa fa-unlock-alt" aria-hidden="true"></i> You must activate <span class="font-weight-bold"> ' .ucwords($get_user_role). ' </span> Role first where ' .$get_user_fname. ' ' .$get_user_lname. ' is assigned, then you can activate ' .$gender_txt. ' account.</span>
                     </div>
-                </div>
-                <div class="modal-footer border-0">
-                    <input type="hidden" name="_token" value="'.csrf_token().'">
-                    <input type="hidden" name="activate_selected_user_id" value="'.$get_selected_user_id.'">
-                    <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
-                    <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
-                    <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
-                    <div class="btn-group" role="group" aria-label="Basic example">
-                        <button type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
-                        <button type="submit" class="btn btn-round btn-success btn_show_icon m-0">Activate this Account <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                    <div class="btn-group d-flex justify-content-end my-3" role="group" aria-label="Ok Confirmation">
+                        <button type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal">Ok <i class="fa fa-thumbs-up btn_icon_show_right" aria-hidden="true"></i></button>
                     </div>
-                </div>
-            </form>
+                    ';
+                }else{
+                    if($get_user_role_status === 'deactivated'){
+                        $output .= '
+                        <div class="card-body lightBlue_cardBody shadow-none mt-2">
+                            <span class="lightBlue_cardBody_blueTitle">Activate ' .ucwords($get_user_role).' Role First:</span>
+                            <span class="lightBlue_cardBody_notice"><i class="fa fa-unlock-alt" aria-hidden="true"></i> You must activate <span class="font-weight-bold"> ' .ucwords($get_user_role). ' </span> Role where ' .$get_user_fname. ' ' .$get_user_lname. ' is assigned, then ' .$gender_txt. ' account will automatically be activated and will regain access to the system effective immediately after Role Activation.</span>
+                        </div>
+                        <div class="btn-group d-flex justify-content-end my-3" role="group" aria-label="Ok Confirmation">
+                            <button type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal">Ok <i class="fa fa-thumbs-up btn_icon_show_right" aria-hidden="true"></i></button>
+                        </div>
+                        ';
+                    }else{
+                        $output .= '
+                        <form action="'.route('user_management.process_activate_user_account').'" class="activateUserAccountConfirmationForm" method="POST">
+                            <div class="card-body lightGreen_cardBody shadow-none mt-2">
+                                <span class="lightGreen_cardBody_notice"><i class="fa fa-unlock-alt" aria-hidden="true"></i> <span class="font-weight-bold"> ' .$get_user_fname. ' ' .$get_user_lname. ' </span> will be able to access the system again effective immediately after account activation.</span>
+                            </div>
+                            <div class="card-body lightBlue_cardBody shadow-none mt-2">
+                                <span class="lightBlue_cardBody_blueTitle">Reason for Activating ' .$get_user_lname.''.$sq.'s Account:</span>
+                                <div class="form-group">
+                                    <textarea class="form-control" id="activate_user_account_reason" name="activate_user_account_reason" rows="3" placeholder="Type reason for Account Activation (optional)"></textarea>
+                                </div>
+                            </div>
+                            <input type="hidden" name="_token" value="'.csrf_token().'">
+                            <input type="hidden" name="activate_selected_user_id" value="'.$get_selected_user_id.'">
+                            <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
+                            <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
+                            <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
+                            <div class="btn-group d-flex justify-content-end my-3" role="group" aria-label="Activate User Confirmation">
+                                <button type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                                <button type="submit" class="btn btn-round btn-success btn_show_icon m-0">Activate this Account <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                            </div>
+                        </form>
+                        ';
+                    }
+                }
+                $output .= '
+            </div>
         </div>
         ';
         return $output;
     }
     // process user account activation
     public function process_activate_user_account(Request $request){
-        echo 'activate moto';
+        // now timestamp
+            $now_timestamp = now();
+            $active_txt    = 'active';
+            $sq            = "'";
+
+        // get all request
+            $get_activate_selected_user_id    = $request->get('activate_selected_user_id');
+            $get_respo_user_id                = $request->get('respo_user_id');
+            $get_respo_user_lname             = $request->get('respo_user_lname');
+            $get_respo_user_fname             = $request->get('respo_user_fname');
+            $get_activate_user_account_reason = $request->get('activate_user_account_reason');
+
+        // get user's info
+            $get_user_details_tbl = Users::select('user_role', 'user_status', 'user_lname', 'user_fname')->where('id', $get_activate_selected_user_id)->first();
+            $get_user_role        = $get_user_details_tbl->user_role;
+            $get_user_status      = $get_user_details_tbl->user_status;
+            $get_user_lname       = $get_user_details_tbl->user_lname;
+            $get_user_fname       = $get_user_details_tbl->user_fname;
+
+        // update user's status
+            $update_user_status_tbl = DB::table('users')
+                ->where('id', $get_activate_selected_user_id)
+                ->update([
+                    'user_status' => $active_txt,
+                    'updated_at'  => $now_timestamp
+                ]);
+        if($update_user_status_tbl){
+            // record status update to user_status_updates_tbl
+            $rec_user_stats_update_tbl = new Userupdatesstatus;
+            $rec_user_stats_update_tbl->from_user_id   = $get_activate_selected_user_id;
+            $rec_user_stats_update_tbl->updated_status = $active_txt;
+            $rec_user_stats_update_tbl->reason_update  = $get_activate_user_account_reason;
+            $rec_user_stats_update_tbl->updated_at     = $now_timestamp;
+            $rec_user_stats_update_tbl->updated_by     = $get_respo_user_id;
+            $rec_user_stats_update_tbl->save();
+
+            // get uStatUpdate_id from user_status_updates_tbl as activity reference
+            $get_uStatUpdate_id_tbl = Userupdatesstatus::select('uStatUpdate_id')->where('from_user_id', $get_activate_selected_user_id)->latest('updated_at')->first();
+            $get_uStatUpdate_id     = $get_uStatUpdate_id_tbl->uStatUpdate_id;
+
+            // record activity
+            $rec_activity = new Useractivites;
+            $rec_activity->created_at            = $now_timestamp;
+            $rec_activity->act_respo_user_id     = $get_respo_user_id;
+            $rec_activity->act_respo_users_lname = $get_respo_user_lname;
+            $rec_activity->act_respo_users_fname = $get_respo_user_fname;
+            $rec_activity->act_type              = 'activate user';
+            $rec_activity->act_details           = 'Activated ' .$get_user_fname. ' ' .$get_user_lname.''.$sq.'s Account.';
+            $rec_activity->act_affected_id       = $get_uStatUpdate_id;
+            $rec_activity->save();
+
+            return back()->withSuccessStatus($get_user_fname. ' ' .$get_user_lname.''.$sq.'s Account was Activated Successfully.');
+        }else{
+            return back()->withFailedStatus($get_user_fname. ' ' .$get_user_lname.''.$sq.'s Account Activation Failed! try again later.');
+        }
     }
 }

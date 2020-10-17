@@ -25,8 +25,8 @@ class UsersTableSeeder extends Seeder
                 'user_type'         => 'employee',
                 'user_sdca_id'      => '201839485',
                 'user_image'        => 'employee_user_image.jpg',
-                'user_lname'        => 'Desierto',
-                'user_fname'        => 'Mitch Frankein',
+                'user_lname'        => 'Bravo',
+                'user_fname'        => 'Johny',
                 'user_gender'       => 'male',
                 'registered_by'     => '1',
                 'created_at'        => now()
@@ -41,8 +41,8 @@ class UsersTableSeeder extends Seeder
                 'user_type'         => 'employee',
                 'user_sdca_id'      => '201983746',
                 'user_image'        => 'employee_user_image.jpg',
-                'user_lname'        => 'Guard',
-                'user_fname'        => 'Kuya',
+                'user_lname'        => 'Wick',
+                'user_fname'        => 'John',
                 'user_gender'       => 'male',
                 'registered_by'     => '1',
                 'created_at'        => now()

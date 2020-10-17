@@ -72,6 +72,10 @@ The above copyright notice and this permission notice shall be included in all c
     {{-- <script src="{{ asset('paper') }}/demo/demo.js"></script> --}}
     <!-- Sharrre libray -->
     {{-- <script src="../assets/demo/jquery.sharrre.js"></script> --}}
+
+    {{-- cockie plugin --}}
+    {{-- <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js" type="text/javascript"></script> --}}
+    {{-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script> --}}
     
     @stack('scripts')
 

@@ -487,7 +487,7 @@
                                                             <span class="lightGreen_cardBody_notice"><i class="fa fa-lock" aria-hidden="true"></i> No access controls found.</span>
                                                             @endif
                                                         </div>
-                                                        <div class="card-body lightBlue_cardBody mt-2">
+                                                        <div class="card-body lightBlue_cardBody mt-2 mb-2">
                                                             <span class="lightBlue_cardBody_notice"><span class="font-weight-bold"><i class="fa fa-lock" aria-hidden="true"></i> Administrator </span> is a fixed user role that cannot be edited or deleted from the system, all modules are accessible to Administrator Role.</span>
                                                         </div>
                                                     {{-- else --}}
@@ -880,6 +880,18 @@
         });
     </script>
 {{-- avtive tab on page refresh end --}}
+
+    <script>
+        $(document).ready(function() {
+            if(localStorage.getItem("accordionCurrentStates")) {
+                $('#userActLogsCollapseDiv').removeClass('show');
+            }
+        });
+
+        $(window).on("popstate", function() {
+            localStorage.setItem("accordionCurrentStates", $('#userActLogsCollapseDiv').hasClass('show'));
+        });
+    </script>
 
 {{-- for active collapse add class --}}
     {{-- first --}}
