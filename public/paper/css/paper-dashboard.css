@@ -4788,7 +4788,11 @@ License - nucleoapp.com/license/
 
 .sidebar .nav .caret,
 .off-canvas-sidebar .nav .caret {
-  top: 14px;
+  /* original */
+  /* top: 14px; */
+
+  /* edited */
+  top: 27px !important;
   position: absolute;
   right: 10px;
 }
@@ -4985,12 +4989,26 @@ License - nucleoapp.com/license/
   background: linear-gradient(#66615B 0%, #000 80%);
   z-index: 3;
 }
- 
+
+
+/* customized sidebar */
+.sidebar-wrapper li a{
+  margin-top: 0 !important;
+  margin-left: 0 !important;
+  margin-bottom: 0 !important;
+  margin-right: 1px !important;
+  padding: 15px 10px !important;
+}
+
+.sidebar-wrapper li a:hover{
+  background: #2A293A !important;
+}
+
 /* sidenav data-color and data-active-color */
 .sidebar[data-color="svms_data_color"]:after,
 .off-canvas-sidebar[data-color="svms_data_color"]:after {
-  /* background: #2F2E41; */
-  background: #242333;
+  background: #2F2E41;
+  /* background: #242333; */
 }
 
 .sidebar[data-color="svms_data_color"] .nav li a,
@@ -5058,6 +5076,7 @@ License - nucleoapp.com/license/
 .off-canvas-sidebar[data-active-color="svms_data_active_color"] .nav li.active>a[data-toggle="collapse"]~div>ul>li.active>a {
   color: #e66163;
   opacity: 1;
+  background: #282737 !important;
 }
 /* sidenav data-color and data-active-color end */
 
@@ -6503,10 +6522,9 @@ License - nucleoapp.com/license/
     content: "";
     display: inline-block;
     position: absolute;
-    right: -16px;
+    right: -17px;
     opacity: 1;
     top: 7px;
-    transition: opacity 150ms ease-in;
   }
   .sidebar .sidebar-wrapper li.active>a:not([data-toggle="collapse"]):after,
   .sidebar .sidebar-wrapper li.active>[data-toggle="collapse"]+div .nav li:after {
@@ -6516,9 +6534,15 @@ License - nucleoapp.com/license/
     content: "";
     display: inline-block;
     position: absolute;
+    /* original
+    right: -17px; 
+    opacity: 1;
+    top: 7px;*/
+
+    /* edited */
     right: -17px;
     opacity: 1;
-    top: 7px;
+    top: 18%;
     transition: opacity 150ms ease-in;
   }
   .sidebar .sidebar-wrapper li.active>[data-toggle="collapse"]+div .nav li a:before,

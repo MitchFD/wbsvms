@@ -34,7 +34,7 @@
         {{-- directory link --}}
         <div class="row mb-3">
             <div class="col-lg-12 col-md-12 col-sm-12">
-                <a href="#" class="directory_link">User Management</a>
+                <a href="{{ route('user_management.index', 'user_management') }}" class="directory_link">User Management </a> <span class="directory_divider"> / </span> <a href="{{ route('user_management.index', 'user_management') }}" class="directory_active_link">Preview </a>
             </div>
         </div>
 

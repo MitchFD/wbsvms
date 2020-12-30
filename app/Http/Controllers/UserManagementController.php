@@ -47,6 +47,11 @@ class UserManagementController extends Controller
         return view('user_management.index')->with(compact('active_users', 'deactivated_users', 'pending_users', 'deleted_users', 'registered_users', 'active_roles', 'deactivated_roles', 'deleted_roles', 'registered_roles', 'all_activities'));
     }
 
+    // create users
+    public function create_users(){
+        return view('user_management.create_users');
+    }
+
     // emailavailability check
     public function new_user_email_availability_check(Request $request){
         if($request->get('email')){
