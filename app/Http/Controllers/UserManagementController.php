@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use App\Models\Userroles;
 use App\Models\Userrolesupdatestatus;
 use App\Models\Editedolduserroles;
@@ -68,7 +69,9 @@ class UserManagementController extends Controller
 
     // create_users
     public function create_users(){
-        return view('user_management.create_users');
+        $employee_system_roles = Userroles::where('uRole_type', 'employee')->get();
+        $student_system_roles  = Userroles::where('uRole_type', 'student')->get();
+        return view('user_management.create_users')->with(compact('employee_system_roles', 'student_system_roles'));
     }
 
     // system_users
@@ -106,23 +109,28 @@ class UserManagementController extends Controller
         ]);
 
         // get all request
-            $create_emp_id      = $request->get('create_emp_id');
-            $create_emp_lname   = $request->get('create_emp_lname');
-            $create_emp_fname   = $request->get('create_emp_fname');
-            $create_emp_gender  = $request->get('create_emp_gender');
-            $create_emp_jobdesc = $request->get('create_emp_jobdesc');
-            $create_emp_dept    = $request->get('create_emp_dept');
-            $create_emp_phnum   = $request->get('create_emp_phnum');
-            $create_emp_email   = $request->get('create_emp_email');
+            $create_emp_role      = $request->get('create_emp_role');
+            $create_emp_id        = $request->get('create_emp_id');
+            $create_emp_lname     = $request->get('create_emp_lname');
+            $create_emp_fname     = $request->get('create_emp_fname');
+            $create_emp_gender    = $request->get('create_emp_gender');
+            $create_emp_jobdesc   = $request->get('create_emp_jobdesc');
+            $create_emp_dept      = $request->get('create_emp_dept');
+            $create_emp_phnum     = $request->get('create_emp_phnum');
+            $create_emp_email     = $request->get('create_emp_email');
+            $get_respo_user_id    = $request->get('respo_user_id');
+            $get_respo_user_lname = $request->get('respo_user_lname');
+            $get_respo_user_fname = $request->get('respo_user_fname');
 
         // custom values
             $now_timestamp        = now();
-            $pending_txt          = 'pending';
+            $active_txt           = 'active';
             $employee_txt         = 'employee';
             $employee_image       = 'employee_user_image.jpg';
             $sq                   = "'";
             $format_now_timestamp = $now_timestamp->format('dmYHis');
             $get_current_year     = $now_timestamp->format('Y');
+            $lower_emp_role       = Str::lower($create_emp_role);
             $lower_emp_gender     = Str::lower($create_emp_gender);
         
         // user image handler
@@ -131,25 +139,88 @@ class UserManagementController extends Controller
                 $get_justFile        = pathinfo($get_filenameWithExt, PATHINFO_FILENAME);
                 $get_justExt         = $request->file('create_emp_user_image')->getClientOriginalExtension();
                 $fileNameToStore     = $get_justFile.'_'.$format_now_timestamp.'.'.$get_justExt;
-                // $uploadImageToPath   = $request->file('create_emp_user_image')->storeAs('public/storage/svms/user_images',$fileNameToStore);
+                $uploadImageToPath   = $request->file('create_emp_user_image')->storeAs('public/svms/user_images',$fileNameToStore);
             }else{
                 $fileNameToStore = $employee_image;
             }
 
         // generate unique password
-            $create_emp_password = Str::lower($create_emp_lname).'@'.$get_current_year;
+            $create_emp_password = Str::lower($create_emp_lname).'@svms'.$get_current_year;
 
-        echo 'REGISTER NEW EMPLOYEE USER <br />';
-        echo 'Employee ID: ' .$create_emp_id. ' <br />';
-        echo 'image: ' .$fileNameToStore. ' <br />';
-        echo 'Last Name: ' .$create_emp_lname. ' <br />';
-        echo 'First Name: ' .$create_emp_fname. ' <br />';
-        echo 'Gender: ' .$lower_emp_gender. ' <br />';
-        echo 'Job Description: ' .$create_emp_jobdesc. ' <br />';
-        echo 'Department: ' .$create_emp_dept. ' <br />';
-        echo 'Phone Number: ' .$create_emp_phnum. ' <br />';
-        echo 'email: ' .$create_emp_email. ' <br />';
-        echo 'password: ' .$create_emp_password. ' <br />';
+        // get the status of selected system role
+            $get_status_selected_role = Userroles::select('uRole_status')->where('uRole', $lower_emp_role)->first();
+            $status_of_selected_role  = $get_status_selected_role->uRole_status;
+
+
+        // save data to users table
+            $reg_emp_user = new Users;
+            $reg_emp_user->email             = $create_emp_email;
+            $reg_emp_user->email_verified_at = $now_timestamp;
+            $reg_emp_user->password          = Hash::make($create_emp_password);
+            $reg_emp_user->user_role         = $lower_emp_role;
+            $reg_emp_user->user_status       = $active_txt;
+            $reg_emp_user->user_role_status  = $status_of_selected_role;
+            $reg_emp_user->user_type         = $employee_txt;
+            $reg_emp_user->user_sdca_id      = $create_emp_id;
+            $reg_emp_user->user_image        = $fileNameToStore;
+            $reg_emp_user->user_lname        = $create_emp_lname;
+            $reg_emp_user->user_fname        = $create_emp_fname;
+            $reg_emp_user->user_gender       = $lower_emp_gender;
+            $reg_emp_user->registered_by     = $get_respo_user_id;
+            $reg_emp_user->created_at        = $now_timestamp;
+            $reg_emp_user->save();
+        // save data to user_employees_tbl table
+            $reg_emp_info = new Useremployees;
+            $reg_emp_info->uEmp_id       = $create_emp_id;
+            $reg_emp_info->uEmp_job_desc = $create_emp_jobdesc;
+            $reg_emp_info->uEmp_dept     = $create_emp_dept;
+            $reg_emp_info->uEmp_phnum    = $create_emp_phnum;
+            $reg_emp_info->created_at    = $now_timestamp;
+            $reg_emp_info->save();
+
+        // if registration was a success
+        if($reg_emp_user AND $reg_emp_info){
+            // get new user's id for activity reference
+                $get_new_emp_user_id = Users::select('id')->where('user_sdca_id', $create_emp_id)->latest('created_at')->first();
+                $new_reg_user_id     = $get_new_emp_user_id->id;
+
+            // record activity
+                $record_act = new Useractivites;
+                $record_act->created_at            = $now_timestamp;
+                $record_act->act_respo_user_id     = $get_respo_user_id;
+                $record_act->act_respo_users_lname = $get_respo_user_lname;
+                $record_act->act_respo_users_fname = $get_respo_user_fname;
+                $record_act->act_type              = 'create user';
+                $record_act->act_details           = 'Registered ' .$create_emp_fname. ' ' .$create_emp_lname. ' as a ' .$create_emp_role. ' of the system.';
+                $record_act->act_affected_id       = $new_reg_user_id;
+                $record_act->save();
+            
+                if($record_act){
+                    return back()->withSuccessStatus('New Employee User Account was registered successfully!');
+                }else{
+                    return back()->withFailedStatus('New Employee User Account has failed to register. Try again later.');
+                }
+        }else{
+            return back()->withFailedStatus('New Employee User Account has failed to register. Try again later.');
+        }
+
+        // echo 'REGISTER NEW EMPLOYEE USER <br />';
+        // echo 'System Role: ' .$create_emp_role. ' <br />';
+        // echo 'System Role Status: ' .$status_of_selected_role. ' <br />';
+        // echo 'Employee ID: ' .$create_emp_id. ' <br />';
+        // echo 'image: ' .$fileNameToStore. ' <br />';
+        // echo 'Last Name: ' .$create_emp_lname. ' <br />';
+        // echo 'First Name: ' .$create_emp_fname. ' <br />';
+        // echo 'Gender: ' .$lower_emp_gender. ' <br />';
+        // echo 'Job Description: ' .$create_emp_jobdesc. ' <br />';
+        // echo 'Department: ' .$create_emp_dept. ' <br />';
+        // echo 'Phone Number: ' .$create_emp_phnum. ' <br />';
+        // echo 'email: ' .$create_emp_email. ' <br />';
+        // echo 'password: ' .$create_emp_password. ' <br />';
+        // echo '<br />';
+        // echo 'by: ' .$get_respo_user_id. ' <br />';
+        // echo 'lname: ' .$get_respo_user_lname. ' <br />';
+        // echo 'fname: ' .$get_respo_user_fname. ' <br />';
     }
     // process registration of new student type user
     public function new_student_user_process_registration(Request $request){

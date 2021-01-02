@@ -64,7 +64,7 @@
                             <button id="listRegUsers_collapseBtnToggle" class="btn btn-link btn-block custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#listRegisteredUsersCollapseDiv" aria-expanded="true" aria-controls="listRegisteredUsersCollapseDiv">
                                 <div>
                                     <span class="card_body_title">Registered Users</span>
-                                    <span class="card_body_subtitle">Hover on any list to view more available options.</span>
+                                    <span class="card_body_subtitle">{{count($registered_users)}} Active Registered Users Found.</span>
                                 </div>
                                 <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
                             </button>
@@ -206,8 +206,8 @@
                             </div>
                             <div class="row mt-2">
                                 <div class="col-lg-12 col-md-12 col-sm-12">
-                                    <a href="{{ route('user_management.create_users', 'create_users') }}" class="btn btn-success btn-sm btn_normal_fontsz shadow" role="button">Create New User <i class="fa fa-user-plus ml-1" aria-hidden="true"></i></a>
-                                    <a href="{{ route('user_management.create_users', 'create_users') }}" class="btn btn_svms_blue btn-sm btn_normal_fontsz shadow" role="button">Manage Users <i class="fa fa-external-link ml-1" aria-hidden="true"></i></a>
+                                    <a href="{{ route('user_management.create_users', 'create_users') }}" class="btn btn_svms_blue btn-sm btn_normal_fontsz shadow" role="button"><i class="nc-icon nc-simple-add mr-1" aria-hidden="true"></i> Create New User</a>
+                                    {{-- <a href="{{ route('user_management.create_users', 'create_users') }}" class="btn btn_svms_blue btn-sm btn_normal_fontsz shadow" role="button">Manage Users <i class="fa fa-external-link ml-1" aria-hidden="true"></i></a> --}}
                                 </div>
                             </div>
                         </div>
@@ -223,7 +223,7 @@
                             <button id="listUserRoles_collapseBtnToggle" class="btn btn-link btn-block custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#listUserRolesCollapseDiv" aria-expanded="true" aria-controls="listUserRolesCollapseDiv">
                                 <div>
                                     <span class="card_body_title">System Roles</span>
-                                    <span class="card_body_subtitle">Click on a role to view more information.</span>
+                                    <span class="card_body_subtitle">{{count($registered_roles)}} Active System Roles Found. Click on a role to view more information.</span>
                                 </div>
                                 <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
                             </button>
@@ -242,6 +242,7 @@
                                         @foreach($active_roles->sortBy('uRole_id') as $active_role)
                                         @php
                                             $assigned_users = App\Models\Users::where('user_role', $active_role->uRole)->get();
+                                            $count_assigned_users = App\Models\Users::where('user_role', $active_role->uRole)->count();
                                         @endphp
                                         <div class="card custom_accordion_card cust_accordion_active">
                                             <div class="card-header p-0" id="userRoleCollapse_heading{{$active_role->uRole_id}}">
@@ -253,23 +254,24 @@
                                                     </div>
                                                     {{-- <i class="nc-icon nc-minimal-down custom2_btn_collapse_icon"></i> --}}
                                                     <div class="assignedUsersCirclesDiv">
-                                                        {{-- @foreach ($assigned_users->sortBy('id') as $assigned_user)
-                                                            @if($assigned_user->user_type === 'student')
-                                                            <img class="display_user_image studImg_border shadow-sm" src="{{asset('storage/svms/user_images/'.$active_user->user_image)}}" alt="upload user's image">
-                                                            @else
-                                                            <img class="display_user_image empImg_border shadow-sm" src="{{asset('storage/svms/user_images/'.$active_user->user_image)}}" alt="upload user's image">
-                                                            @endif
-                                                        @endforeach --}}
-                                                        <img class="assignedUsersCirclesImgs whiteImg_border1" src="{{asset('storage/svms/user_images/student_user_image.jpg')}}" alt="user_image" data-toggle="tooltip" data-placement="top" title="User Name 1">
-                                                        <img class="assignedUsersCirclesImgs whiteImg_border1" src="{{asset('storage/svms/user_images/employee_user_image.jpg')}}" alt="user_image" data-toggle="tooltip" data-placement="top" title="User Name 2">
-                                                        <img class="assignedUsersCirclesImgs whiteImg_border1" src="{{asset('storage/svms/user_images/Group 272.jpg')}}" alt="user_image" data-toggle="tooltip" data-placement="top" title="User Name 3">
-                                                        <img class="assignedUsersCirclesImgs whiteImg_border1" src="{{asset('storage/svms/user_images/mfodpic_13102020234509.png')}}" alt="user_image" data-toggle="tooltip" data-placement="top" title="User Name 4">
-                                                        <img class="assignedUsersCirclesImgs whiteImg_border1" src="{{asset('storage/svms/user_images/mitch_13102020230525.jpg')}}" alt="user_image" data-toggle="tooltip" data-placement="top" title="User Name 5">
-                                                        <img class="assignedUsersCirclesImgs whiteImg_border1" src="{{asset('storage/svms/user_images/disabled_user_image.jpg')}}" alt="user_image" data-toggle="tooltip" data-placement="top" title="User Name 6">
-                                                        {{-- <img class="assignedUsersCirclesImgs whiteImg_border1" src="{{asset('storage/svms/user_images/null_bg.jpg')}}" alt="more_users"> --}}
-                                                        <div class="moreImgsCounterDiv" data-toggle="tooltip" data-placement="top" title="3 more users">
-                                                            <span class="moreImgsCounterTxt">+3</span>
-                                                        </div>
+                                                        <?php
+                                                            if($count_assigned_users >= 7){
+                                                                $get_only_6 = App\Models\Users::select('id', 'user_image', 'user_lname', 'user_fname')->where('user_role', $active_role->uRole)->take(6)->get();
+                                                                $more_count = $count_assigned_users - 6;
+                                                                foreach($get_only_6->sortBy('id') as $display_6_user_images) {
+                                                                    ?> <img class="assignedUsersCirclesImgs whiteImg_border1" src="{{asset('storage/svms/user_images/'.$display_6_user_images->user_image)}}" alt="user_image" data-toggle="tooltip" data-placement="top" title="@if(auth()->user()->id === $display_6_user_images->id) You @else {{$display_6_user_images->user_fname. ' ' .$display_6_user_images->user_lname}} @endif"> <?php
+                                                                }
+                                                                ?>
+                                                                    <div class="moreImgsCounterDiv" data-toggle="tooltip" data-placement="top" title="{{$more_count}} more users">
+                                                                        <span class="moreImgsCounterTxt">+{{$more_count}}</span>
+                                                                    </div>
+                                                                <?php
+                                                            }else{
+                                                                foreach($assigned_users->sortBy('id') as $display_6_user_images) {
+                                                                    ?> <img class="assignedUsersCirclesImgs whiteImg_border1" src="{{asset('storage/svms/user_images/'.$display_6_user_images->user_image)}}" alt="user_image" data-toggle="tooltip" data-placement="top" title="@if(auth()->user()->id === $display_6_user_images->id) You @else {{$display_6_user_images->user_fname. ' ' .$display_6_user_images->user_lname}} @endif"> <?php
+                                                                }
+                                                            }
+                                                        ?>
                                                     </div>
                                                 </button>
                                                 </h2>
@@ -443,6 +445,7 @@
                                             @foreach($deactivated_roles->sortBy('uRole_id') as $deactivated_role)
                                             @php
                                                 $assigned_users_d = App\Models\Users::where('user_role', $deactivated_role->uRole)->get();
+                                                $count_assigned_users = App\Models\Users::where('user_role', $deactivated_role->uRole)->count();
                                             @endphp
                                             <div class="card custom_accordion_card cust_accordion_active2">
                                                 <div class="card-header p-0" id="deactvdURoleCollapse_heading{{$deactivated_role->uRole_id}}">
@@ -454,22 +457,25 @@
                                                         </div>
                                                         {{-- <i class="nc-icon nc-minimal-down custom2_btn_collapse_icon"></i> --}}
                                                         <div class="assignedUsersCirclesDiv">
-                                                            {{-- @foreach ($assigned_users->sortBy('id') as $assigned_user)
-                                                                @if($assigned_user->user_type === 'student')
-                                                                <img class="display_user_image studImg_border shadow-sm" src="{{asset('storage/svms/user_images/'.$active_user->user_image)}}" alt="upload user's image">
-                                                                @else
-                                                                <img class="display_user_image empImg_border shadow-sm" src="{{asset('storage/svms/user_images/'.$active_user->user_image)}}" alt="upload user's image">
-                                                                @endif
-                                                            @endforeach --}}
-                                                            <img class="assignedUsersCirclesImgs grayUsersCirclesImgs_filter" src="{{asset('storage/svms/user_images/student_user_image.jpg')}}" alt="user_image" data-toggle="tooltip" data-placement="top" title="User Name 1">
-                                                            <img class="assignedUsersCirclesImgs grayUsersCirclesImgs_filter" src="{{asset('storage/svms/user_images/employee_user_image.jpg')}}" alt="user_image" data-toggle="tooltip" data-placement="top" title="User Name 2">
-                                                            <img class="assignedUsersCirclesImgs grayUsersCirclesImgs_filter" src="{{asset('storage/svms/user_images/Group 272.jpg')}}" alt="user_image" data-toggle="tooltip" data-placement="top" title="User Name 3">
-                                                            <img class="assignedUsersCirclesImgs grayUsersCirclesImgs_filter" src="{{asset('storage/svms/user_images/mfodpic_13102020234509.png')}}" alt="user_image" data-toggle="tooltip" data-placement="top" title="User Name 4">
-                                                            <img class="assignedUsersCirclesImgs grayUsersCirclesImgs_filter" src="{{asset('storage/svms/user_images/mitch_13102020230525.jpg')}}" alt="user_image" data-toggle="tooltip" data-placement="top" title="User Name 5">
-                                                            <img class="assignedUsersCirclesImgs grayUsersCirclesImgs_filter" src="{{asset('storage/svms/user_images/disabled_user_image.jpg')}}" alt="user_image" data-toggle="tooltip" data-placement="top" title="User Name 6">
-                                                            {{-- <img class="assignedUsersCirclesImgs whiteImg_border1" src="{{asset('storage/svms/user_images/null_bg.jpg')}}" alt="more_users"> --}}
-                                                            <div class="moreImgsCounterDiv" data-toggle="tooltip" data-placement="top" title="3 more users">
-                                                                <span class="moreImgsCounterTxt">+3</span>
+                                                            <div class="assignedUsersCirclesDiv">
+                                                                <?php
+                                                                    if($count_assigned_users >= 7){
+                                                                        $get_only_6 = App\Models\Users::select('id', 'user_image', 'user_lname', 'user_fname')->where('user_role', $deactivated_role->uRole)->take(6)->get();
+                                                                        $more_count = $count_assigned_users - 6;
+                                                                        foreach($get_only_6->sortBy('id') as $display_6_user_images) {
+                                                                            ?> <img class="assignedUsersCirclesImgs grayUsersCirclesImgs_filter" src="{{asset('storage/svms/user_images/'.$display_6_user_images->user_image)}}" alt="user_image" data-toggle="tooltip" data-placement="top" title="@if(auth()->user()->id === $display_6_user_images->id) You @else {{$display_6_user_images->user_fname. ' ' .$display_6_user_images->user_lname}} @endif"> <?php
+                                                                        }
+                                                                        ?>
+                                                                            <div class="moreImgsCounterDiv" data-toggle="tooltip" data-placement="top" title="{{$more_count}} more users">
+                                                                                <span class="moreImgsCounterTxt">+{{$more_count}}</span>
+                                                                            </div>
+                                                                        <?php
+                                                                    }else{
+                                                                        foreach($assigned_users->sortBy('id') as $display_6_user_images) {
+                                                                            ?> <img class="assignedUsersCirclesImgs grayUsersCirclesImgs_filter" src="{{asset('storage/svms/user_images/'.$display_6_user_images->user_image)}}" alt="user_image" data-toggle="tooltip" data-placement="top" title="@if(auth()->user()->id === $display_6_user_images->id) You @else {{$display_6_user_images->user_fname. ' ' .$display_6_user_images->user_lname}} @endif"> <?php
+                                                                        }
+                                                                    }
+                                                                ?>
                                                             </div>
                                                         </div>
                                                     </button>

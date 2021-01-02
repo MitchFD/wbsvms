@@ -34,7 +34,7 @@
         {{-- directory link --}}
         <div class="row mb-3">
             <div class="col-lg-12 col-md-12 col-sm-12">
-                <a href="{{ route('user_management.index', 'user_management') }}" class="directory_link">User Management </a> <span class="directory_divider"> / </span> <a href="{{ route('user_management.create_users', 'create_users') }}" class="directory_active_link">Create Users </a>
+                <a href="{{ route('user_management.overview_users_management', 'overview_users_management') }}" class="directory_link">User Management </a> <span class="directory_divider"> / </span> <a href="{{ route('user_management.create_users', 'create_users') }}" class="directory_active_link">Create Users </a>
             </div>
         </div>
 
@@ -104,6 +104,25 @@
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    <label class="custom_label" for="create_emp_role">Assign Role:</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text">
+                                                                <i class="nc-icon nc-tap-01"></i>
+                                                            </span>
+                                                        </div>
+                                                        <input id="create_emp_role" list="userRoleOptions" pattern="@foreach($employee_system_roles->sortBy('uRole_id') as $employee_system_role){{ucwords($employee_system_role->uRole)}}<?php if(!$loop->last){echo "|";}; ?>@endforeach" name="create_emp_role" type="text" class="form-control" placeholder="Select System Role" value="{{ old('create_emp_role') }}" required>
+                                                        <datalist id="userRoleOptions">
+                                                            @foreach($employee_system_roles->sortBy('uRole_id') as $employee_system_role)
+                                                                <option value="{{ucwords($employee_system_role->uRole)}}">
+                                                                {{-- @if($employee_system_role->uRole === 'administrator')
+
+                                                                @else
+                                                                    <option value="{{ucwords($employee_system_role->uRole)}}">
+                                                                @endif --}}
+                                                            @endforeach
+                                                        </datalist>
+                                                    </div>
                                                     <label class="custom_label" for="create_emp_id">Employee ID:</label>
                                                     <div class="input-group">
                                                         <div class="input-group-prepend">
@@ -138,7 +157,7 @@
                                                                 <i class="nc-icon nc-single-02"></i>
                                                             </span>
                                                         </div>
-                                                        <input id="create_emp_gender" list="updateGenderOptions" pattern="Male|Female" name="create_emp_gender" type="text" class="form-control" placeholder="Select Gender" value="{{ old('updateGenderOptions') }}" required>
+                                                        <input id="create_emp_gender" list="updateGenderOptions" pattern="Male|Female" name="create_emp_gender" type="text" class="form-control" placeholder="Select Gender" value="{{ old('create_emp_gender') }}" required>
                                                         <datalist id="updateGenderOptions">
                                                             <option value="Male">
                                                             <option value="Female">
@@ -185,8 +204,8 @@
                                                     </div>
                                                     <div class="d-flex justify-content-center">
                                                         <input type="hidden" name="respo_user_id" value="{{auth()->user()->id}}"/>
-                                                        <input type="hidden" name="respo_user_lname" value="{{auth()->user()->user_last_name}}"/>
-                                                        <input type="hidden" name="respo_user_fname" value="{{auth()->user()->user_first_name}}"/>
+                                                        <input type="hidden" name="respo_user_lname" value="{{auth()->user()->user_lname}}"/>
+                                                        <input type="hidden" name="respo_user_fname" value="{{auth()->user()->user_fname}}"/>
                                                         <button type="submit" id="createEmpUser_RegisterBtn" class="btn btn_svms_blue btn-round btn_show_icon" disabled>{{ __('Register Employee User') }}<i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
                                                     </div>
                                                 </div>
