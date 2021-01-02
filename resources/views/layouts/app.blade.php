@@ -76,6 +76,9 @@ The above copyright notice and this permission notice shall be included in all c
     {{-- cockie plugin --}}
     {{-- <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js" type="text/javascript"></script> --}}
     {{-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script> --}}
+
+    {{-- customized scripts --}}
+    <script src="{{ asset('paper') }}/js/custom.js"></script>
     
     @stack('scripts')
 

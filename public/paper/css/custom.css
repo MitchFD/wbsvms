@@ -398,6 +398,10 @@ fieldset[disabled] .btn_svms_blue.active {
 }
 /* buttons end */
 
+.btn_normal_fontsz{
+  font-weight: normal !important;
+}
+
 /* cusotom display information with icon */
 .cust_info_txtwicon{
   display: block;
@@ -776,6 +780,14 @@ a.text_svms_blue:hover {
   color: var(--svms_blue) !important;
 }
 
+/* customized input label */
+.custom_label{
+  font-weight: bold !important;
+  font-size: 14px !important;
+  margin-top: 10px !important;
+  color: var(--svms_light_blue) !important;
+}
+
 /* inputs customizations */
 .input-group-prepend .is_invalid{
   border-right: none !important;
@@ -861,6 +873,7 @@ a.text_svms_blue:hover {
   background-size: cover !important;
   background-position: 50% 50% !important;
   background-repeat: no-repeat !important;
+  background: var(--svms_blue) !important;
 }
 .up_stud_user_image{
   width: 150px;
@@ -874,6 +887,7 @@ a.text_svms_blue:hover {
   background-size: cover !important;
   background-position: 50% 50% !important;
   background-repeat: no-repeat !important;
+  background: var(--svms_green) !important;
 }
 .up_fullname_txt{
   display: block;
@@ -928,7 +942,7 @@ a.text_svms_blue:hover {
   border-radius: 50%;
   color: var(--white);
   top: 95px;
-  right: 140px;
+  right: 275px;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
   font-size: 16px;
   padding: 13px 15px;
@@ -1050,10 +1064,18 @@ a.text_svms_blue:hover {
   border: 0 !important;
 }
 
+.roleStatusDiv{
+  display: flex;
+  font-size: 14px;
+  text-transform: none !important;
+  font-weight: normal !important;
+  color: var(--svms_light_blue2);
+  margin: 0;
+}
 /* system roles */
 .roleStatusToggleIcon{
   font-size: 20px;
-  margin: 0 0 -3px 0;
+  margin: 0;
   padding: 0;
   cursor: pointer;
   color: var(--svms_blue) !important;
@@ -1075,11 +1097,43 @@ a.text_svms_blue:hover {
   background-position: 50% 50% !important;
   background-repeat: no-repeat !important;
 }
+.empImg_background{
+  width: 60px;
+  height: 60px;
+  overflow: hidden;
+  border-radius: 50%;
+  position: relative;
+  object-fit: cover !important;
+  background-size: cover !important;
+  background-position: 50% 50% !important;
+  background-repeat: no-repeat !important;
+  background-color: var(--svms_blue) !important;
+  border: 3px solid var(--svms_blue);
+}
+.studImg_background{
+  width: 60px;
+  height: 60px;
+  overflow: hidden;
+  border-radius: 50%;
+  position: relative;
+  object-fit: cover !important;
+  background-size: cover !important;
+  background-position: 50% 50% !important;
+  background-repeat: no-repeat !important;
+  background-color: var(--svms_green) !important;
+  border: 3px solid var(--svms_green);
+}
 .empImg_border{
   border: 3px solid var(--svms_blue);
 }
 .studImg_border{
   border: 3px solid var(--svms_green);
+}
+.whiteImg_border{
+  border: 3px solid var(--white);
+}
+.whiteImg_border1{
+  border: 4px solid var(--white);
 }
 .grayImg_border{
   border: 3px solid var(--svms_text_gray);
@@ -1263,3 +1317,66 @@ a.text_svms_blue:hover {
 .cust_lg_item_ve:active{
   background-color: #FDF7F7 !important;
 }
+
+.youIndicator{
+  font-weight: normal !important;
+  font-style: italic !important;
+  font-size: 12px !important;
+  color: var(--svms_light_blue) !important;
+}
+
+.cnTab:after{
+  display: inline-block;
+  content: " ";
+  width: 8px;
+}
+
+.assignedUsersCirclesDiv{
+  text-align: right !important;
+  display: flex;
+}
+.assignedUsersCirclesImgs{
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  overflow: hidden;
+  border-radius: 50%;
+  position: relative;
+  object-fit: cover !important;
+  background-size: cover !important;
+  background-position: 50% 50% !important;
+  background-repeat: no-repeat !important;
+  background-color: #ffffff;
+}
+.assignedUsersCirclesImgs:not(:first-child){
+  margin-left: -12px;
+}
+.grayUsersCirclesImgs_filter{
+  border: 4px solid var(--white);
+  filter: grayscale(100%) !important;
+}
+
+.moreImgsCounterDiv{
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  overflow: hidden;
+  border-radius: 50%;
+  margin-left: -12px;
+  overflow: hidden;
+  background: #96959E !important;
+  border: 4px solid var(--white);
+  text-align: center;
+  z-index: 100;
+  font-size: 14px;
+  font-weight: 400;
+}
+.moreImgsCounterTxt{
+  font-size: 14px;
+  font-weight: 500;
+  position: relative;
+  top: 25%;
+  left: 25%;
+  margin: -25px 0 0 -25px;
+}
+

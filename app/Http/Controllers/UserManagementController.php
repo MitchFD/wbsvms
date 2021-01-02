@@ -47,9 +47,43 @@ class UserManagementController extends Controller
         return view('user_management.index')->with(compact('active_users', 'deactivated_users', 'pending_users', 'deleted_users', 'registered_users', 'active_roles', 'deactivated_roles', 'deleted_roles', 'registered_roles', 'all_activities'));
     }
 
-    // create users
+    // sub-modules
+    // overview_users_management
+    public function overview_users_management(){
+        // users
+        $active_users      = Users::where('user_status', 'active')->where('user_role_status', 'active')->get();
+        $deactivated_users = Users::where('user_status', 'deactivated')->orWhere('user_role_status', 'deactivated')->get();
+        $pending_users     = Users::where('user_role', 'pending')->where('user_status', 'pending')->where('user_role_status', 'pending')->get();
+        $deleted_users     = Users::where('user_status', 'deleted')->get();
+        $registered_users  = Users::where('user_status', '!=', 'deleted')->get();
+
+        // user roles
+        $active_roles      = Userroles::where('uRole_status', 'active')->get();
+        $deactivated_roles = Userroles::where('uRole_status', 'deactivated')->get();
+        $deleted_roles     = Userroles::where('uRole_status', 'deleted')->get();
+        $registered_roles  = Userroles::where('uRole_status', '!=', 'deleted')->get();
+
+        return view('user_management.overview')->with(compact('active_users', 'deactivated_users', 'pending_users', 'deleted_users', 'registered_users', 'active_roles', 'deactivated_roles', 'deleted_roles', 'registered_roles'));
+    }
+
+    // create_users
     public function create_users(){
         return view('user_management.create_users');
+    }
+
+    // system_users
+    public function system_users(){
+        return view('user_management.system_users');
+    }
+
+    // system_roles
+    public function system_roles(){
+        return view('user_management.system_roles');
+    }
+
+    // users_logs
+    public function users_logs(){
+        return view('user_management.users_logs');
     }
 
     // emailavailability check
@@ -116,6 +150,10 @@ class UserManagementController extends Controller
         echo 'Phone Number: ' .$create_emp_phnum. ' <br />';
         echo 'email: ' .$create_emp_email. ' <br />';
         echo 'password: ' .$create_emp_password. ' <br />';
+    }
+    // process registration of new student type user
+    public function new_student_user_process_registration(Request $request){
+        echo 'wow student ka toi?';
     }
 
     // FUNCTIONS FOR SYSTEM ROLES

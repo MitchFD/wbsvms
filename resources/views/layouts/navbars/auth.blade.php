@@ -34,8 +34,8 @@
                         <p>{{ __('User Management') }}</p>
                     </a>
                 </li> --}}
-                <li class="{{ $elementActive == 'user_management' || $elementActive == 'create_users' || $elementActive == 'users_logs' ? 'active' : '' }}">
-                    <a data-toggle="collapse" aria-expanded="true" href="#usersManagementCollapse">
+                <li class="{{ $elementActive == 'overview_users_management' || $elementActive == 'user_management' || $elementActive == 'create_users' || $elementActive == 'system_users' || $elementActive == 'system_roles' || $elementActive == 'users_logs' ? 'active' : '' }}">
+                    <a data-toggle="collapse" aria-expanded="false" href="#usersManagementCollapse">
                         <i class="nc-icon nc-circle-10"></i>
                         <p>
                             {{ __('USERS MANAGEMENT') }}
@@ -44,10 +44,16 @@
                     </a>
                     <div class="collapse" id="usersManagementCollapse">
                         <ul class="nav">
+                            <li class="{{ $elementActive == 'overview_users_management' ? 'active' : '' }}">
+                                <a style="padding-left: 25px !important;" href="{{ route('user_management.overview_users_management', 'overview_users_management') }}">
+                                    <i class="nc-icon nc-minimal-right sidebar-mini-icon"></i>
+                                    <span class="sidebar-normal">{{ __(' Overview ') }}</span>
+                                </a>
+                            </li>
                             <li class="{{ $elementActive == 'user_management' ? 'active' : '' }}">
                                 <a style="padding-left: 25px !important;" href="{{ route('user_management.index', 'user_management') }}">
                                     <i class="nc-icon nc-minimal-right sidebar-mini-icon"></i>
-                                    <span class="sidebar-normal">{{ __(' Preview ') }}</span>
+                                    <span class="sidebar-normal">{{ __(' Default ') }}</span>
                                 </a>
                             </li>
                             <li class="{{ $elementActive == 'create_users' ? 'active' : '' }}">
@@ -56,14 +62,20 @@
                                     <span class="sidebar-normal">{{ __(' Create Users ') }}</span>
                                 </a>
                             </li>
+                            <li class="{{ $elementActive == 'system_users' ? 'active' : '' }}">
+                                <a style="padding-left: 25px !important;" href="{{ route('user_management.system_users', 'system_users') }}">
+                                    <i class="nc-icon nc-minimal-right sidebar-mini-icon"></i>
+                                    <span class="sidebar-normal">{{ __(' System Users ') }}</span>
+                                </a>
+                            </li>
                             <li class="{{ $elementActive == 'system_roles' ? 'active' : '' }}">
-                                <a style="padding-left: 25px !important;" href="#">
+                                <a style="padding-left: 25px !important;" href="{{ route('user_management.system_roles', 'system_roles') }}">
                                     <i class="nc-icon nc-minimal-right sidebar-mini-icon"></i>
                                     <span class="sidebar-normal">{{ __(' System Roles ') }}</span>
                                 </a>
                             </li>
                             <li class="{{ $elementActive == 'users_logs' ? 'active' : '' }}">
-                                <a style="padding-left: 25px !important;" href="#">
+                                <a style="padding-left: 25px !important;" href="{{ route('user_management.users_logs', 'users_logs') }}">
                                     <i class="nc-icon nc-minimal-right sidebar-mini-icon"></i>
                                     <span class="sidebar-normal">{{ __(' Users Logs ') }}</span>
                                 </a>

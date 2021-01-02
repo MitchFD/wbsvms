@@ -6514,6 +6514,8 @@ License - nucleoapp.com/license/
     float: right;
     padding-right: 15px;
   }
+
+  /* active sidenav triangle indicator */
   .sidebar .sidebar-wrapper li.active>a:not([data-toggle="collapse"]):before,
   .sidebar .sidebar-wrapper li.active>[data-toggle="collapse"]+div .nav li:before {
     border-right: 17px solid #DDDDDD;
