@@ -8,6 +8,7 @@
         $('#listRegUsers_collapseBtnToggle').click(function() {
             // $('#actLogs_collapseIconToggle').toggle('1000');
             $("i", this).toggleClass("nc-minimal-up nc-minimal-down");
+            // $('#listRegUsers_subtitleTxt').text($('#listRegUsers_subtitleTxt').text() == '13 Registered Users Found.' ? 'Click me to view all registered Users...' : '13 Registered Users Found.');
         });
     // for system roles card collapse icon
         $('#listUserRoles_collapseBtnToggle').click(function() {
@@ -19,6 +20,11 @@
             // $('#actLogs_collapseIconToggle').toggle('1000');
             $("i", this).toggleClass("nc-minimal-up nc-minimal-down");
         });
+    // for syste role registration form
+    $('#createSystemRole_collapseBtnToggle').click(function() {
+        // $('#actLogs_collapseIconToggle').toggle('1000');
+        $("i", this).toggleClass("nc-minimal-up nc-minimal-down");
+    });
 // change dropdown collapse icon on button click from main gray card end 
 
 // active main gray card collpase on page refresh

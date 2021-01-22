@@ -402,15 +402,49 @@ fieldset[disabled] .btn_svms_blue.active {
   font-weight: normal !important;
 }
 
+.cust_btn_mdcircle{
+  float: right;
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  font-size: 18px;
+  margin: 0;
+  padding: 0;
+  background-color: #ffffff;
+  color: var(--svms_btn_light_gray_txt)
+}
+.cust_btn_mdcircle:hover{
+  background-color: #f2f2f3 !important;
+  color: var(--svms_input_txt) !important;
+}
+.cust_btn_mdcircle:focus,
+.cust_btn_mdcircle:active,
+.cust_btn_mdcircle:active:focus {
+  background-color: #f2f2f3 !important;
+  color: var(--svms_input_txt) !important;
+}
+
+.cust_bt_links{
+  font-weight: normal !important;
+  margin: 0 0 5px 0 !important;
+  padding: 5px 15px !important;
+  font-size: 11.9994px !important;
+  line-height: 1.5;
+  border-radius: 0.2rem;
+}
+
 /* cusotom display information with icon */
 .cust_info_txtwicon{
-  display: block;
+  display: flex;
   font-size: 13px !important;
   font-weight: normal;
   text-decoration: none !important;
   text-transform: normal !important;
   color: var(--svms_light_blue); 
   align-items: center !important;
+}
+.cust_info_txtwicon i{
+  width: 15px;
 }
 
 /* cursor customizations */
@@ -432,6 +466,20 @@ fieldset[disabled] .btn_svms_blue.active {
 .my15br15{
   margin: 15px 0px !important;
   border-radius: 15px !important;
+}
+
+/* radio button customization */
+.cust_radioInptDiv{
+  display: -ms-flexbox !important;
+  display: flex !important;
+  -ms-flex-align: center !important;
+  align-items: center !important;
+  width: 100%;
+}
+.cust_radioInptDiv input{
+  position: relative;
+  cursor: pointer !important;
+  margin: 0 10px 0 0 !important;
 }
 
 /* modal customizations */
@@ -479,6 +527,9 @@ fieldset[disabled] .btn_svms_blue.active {
 }
 .cb_t0b12y20{
   padding: 0px 20px 12px 20px !important;
+}
+.cb_t0b25x25{
+  padding: 0px 25px 25px 25px !important;
 }
 /* border-radius */
 .card_gbr{
@@ -561,6 +612,21 @@ fieldset[disabled] .btn_svms_blue.active {
   color: var(--svms_light_blue2);
   margin: 0;
   align-items: center !important;
+}
+.lightBlue_cardBody_chckboxLabel{
+  display: block;
+  font-size: 14px !important;
+  text-transform: none !important;
+  font-weight: normal !important;
+  color: var(--svms_blue) !important;
+  margin: 0 !important;
+  padding: 3px 0 0 0 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease-in-out;
+}
+.lightBlue_cardBody_chckboxLabel:hover{
+  color: var(--svms_med_dark_blue) !important;
+  font-weight: bold !important;
 }
 .lightBlue_cardBody_notice{
   display: block;
@@ -821,6 +887,10 @@ a.text_svms_blue:hover {
   color: var(--svms_blue);
 }
 
+.tbody_svms_white tr{
+  cursor: pointer !important;
+}
+
 /* custom status title */
 .cust_status_title{
   display: block;
@@ -936,18 +1006,23 @@ a.text_svms_blue:hover {
 }
 
 .user_image_upload_input_div{
-  position: absolute;
+  position: relative;
   width: 45px;
   height: 45px;
   border-radius: 50%;
   color: var(--white);
-  top: 95px;
-  right: 275px;
+  /* top: -70px;
+  left: 55%; */
+  /* right: 275px; */
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
   font-size: 16px;
   padding: 13px 15px;
   cursor: pointer;
   z-index: 2;
+}
+.imgUpldDiv_placement{
+  top: -70px !important;
+  left: 55% !important;
 }
 .stud_imgUpload{
   background-color: var(--svms_green);
@@ -1081,6 +1156,45 @@ a.text_svms_blue:hover {
   color: var(--svms_blue) !important;
 }
 
+/* custom list cards */
+.cust_listCard{
+  display: block;
+  border-radius: 15px !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+.cust_listCard_header{
+  display: -ms-flexbox !important;
+  display: flex !important;
+  -ms-flex-pack: justify !important;
+  justify-content: space-between !important;
+  -ms-flex-align: center !important;
+  align-items: center !important;
+  padding: 15px 25px !important;
+  border-bottom: 1px solid #F4F3EF !important;
+}
+.cust_listCard_header2{
+  display: -ms-flexbox !important;
+  display: flex !important;
+  -ms-flex-pack: justify !important;
+  justify-content: space-between !important;
+  -ms-flex-align: center !important;
+  align-items: center !important;
+  padding: 15px 25px !important;
+  border-bottom: 1px solid #F4F3EF !important;
+}
+.cust_listCard_header3{
+  /* display: -ms-flexbox !important;
+  display: flex !important;
+  -ms-flex-pack: justify !important;
+  justify-content: start !important;
+  -ms-flex-align: center !important;
+  align-items: center !important; */
+  padding: 10px 15px !important;
+  border-bottom: 1px solid #F4F3EF !important;
+}
+
 /* custom user image display */
 .display_user_image_div{
   display: block;
@@ -1108,7 +1222,7 @@ a.text_svms_blue:hover {
   background-position: 50% 50% !important;
   background-repeat: no-repeat !important;
   background-color: var(--svms_blue) !important;
-  border: 3px solid var(--svms_blue);
+  border: 3px solid var(--svms_blue) !important;
 }
 .studImg_background{
   width: 60px;
@@ -1121,7 +1235,7 @@ a.text_svms_blue:hover {
   background-position: 50% 50% !important;
   background-repeat: no-repeat !important;
   background-color: var(--svms_green) !important;
-  border: 3px solid var(--svms_green);
+  border: 3px solid var(--svms_green) !important;
 }
 .empImg_border{
   border: 3px solid var(--svms_blue);
@@ -1225,12 +1339,33 @@ a.text_svms_blue:hover {
   color: var(--svms_input_txt) !important;
 }
 
+.cust_btn_smcircle2{
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  font-size: 16px;
+  margin: 0;
+  padding: 10px;
+  background-color: #ffffff;
+  color: var(--svms_btn_light_gray_txt)
+}
+.cust_btn_smcircle2:hover{
+  background-color: #f2f2f3 !important;
+  color: var(--svms_input_txt) !important;
+}
+.cust_btn_smcircle2:focus,
+.cust_btn_smcircle2:active,
+.cust_btn_smcircle2:active:focus {
+  background-color: #f2f2f3 !important;
+  color: var(--svms_input_txt) !important;
+}
+
 /* custom no data found */
 .no_data_found_div{
   display: block;
   margin: 0;
   padding: 20px 25px;
-  text-align: center;
+  text-align: left;
   align-items: center;
   border-radius: 15px;
   background-color: var(--svms_gray_bg_hover);
@@ -1337,8 +1472,8 @@ a.text_svms_blue:hover {
 }
 .assignedUsersCirclesImgs{
   display: inline-block;
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   overflow: hidden;
   border-radius: 50%;
   position: relative;
@@ -1351,6 +1486,23 @@ a.text_svms_blue:hover {
 .assignedUsersCirclesImgs:not(:first-child){
   margin-left: -12px;
 }
+.assignedUsersCirclesImgs2{
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  margin: 0 !important;
+  overflow: hidden;
+  border-radius: 50%;
+  position: relative;
+  object-fit: cover !important;
+  background-size: cover !important;
+  background-position: 50% 50% !important;
+  background-repeat: no-repeat !important;
+  background-color: #ffffff;
+}
+.assignedUsersCirclesImgs2:not(:first-child){
+  margin-left: -10px !important;
+}
 .grayUsersCirclesImgs_filter{
   border: 4px solid var(--white);
   filter: grayscale(100%) !important;
@@ -1358,25 +1510,127 @@ a.text_svms_blue:hover {
 
 .moreImgsCounterDiv{
   display: inline-block;
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   overflow: hidden;
   border-radius: 50%;
   margin-left: -12px;
   overflow: hidden;
   background: #96959E !important;
   border: 4px solid var(--white);
-  text-align: center;
   z-index: 100;
   font-size: 14px;
   font-weight: 400;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 55px; 
+}
+.moreImgsCounterDiv2{
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  border-radius: 50%;
+  margin-left: -10px;
+  overflow: hidden;
+  background: #96959E !important;
+  border: 4px solid var(--white);
+  z-index: 100;
+  font-size: 14px;
+  font-weight: 400;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 32px; 
 }
 .moreImgsCounterTxt{
   font-size: 14px;
   font-weight: 500;
   position: relative;
-  top: 25%;
-  left: 25%;
-  margin: -25px 0 0 -25px;
+  margin: 0 !important;
+  color: #ffffff !important;
+}
+.moreImgsCounterTxt2{
+  font-size: 12px;
+  font-weight: 500;
+  color: #ffffff !important;
+  position: relative;
+  margin: 0 !important;
 }
 
+
+/* system users module */
+.cust_srchInpt_div {
+  border-radius: 25px;
+  overflow: hidden;
+  box-shadow: none;
+  margin: 0 !important;
+  transition: all 0.2s ease-in-out;
+}
+.cust_srchInpt_div i {
+  position: absolute;
+  font-size: 14px;
+  cursor: default !important;
+  right: 20px;
+  top: 18px;
+  z-index: 100;
+  color: #b3b0ad;
+}
+.cust_srchUsersInpt_box {
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 15px 20px !important; 
+  border: 1px solid #ffffff;
+  box-shadow: none;
+  color: #66615b;
+}
+.cust_srchUsersInpt_box::placeholder {
+  opacity: 1;
+  color: #b3b0ad !important;
+  font-weight: normal !important;
+}
+.cust_srchUsersInpt_box:hover,
+.cust_srchUsersInpt_box:focus {
+  border: 1px solid #ffffff;
+}
+
+.cust_srchInpt_div:focus-within{
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.usrts_span{
+  line-height: 10px !important;
+}
+
+/* user circle images on system users table */
+.rslts_userImgs{
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  border-radius: 50%;
+  position: relative;
+  object-fit: cover !important;
+  background-size: cover !important;
+  background-position: 50% 50% !important;
+  background-repeat: no-repeat !important;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+.rslts_emp{
+  background-color: var(--svms_blue) !important;
+  border: 3px solid var(--svms_blue) !important;
+}
+.rslts_stud{
+  background-color: var(--svms_green) !important;
+  border: 3px solid var(--svms_green) !important;
+}
+.rslts_deact{
+  border: 3px solid var(--svms_text_gray);
+  background-color: var(--svms_text_gray) !important;
+  filter: grayscale(100%) !important;
+}
+.rslts_dele{
+  -webkit-filter: invert(40%) grayscale(0) brightness(80%) sepia(100%) hue-rotate(-50deg) saturate(400%) contrast(2);
+  filter: grayscale(0) brightness(80%) sepia(100%) hue-rotate(-50deg) saturate(600%) contrast(0.8);
+  background-color: var(--svms_red) !important;
+  border: 3px solid var(--svms_red) !important;
+}

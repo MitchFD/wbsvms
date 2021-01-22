@@ -34,7 +34,7 @@
         {{-- directory link --}}
         <div class="row mb-3">
             <div class="col-lg-12 col-md-12 col-sm-12">
-                <a href="{{ route('user_management.overview_users_management', 'overview_users_management') }}" class="directory_link">User Management </a> <span class="directory_divider"> / </span> <a href="{{ route('user_management.create_users', 'create_users') }}" class="directory_active_link">Create Users </a>
+                <a href="{{ route('user_management.overview_users_management', 'overview_users_management') }}" class="directory_link" data-toggle="tooltip" data-placement="top" title="Back to Overview Page?">User Management </a> <span class="directory_divider"> / </span> <a href="{{ route('user_management.create_users', 'create_users') }}" class="directory_active_link">Create Users </a>
             </div>
         </div>
 
@@ -45,10 +45,10 @@
                     <div class="card-body card_intro">
                         <div class="page_intro">
                             <span class="page_intro_title">Create Users</span>
-                            <span class="page_intro_subtitle">This page allows you to register new system users, you can create a user account for an employee type user or a student type user by filling-up the required information. You can also create a new system role if there are no options available to be assigned to the new user and select modules for its access control.</span>
+                            <span class="page_intro_subtitle">This page allows you to register a new user account for an employee type user or a student type user by filling-up the required information. You can also create a new system role if there are no options available to be assigned to the new user and select modules for its access control.</span>
                         </div>
                         <div class="page_illustration">
-                            <img class="illustration_svg" src="{{ asset('storage/svms/illustrations/profile_illustration.svg') }}" alt="...">
+                            <img class="illustration_svg" src="{{ asset('storage/svms/illustrations/um_create_users_2_illustration.svg') }}" alt="...">
                         </div>
                     </div>
                 </div>
@@ -69,7 +69,7 @@
                                 <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
                             </button>
                         </div>
-                        <div id="createUserCollapseDiv" class="collapse show cb_t0b15x25" aria-labelledby="createUserCollapseHeading" data-parent="#createUserCollapseParent">
+                        <div id="createUserCollapseDiv" class="collapse show cb_t0b25x25" aria-labelledby="createUserCollapseHeading" data-parent="#createUserCollapseParent">
                             <ul class="nav nav-pills custom_nav_pills mt-0 mb-3 d-flex justify-content-center" id="pills-tab" role="tablist">
                                 <li class="nav-item">
                                     <a class="nav-link custom_nav_link_blue active" id="createEmpUserForm" data-toggle="pill" href="#createEmpUserLink" role="tab" aria-controls="createEmpUserLink" aria-selected="true">Employee</a>
@@ -98,7 +98,7 @@
                                                             <div class="up_img_div text-center">
                                                                 <img class="up_user_image createEmp_imgUpld_targetImg shadow" src="{{asset('storage/svms/user_images/employee_user_image.jpg')}}" alt="upload user's image">
                                                             </div>
-                                                            <div class="user_image_upload_input_div emp_imgUpload">
+                                                            <div class="user_image_upload_input_div imgUpldDiv_placement emp_imgUpload">
                                                                 <i class="nc-icon nc-image createEmp_imgUpld_TrgtBtn"></i>
                                                                 <input name="create_emp_user_image" class="file_upload_input createEmp_img_imgUpld_fileInpt" value="{{ old('create_emp_user_image') }}" type="file" accept="image/*"/>
                                                             </div>
@@ -115,11 +115,6 @@
                                                         <datalist id="userRoleOptions">
                                                             @foreach($employee_system_roles->sortBy('uRole_id') as $employee_system_role)
                                                                 <option value="{{ucwords($employee_system_role->uRole)}}">
-                                                                {{-- @if($employee_system_role->uRole === 'administrator')
-
-                                                                @else
-                                                                    <option value="{{ucwords($employee_system_role->uRole)}}">
-                                                                @endif --}}
                                                             @endforeach
                                                         </datalist>
                                                     </div>
@@ -229,11 +224,25 @@
                                                             <div class="up_img_div text-center">
                                                                 <img class="up_stud_user_image createStud_imgUpld_targetImg shadow" src="{{asset('storage/svms/user_images/student_user_image.jpg')}}" alt="upload user's image">
                                                             </div>
-                                                            <div class="user_image_upload_input_div stud_imgUpload">
+                                                            <div class="user_image_upload_input_div imgUpldDiv_placement stud_imgUpload">
                                                                 <i class="nc-icon nc-image createStud_imgUpld_TrgtBtn"></i>
                                                                 <input name="create_stud_user_image" class="file_upload_input createStud_img_imgUpld_fileInpt" value="{{ old('create_stud_user_image') }}" type="file" accept="image/*"/>
                                                             </div>
                                                         </div>
+                                                    </div>
+                                                    <label class="custom_label" for="create_stud_role">Assign Role:</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text">
+                                                                <i class="nc-icon nc-tap-01"></i>
+                                                            </span>
+                                                        </div>
+                                                        <input id="create_stud_role" list="studentUserRoleOptions" pattern="@foreach($student_system_roles->sortBy('uRole_id') as $student_system_role){{ucwords($student_system_role->uRole)}}<?php if(!$loop->last){echo "|";}; ?>@endforeach" name="create_stud_role" type="text" class="form-control" placeholder="Select System Role" value="{{ old('create_stud_role') }}" required>
+                                                        <datalist id="studentUserRoleOptions">
+                                                            @foreach($student_system_roles->sortBy('uRole_id') as $student_system_role)
+                                                                <option value="{{ucwords($student_system_role->uRole)}}">
+                                                            @endforeach
+                                                        </datalist>
                                                     </div>
                                                     <label class="custom_label" for="create_stud_id">Student Number:</label>
                                                     <div class="input-group">
@@ -314,6 +323,15 @@
         
                                                         </datalist>
                                                     </div>
+                                                    <label class="custom_label" for="create_stud_section">Section:</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text">
+                                                                <i class="nc-icon nc-badge"></i>
+                                                            </span>
+                                                        </div>
+                                                        <input id="create_stud_section" name="create_stud_section" type="text" class="form-control" placeholder="Type First Name" value="{{ old('create_stud_section') }}" required>
+                                                    </div>
                                                     <label class="custom_label" for="create_stud_phnum">Phone NUmber:</label>
                                                     <div class="input-group">
                                                         <div class="input-group-prepend">
@@ -337,8 +355,8 @@
                                                     </div>
                                                     <div class="d-flex justify-content-center">
                                                         <input type="hidden" name="respo_user_id" value="{{auth()->user()->id}}"/>
-                                                        <input type="hidden" name="respo_user_lname" value="{{auth()->user()->user_last_name}}"/>
-                                                        <input type="hidden" name="respo_user_fname" value="{{auth()->user()->user_first_name}}"/>
+                                                        <input type="hidden" name="respo_user_lname" value="{{auth()->user()->user_lname}}"/>
+                                                        <input type="hidden" name="respo_user_fname" value="{{auth()->user()->user_fname}}"/>
                                                         <button type="submit" id="createStudUser_RegisterBtn" class="btn btn-success btn-round btn_show_icon" disabled>{{ __('Register Student User') }}<i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
                                                     </div>
                                                 </div>
@@ -369,7 +387,7 @@
                                 <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
                             </button>
                         </div>
-                        <div class="cb_t0b15x25">
+                        <div class="cb_t0b25x25">
                             <div class="row">
                                 <div class="col-lg-2 col-md-2 col-sm-2 d-flex justify-content-center align-items-center">
                                     <div class="nav cust_vNav_div flex-column nav-pills" id="userRegistrationTab" role="tablist" aria-orientation="vertical">
@@ -503,13 +521,103 @@
             {{-- user creation form end --}}
             {{-- system role creation form --}}
             <div class="col-lg-6 col-md-6 col-sm-12">
-                <div class="card card_gbr card_ofh shadow-none card_body_bg_gray">
-                    <div class="card-header">
-                        <span class="card_body_title">System Role Registration</span>
-                        <span class="card_body_subtitle">Create new User Role if there are no options available to be assigned to the new user.</span>
-                    </div>
-                    <div class="card-body">
-                        
+                <div class="accordion" id="createSystemRoleCollapseParent">
+                    <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray">
+                        <div class="card-header p-0" id="createSystemRoleCollapseHeading">
+                            <button id="createSystemRole_collapseBtnToggle" class="btn btn-link btn-block custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#createSystemRoleCollapseDiv" aria-expanded="true" aria-controls="createSystemRoleCollapseDiv">
+                                <div>
+                                    <span class="card_body_title">System Role Registration</span>
+                                    <span class="card_body_subtitle">Create new User Role if there are no options available to be assigned to the new user.</span>
+                                </div>
+                                <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
+                            </button>
+                        </div>
+                        <div id="createSystemRoleCollapseDiv" class="collapse show cb_t0b25x25" aria-labelledby="createSystemRoleCollapseHeading" data-parent="#createSystemRoleCollapseParent">
+                            <div class="card card_gbr shadow">
+                                <div class="card-body cb_p15x25">
+                                    <form action="{{route('user_management.create_new_system_role')}}" class="createSystemRoleForm" method="POST">
+                                        @csrf
+                                        <label class="custom_label" for="create_role_name">Role Name:</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <i class="nc-icon nc-badge"></i>
+                                                </span>
+                                            </div>
+                                            <input id="create_role_name" name="create_role_name" type="text" class="form-control" placeholder="Type New Role Name" value="{{ old('create_role_name') }}" required>
+                                        </div>
+                                        <div class="card-body lightBlue_cardBody mt-3">
+                                            <span class="lightBlue_cardBody_blueTitle">Select Role Type:</span>
+                                            <span class="lightBlue_cardBody_notice"><i class="nc-icon nc-tap-01" aria-hidden="true"></i> Role type selection is required for system preference.</span>
+                                            <div class="form-check align-items-center cust_radioInptDiv">
+                                                <input class="form-check-input" type="radio" name="create_role_type" id="employee_type_role" value="employee" required>
+                                                <label class="form-check-label lightBlue_cardBody_chckboxLabel" for="employee_type_role">Employee Type Role</label>
+                                            </div>
+                                            <div class="form-check align-items-center cust_radioInptDiv">
+                                                <input class="form-check-input" type="radio" name="create_role_type" id="student_type_role" value="student" required>
+                                                <label class="form-check-label ml-2 lightBlue_cardBody_chckboxLabel" for="student_type_role">Student Type Role</label>
+                                            </div>
+                                        </div>
+                                        <div class="card-body lightGreen_cardBody mt-3">
+                                            <span class="lightGreen_cardBody_greenTitle">Default Access Controls:</span>
+                                            <div class="form-group mx-0 mt-0 mb-1">
+                                                <div class="custom-control custom-checkbox align-items-center">
+                                                    <input type="checkbox" name="create_role_access[]" value="profile" class="custom-control-input cursor_pointer" id="my_profile_mod" checked>
+                                                    <label class="custom-control-label lightGreen_cardBody_chckboxLabel" for="my_profile_mod">My Profile</label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group mx-0 mt-0 mb-1">
+                                                <div class="custom-control custom-checkbox align-items-center">
+                                                    <input type="checkbox" name="create_role_access[]" value="violation entry" class="custom-control-input cursor_pointer" id="violation_entry_mod" checked>
+                                                    <label class="custom-control-label lightGreen_cardBody_chckboxLabel" for="violation_entry_mod">Violation Entry</label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group mx-0 mt-0 mb-1">
+                                                <div class="custom-control custom-checkbox align-items-center">
+                                                    <input type="checkbox" name="create_role_access[]" value="student handbook" class="custom-control-input cursor_pointer" id="student_handbook_mod" checked>
+                                                    <label class="custom-control-label lightGreen_cardBody_chckboxLabel" for="student_handbook_mod">Student Handbook</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-body lightRed_cardBody mt-3">
+                                            <span class="lightRed_cardBody_redTitle">Administrative Access Controls:</span>
+                                            <span class="lightRed_cardBody_notice"><i class="fa fa-lock" aria-hidden="true"></i> Below Modules are Administrative Access Controls that are not recommended for regular System Roles but you can enable them for this role if you wish to.</span>
+                                            <div class="form-group mx-0 mt-2 mb-1">
+                                                <div class="custom-control custom-checkbox align-items-center">
+                                                    <input type="checkbox" name="create_role_access[]" value="dashboard" class="custom-control-input cursor_pointer" id="dashboard_mod">
+                                                    <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="dashboard_mod">Dashboard</label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group mx-0 mt-0 mb-1">
+                                                <div class="custom-control custom-checkbox align-items-center">
+                                                    <input type="checkbox" name="create_role_access[]" value="user management" class="custom-control-input cursor_pointer" id="users_management_mod">
+                                                    <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="users_management_mod">User Management</label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group mx-0 mt-0 mb-1">
+                                                <div class="custom-control custom-checkbox align-items-center">
+                                                    <input type="checkbox" name="create_role_access[]" value="violation records" class="custom-control-input cursor_pointer" id="violation_record_mod">
+                                                    <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="violation_record_mod">Violation Records</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row d-flex justify-content-center mt-2">
+                                            <div class="col-lg-12 col-md-12 col-sm-12 text-center">
+                                                <input type="hidden" name="respo_user_id" value="{{auth()->user()->id}}">
+                                                <input type="hidden" name="respo_user_lname" value="{{auth()->user()->user_lname}}">
+                                                <input type="hidden" name="respo_user_fname" value="{{auth()->user()->user_fname}}">
+                                                <button type="submit" class="btn saveNewSystemRoleBtn btn_svms_blue btn-round btn_show_icon" disabled>{{ __('Save Changes') }}<i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <a href="{{ route('user_management.overview_users_management', 'overview_users_management') }}" class="btn btn_svms_blue btn-sm btn_normal_fontsz shadow m-0" role="button">View System Roles <i class="fa fa-share ml-1" aria-hidden="true"></i></a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -719,4 +827,17 @@
         });
     </script>
 {{-- display datalist options based on previous selected option --}}
+
+{{-- for System Role Creation --}}
+{{-- edit role form on change enable 'Save Changes' button --}}
+    <script>
+        $(window).on('load', function (e) {
+            $('.createSystemRoleForm').each(function(){
+                    $(this).data('serialized', $(this).serialize())
+                }).on('change input', function(){
+                    $(this).find('.saveNewSystemRoleBtn').prop('disabled', $(this).serialize() == $(this).data('serialized'));
+                }).find('.saveNewSystemRoleBtn').prop('disabled', true);
+        });
+    </script>
+{{-- edit role form on change enable 'Save Changes' button end --}}
 @endpush

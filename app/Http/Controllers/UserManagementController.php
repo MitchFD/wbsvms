@@ -52,31 +52,34 @@ class UserManagementController extends Controller
     // overview_users_management
     public function overview_users_management(){
         // users
-        $active_users      = Users::where('user_status', 'active')->where('user_role_status', 'active')->get();
-        $deactivated_users = Users::where('user_status', 'deactivated')->orWhere('user_role_status', 'deactivated')->get();
+        $count_active_users      = Users::where('user_status', 'active')->where('user_role_status', 'active')->count();
+        $count_deactivated_users = Users::where('user_status', 'deactivated')->orWhere('user_role_status', 'deactivated')->count();
         $pending_users     = Users::where('user_role', 'pending')->where('user_status', 'pending')->where('user_role_status', 'pending')->get();
         $deleted_users     = Users::where('user_status', 'deleted')->get();
-        $registered_users  = Users::where('user_status', '!=', 'deleted')->get();
+        $count_registered_users  = Users::where('user_status', '!=', 'deleted')->count();
 
         // user roles
-        $active_roles      = Userroles::where('uRole_status', 'active')->get();
-        $deactivated_roles = Userroles::where('uRole_status', 'deactivated')->get();
-        $deleted_roles     = Userroles::where('uRole_status', 'deleted')->get();
-        $registered_roles  = Userroles::where('uRole_status', '!=', 'deleted')->get();
+        $count_active_roles      = Userroles::where('uRole_status', 'active')->count();
+        $count_deactivated_roles = Userroles::where('uRole_status', 'deactivated')->count();
+        $count_deleted_roles     = Userroles::where('uRole_status', 'deleted')->count();
+        $count_registered_roles  = Userroles::where('uRole_status', '!=', 'deleted')->count();
 
-        return view('user_management.overview')->with(compact('active_users', 'deactivated_users', 'pending_users', 'deleted_users', 'registered_users', 'active_roles', 'deactivated_roles', 'deleted_roles', 'registered_roles'));
+        return view('user_management.overview')->with(compact('count_active_users', 'count_deactivated_users', 'pending_users', 'deleted_users', 'count_registered_users', 'count_active_roles', 'count_deactivated_roles', 'count_deleted_roles', 'count_registered_roles'));
     }
 
     // create_users
     public function create_users(){
-        $employee_system_roles = Userroles::where('uRole_type', 'employee')->get();
-        $student_system_roles  = Userroles::where('uRole_type', 'student')->get();
+        $employee_system_roles = Userroles::select('uRole_type', 'uRole')->where('uRole_type', 'employee')->get();
+        $student_system_roles  = Userroles::select('uRole_type', 'uRole')->where('uRole_type', 'student')->get();
         return view('user_management.create_users')->with(compact('employee_system_roles', 'student_system_roles'));
     }
 
     // system_users
     public function system_users(){
-        return view('user_management.system_users');
+        // system roles
+        $count_active_roles      = Userroles::where('uRole_status', 'active')->count();
+        $count_deactivated_roles = Userroles::where('uRole_status', 'deactivated')->count();
+        return view('user_management.system_users')->with(compact('count_active_roles', 'count_deactivated_roles'));
     }
 
     // system_roles
@@ -127,7 +130,6 @@ class UserManagementController extends Controller
             $active_txt           = 'active';
             $employee_txt         = 'employee';
             $employee_image       = 'employee_user_image.jpg';
-            $sq                   = "'";
             $format_now_timestamp = $now_timestamp->format('dmYHis');
             $get_current_year     = $now_timestamp->format('Y');
             $lower_emp_role       = Str::lower($create_emp_role);
@@ -224,10 +226,185 @@ class UserManagementController extends Controller
     }
     // process registration of new student type user
     public function new_student_user_process_registration(Request $request){
-        echo 'wow student ka toi?';
+        // get all request
+            $create_stud_role     = $request->get('create_stud_role');
+            $create_stud_id       = $request->get('create_stud_id');
+            $create_stud_lname    = $request->get('create_stud_lname');
+            $create_stud_fname    = $request->get('create_stud_fname');
+            $create_stud_gender   = $request->get('create_stud_gender');
+            $create_stud_school   = $request->get('create_stud_school');
+            $create_stud_program  = $request->get('create_stud_program');
+            $create_stud_yearlvl  = $request->get('create_stud_yearlvl');
+            $create_stud_section  = $request->get('create_stud_section');
+            $create_stud_phnum    = $request->get('create_stud_phnum');
+            $create_stud_email    = $request->get('create_stud_email');
+            $get_respo_user_id    = $request->get('respo_user_id');
+            $get_respo_user_lname = $request->get('respo_user_lname');
+            $get_respo_user_fname = $request->get('respo_user_fname');
+
+        // custom values
+            $now_timestamp        = now();
+            $active_txt           = 'active';
+            $student_txt          = 'student';
+            $employee_image       = 'student_user_image.jpg';
+            $format_now_timestamp = $now_timestamp->format('dmYHis');
+            $get_current_year     = $now_timestamp->format('Y');
+            $lower_stud_role      = Str::lower($create_stud_role);
+            $lower_stud_gender    = Str::lower($create_stud_gender);
+        
+        // user image handler
+            if($request->hasFile('create_stud_user_image')){
+                $get_filenameWithExt = $request->file('create_stud_user_image')->getClientOriginalName();
+                $get_justFile        = pathinfo($get_filenameWithExt, PATHINFO_FILENAME);
+                $get_justExt         = $request->file('create_stud_user_image')->getClientOriginalExtension();
+                $fileNameToStore     = $get_justFile.'_'.$format_now_timestamp.'.'.$get_justExt;
+                $uploadImageToPath   = $request->file('create_stud_user_image')->storeAs('public/svms/user_images',$fileNameToStore);
+            }else{
+                $fileNameToStore = $employee_image;
+            }
+
+        // generate unique password
+            $create_stud_password = Str::lower($create_stud_lname).'@svms'.$get_current_year;
+
+        // get the status of selected system role
+            $get_status_selected_role = Userroles::select('uRole_status')->where('uRole', $lower_stud_role)->first();
+            $status_of_selected_role  = $get_status_selected_role->uRole_status;
+
+
+        // save data to users table
+            $reg_stud_user = new Users;
+            $reg_stud_user->email             = $create_stud_email;
+            $reg_stud_user->email_verified_at = $now_timestamp;
+            $reg_stud_user->password          = Hash::make($create_stud_password);
+            $reg_stud_user->user_role         = $lower_stud_role;
+            $reg_stud_user->user_status       = $active_txt;
+            $reg_stud_user->user_role_status  = $status_of_selected_role;
+            $reg_stud_user->user_type         = $student_txt;
+            $reg_stud_user->user_sdca_id      = $create_stud_id;
+            $reg_stud_user->user_image        = $fileNameToStore;
+            $reg_stud_user->user_lname        = $create_stud_lname;
+            $reg_stud_user->user_fname        = $create_stud_fname;
+            $reg_stud_user->user_gender       = $lower_stud_gender;
+            $reg_stud_user->registered_by     = $get_respo_user_id;
+            $reg_stud_user->created_at        = $now_timestamp;
+            $reg_stud_user->save();
+        // save data to user_employees_tbl table
+            $reg_stud_info = new Userstudents;
+            $reg_stud_info->uStud_num     = $create_stud_id;
+            $reg_stud_info->uStud_school  = $create_stud_school;
+            $reg_stud_info->uStud_program = $create_stud_program;
+            $reg_stud_info->uStud_yearlvl = $create_stud_yearlvl;
+            $reg_stud_info->uStud_section = $create_stud_section;
+            $reg_stud_info->uStud_phnum   = $create_stud_phnum;
+            $reg_stud_info->created_at    = $now_timestamp;
+            $reg_stud_info->save();
+
+        // if registration was a success
+        if($reg_stud_user AND $reg_stud_info){
+            // get new user's id for activity reference
+                $get_new_stud_user_id = Users::select('id')->where('user_sdca_id', $create_stud_id)->latest('created_at')->first();
+                $new_reg_user_id     = $get_new_stud_user_id->id;
+
+            // record activity
+                $record_act = new Useractivites;
+                $record_act->created_at            = $now_timestamp;
+                $record_act->act_respo_user_id     = $get_respo_user_id;
+                $record_act->act_respo_users_lname = $get_respo_user_lname;
+                $record_act->act_respo_users_fname = $get_respo_user_fname;
+                $record_act->act_type              = 'create user';
+                $record_act->act_details           = 'Registered ' .$create_stud_fname. ' ' .$create_stud_lname. ' as a ' .$create_stud_role. ' of the system.';
+                $record_act->act_affected_id       = $new_reg_user_id;
+                $record_act->save();
+            
+                if($record_act){
+                    return back()->withSuccessStatus('New Student User Account was registered successfully!');
+                }else{
+                    return back()->withFailedStatus('New Student User Account has failed to register. Try again later.');
+                }
+        }else{
+            return back()->withFailedStatus('New Student User Account has failed to register. Try again later.');
+        }
+
+        // test fetch request data
+            // echo 'REGISTER NEW STUDENT USER <br />';
+            // echo 'System Role: ' .$create_stud_role. ' <br />';
+            // echo 'System Role Status: ' .$status_of_selected_role. ' <br />';
+            // echo 'Student Number: ' .$create_stud_id. ' <br />';
+            // echo 'image: ' .$fileNameToStore. ' <br />';
+            // echo 'Last Name: ' .$create_stud_lname. ' <br />';
+            // echo 'First Name: ' .$create_stud_fname. ' <br />';
+            // echo 'Gender: ' .$lower_stud_gender. ' <br />';
+            // echo 'School: ' .$create_stud_school. ' <br />';
+            // echo 'Program: ' .$create_stud_program. ' <br />';
+            // echo 'Year Level: ' .$create_stud_yearlvl. ' <br />';
+            // echo 'Section: ' .$create_stud_section. ' <br />';
+            // echo 'Phone Number: ' .$create_stud_phnum. ' <br />';
+            // echo 'email: ' .$create_stud_email. ' <br />';
+            // echo 'password: ' .$create_stud_password. ' <br />';
+            // echo '<br />';
+            // echo 'by: ' .$get_respo_user_id. ' <br />';
+            // echo 'lname: ' .$get_respo_user_lname. ' <br />';
+            // echo 'fname: ' .$get_respo_user_fname. ' <br />';
     }
 
     // FUNCTIONS FOR SYSTEM ROLES
+    // create new role
+    public function create_new_system_role(Request $request){
+        // get all requests
+            $get_create_role_name   = $request->get('create_role_name');
+            $get_create_role_type   = $request->get('create_role_type');
+            $get_create_role_access = json_decode(json_encode($request->get('create_role_access')));
+            $get_respo_user_id      = $request->get('respo_user_id');
+            $get_respo_user_lname   = $request->get('respo_user_lname');
+            $get_respo_user_fname   = $request->get('respo_user_fname');    
+            
+        // custom values
+            $now_timestamp    = now();
+            $active_txt       = 'active';
+            $lower_uRole_name = Str::lower($get_create_role_name);
+
+        // save to user_roles_tbl table
+            $reg_new_system_role = new Userroles;
+            $reg_new_system_role->uRole_status = $active_txt;
+            $reg_new_system_role->uRole_type   = $get_create_role_type;
+            $reg_new_system_role->uRole        = $lower_uRole_name;
+            $reg_new_system_role->uRole_access = $get_create_role_access;
+            $reg_new_system_role->created_by   = $get_respo_user_id;
+            $reg_new_system_role->created_at   = $now_timestamp;
+            $reg_new_system_role->save();
+
+        // if saving new role was a success
+        if($reg_new_system_role){
+            // get new role's id for activity reference
+                $get_new_role_id = Userroles::select('uRole_id')->where('uRole', $get_create_role_name)->latest('created_at')->first();
+                $newly_reg_role_id     = $get_new_role_id->uRole_id;
+
+            // record activity
+                $record_act = new Useractivites;
+                $record_act->created_at            = $now_timestamp;
+                $record_act->act_respo_user_id     = $get_respo_user_id;
+                $record_act->act_respo_users_lname = $get_respo_user_lname;
+                $record_act->act_respo_users_fname = $get_respo_user_fname;
+                $record_act->act_type              = 'create role';
+                $record_act->act_details           = 'Created a new ' .$get_create_role_type. ' type System Role: ' .$get_create_role_name;
+                $record_act->act_affected_id       = $newly_reg_role_id;
+                $record_act->save();
+
+            return back()->withSuccessStatus('New System Role was registered successfully!');
+        }else{
+            return back()->withFailedStatus('New System Role has failed to register. Try again later.');
+        }
+
+        // test fetch request data
+            // echo 'REGISTER NEW EMPLOYEE USER <br />';
+            // echo 'System Role: ' .$get_create_role_name. ' <br />';
+            // echo 'System Role Type: ' .$get_create_role_type. ' <br />';
+            // echo 'System Role Access: ' .$get_create_role_access. ' <br />';
+            // echo '<br />';
+            // echo 'by: ' .$get_respo_user_id. ' <br />';
+            // echo 'lname: ' .$get_respo_user_lname. ' <br />';
+            // echo 'fname: ' .$get_respo_user_fname. ' <br />';
+    }
     // update role
     public function update_user_role(Request $request){
         // now timestamp

@@ -62,7 +62,7 @@
                             @endif
                         </div>
                         <div class="page_illustration">
-                            <img class="illustration_svg" src="{{ asset('storage/svms/illustrations/profile_illustration.svg') }}" alt="...">
+                            <img class="illustration_svg" src="{{ asset('storage/svms/illustrations/my_profile_illustration.svg') }}" alt="...">
                         </div>
                     </div>
                 </div>
