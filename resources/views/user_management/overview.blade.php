@@ -160,11 +160,11 @@
                                         @if($count_active_users > 0)
                                             <span class="cust_info_txtwicon"><i class="fa fa-toggle-on mr-1" aria-hidden="true"></i> {{ $count_active_users }} Active @if($count_active_users > 1) Users @else User @endif found.</span>
                                         @endif
-                                        @if(count($deactivated_users) > 0)
-                                            <span class="cust_info_txtwicon"><i class="fa fa-toggle-off mr-1" aria-hidden="true"></i> {{ count($deactivated_users) }} Deactivated @if(count($deactivated_users) > 1) Users @else User @endif found.</span>
+                                        @if($count_deactivated_users > 0)
+                                            <span class="cust_info_txtwicon"><i class="fa fa-toggle-off mr-1" aria-hidden="true"></i> {{ $count_deactivated_users }} Deactivated @if($count_deactivated_users > 1) Users @else User @endif found.</span>
                                         @endif
-                                        @if(count($pending_users) > 0)
-                                            <span class="cust_info_txtwicon"><i class="fa fa-clock-o mr-1" aria-hidden="true"></i> {{ count($pending_users) }} Pending @if(count($pending_users) > 1) Users @else User @endif found.</span>
+                                        @if($count_pending_users > 0)
+                                            <span class="cust_info_txtwicon"><i class="fa fa-clock-o mr-1" aria-hidden="true"></i> {{ $count_pending_users }} Pending @if($count_pending_users > 1) Users @else User @endif found.</span>
                                         @endif
                                     </div>
                                     <div class="col-lg-6 col-md-6 col-sm-12 d-flex justify-content-end align-items-end">

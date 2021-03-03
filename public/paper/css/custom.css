@@ -887,9 +887,26 @@ a.text_svms_blue:hover {
   color: var(--svms_blue);
 }
 
-.tbody_svms_white tr{
-  cursor: pointer !important;
+.no_data_row td{
+  padding: 12px !important;
 }
+.no_data_div{
+  width: 100%;
+  /* height: auto !important; */
+  background-color: #F5F5F5 !important;
+  border-radius: 15px;
+  padding: 20px;
+}
+.no_data_div img{
+  width: auto;
+  height: 150px;
+  margin: 0 auto 10px !important;
+  display: block;
+}
+
+/* .tbody_svms_white tr{
+  cursor: pointer !important;
+} */
 
 /* custom status title */
 .cust_status_title{
@@ -1613,7 +1630,7 @@ a.text_svms_blue:hover {
   background-size: cover !important;
   background-position: 50% 50% !important;
   background-repeat: no-repeat !important;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 }
 .rslts_emp{
   background-color: var(--svms_blue) !important;
@@ -1623,14 +1640,25 @@ a.text_svms_blue:hover {
   background-color: var(--svms_green) !important;
   border: 3px solid var(--svms_green) !important;
 }
-.rslts_deact{
+/* .rslts_deact{
   border: 3px solid var(--svms_text_gray);
   background-color: var(--svms_text_gray) !important;
   filter: grayscale(100%) !important;
-}
-.rslts_dele{
+} */
+/* .rslts_dele{
   -webkit-filter: invert(40%) grayscale(0) brightness(80%) sepia(100%) hue-rotate(-50deg) saturate(400%) contrast(2);
   filter: grayscale(0) brightness(80%) sepia(100%) hue-rotate(-50deg) saturate(600%) contrast(0.8);
   background-color: var(--svms_red) !important;
   border: 3px solid var(--svms_red) !important;
+} */
+
+.gry_stat{
+  color: var(--svms_text_gray) !important;
+  font-style: italic !important;
+}
+.gry_stat img{
+  border: 3px solid var(--svms_text_gray);
+  background-color: var(--svms_text_gray) !important;
+  filter: grayscale(100%) !important;
+  box-shadow: none !important;
 }

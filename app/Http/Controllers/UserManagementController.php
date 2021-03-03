@@ -54,17 +54,17 @@ class UserManagementController extends Controller
         // users
         $count_active_users      = Users::where('user_status', 'active')->where('user_role_status', 'active')->count();
         $count_deactivated_users = Users::where('user_status', 'deactivated')->orWhere('user_role_status', 'deactivated')->count();
-        $pending_users     = Users::where('user_role', 'pending')->where('user_status', 'pending')->where('user_role_status', 'pending')->get();
-        $deleted_users     = Users::where('user_status', 'deleted')->get();
+        $count_pending_users     = Users::where('user_role', 'pending')->orWhere('user_status', 'pending')->orWhere('user_role_status', 'pending')->count();
+        $count_deleted_users     = Users::where('user_status', 'deleted')->count();
         $count_registered_users  = Users::where('user_status', '!=', 'deleted')->count();
 
-        // user roles
+        // system roles
         $count_active_roles      = Userroles::where('uRole_status', 'active')->count();
         $count_deactivated_roles = Userroles::where('uRole_status', 'deactivated')->count();
         $count_deleted_roles     = Userroles::where('uRole_status', 'deleted')->count();
         $count_registered_roles  = Userroles::where('uRole_status', '!=', 'deleted')->count();
 
-        return view('user_management.overview')->with(compact('count_active_users', 'count_deactivated_users', 'pending_users', 'deleted_users', 'count_registered_users', 'count_active_roles', 'count_deactivated_roles', 'count_deleted_roles', 'count_registered_roles'));
+        return view('user_management.overview')->with(compact('count_active_users', 'count_deactivated_users', 'count_pending_users', 'count_deleted_users', 'count_registered_users', 'count_active_roles', 'count_deactivated_roles', 'count_deleted_roles', 'count_registered_roles'));
     }
 
     // create_users
@@ -76,10 +76,116 @@ class UserManagementController extends Controller
 
     // system_users
     public function system_users(){
+        // users
+        $count_active_users      = Users::where('user_status', 'active')->where('user_role_status', 'active')->count();
+        $count_deactivated_users = Users::where('user_status', 'deactivated')->orWhere('user_role_status', 'deactivated')->count();
+        $count_pending_users     = Users::where('user_role', 'pending')->orWhere('user_status', 'pending')->orWhere('user_role_status', 'pending')->count();
+        $count_deleted_users     = Users::where('user_status', 'deleted')->count();
+        $count_registered_users  = Users::count();
+        // $count_registered_users  = Users::where('user_status', '!=', 'deleted')->count();
+
         // system roles
         $count_active_roles      = Userroles::where('uRole_status', 'active')->count();
         $count_deactivated_roles = Userroles::where('uRole_status', 'deactivated')->count();
-        return view('user_management.system_users')->with(compact('count_active_roles', 'count_deactivated_roles'));
+
+        return view('user_management.system_users')->with(compact('count_active_users', 'count_deactivated_users', 'count_pending_users', 'count_deleted_users', 'count_registered_users', 'count_active_roles', 'count_deactivated_roles'));
+    }
+
+    // live search filter for system users table
+    public function live_search_users_filter(Request $request){
+        if($request->ajax()){
+            $output = '';
+            $users_query = $request->get('users_query');
+            if($users_query != ''){
+                $data = Users::select('id', 'user_role', 'user_status', 'user_role_status', 'user_type', 'user_sdca_id', 'user_image', 'user_lname', 'user_fname', 'user_gender')
+                            ->where('user_role', 'like', '%'.$users_query.'%')
+                            ->orWhere('user_status', 'like', '%'.$users_query.'%')
+                            ->orWhere('user_type', 'like', '%'.$users_query.'%')
+                            ->orWhere('user_sdca_id', 'like', '%'.$users_query.'%')
+                            ->orWhere('user_lname', 'like', '%'.$users_query.'%')
+                            ->orWhere('user_fname', 'like', '%'.$users_query.'%')
+                            ->orWhere('user_gender', 'like', '%'.$users_query.'%')
+                            ->orderBy('id', 'asc')
+                            ->get();
+            }else{
+                $data = Users::orderBy('id', 'asc')->get();
+            }
+            $total_row  = $data->count();
+            if($total_row > 0){
+                // output matching users found and total data count
+                if($total_row > 1){
+                    $matched_results  = $total_row . ' matching users found';
+                    $total_data_count = $total_row . ' users';
+                }else{
+                    $matched_results  = $total_row . ' matching user found';
+                    $total_data_count = $total_row . ' user';
+                }
+
+                // output results
+                foreach($data as $row){
+                    if($row->user_status !== 'active' OR $row->user_role_status !== 'active'){
+                        $output .='
+                            <tr class="gry_stat">
+                                <td class="p12">
+                                    <img class="rslts_userImgs rslts_deact" src="'.asset('storage/svms/user_images/'.$row->user_image.'').'" alt="user image">
+                                    <span class="ml-3">'.$row->user_fname. ' ' .$row->user_lname.'</span>
+                                </td>
+                                <td>'.ucwords($row->user_role).'</td>
+                                <td>'.ucwords($row->user_type).'</td>
+                                <td class="text_svms_red font-weight-bold">'; 
+                                    if($row->user_status === 'deactivated' OR $row->user_role_status === 'deactivated'){
+                                        $output .='Deactivated';
+                                    }else{
+                                        $output .=''.ucwords($row->user_status).'';
+                                    } 
+                                    $output .='
+                                </td>
+                            </tr>
+                        ';
+                    }else{
+                        // determine user's user_type for image filter
+                        if($row->user_type === 'employee'){
+                            $uImg_fltr  = 'rslts_emp';
+                        }else{
+                            $uImg_fltr = 'rslts_stud';
+                        }
+
+                        $output .='
+                            <tr>
+                                <td class="p12">
+                                    <img class="rslts_userImgs '.$uImg_fltr.'" src="'.asset('storage/svms/user_images/'.$row->user_image.'').'" alt="user image">
+                                    <span class="ml-3">'.$row->user_fname. ' ' .$row->user_lname.'</span>
+                                </td>
+                                <td>'.ucwords($row->user_role).'</td>
+                                <td>'.ucwords($row->user_type).'</td>
+                                <td>'.ucwords($row->user_status).'</td>
+                            </tr>
+                        ';
+                    }
+                }
+            }else{
+                // output total matched results and total data count
+                $total_data_count = $total_row . ' users';
+                $matched_results = 'No Match found for '.$users_query.'...';
+                $output .='
+                    <tr class="no_data_row">
+                        <td align="center" colspan="4">
+                            <div class="no_data_div d-flex justify-content-center align-items-center text-center flex-column">
+                                <img class="illustration_svg" src="'. asset('storage/svms/illustrations/no_matching_users_found.svg') .'" alt="no matching users found">
+                                <span class="font-italic">No Matching Users Found for <span class="font-weight-bold"> ' .$users_query.'...</span></span>
+                            </div>
+                        </td>
+                    </tr>
+                ';
+            }
+            $data = array(
+                'sys_users_tbl_data' => $output,
+                'total_data_count'   => $total_data_count,
+                'matched_searches'   => $matched_results
+               );
+         
+            echo json_encode($data);
+        }
     }
 
     // system_roles

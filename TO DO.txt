@@ -6,3 +6,63 @@ TO DO
 4. create users / send link                ~
 5. view user profile                       ~
 6. delete user account temporary/permanent ~
+
+
+1. MY PROFILE
+    1.1. data-table filters
+    1.2. print reports
+        1.2.1. activity logs
+        1.2.2. account information
+
+2. DASHBOARD
+    2.1. violations
+
+3. USERS MANAGEMENT
+    3.1. OVERVIEW
+        3.1.1. 
+        3.1.2. Responsiveness
+
+    3.2. CREATE USERS
+        3.2.1. create employee type user form
+        3.2.2. create student type user form
+        3.2.3. Responsiveness
+
+    3.3. SYSTEM USERS
+        3.1. activate/deactivate users
+        3.2. data-table filter
+        3.3. user's profile
+        3.4. print reports
+            3.4.1. users reports
+
+    3.4. SYSTEM ROLES
+
+    3.5. USERS LOGS
+        3.5.1. data-table w/ filters
+        3.5.2. generate reports
+            3.5.2.1. downloadable & printable
+
+4. VIOLATION ENTRY
+    4.1. search student
+    4.2. violation form
+        4.2.1. function for multiple violators
+        4.2.2. for existing/registered students
+        4.2.3. for registered students but do not exist on the school's database
+
+5. VIOLATION RECORDS
+    5.1. overview dashboard
+        5.1.1. per school
+        5.1.2. per course/program
+        5.1.3. 
+
+6. STUDENT HANDBOOKS
+    6.1. pdf copy
+        6.1.1. downloadable & printable
+    6.2. focus on specific page
+
+
+
+GENERAL
+1. active tabs on page refresh
+2. pdf & excel supported
+3. Responsiveness
+4. 

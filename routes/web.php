@@ -62,6 +62,9 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('user_management/activate_user_account_modal', 'App\Http\Controllers\UserManagementController@activate_user_account_modal')->name('user_management.activate_user_account_modal');
 	Route::post('user_management/process_activate_user_account', 'App\Http\Controllers\UserManagementController@process_activate_user_account')->name('user_management.process_activate_user_account');
 
+	// live search filter for (system users)'s table
+	Route::get('user_management/live_search_users_filter', 'App\Http\Controllers\UserManagementController@live_search_users_filter')->name('user_management.live_search_users_filter');
+
 	// for system roles
 	Route::post('user_management/create_new_system_role', 'App\Http\Controllers\UserManagementController@create_new_system_role')->name('user_management.create_new_system_role');
 	Route::post('user_management/update_user_role', 'App\Http\Controllers\UserManagementController@update_user_role')->name('user_management.update_user_role');
