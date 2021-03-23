@@ -21,6 +21,7 @@ class CreateEditedolduserrolesTable extends Migration
             $table->string('old_uRole_type');    
             $table->string('old_uRole');    
             $table->json('old_uRole_access');
+            $table->tinyInteger('old_assUsers_count')->nullable(); 
             $table->unsignedBigInteger('respo_user_id');
                 // $table->foreign('respo_user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamp('edited_at')->format('Y-m-d H:i:s')->nullable();

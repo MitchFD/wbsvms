@@ -21,6 +21,7 @@ class CreateEditednewuserrolesTable extends Migration
             $table->string('new_uRole_type');    
             $table->string('new_uRole');    
             $table->json('new_uRole_access');
+            $table->tinyInteger('new_assUsers_count')->nullable(); 
             $table->timestamp('edited_at')->format('Y-m-d H:i:s')->nullable();
         });
     }

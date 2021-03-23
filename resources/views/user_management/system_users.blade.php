@@ -182,7 +182,7 @@
                                                                     ?><img class="assignedUsersCirclesImgs2 whiteImg_border1" src="{{asset('storage/svms/user_images/'.$display_8userImgs->user_image)}}" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="@if(auth()->user()->id === $display_8userImgs->id) You @else {{$display_8userImgs->user_fname. ' ' .$display_8userImgs->user_lname}} @endif"> <?php
                                                                 }
                                                                 ?>
-                                                                <div class="moreImgsCounterDiv2" data-toggle="tooltip" data-placement="top" title="{{$more_count}} more users">
+                                                                <div class="moreImgsCounterDiv2" data-toggle="tooltip" data-placement="top" title="{{$more_count}} more @if($more_count >= 1) user @else users @endif">
                                                                     <span class="moreImgsCounterTxt2">+{{$more_count}}</span>
                                                                 </div>
                                                                 <?php
@@ -243,7 +243,7 @@
                                                                     ?><img class="assignedUsersCirclesImgs2 whiteImg_border1" src="{{asset('storage/svms/user_images/'.$display_8userImgs->user_image)}}" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="@if(auth()->user()->id === $display_8userImgs->id) You @else {{$display_8userImgs->user_fname. ' ' .$display_8userImgs->user_lname}} @endif"> <?php
                                                                 }
                                                                 ?>
-                                                                <div class="moreImgsCounterDiv2" data-toggle="tooltip" data-placement="top" title="{{$more_count}} more users">
+                                                                <div class="moreImgsCounterDiv2" data-toggle="tooltip" data-placement="top" title="{{$more_count}} more @if($more_count >= 1) user @else users @endif">
                                                                     <span class="moreImgsCounterTxt2">+{{$more_count}}</span>
                                                                 </div>
                                                                 <?php
@@ -262,6 +262,29 @@
                                 </div>
                             @endif
                             {{-- deactivated roles end --}}
+                        </div>
+                        <div class="card-footer cb_t0b15x25">
+                            {{-- bottom line --}}
+                                <div class="row mt-2">
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <span class="cust_info_txtwicon font-weight-bold"><i class="nc-icon nc-circle-10 mr-1" aria-hidden="true"></i> {{ $count_total_roles }} System @if($count_total_roles > 1) Roles @else Role @endif found.</span>
+                                        @if($count_active_roles > 0)
+                                            <span class="cust_info_txtwicon"><i class="fa fa-toggle-on mr-1" aria-hidden="true"></i> {{ $count_active_roles }} Active System @if($count_active_roles > 1) Roles @else Role @endif found.</span>
+                                        @endif
+                                        @if($count_deactivated_roles > 0)
+                                            <span class="cust_info_txtwicon"><i class="fa fa-toggle-off mr-1" aria-hidden="true"></i> {{ $count_deactivated_roles }} Deactivated System @if($count_deactivated_roles > 1) Roles @else Role @endif found.</span>
+                                        @endif
+                                        @if($count_empty_roles > 0)
+                                            <span class="cust_info_txtwicon"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i> {{ $count_empty_roles }} System @if($count_empty_roles > 1) Roles @else Role @endif with no assigned user/s.</span>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <a href="{{ route('user_management.system_roles', 'system_roles') }}" class="btn btn_svms_blue cust_bt_links shadow" role="button"><i class="nc-icon nc-settings-gear-65 mr-1" aria-hidden="true"></i> Manage System Roles</a>
+                                    </div>
+                                </div>
+                            {{-- bottom line end --}}
                         </div>
                     </div>
                 </div>

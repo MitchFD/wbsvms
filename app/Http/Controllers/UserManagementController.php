@@ -85,10 +85,12 @@ class UserManagementController extends Controller
         // $count_registered_users  = Users::where('user_status', '!=', 'deleted')->count();
 
         // system roles
+        $count_total_roles       = Userroles::where('uRole_status', '!=', 'deleted')->count();
         $count_active_roles      = Userroles::where('uRole_status', 'active')->count();
         $count_deactivated_roles = Userroles::where('uRole_status', 'deactivated')->count();
+        $count_empty_roles       = Userroles::where('assUsers_count', 0)->count();
 
-        return view('user_management.system_users')->with(compact('count_active_users', 'count_deactivated_users', 'count_pending_users', 'count_deleted_users', 'count_registered_users', 'count_active_roles', 'count_deactivated_roles'));
+        return view('user_management.system_users')->with(compact('count_total_roles', 'count_active_users', 'count_deactivated_users', 'count_pending_users', 'count_deleted_users', 'count_registered_users', 'count_active_roles', 'count_deactivated_roles', 'count_empty_roles'));
     }
 
     // live search filter for system users table

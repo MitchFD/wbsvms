@@ -19,6 +19,7 @@ class CreateDeleteduserrolesTable extends Migration
             $table->string('del_uRole_type');    
             $table->string('del_uRole');    
             $table->json('del_uRole_access');
+            $table->tinyInteger('del_assUsers_count')->nullable(); 
             $table->timestamp('del_created_at')->format('Y-m-d H:i:s')->nullable();
             $table->string('reason_deletion')->nullable();
             $table->unsignedBigInteger('respo_user_id');
