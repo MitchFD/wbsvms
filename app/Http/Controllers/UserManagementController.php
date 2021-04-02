@@ -79,9 +79,13 @@ class UserManagementController extends Controller
         // users
         $count_active_users      = Users::where('user_status', 'active')->where('user_role_status', 'active')->count();
         $count_deactivated_users = Users::where('user_status', 'deactivated')->orWhere('user_role_status', 'deactivated')->count();
-        $count_pending_users     = Users::where('user_role', 'pending')->orWhere('user_status', 'pending')->orWhere('user_role_status', 'pending')->count();
         $count_deleted_users     = Users::where('user_status', 'deleted')->count();
         $count_registered_users  = Users::count();
+        $count_pending_users     = Users::where('user_status', 'pending')->orWhere('user_role_status', 'pending')->count();
+        $count_employee_users    = Users::where('user_type', 'employee')->count();
+        $count_student_users     = Users::where('user_type', 'student')->count();
+        $count_male_users        = Users::where('user_gender', 'male')->count();
+        $count_female_users      = Users::where('user_gender', 'female')->count();
         // $count_registered_users  = Users::where('user_status', '!=', 'deleted')->count();
 
         // system roles
@@ -89,8 +93,19 @@ class UserManagementController extends Controller
         $count_active_roles      = Userroles::where('uRole_status', 'active')->count();
         $count_deactivated_roles = Userroles::where('uRole_status', 'deactivated')->count();
         $count_empty_roles       = Userroles::where('assUsers_count', 0)->count();
+        $count_pending_roles     = Userroles::where('uRole_status', 'pending')->count();
 
-        return view('user_management.system_users')->with(compact('count_total_roles', 'count_active_users', 'count_deactivated_users', 'count_pending_users', 'count_deleted_users', 'count_registered_users', 'count_active_roles', 'count_deactivated_roles', 'count_empty_roles'));
+        return view('user_management.system_users')->with(compact('count_total_roles', 'count_active_users', 'count_deactivated_users', 'count_pending_users', 'count_deleted_users', 'count_registered_users', 'count_employee_users', 'count_student_users', 'count_male_users', 'count_female_users', 'count_active_roles', 'count_deactivated_roles', 'count_empty_roles', 'count_pending_roles'));
+    }
+    // user_profile
+    public function user_profile($user_id){
+        // user data
+        $user_data = Users::where('id', $user_id)->first();
+
+        // user activities
+        $user_activities = Useractivites::where('act_respo_user_id', $user_id)->count();
+
+        return view('user_management.user_profile')->with(compact('user_data', 'user_activities'));
     }
 
     // live search filter for system users table
@@ -116,54 +131,96 @@ class UserManagementController extends Controller
             if($total_row > 0){
                 // output matching users found and total data count
                 if($total_row > 1){
-                    $matched_results  = $total_row . ' matching users found';
-                    $total_data_count = $total_row . ' users';
+                    $matched_results  = $total_row . ' Match Found for <span class="font-weight-bold font-italic"> ' .$users_query.'...</span>';
+                    $total_data_count = $total_row . ' rows';
                 }else{
-                    $matched_results  = $total_row . ' matching user found';
-                    $total_data_count = $total_row . ' user';
+                    $matched_results  = $total_row . ' Match Found  for <span class="font-weight-bold font-italic"> ' .$users_query.'...</span>';
+                    $total_data_count = $total_row . ' row';
                 }
 
                 // output results
                 foreach($data as $row){
-                    if($row->user_status !== 'active' OR $row->user_role_status !== 'active'){
-                        $output .='
-                            <tr class="gry_stat">
-                                <td class="p12">
-                                    <img class="rslts_userImgs rslts_deact" src="'.asset('storage/svms/user_images/'.$row->user_image.'').'" alt="user image">
-                                    <span class="ml-3">'.$row->user_fname. ' ' .$row->user_lname.'</span>
-                                </td>
-                                <td>'.ucwords($row->user_role).'</td>
-                                <td>'.ucwords($row->user_type).'</td>
-                                <td class="text_svms_red font-weight-bold">'; 
-                                    if($row->user_status === 'deactivated' OR $row->user_role_status === 'deactivated'){
-                                        $output .='Deactivated';
-                                    }else{
-                                        $output .=''.ucwords($row->user_status).'';
-                                    } 
-                                    $output .='
-                                </td>
-                            </tr>
-                        ';
+                    // custom classes
+                    $apost = "'";
+                    // row text filter
+                    if($row->user_status === 'active' AND $row->user_role_status === 'active'){
+                        $tr_gray_stat    = '';
+                        $img_rslts_deact = '';
+                        $stat_txt_filter = 'text-success';
+                        $stat_txt_alt    = 'active';
                     }else{
-                        // determine user's user_type for image filter
-                        if($row->user_type === 'employee'){
-                            $uImg_fltr  = 'rslts_emp';
+                        if($row->user_status === 'deactivated' OR $row->user_role_status === 'deactivated'){
+                            $tr_gray_stat    = 'gry_stat';
+                            $img_rslts_deact = 'rslts_deact';
+                            $stat_txt_filter = 'text_svms_red';
+                            $stat_txt_alt    = 'deactivated';
                         }else{
-                            $uImg_fltr = 'rslts_stud';
+                            if($row->user_role_status === 'deleted'){
+                                $tr_gray_stat    = 'gry_stat';
+                                $img_rslts_deact = 'rslts_deact';
+                                $stat_txt_filter = 'text_svms_red';
+                                $stat_txt_alt    = 'deleted';
+                            }else{
+                                $tr_gray_stat    = 'gry_stat';
+                                $img_rslts_deact = 'rslts_deact';
+                                $stat_txt_filter = '';
+                                $stat_txt_alt    = 'pending';
+                            }
                         }
-
-                        $output .='
-                            <tr>
-                                <td class="p12">
-                                    <img class="rslts_userImgs '.$uImg_fltr.'" src="'.asset('storage/svms/user_images/'.$row->user_image.'').'" alt="user image">
-                                    <span class="ml-3">'.$row->user_fname. ' ' .$row->user_lname.'</span>
-                                </td>
-                                <td>'.ucwords($row->user_role).'</td>
-                                <td>'.ucwords($row->user_type).'</td>
-                                <td>'.ucwords($row->user_status).'</td>
-                            </tr>
-                        ';
                     }
+
+                    // user type image filter
+                    if($row->user_type === 'employee'){
+                        $uImg_fltr = 'rslts_emp';
+                    }else{
+                        $uImg_fltr = 'rslts_stud';
+                    }
+
+                    // custom texts
+                    $deactivated_txt = 'deactivated';
+
+                    $output .='
+                        <tr class="'.$tr_gray_stat.'">
+                            <td class="pl12">
+                                <img class="rslts_userImgs '.$uImg_fltr.' '.$img_rslts_deact.'" src="'.asset('storage/svms/user_images/'.$row->user_image.'').'" alt="user image">
+                                <span class="ml-3">'.preg_replace('/('.$users_query.')/i','<span class="grn_highlight">$1</span>', $row->user_fname). ' ' .preg_replace('/('.$users_query.')/i','<span class="grn_highlight">$1</span>', $row->user_lname).'</span>
+                            </td>
+                            <td>'.preg_replace('/('.$users_query.')/i','<span class="grn_highlight">$1</span>', ucwords($row->user_sdca_id)).'</td>
+                            <td>'.preg_replace('/('.$users_query.')/i','<span class="grn_highlight">$1</span>', ucwords($row->user_role)).'</td>
+                            <td>'.preg_replace('/('.$users_query.')/i','<span class="grn_highlight">$1</span>', ucwords($row->user_type)).'</td>
+                            <td>'.preg_replace('/('.$users_query.')/i','<span class="grn_highlight">$1</span>', ucwords($row->user_gender)).'</td>
+                            <td class="'.$stat_txt_filter.' font-weight-bold">'.preg_replace('/('.$users_query.')/i','<span class="grn_highlight">$1</span>', ucwords($stat_txt_alt)).'</td>
+                            <td class="text-center pr12">';
+                            // actions
+                            if(auth()->user()->id === $row->id){
+                                $output .= '<a href="'. route('profile.index', 'profile') .'" class="btn cust_btn_smcircle3 pt7" data-toggle="tooltip" data-placement="top" title="View Your Profile?"><i class="fa fa-eye" aria-hidden="true"></i></a>';
+                            }else{
+                                $output .= '<a href="'. route('user_management.user_profile', $row->id, 'user_profile') .'" class="btn cust_btn_smcircle3 pt7" data-toggle="tooltip" data-placement="top" title="View '.$row->user_fname . ' ' . $row->user_lname.''.$apost.'s Profile?"><i class="fa fa-eye" aria-hidden="true"></i></a>';
+                                if($row->user_role_status === 'active'){
+                                    if($row->user_status === 'active'){
+                                        $output .= '<button id="'.$row->id.'" class="btn cust_btn_smcircle3" onclick="deactivateUserAccount(this.id)" data-toggle="tooltip" data-placement="top" title="Deactivate '.$row->user_fname . ' ' . $row->user_lname.''.$apost.'s Account"><i class="fa fa-toggle-on" aria-hidden="true"></i></button>';
+                                    }else{
+                                        if($row->user_status === 'deactivated'){
+                                            $output .= '<button id="'.$row->id.'" class="btn cust_btn_smcircle3" onclick="activateUserAccount(this.id)" data-toggle="tooltip" data-placement="top" title="Activate '.$row->user_fname . ' ' . $row->user_lname.''.$apost.'s Account"><i class="fa fa-toggle-off" aria-hidden="true"></i></button>';
+                                        }else{
+                                            $output .= '';
+                                        }
+                                    }
+                                }else{
+                                    if($row->user_role_status === 'deactivated'){
+                                        $output .= '<button id="'.$row->id.'" class="btn cust_btn_smcircle3" onclick="activateUserAccount(this.id)" data-toggle="tooltip" data-placement="top" title="Activate '.$row->user_fname . ' ' . $row->user_lname.''.$apost.'s Account"><i class="fa fa-toggle-off" aria-hidden="true"></i></button>';
+                                    }else{
+                                        $output .= '';
+                                    }   
+                                }
+                                $output .= '<button id="'.$row->id.'" class="btn cust_btn_smcircle3" data-toggle="tooltip" data-placement="top" title="Delete '.$row->user_fname . ' ' . $row->user_lname.''.$apost.'s Account"><i class="fa fa-trash" aria-hidden="true"></i></button>';
+                            }
+                            
+
+                            $output .='
+                            </td>
+                        </tr>
+                    ';
                 }
             }else{
                 // output total matched results and total data count
@@ -171,7 +228,7 @@ class UserManagementController extends Controller
                 $matched_results = 'No Match found for '.$users_query.'...';
                 $output .='
                     <tr class="no_data_row">
-                        <td align="center" colspan="4">
+                        <td align="center" colspan="7">
                             <div class="no_data_div d-flex justify-content-center align-items-center text-center flex-column">
                                 <img class="illustration_svg" src="'. asset('storage/svms/illustrations/no_matching_users_found.svg') .'" alt="no matching users found">
                                 <span class="font-italic">No Matching Users Found for <span class="font-weight-bold"> ' .$users_query.'...</span></span>
@@ -183,7 +240,8 @@ class UserManagementController extends Controller
             $data = array(
                 'sys_users_tbl_data' => $output,
                 'total_data_count'   => $total_data_count,
-                'matched_searches'   => $matched_results
+                'matched_searches'   => $matched_results,
+                'search_query'       => $users_query
                );
          
             echo json_encode($data);
@@ -294,7 +352,22 @@ class UserManagementController extends Controller
                 $get_new_emp_user_id = Users::select('id')->where('user_sdca_id', $create_emp_id)->latest('created_at')->first();
                 $new_reg_user_id     = $get_new_emp_user_id->id;
 
-            // record activity
+            // get current number of assigned users for selected role
+                $get_sel_role_assUsers_count = Userroles::select('uRole_id', 'uRole', 'assUsers_count')->where('uRole', $lower_emp_role)->first();
+                $get_sel_uRole_id            = $get_sel_role_assUsers_count->uRole_id;
+                $get_current_count_assUsers  = $get_sel_role_assUsers_count->assUsers_count;
+                // add 1
+                $add_1_assUsers_count        = $get_current_count_assUsers + 1;
+                // update assUsers_count from userroles_tbl
+                $update_assUsers_count_n = DB::table('user_roles_tbl')
+                            ->where('uRole_id', $get_sel_uRole_id)
+                            ->update([
+                                'assUsers_count' => $add_1_assUsers_count,
+                                'updated_at'     => $now_timestamp
+                            ]);
+
+            if($update_assUsers_count_n){
+                // record activity
                 $record_act = new Useractivites;
                 $record_act->created_at            = $now_timestamp;
                 $record_act->act_respo_user_id     = $get_respo_user_id;
@@ -310,6 +383,9 @@ class UserManagementController extends Controller
                 }else{
                     return back()->withFailedStatus('New Employee User Account has failed to register. Try again later.');
                 }
+            }else{
+                return back()->withFailedStatus('New Employee User Account has failed to register. Try again later.');
+            }
         }else{
             return back()->withFailedStatus('New Employee User Account has failed to register. Try again later.');
         }
@@ -413,7 +489,22 @@ class UserManagementController extends Controller
                 $get_new_stud_user_id = Users::select('id')->where('user_sdca_id', $create_stud_id)->latest('created_at')->first();
                 $new_reg_user_id     = $get_new_stud_user_id->id;
 
-            // record activity
+            // get current number of assigned users for selected role
+            $get_sel_role_assUsers_count = Userroles::select('uRole_id', 'uRole', 'assUsers_count')->where('uRole', $lower_stud_role)->first();
+            $get_sel_uRole_id            = $get_sel_role_assUsers_count->uRole_id;
+            $get_current_count_assUsers  = $get_sel_role_assUsers_count->assUsers_count;
+            // add 1
+            $add_1_assUsers_count        = $get_current_count_assUsers + 1;
+            // update assUsers_count from userroles_tbl
+            $update_assUsers_count_n = DB::table('user_roles_tbl')
+                        ->where('uRole_id', $get_sel_uRole_id)
+                        ->update([
+                            'assUsers_count' => $add_1_assUsers_count,
+                            'updated_at'     => $now_timestamp
+                        ]);
+
+            if($update_assUsers_count_n){
+                // record activity
                 $record_act = new Useractivites;
                 $record_act->created_at            = $now_timestamp;
                 $record_act->act_respo_user_id     = $get_respo_user_id;
@@ -429,6 +520,9 @@ class UserManagementController extends Controller
                 }else{
                     return back()->withFailedStatus('New Student User Account has failed to register. Try again later.');
                 }
+            }else{
+                return back()->withFailedStatus('New Student User Account has failed to register. Try again later.');
+            }
         }else{
             return back()->withFailedStatus('New Student User Account has failed to register. Try again later.');
         }
@@ -956,6 +1050,101 @@ class UserManagementController extends Controller
         }else{
             return back()->withFailedStatus(ucwords($org_uRole_name). ' Role Activation Failed! try again later.');
         }
+    }
+    // manage role first modal
+    public function manage_role_first_modal(Request $request){
+        // get the user's id
+            $sel_user_id = $request->get('manage_role_first_id');
+
+        // get user's assigned role
+            $get_assigned_role    = Users::select('id', 'user_role', 'user_lname', 'user_fname', 'user_gender')->where('id', $sel_user_id)->first();
+            $assigned_role        = $get_assigned_role->user_role;
+            $assigned_user_lname  = $get_assigned_role->user_lname;
+            $assigned_user_fname  = $get_assigned_role->user_fname;
+            $assigned_user_gender = $get_assigned_role->user_gender;
+
+        // his/her text
+            if($assigned_user_gender === 'female'){
+                $his_her = 'her';
+            }else{
+                $his_her = 'his';
+            }
+        
+        // get role information based on user's assigned role
+            $get_role_info        = Userroles::where('uRole', $assigned_role)->first();
+            $get_uRole_status     = $get_role_info->uRole_status;
+            $get_uRole_type       = $get_role_info->uRole_type;
+            $get_uRole            = $get_role_info->uRole;
+            $get_uRole_access     = $get_role_info->uRole_access;
+            $get_assUsers_count   = $get_role_info->assUsers_count;
+            $get_uRole_created_by = $get_role_info->created_by;
+            $get_uRole_created_at = $get_role_info->created_at;
+
+        // custom values 
+        if($get_assUsers_count > 1){
+            $s = 's';
+        }else{
+            $s = '';
+        }
+
+        $output = '';
+        $output .= '
+            <div class="modal-body border-0 p-0">
+                <div class="cust_modal_body_gray">
+                    <div class="card cust_listCard shadow">
+                        <div class="card-header cust_listCard_header3">';
+                        if($get_assUsers_count < 1){
+                            $output .= '
+                            <div>
+                                <span class="accordion_title">'.$get_uRole.''.$s.'</span>
+                                <span class="font-italic text_svms_red"> No Assigned Users. </span>
+                            </div>
+                            ';
+                        }else{
+                            $output .= '
+                            <div>
+                                <span class="accordion_title">'.$get_uRole.''.$s.'</span>
+                            </div>
+                            <div class="assignedUsersCirclesDiv">';
+                            if($get_assUsers_count > 14){
+                                $get_only_13 = Users::select('id', 'user_role', 'user_image', 'user_lname', 'user_fname')->where('user_role', $get_uRole)->take(13)->get();
+                                $more_count  = $get_assUsers_count - 1;
+                                foreach($get_assUsers_count->sortBy('id') as $display_13userImgs){
+                                    $output .= '<img class="assignedUsersCirclesImgs2 gray_image_filter whiteImg_border1" src="'.asset('storage/svms/user_images/'.$display_13userImgs->user_image.'').'" alt="assigned user" data-toggle="tooltip" data-placement="top" title="'.$display_13userImgs->user_fname . ' ' .$display_13userImgs->user_lname.'">';
+                                }
+                                $output .= '
+                                <div class="moreImgsCounterDiv2" data-toggle="tooltip" data-placement="top" title="'.$more_count.' more '; if($more_count > 1){ $output .= 'users'; }else{ $output .= 'user';} $output .='">
+                                    <span class="moreImgsCounterTxt2">+'.$more_count.'</span>
+                                </div>
+                                ';
+                            }else{
+                                $get_all_assigned_users = Users::select('id', 'user_role', 'user_image', 'user_lname', 'user_fname')->where('user_role', $get_uRole)->get();
+                                foreach($get_all_assigned_users->sortBy('id') as $assigned_users){
+                                    $output .= '<img class="assignedUsersCirclesImgs2 gray_image_filter whiteImg_border1" src="'.asset('storage/svms/user_images/'.$assigned_users->user_image.'').'" alt="assigned user" data-toggle="tooltip" data-placement="top" title="'.$assigned_users->user_fname . ' ' .$assigned_users->user_lname.'">';
+                                }
+                            }
+                            $output .='
+                            </div>
+                            ';
+                        }
+                        $output .='
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="card-body lightBlue_cardBody shadow-none mt-1">
+                        <span class="lightBlue_cardBody_blueTitle">Activate ' . ucwords($get_uRole) . ' Role First</span>
+                        <span class="lightBlue_cardBody_notice"><i class="fa fa-unlock-alt" aria-hidden="true"></i> You must activate <span class="font-weight-bold"> ' .ucwords($get_uRole). ' </span> Role where ' .$assigned_user_fname. ' ' .$assigned_user_lname. ' is assigned, then ' .$his_her. ' account will automatically be activated and will regain access to the system effective immediately after Role Activation.</span>
+                    </div>
+                    <div class="btn-group d-flex justify-content-end mt-3" role="group" aria-label="Activate User Confirmation">
+                        <button type="button" class="btn btn-round btn-secondary btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                        <button type="submit" class="btn btn-round btn_svms_blue btn_show_icon m-0">Manage ' . $get_uRole . ' Role <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+            </div>
+        ';
+        
+        echo $output;
     }
 
     // FUNCTIONS FOR SYSTEM USERS

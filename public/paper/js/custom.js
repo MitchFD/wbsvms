@@ -4,12 +4,11 @@
     })
 
 // change dropdown collapse icon on button click from main gray card
-    // for registered users card collapse icon
-        $('#listRegUsers_collapseBtnToggle').click(function() {
-            // $('#actLogs_collapseIconToggle').toggle('1000');
-            $("i", this).toggleClass("nc-minimal-up nc-minimal-down");
-            // $('#listRegUsers_subtitleTxt').text($('#listRegUsers_subtitleTxt').text() == '13 Registered Users Found.' ? 'Click me to view all registered Users...' : '13 Registered Users Found.');
-        });
+    // for all colllapse cards
+    $('.acc_collapse_cards').click(function() {
+        // $('#actLogs_collapseIconToggle').toggle('1000');
+        $("i", this).toggleClass("nc-minimal-up nc-minimal-down");
+    });
     // for system roles card collapse icon
         $('#listUserRoles_collapseBtnToggle').click(function() {
             // $('#actLogs_collapseIconToggle').toggle('1000');
