@@ -584,14 +584,6 @@
 @endsection
 
 @push('scripts')
-{{-- initialize tooltip --}}
-    <script>
-        $(function () {
-            $('[data-toggle="tooltip"]').tooltip()
-        })
-    </script>
-{{-- initialize tooltip end --}}
-
 {{-- live search users --}}
     <script>
         $(document).ready(function(){

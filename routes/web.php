@@ -76,6 +76,9 @@ Route::group(['middleware' => 'auth'], function () {
 
 	// manage role first
 	Route::get('user_management/manage_role_first_modal', 'App\Http\Controllers\UserManagementController@manage_role_first_modal')->name('user_management.manage_role_first_modal');
+
+	// for updating system user's profile
+	Route::post('user_management/update_stud_user_profile', ['as' => 'user_management.update_stud_user_profile', 'uses' => 'App\Http\Controllers\UserManagementController@update_stud_user_profile']);
 });
 
 // violation entry

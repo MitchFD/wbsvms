@@ -1097,9 +1097,9 @@ a.text_svms_gray:hover {
   height: 45px;
   border-radius: 50%;
   color: var(--white);
-  /* top: -70px;
-  left: 55%; */
-  /* right: 275px; */
+  top: -50px;
+  left: 55%;
+  right: 275px;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
   font-size: 16px;
   padding: 13px 15px;
@@ -1911,9 +1911,96 @@ select.drpdwn_arrow:focus {
   color: #9a9a9a !important;
 }
 
-
-
 /* highlight search results */
 .grn_highlight{
   background-color: #A5E2C1 !important;
 }
+
+.form label{
+  font-weight: bold !important;
+  font-size: 13px;
+}
+
+.light_backDrop_card{
+  background-color: #f4f4f5;
+  padding: 10px 15px;
+  border-radius: 12px;
+}
+
+.pass_strenght_indicator_div{
+  height: 3px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.pass_strenght_indicator_div span{
+  position: relative;
+  height: 100%;
+  width: 100%;
+  background: #e5e5e5;
+  border-radius: 0;
+}
+.pass_strenght_indicator_div span:nth-child(2){
+  margin: 0;
+}
+.pass_strenght_indicator_div span.active:before{
+  position: absolute;
+  content: '';
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  border-radius: 0;
+}
+.pass_strenght_indicator_div span.weak:before{
+  background-color: #ff4757;
+}
+.pass_strenght_indicator_div span.medium:before{
+  background-color: orange;
+}
+.pass_strenght_indicator_div span.strong:before{
+  background-color: #23ad5c;
+}
+.weak_bgColor{
+  background-color: #ff4757 !important;
+}
+.medium_bgColor{
+  background-color: orange !important;
+}
+.strong_bgColor{
+  background-color: #23ad5c !important;
+}
+#pass_strenght_txt{
+  font-size: 13px;
+  font-weight: bold;
+  display: none;
+  margin: 5px 0;
+}
+#pass_strenght_txt.weak{
+  color: #ff4757;
+}
+#pass_strenght_txt.medium{
+  color: orange;
+}
+#pass_strenght_txt.strong{
+  color: #23ad5c;
+}
+
+.or_txt{
+  font-size: 14px;
+  font-weight: normal;
+  color: var(--svms_light_blue2);
+  margin: 10px auto;
+  display: block;
+  display: flex;
+  text-align: center !important;
+  justify-content: center !important;
+}
+
+/* date filter input */
+.cust_date_filterInput{
+  cursor: pointer !important;
+}
+
+/* date filter input end */

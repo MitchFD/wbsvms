@@ -390,6 +390,193 @@
                             {{-- user information end --}}
                             {{-- edit user informatin form --}}
                                 <div class="tab-pane fade" id="userProfile_edit_{{$user_data->id}}" role="tabpanel" aria-labelledby="pills_edit_userProfile_tab_{{$user_data->id}}">
+                                    @if($user_data->user_type === 'student')
+                                        <div class="card card_gbr shadow">
+                                            <div class="card-body p-0">
+                                                <div class="card-header cb_p15x25">
+                                                    <span class="sec_card_body_title">Edit User's Profile</span>
+                                                    <span class="sec_card_body_subtitle">Click the <span class="font-weight-bold">'Save Changes'</span> button to update {{ $user_data->user_fname }} {{ $user_data->user_lname}}'s profile.</span>
+                                                </div>
+                                                <form id="form_studUserUpdateProfile" class="form" method="POST" action="{{route('user_management.update_stud_user_profile')}}" enctype="multipart/form-data">
+                                                    @csrf
+                                                    <div class="cb_px25 cb_pb15">
+                                                        <div class="row d-flex justify-content-center">
+                                                            <div class="col-lg-12 col-md-12 col-sm-12 align-items-center">
+                                                                <div class="up_img_div text-center">
+                                                                    <img class="up_stud_user_image stud_imgUpld_targetImg shadow border-gray" src="{{asset('storage/svms/user_images/'.$user_data->user_image)}}" alt="{{$user_data->user_fname }} {{ $user_data->user_lname}}'s profile image'">
+                                                                </div>
+                                                                <div class="user_image_upload_input_div stud_imgUpload">
+                                                                    <i class="nc-icon nc-image stud_imgUpld_TrgtBtn"></i>
+                                                                    <input name="upd_stud_user_image" class="file_upload_input stud_img_imgUpld_fileInpt" type="file" accept="image/*"/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <label for="upd_stud_email">Email Address</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="nc-icon nc-email-85" aria-hidden="true"></i>
+                                                                </span>
+                                                            </div>
+                                                            <input id="upd_stud_email" name="upd_stud_email" type="text" class="form-control" @if($user_data->email != 'null') value="{{$user_data->email}}" @else placeholder="Type Email Address" @endif required>
+                                                        </div>
+                                                        <label for="upd_stud_num">Student Number</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="nc-icon nc-badge" aria-hidden="true"></i>
+                                                                </span>
+                                                            </div>
+                                                            <input id="upd_stud_num" name="upd_stud_num" type="number" min="0" oninput="validity.valid||(value='');" class="form-control" @if($user_data->user_sdca_id != 'null') value="{{$user_data->user_sdca_id}}" @else placeholder="Type Student Number" @endif required>
+                                                        </div>
+                                                        <label for="upd_stud_lname">Last Name</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="nc-icon nc-single-02"></i>
+                                                                </span>
+                                                            </div>
+                                                            <input id="upd_stud_lname" name="upd_stud_lname" type="text" class="form-control" @if($user_data->user_lname != 'null') value="{{$user_data->user_lname}}" @else placeholder="Type Last Name" @endif required>
+                                                        </div>
+                                                        <label for="upd_stud_fname">First Name</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="nc-icon nc-single-02"></i>
+                                                                </span>
+                                                            </div>
+                                                            <input id="upd_stud_fname" name="upd_stud_fname" type="text" class="form-control" @if($user_data->user_fname != 'null') value="{{$user_data->user_fname}}" @else placeholder="Type First Name" @endif required>
+                                                        </div>
+                                                        <label for="upd_stud_gender">Gender</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="nc-icon nc-single-02"></i>
+                                                                </span>
+                                                            </div>
+                                                            <input id="upd_stud_gender" list="updateStudGenderOptions" pattern="Male|Female" name="upd_stud_gender" type="text" class="form-control" @if($user_data->user_gender != 'null') value="{{ucfirst($user_data->user_gender)}}" @else placeholder="Select Gender" @endif required>
+                                                            <datalist id="updateStudGenderOptions">
+                                                                <option value="Male">
+                                                                <option value="Female">
+                                                            </datalist>
+                                                        </div>  
+                                                        <label for="upd_stud_school">School</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="nc-icon nc-badge" aria-hidden="true"></i>
+                                                                </span>
+                                                            </div>
+                                                            <input id="upd_stud_school" list="updateStudSchoolOptions" pattern="SASE|SBCS|SIHTM|SHSP" name="upd_stud_school" type="text" class="form-control" @if($user_stud_info->uStud_school != 'null') value="{{$user_stud_info->uStud_school}}" @else placeholder="Type Your School" @endif required>
+                                                            <datalist id="updateStudSchoolOptions">
+                                                                <option value="SASE">
+                                                                <option value="SBCS">
+                                                                <option value="SIHTM">
+                                                                <option value="SHSP">
+                                                            </datalist>
+                                                        </div>
+                                                        <label for="upd_stud_program">Program</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="nc-icon nc-badge" aria-hidden="true"></i>
+                                                                </span>
+                                                            </div>
+                                                            <input id="upd_stud_program" list="updateStudProgramOptions" pattern="BS Psychology|BS Education|BA Communication|BSBA|BSA|BSIT|BSCS|BMA|BSHM|BSTM|BS Biology|BS Pharmacy|BS Radiologic Technology|BS Physical Therapy|BS Medical Technology|BS Nursing" name="upd_stud_program" type="text" class="form-control" @if($user_stud_info->uStud_program != 'null') value="{{$user_stud_info->uStud_program}}" @else placeholder="Type Your Program" @endif required>
+                                                            <datalist id="updateStudProgramOptions">
+                                                                
+                                                            </datalist>
+                                                        </div>
+                                                        <label for="upd_stud_yearlvl">Year Level</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="nc-icon nc-badge" aria-hidden="true"></i>
+                                                                </span>
+                                                            </div>
+                                                            <input id="upd_stud_yearlvl" list="updateStudYearlvlOptions" pattern="FIRST YEAR|SECOND YEAR|THIRD YEAR|FOURTH YEAR|FIFTH YEAR" name="upd_stud_yearlvl" type="text" class="form-control" @if($user_stud_info->uStud_yearlvl != 'null') value="{{$user_stud_info->uStud_yearlvl}}" @else placeholder="Type Your Year Level" @endif required>
+                                                            <datalist id="updateStudYearlvlOptions">
+
+                                                            </datalist>
+                                                        </div>
+                                                        <label for="upd_stud_section">Section</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="nc-icon nc-badge" aria-hidden="true"></i>
+                                                                </span>
+                                                            </div>
+                                                            <input id="upd_stud_section" name="upd_stud_section" type="text" class="form-control" @if($user_stud_info->uStud_section != 'null') value="{{$user_stud_info->uStud_section}}" @else placeholder="Type Your Section" @endif required>
+                                                        </div>
+                                                        <label for="upd_stud_phnum">Phone NUmber</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="fa fa-mobile" aria-hidden="true"></i>
+                                                                </span>
+                                                            </div>
+                                                            <input name="upd_stud_phnum" type="number" pattern="[0-9]{11}" min="0" oninput="validity.valid||(value='');" class="form-control" @if($user_stud_info->uStud_phnum != 'null') value="{{$user_stud_info->uStud_phnum}}" @else placeholder="Type Contact Number" @endif required>
+                                                        </div>
+                                                        <div class="d-flex justify-content-center">
+                                                            <input type="hidden" name="selected_user_id" value="{{$user_data->id}}"/>
+                                                            <input type="hidden" name="respo_user_id" value="{{auth()->user()->id}}"/>
+                                                            <input type="hidden" name="respo_user_lname" value="{{auth()->user()->user_lname}}"/>
+                                                            <input type="hidden" name="respo_user_fname" value="{{auth()->user()->user_fname}}"/>
+                                                            <button type="submit" id="update_studUserInfoBtn" class="btn btn-success btn-round btn_show_icon" disabled>{{ __('Save Changes') }}<i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <div class="card card_gbr shadow">
+                                            <div class="card-body p-0">
+                                                <div class="card-header cb_p15x25">
+                                                    <span class="sec_card_body_title">Change User's Password</span>
+                                                    <span class="sec_card_body_subtitle">Type new password for {{ $user_data->user_fname }} {{ $user_data->user_lname}}'s Account or click <span class="font-weight-bold"> "Generate Password" </span> button to let the system process a new password for the user's account.</span>
+                                                </div>
+                                                <form class="form" method="POST" action="#">
+                                                    <div class="cb_px25 cb_pb15">
+                                                        <div class="light_backDrop_card">
+                                                            <label for="upd_studUser_new_password">Type New Password <i class="fa fa-info-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Include numbers, symbols, and uppercase and lowercase letters to have a strong password."></i></label>
+                                                            <div class="input-group paswrd_inpt_fld">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text">
+                                                                        <i class="nc-icon nc-key-25" aria-hidden="true"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <input type="password" onkeyup="check_pass_strenght()" id="upd_studUser_new_password" name="upd_studUser_new_password" class="form-control" placeholder="Type new password" required>
+                                                                <i class="fa fa-eye" id="toggleStudUserNewPassword"></i>
+                                                            </div>
+                                                            <div class="pass_strenght_indicator_div d-none">
+                                                                <span class="weak"></span>
+                                                                <span class="medium"></span>
+                                                                <span class="strong"></span>
+                                                            </div>
+                                                            <div id="pass_strenght_txt">
+
+                                                            </div>
+                                                            <div class="d-flex justify-content-center ">
+                                                                <button id="change_studUser_pass_btn" type="submit" class="btn btn-success btn-round btn_show_icon" disabled>Update {{ $user_data->user_lname}}'s Password<i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                                                            </div>
+                                                        </div>
+                                                        <span class="or_txt">
+                                                            or
+                                                        </span>
+                                                        <div class="light_backDrop_card">
+                                                            <span class="lightBlue_cardBody_notice"><i class="fa fa-info-circle" aria-hidden="true"></i> The <span class="font-weight-bold"> "Generate New Password" </span> button will automatically generate a new password for {{ $user_data->user_fname }} {{ $user_data->user_lname}}'s account. The System will notify the said user thru {{ $gender_txt }} email address.</span>
+                                                            <div class="d-flex justify-content-center ">
+                                                                <button id="generate_NewStudPass_Btn" type="button" class="btn btn_svms_blue btn-round btn_show_icon">Generate New Password<i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    @elseif($user_data === 'employee')
+
+                                    @else
+                                        
+                                    @endif
                                 </div>
                             {{-- edit user informatin form --}}
                             </div>
@@ -405,7 +592,65 @@
         {{-- user profile card end --}}
         {{-- user activity logs --}}
         <div class="col-lg-8 col-md-7 col-sm-12">
-                
+            <div class="accordion" id="usersActLogsCollapseParent">
+                <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray">
+                    <div class="card-header p-0" id="usersActLogsCollapseHeading">
+                        <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#usersActLogsCollapseDiv" aria-expanded="true" aria-controls="usersActLogsCollapseDiv">
+                            <div>
+                                <span class="card_body_title">User's Activity Logs</span>
+                                <span class="card_body_subtitle">View System Users and their statuses</span>
+                            </div>
+                            <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
+                        </button>
+                    </div>
+                    <div id="usersActLogsCollapseDiv" class="collapse show cb_t0b15x25" aria-labelledby="usersActLogsCollapseHeading" data-parent="#usersActLogsCollapseParent">
+                        <div class="row d-flex justify-content-center">
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <div class="card card_gbr shadow">
+                                    <div class="card-body">
+                                        <div class="row input-daterange">
+                                            <div class="col-md-4">
+                                                <input type="text" name="from_date" id="from_date" class="form-control cust_date_filterInput" placeholder="From Date" readonly />
+                                            </div>
+                                            <div class="col-md-4">
+                                                <input type="text" name="to_date" id="to_date" class="form-control cust_date_filterInput" placeholder="To Date" readonly />
+                                            </div>
+                                            <div class="col-md-4">
+                                                <button type="button" name="filter" id="filter" class="btn btn-primary">Filter</button>
+                                                <button type="button" name="refresh" id="refresh" class="btn btn-default">Refresh</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <table class="table table-hover cust_table shadow">
+                                    <thead class="thead_svms_blue">
+                                        <tr>
+                                            <th class="pl12">~ Date</th>
+                                            <th>Category</th>
+                                            <th>Details</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="tbody_svms_white" id="usersActLogs_tbody">
+                                        {{-- ajax data table --}}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row d-flex justify-content-center align-items-center">
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <span>Total Data: <span class="font-weight-bold" id="total_data_count"> </span> </span>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12 d-flex justify-content-end align-items-end">
+                                <a href="#" class="btn btn-success cust_bt_links shadow" role="button"><i class="fa fa-print mr-1" aria-hidden="true"></i> Generate Report</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     {{-- user activity logs end --}}
         </div>
@@ -463,6 +708,24 @@
             </div>
         </div>
     {{-- manage user role first modal --}}
+    {{-- verify credential for updating user's profile modal --}}
+        <div class="modal fade" id="verifyPasswordModal" tabindex="-1" role="dialog" aria-labelledby="verifyPasswordModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="verifyPasswordModalLabel">Manage Assigned Role First </span>
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="verifyPasswordHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{-- verify credential for updating user's profile modal --}}
+
 @endsection
 
 @push('scripts')
@@ -517,5 +780,185 @@
         }
     </script>
 {{-- manage role first open modal end --}}
+
+
+{{-- STUDENT USER's PROFILE UPDATE --}}
+{{-- student user's image update --}}
+    <script>
+        $(document).ready(function() {
+            var readURL = function(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        $('.stud_imgUpld_targetImg').attr('src', e.target.result);
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+            $(".stud_img_imgUpld_fileInpt").on('change', function(){
+                readURL(this);
+            });
+            $(".stud_imgUpld_TrgtBtn").on('click', function() {
+                $(".stud_img_imgUpld_fileInpt").click();
+            });
+        });
+    </script>
+{{-- student user's image update --}}
+{{-- display datalist options based on previous selected option --}}
+    {{-- selected school --}}
+    <script>
+        $(document).ready(function() {
+            $("#upd_stud_school").on("change paste keyup", function() {
+                var selectedSchool = $(this).val();
+                if(selectedSchool != ''){
+                    if(selectedSchool == 'SASE'){
+                        $("#updateStudProgramOptions").html('<option value="BS Psychology"> \
+                                                    <option value="BS Education"> \
+                                                    <option value="BA Communication">');
+                    }else if(selectedSchool == 'SBCS'){
+                        $("#updateStudProgramOptions").html('<option value="BSBA"> \
+                                                    <option value="BSA"> \
+                                                    <option value="BSIT"> \
+                                                    <option value="BMA">');
+                    }else if(selectedSchool == 'SIHTM'){
+                        $("#updateStudProgramOptions").html('<option value="BSHM"> \
+                                                    <option value="BSTM">');
+                    }else if(selectedSchool == 'SHSP'){
+                        $("#updateStudProgramOptions").html('<option value="BS Biology"> \
+                                                    <option value="BS Pharmacy"> \
+                                                    <option value="BS Radiologic Technology"> \
+                                                    <option value="BS Physical Therapy"> \
+                                                    <option value="BS Medical Technology"> \
+                                                    <option value="BS Nursing">');
+                    }else{
+                        $("#updateStudProgramOptions").html('<option value="Select School First"></option>');
+                    }
+                }else{
+                    $("#updateStudProgramOptions").html('<option value="Select School First"></option>');
+                }
+            });
+        });
+    </script>
+    {{-- selected program --}}
+    <script>
+        $(document).ready(function() {
+            $("#upd_stud_program").on("change paste keyup", function() {
+                var selectedProgram = $(this).val();
+                if(selectedProgram != ''){
+                    if(selectedProgram == 'BSA' || selectedProgram == 'BS Physical Therapy'){
+                        $("#updateStudYearlvlOptions").html('<option value="FIRST YEAR"> \
+                                                <option value="SECOND YEAR"> \
+                                                <option value="THIRD YEAR"> \
+                                                <option value="FOURTH YEAR"> \
+                                                <option value="FIFTH YEAR">');
+                    }else{
+                        $("#updateStudYearlvlOptions").html('<option value="FIRST YEAR"> \
+                                                <option value="SECOND YEAR"> \
+                                                <option value="THIRD YEAR"> \
+                                                <option value="FOURTH YEAR">');
+                    }
+                }else{
+                    $("#updateStudYearlvlOptions").html('<option value="Select Program First"></option>');
+                }
+            });
+        });
+    </script>
+{{-- display datalist options based on previous selected option --}}
+{{-- disable update button on student profile update if any of inputs have chagned --}}
+    <script>
+        $(window).on('load', function(e){
+            $('#form_studUserUpdateProfile').each(function(){
+                $(this).data('serialized', $(this).serialize())
+            }).on('change input', function(){
+                $(this).find('#update_studUserInfoBtn').prop('disabled', $(this).serialize() == $(this).data('serialized'));
+                /* Check if input with type files has changed */
+                var changedFiles = $( ":file" ).filter(function( index ) {
+                    return this.value != this.defaultValue;
+                }).length;
+                if ( changedFiles > 0) {
+                    $(this).find('#update_studUserInfoBtn, input[type="file"]')
+                        .prop('disabled', false);
+                }
+            }).find('#update_studUserInfoBtn').prop('disabled', true);
+        });
+    </script>
+{{-- disable update button on student profile update if any of inputs have chagned end --}}
+
+{{-- toggle password input visibility --}}
+    <script>
+        const toggleStudUserNewPassword = document.querySelector('#toggleStudUserNewPassword');
+        const upd_studUser_new_password = document.querySelector('#upd_studUser_new_password');
+        toggleStudUserNewPassword.addEventListener('click', function (e) {
+            // toggle the type attribute
+            const type = upd_studUser_new_password.getAttribute('type') === 'password' ? 'text' : 'password';
+            upd_studUser_new_password.setAttribute('type', type);
+            // toggle the eye slash icon
+            this.classList.toggle('fa-eye-slash');
+        });
+    </script>
+{{-- toggle password input visibility end --}}
+
+{{-- password check strenght --}}
+    <script>
+        const newStudUserPass_indicator = document.querySelector(".pass_strenght_indicator_div");
+        const newStudUserPass_input     = document.querySelector("#upd_studUser_new_password");
+        const weak                      = document.querySelector(".weak");
+        const medium                    = document.querySelector(".medium");
+        const strong                    = document.querySelector(".strong");
+        const text                      = document.querySelector("#pass_strenght_txt");
+        const NewStudUserPass_Btn       = document.querySelector("#change_studUser_pass_btn");
+        const generate_NewStudPass_Btn  = document.querySelector("#generate_NewStudPass_Btn");
+        let regExpWeak                  = /[a-z]/;
+        let regExpMedium                = /\d+/;
+        let regExpStrong                = /.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/;
+        function check_pass_strenght(){
+            if(newStudUserPass_input.value != ""){
+                generate_NewStudPass_Btn.disabled = true;
+                newStudUserPass_indicator.classList.remove("d-none");
+                newStudUserPass_indicator.style.display = "flex";
+                if(newStudUserPass_input.value.length <= 3 && (newStudUserPass_input.value.match(regExpWeak) || newStudUserPass_input.value.match(regExpMedium) || newStudUserPass_input.value.match(regExpStrong)))no=1;
+                if(newStudUserPass_input.value.length >= 6 && ((newStudUserPass_input.value.match(regExpWeak) && newStudUserPass_input.value.match(regExpMedium)) || (newStudUserPass_input.value.match(regExpMedium) && newStudUserPass_input.value.match(regExpStrong)) || (newStudUserPass_input.value.match(regExpWeak) && newStudUserPass_input.value.match(regExpStrong))))no=2;
+                if(newStudUserPass_input.value.length >= 6 && newStudUserPass_input.value.match(regExpWeak) && newStudUserPass_input.value.match(regExpMedium) && newStudUserPass_input.value.match(regExpStrong))no=3;
+                if(no===1){
+                    weak.classList.add("active");
+                    text.style.display = "block";
+                    text.textContent   = "Password strength is too week";
+                    text.classList.add("weak");
+                }
+                if(no===2){
+                    medium.classList.add("active");
+                    weak.classList.remove("active");
+                    weak.classList.add("medium_bgColor");
+                    text.textContent = "password strength not too strong";
+                    text.classList.add("medium");
+                }else{
+                    medium.classList.remove("active");
+                    weak.classList.remove("medium_bgColor");
+                    text.classList.remove("medium");
+                }
+                if(no===3){
+                    weak.classList.remove("active");
+                    strong.classList.remove("active");
+                    weak.classList.add("strong_bgColor");
+                    medium.classList.add("strong_bgColor");
+                    strong.classList.add("active");
+                    text.textContent = "password strength is strong";
+                    text.classList.add("strong");
+                    NewStudUserPass_Btn.disabled = false;
+                }else{
+                    strong.classList.remove("active");
+                    text.classList.remove("strong");
+                    weak.classList.remove("strong_bgColor");
+                    medium.classList.remove("strong_bgColor");
+                }
+            }else{
+                newStudUserPass_indicator.classList.add("d-none");
+                text.style.display = "none";
+                NewStudUserPass_Btn.disabled = true;
+                generate_NewStudPass_Btn.disabled = false;
+            }
+        }
+    </script>
+{{-- password check strenght end --}}
 
 @endpush

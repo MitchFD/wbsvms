@@ -549,6 +549,156 @@ class UserManagementController extends Controller
             // echo 'fname: ' .$get_respo_user_fname. ' <br />';
     }
 
+    // FUNCTIONS FOR UPDATING SYSTEM USER's ACCOUNTS
+    // update student user's account
+    public function update_stud_user_profile(Request $request){
+        // now timestamp
+            $now_timestamp  = now();
+            $format_now_timestamp = $now_timestamp->format('dmYHis');
+        // get responsible user info for updating this record
+            $get_respo_user_id    = $request->get('respo_user_id');
+            $get_respo_user_lname = $request->get('respo_user_lname');
+            $get_respo_user_fname = $request->get('respo_user_fname');
+
+        // get all request
+            $get_upd_stud_user_image = $request->file('upd_stud_user_image');
+            $get_selected_userId     = $request->get('selected_user_id');
+            $get_upd_studEmail       = $request->get('upd_stud_email');
+            $get_upd_studNum         = $request->get('upd_stud_num');
+            $get_upd_studLname       = $request->get('upd_stud_lname');
+            $get_upd_studFname       = $request->get('upd_stud_fname');
+            $get_upd_studGender      = $request->get('upd_stud_gender');
+            $get_upd_studSchool      = $request->get('upd_stud_school');
+            $get_upd_studProgram     = $request->get('upd_stud_program');
+            $get_upd_studYearlvl     = $request->get('upd_stud_yearlvl');
+            $get_upd_studSection     = $request->get('upd_stud_section');
+            $get_upd_studPhnum       = $request->get('upd_stud_phnum');
+        // get user's original info
+            $fetch_original_user = Users::where('id' , $get_selected_userId)->first();
+            $stud_orgEmail       = $fetch_original_user->email;
+            $stud_orgStudNum     = $fetch_original_user->user_sdca_id;
+            $stud_orgImage       = $fetch_original_user->user_image;
+            $stud_orgLname       = $fetch_original_user->user_lname;
+            $stud_orgFname       = $fetch_original_user->user_fname;
+            $stud_orgGender      = $fetch_original_user->user_gender;
+            $stud_orgRole        = $fetch_original_user->user_role;
+            $stud_orgType        = $fetch_original_user->user_type;
+
+            $fetch_original_stud = Userstudents::where('uStud_num', $stud_orgStudNum)->first();
+            $stud_orgSchool      = $fetch_original_stud->uStud_school;
+            $stud_orgProgram     = $fetch_original_stud->uStud_program;
+            $stud_orgYearlvl     = $fetch_original_stud->uStud_yearlvl;
+            $stud_orgSection     = $fetch_original_stud->uStud_section;
+            $stud_orgPhnum       = $fetch_original_stud->uStud_phnum;
+        // user gender format
+            $old_user_gender = Str::lower($stud_orgGender);
+            $new_user_gender = Str::lower($get_upd_studGender);
+            if($old_user_gender == 'male'){
+                $userGenderTxt = 'his';
+            }elseif($old_user_gender == 'female'){
+                $userGenderTxt = 'her';
+            }else{
+                $userGenderTxt = 'his/her';
+            }
+            $s_s = "'";
+        // user image update handler
+            if($request->hasFile('upd_stud_user_image')){
+                $get_filenameWithExt = $request->file('upd_stud_user_image')->getClientOriginalName();
+                $get_justFile        = pathinfo($get_filenameWithExt, PATHINFO_FILENAME);
+                $get_justExt         = $request->file('upd_stud_user_image')->getClientOriginalExtension();
+                $fileNameToStore     = $get_justFile.'_'.$format_now_timestamp.'.'.$get_justExt;
+                // $uploadImageToPath   = $request->file('upd_stud_user_image')->storeAs('public/storage/svms/user_images',$fileNameToStore);
+            }else{
+                $fileNameToStore = $stud_orgImage;
+            }
+        // update record from users table
+            $update_users_tbl = DB::table('users')
+                ->where('id', $get_selected_userId)
+                ->update([
+                    'email'        => $get_upd_studEmail,
+                    'user_sdca_id' => $get_upd_studNum,
+                    'user_image'   => $fileNameToStore,
+                    'user_lname'   => $get_upd_studLname,
+                    'user_fname'   => $get_upd_studFname,
+                    'user_gender'  => $new_user_gender,
+                    'updated_at'   => $now_timestamp
+                    ]);
+
+        // if update was successful
+            if($update_users_tbl){
+            // update user_students_tbl
+                $update_users_tbl = DB::table('user_students_tbl')
+                    ->where('uStud_num', $stud_orgStudNum)
+                    ->update([
+                        'uStud_num'     => $get_upd_studNum,
+                        'uStud_school'  => $get_upd_studSchool,
+                        'uStud_program' => $get_upd_studProgram,
+                        'uStud_yearlvl' => $get_upd_studYearlvl,
+                        'uStud_section' => $get_upd_studSection,
+                        'uStud_phnum'   => $get_upd_studPhnum
+                        ]);
+            // store uploaded image to public/storage/svms/user_images
+                if($request->hasFile('upd_stud_user_image')){
+                    $destinationPath   = public_path('/storage/svms/user_images');
+                    $uploadImageToPath = $request->file('upd_stud_user_image')->move($destinationPath,$fileNameToStore);
+                }
+            // record original user's info to edited_old_stud_users_tbl
+                $rec_orginalUserInfo = new Editedoldstudentusers;
+                $rec_orginalUserInfo->from_user_id     = $get_selected_userId;
+                $rec_orginalUserInfo->eOld_uRole       = $stud_orgRole;
+                $rec_orginalUserInfo->eOld_email       = $stud_orgEmail;
+                $rec_orginalUserInfo->eOld_user_type   = $stud_orgType;
+                $rec_orginalUserInfo->eOld_user_image  = $stud_orgImage;
+                $rec_orginalUserInfo->eOld_user_lname  = $stud_orgLname;
+                $rec_orginalUserInfo->eOld_user_fname  = $stud_orgFname;
+                $rec_orginalUserInfo->eOld_user_gender = $old_user_gender;
+                $rec_orginalUserInfo->eOld_sdca_id     = $stud_orgStudNum;
+                $rec_orginalUserInfo->eOld_school      = $stud_orgSchool;
+                $rec_orginalUserInfo->eOld_program     = $stud_orgProgram;
+                $rec_orginalUserInfo->eOld_yearlvl     = $stud_orgYearlvl;
+                $rec_orginalUserInfo->eOld_section     = $stud_orgSection;
+                $rec_orginalUserInfo->eOld_phnum       = $stud_orgPhnum;
+                $rec_orginalUserInfo->respo_user_id    = $get_selected_userId;
+                $rec_orginalUserInfo->edited_at        = $now_timestamp;
+                $rec_orginalUserInfo->save();
+            // get id from latest update on edited_old_stud_users_tbl
+                $get_eOldStud_id  = Editedoldstudentusers::select('eOldStud_id')->where('from_user_id', $get_selected_userId)->latest('edited_at')->first();
+                $from_eOldStud_id = $get_eOldStud_id->eOldStud_id;
+            // record new user's info to edited_new_emp_users_tbl
+                $rec_newStudInfo = new Editednewstudentusers;
+                $rec_newStudInfo->from_eOldStud_id = $from_eOldStud_id;
+                $rec_newStudInfo->eNew_email       = $get_upd_studEmail;
+                $rec_newStudInfo->eNew_uRole       = $stud_orgRole;
+                $rec_newStudInfo->eNew_user_type   = $stud_orgType;
+                $rec_newStudInfo->eNew_user_image  = $fileNameToStore;
+                $rec_newStudInfo->eNew_user_lname  = $get_upd_studLname;
+                $rec_newStudInfo->eNew_user_fname  = $get_upd_studFname;
+                $rec_newStudInfo->eNew_user_gender = $new_user_gender;
+                $rec_newStudInfo->eNew_sdca_id     = $get_upd_studNum;
+                $rec_newStudInfo->eNew_school      = $get_upd_studSchool;
+                $rec_newStudInfo->eNew_program     = $get_upd_studProgram;
+                $rec_newStudInfo->eNew_yearlvl     = $get_upd_studYearlvl;
+                $rec_newStudInfo->eNew_section     = $get_upd_studSection;
+                $rec_newStudInfo->eNew_phnum       = $get_upd_studPhnum;
+                $rec_newStudInfo->edited_at        = $now_timestamp;
+                $rec_newStudInfo->save();
+            // record activity
+                $rec_activity = new Useractivites;
+                $rec_activity->created_at            = $now_timestamp;
+                $rec_activity->act_respo_user_id     = $get_respo_user_id;
+                $rec_activity->act_respo_users_lname = $get_respo_user_lname;
+                $rec_activity->act_respo_users_fname = $get_respo_user_fname;
+                $rec_activity->act_type              = 'update account';
+                $rec_activity->act_details           = $get_respo_user_fname. ' ' .$get_respo_user_lname . ' Updated ' . $stud_orgFname . ' ' . $stud_orgLname.''.$s_s.'s Account.';
+                $rec_activity->act_affected_id       = $from_eOldStud_id;
+                $rec_activity->save();
+
+            return back()->withSuccessStatus(''.$stud_orgFname . ' '. $stud_orgLname.''.$s_s.'s Account was updated successfully.');
+        }else{
+            return back()->withFailedStatus(''.$stud_orgFname . ' '. $stud_orgLname.''.$s_s.'s Account Update has failed, Try again  later.');
+        }
+    }
+
     // FUNCTIONS FOR SYSTEM ROLES
     // create new role
     public function create_new_system_role(Request $request){
