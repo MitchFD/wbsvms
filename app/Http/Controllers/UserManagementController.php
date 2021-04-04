@@ -16,10 +16,12 @@ use App\Models\Editednewuseremployees;
 use App\Models\Userstudents;
 use App\Models\Editedoldstudentusers;
 use App\Models\Editednewstudentusers;
+use App\Models\Passwordupdate;
 use App\Models\Useractivites;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Mail\Mailable;
 
 class UserManagementController extends Controller
 {
@@ -688,7 +690,7 @@ class UserManagementController extends Controller
                 $rec_activity->act_respo_user_id     = $get_respo_user_id;
                 $rec_activity->act_respo_users_lname = $get_respo_user_lname;
                 $rec_activity->act_respo_users_fname = $get_respo_user_fname;
-                $rec_activity->act_type              = 'update account';
+                $rec_activity->act_type              = 'profile update';
                 $rec_activity->act_details           = $get_respo_user_fname. ' ' .$get_respo_user_lname . ' Updated ' . $stud_orgFname . ' ' . $stud_orgLname.''.$s_s.'s Account.';
                 $rec_activity->act_affected_id       = $from_eOldStud_id;
                 $rec_activity->save();
@@ -696,6 +698,111 @@ class UserManagementController extends Controller
             return back()->withSuccessStatus(''.$stud_orgFname . ' '. $stud_orgLname.''.$s_s.'s Account was updated successfully.');
         }else{
             return back()->withFailedStatus(''.$stud_orgFname . ' '. $stud_orgLname.''.$s_s.'s Account Update has failed, Try again  later.');
+        }
+    }
+
+    // update user's password
+    public function update_user_password(Request $request){
+        // now timestamp
+            $now_timestamp  = now();
+            $format_now_timestamp = $now_timestamp->format('dmYHis');
+        // get responsible user info for updating this record
+            $get_sel_user_id       = $request->get('selected_user_id');
+            $get_respo_user_id     = $request->get('respo_user_id');
+            $get_respo_user_lname  = $request->get('respo_user_lname');
+            $get_respo_user_fname  = $request->get('respo_user_fname');
+        // get new pass
+            $get_new_user_pass           = $request->get('upd_sysUser_new_password');
+            $get_reasons_for_pass_update = $request->get('upd_sysUser_new_password_reason');
+
+        // get selected user's info
+            $get_sel_user_info   = Users::select('id', 'email', 'user_lname', 'user_fname', 'user_gender')->where('id', $get_sel_user_id)->first();
+            $get_sel_user_email  = $get_sel_user_info->email;
+            $get_sel_user_fname  = $get_sel_user_info->user_fname;
+            $get_sel_user_lname  = $get_sel_user_info->user_lname;
+            $get_sel_user_gender = $get_sel_user_info->user_gender;
+
+        // get responsible user's gender 
+            $get_respo_user_gender_info = Users::select('id', 'user_gender')->where('id', $get_respo_user_id)->first();
+            $get_respo_user_gender      = $get_respo_user_gender_info->user_gender;
+
+        // custom values
+        // his/her & Mr./Ms.
+            if($get_sel_user_gender === 'female'){
+                $his_her = 'her';
+                $mr_ms   = 'Ms.';
+            }else{
+                $his_her = 'his';
+                $mr_ms   = 'Mr.';
+            }
+            if($get_respo_user_gender === 'female'){
+                $respo_his_her = 'her';
+                $respo_mr_ms   = 'Ms.';
+            }else{
+                $respo_his_her = 'his';
+                $respo_mr_ms   = 'Mr.';
+            }
+        // apostrophe
+            $s_s = "'";
+        
+        // hass pass
+            $hash_new_user_pass = Hash::make($get_new_user_pass);
+
+        // update users table
+            $update_sys_users_tbl = DB::table('users')
+            ->where('id', $get_sel_user_id)
+            ->update([
+                'password'   => $hash_new_user_pass,
+                'updated_at' => $now_timestamp
+                ]);
+        // if update was a success
+        if($update_sys_users_tbl){
+            // record password update to password_updates_tbl
+                $rec_pass_update = new Passwordupdate;
+                $rec_pass_update->sel_user_id    = $get_sel_user_id;
+                $rec_pass_update->upd_by_user_id = $get_respo_user_id;
+                $rec_pass_update->reason_update  = $get_reasons_for_pass_update;
+                $rec_pass_update->updated_at     = $now_timestamp;
+                $rec_pass_update->save();
+
+            // get id from latest update on password_updates_tbl
+                $get_pass_upd_id  = Passwordupdate::select('pass_upd_id')->where('sel_user_id', $get_sel_user_id)->latest('updated_at')->first();
+                $from_pass_upd_id = $get_pass_upd_id->pass_upd_id;
+
+            // record activity
+                $rec_activity = new Useractivites;
+                $rec_activity->created_at            = $now_timestamp;
+                $rec_activity->act_respo_user_id     = $get_respo_user_id;
+                $rec_activity->act_respo_users_lname = $get_respo_user_lname;
+                $rec_activity->act_respo_users_fname = $get_respo_user_fname;
+                $rec_activity->act_type              = 'password update';
+                $rec_activity->act_details           = $get_respo_user_fname. ' ' .$get_respo_user_lname . ' Updated ' . $get_sel_user_fname . ' ' . $get_sel_user_lname.''.$s_s.'s Password.';
+                $rec_activity->act_affected_id       = $from_pass_upd_id;
+                $rec_activity->save();
+
+            // send email
+                $details = [
+                    'svms_logo'        => "storage/svms/logos/svms_logo_text.png",
+                    'title'            => 'PASSWORD UPDATE',
+                    'recipient'        => $mr_ms . ' ' .$get_sel_user_fname . ' ' . $get_sel_user_lname,
+                    'responsible_user' => $respo_mr_ms . ' ' .$get_respo_user_fname . ' ' . $get_respo_user_lname,
+                    'pass_updt_reason' => $get_reasons_for_pass_update,
+                    'sysUser_email'    => $get_sel_user_email,
+                    'sysUser_newPass'  => $get_new_user_pass
+                ];
+                \Mail::to('mfodesierto2@gmail.com')->send(new \App\Mail\PasswordUpdateSendMail($details));
+
+            return back()->withSuccessStatus(''.$get_sel_user_fname . ' '. $get_sel_user_lname.''.$s_s.'s Password was updated successfully.');
+            // test fetch request data
+                // echo 'New Password for ' .$get_sel_user_fname. ' ' .$get_sel_user_lname. '<br />';
+                // echo 'New Pass: ' .$get_new_user_pass. ' <br />';
+                // echo '<br />';
+                // echo 'by: ' .$get_respo_user_id. ' <br />';
+                // echo 'lname: ' .$get_respo_user_lname. ' <br />';
+                // echo 'fname: ' .$get_respo_user_fname. ' <br />';
+                // echo 'email has been sent<br />';
+        }else{
+            return back()->withFailedStatus(''.$get_sel_user_fname . ' '. $get_sel_user_lname.''.$s_s.'s Password Update has failed, Try again  later.');
         }
     }
 

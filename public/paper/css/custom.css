@@ -452,10 +452,11 @@ fieldset[disabled] .btn_svms_blue.active {
   text-decoration: none !important;
   text-transform: normal !important;
   color: var(--svms_light_blue); 
-  align-items: center !important;
+  /* align-items: center !important; */
 }
 .cust_info_txtwicon i{
   width: 15px;
+  margin-top: 3px !important;
 }
 
 /* cursor customizations */

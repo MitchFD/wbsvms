@@ -146,10 +146,13 @@
                         <div id="userProfileCollapseDiv" class="collapse show cb_t0b15x25" aria-labelledby="userProfileCollapseHeading" data-parent="#userProfileCollapseParent">
                             <ul class="nav nav-pills custom_nav_pills mt-0 mb-3 d-flex justify-content-center" id="pills-tab" role="tablist">
                                 <li class="nav-item">
-                                    <a class="nav-link {{ $custom_nav_pill }} active" id="pills_userProfile_preview_tab_{{$user_data->id}}" data-toggle="pill" href="#userProfile_preview_{{$user_data->id}}" role="tab" aria-controls="userProfile_preview_{{$user_data->id}}" aria-selected="true">User Profile</a>
+                                    <a class="nav-link {{ $custom_nav_pill }} active" id="pills_userProfile_preview_tab_{{$user_data->id}}" data-toggle="pill" href="#userProfile_preview_{{$user_data->id}}" role="tab" aria-controls="userProfile_preview_{{$user_data->id}}" aria-selected="true">Profile</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link {{ $custom_nav_pill }}" id="pills_edit_userProfile_tab_{{$user_data->id}}" data-toggle="pill" href="#userProfile_edit_{{$user_data->id}}" role="tab" aria-controls="userProfile_edit_{{$user_data->id}}" aria-selected="false">Edit User Profile</a>
+                                    <a class="nav-link {{ $custom_nav_pill }}" id="pills_edit_userProfile_tab_{{$user_data->id}}" data-toggle="pill" href="#userProfile_edit_{{$user_data->id}}" role="tab" aria-controls="userProfile_edit_{{$user_data->id}}" aria-selected="false">Edit Profile</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ $custom_nav_pill }}" id="pills_edit_userPassword_tab_{{$user_data->id}}" data-toggle="pill" href="#userPassword_edit_{{$user_data->id}}" role="tab" aria-controls="userPassword_edit_{{$user_data->id}}" aria-selected="false">Change Password</a>
                                 </li>
                             </ul>
                             <div class="tab-content" id="userProfilePills-tabContent">
@@ -528,57 +531,82 @@
                                                 </form>
                                             </div>
                                         </div>
-                                        <div class="card card_gbr shadow">
-                                            <div class="card-body p-0">
-                                                <div class="card-header cb_p15x25">
-                                                    <span class="sec_card_body_title">Change User's Password</span>
-                                                    <span class="sec_card_body_subtitle">Type new password for {{ $user_data->user_fname }} {{ $user_data->user_lname}}'s Account or click <span class="font-weight-bold"> "Generate Password" </span> button to let the system process a new password for the user's account.</span>
-                                                </div>
-                                                <form class="form" method="POST" action="#">
-                                                    <div class="cb_px25 cb_pb15">
-                                                        <div class="light_backDrop_card">
-                                                            <label for="upd_studUser_new_password">Type New Password <i class="fa fa-info-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Include numbers, symbols, and uppercase and lowercase letters to have a strong password."></i></label>
-                                                            <div class="input-group paswrd_inpt_fld">
-                                                                <div class="input-group-prepend">
-                                                                    <span class="input-group-text">
-                                                                        <i class="nc-icon nc-key-25" aria-hidden="true"></i>
-                                                                    </span>
-                                                                </div>
-                                                                <input type="password" onkeyup="check_pass_strenght()" id="upd_studUser_new_password" name="upd_studUser_new_password" class="form-control" placeholder="Type new password" required>
-                                                                <i class="fa fa-eye" id="toggleStudUserNewPassword"></i>
-                                                            </div>
-                                                            <div class="pass_strenght_indicator_div d-none">
-                                                                <span class="weak"></span>
-                                                                <span class="medium"></span>
-                                                                <span class="strong"></span>
-                                                            </div>
-                                                            <div id="pass_strenght_txt">
-
-                                                            </div>
-                                                            <div class="d-flex justify-content-center ">
-                                                                <button id="change_studUser_pass_btn" type="submit" class="btn btn-success btn-round btn_show_icon" disabled>Update {{ $user_data->user_lname}}'s Password<i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
-                                                            </div>
-                                                        </div>
-                                                        <span class="or_txt">
-                                                            or
-                                                        </span>
-                                                        <div class="light_backDrop_card">
-                                                            <span class="lightBlue_cardBody_notice"><i class="fa fa-info-circle" aria-hidden="true"></i> The <span class="font-weight-bold"> "Generate New Password" </span> button will automatically generate a new password for {{ $user_data->user_fname }} {{ $user_data->user_lname}}'s account. The System will notify the said user thru {{ $gender_txt }} email address.</span>
-                                                            <div class="d-flex justify-content-center ">
-                                                                <button id="generate_NewStudPass_Btn" type="button" class="btn btn_svms_blue btn-round btn_show_icon">Generate New Password<i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
                                     @elseif($user_data === 'employee')
 
                                     @else
                                         
                                     @endif
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <span class="cust_info_txtwicon"><i class="nc-icon nc-circle-10 mr-1" aria-hidden="true"></i>The System will notify {{ $user_data->user_fname }} {{ $user_data->user_lname }} of all the changes made to {{ $gender_txt }} profile thru {{ $gender_txt }} registered email address.</span>
+                                        </div>
+                                    </div>
                                 </div>
                             {{-- edit user informatin form --}}
+                            {{-- change user's password --}}
+                                <div class="tab-pane fade" id="userPassword_edit_{{$user_data->id}}" role="tabpanel" aria-labelledby="pills_edit_userPassword_tab_{{$user_data->id}}">
+                                    <div class="card card_gbr shadow">
+                                        <div class="card-body p-0">
+                                            <div class="card-header cb_p15x25">
+                                                <span class="sec_card_body_title">Change User's Password</span>
+                                                <span class="sec_card_body_subtitle">Type new password for {{ $user_data->user_fname }} {{ $user_data->user_lname}}'s Account or click <span class="font-weight-bold"> "Generate Password" </span> button to let the system process a new password for the user's account.</span>
+                                            </div>
+                                            <form class="form" method="POST" action="{{route('user_management.update_user_password')}}" enctype="multipart/form-data" onsubmit="change_studUser_pass_btn.disabled = true; return true;">
+                                                @csrf
+                                                <div class="cb_px25 cb_pb15">
+                                                    <div class="light_backDrop_card mb-2">
+                                                        <div class="form-group">
+                                                            <label for="upd_sysUser_new_password_reason">Reason <i class="fa fa-info-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="This will let {{ $user_data->user_fname }} {{ $user_data->user_lname }} know the reason behind updating {{ $gender_txt }} account password."></i></label>
+                                                            <textarea class="form-control" id="upd_sysUser_new_password_reason" name="upd_sysUser_new_password_reason" rows="3" placeholder="Type reason for Password Update first (required)" required></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="light_backDrop_card">
+                                                        <label for="upd_sysUser_new_password">Type New Password <i class="fa fa-info-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Include numbers, symbols, and uppercase and lowercase letters to have a strong password."></i></label>
+                                                        <div class="input-group paswrd_inpt_fld">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="nc-icon nc-key-25" aria-hidden="true"></i>
+                                                                </span>
+                                                            </div>
+                                                            <input type="password" onkeyup="check_pass_strenght()" id="upd_sysUser_new_password" name="upd_sysUser_new_password" class="form-control" placeholder="Type new password" required>
+                                                            <i class="fa fa-eye" id="toggleStudUserNewPassword"></i>
+                                                        </div>
+                                                        <div class="pass_strenght_indicator_div d-none">
+                                                            <span class="weak"></span>
+                                                            <span class="medium"></span>
+                                                            <span class="strong"></span>
+                                                        </div>
+                                                        <div id="pass_strenght_txt">
+
+                                                        </div>
+                                                        <div class="d-flex justify-content-center ">
+                                                            <input type="hidden" name="selected_user_id" value="{{$user_data->id}}"/>
+                                                            <input type="hidden" name="respo_user_id" value="{{auth()->user()->id}}"/>
+                                                            <input type="hidden" name="respo_user_lname" value="{{auth()->user()->user_lname}}"/>
+                                                            <input type="hidden" name="respo_user_fname" value="{{auth()->user()->user_fname}}"/>
+                                                            <button id="change_studUser_pass_btn" type="submit" class="btn btn-success btn-round btn_show_icon">Update {{ $user_data->user_lname}}'s Password<i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                                                        </div>
+                                                    </div>
+                                                    <span class="or_txt">
+                                                        or
+                                                    </span>
+                                                    <div class="light_backDrop_card">
+                                                        <span class="lightBlue_cardBody_notice"><i class="fa fa-info-circle" aria-hidden="true"></i> The <span class="font-weight-bold"> "Generate New Password" </span> button will automatically generate a new password for {{ $user_data->user_fname }} {{ $user_data->user_lname}}'s account. The System will notify the said user thru {{ $gender_txt }} email address.</span>
+                                                        <div class="d-flex justify-content-center ">
+                                                            <button id="generate_NewSysUserPass_Btn" type="button" class="btn btn_svms_blue btn-round btn_show_icon">Generate New Password<i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <span class="cust_info_txtwicon"><i class="nc-icon nc-circle-10 mr-1" aria-hidden="true"></i>The System will notify {{ $user_data->user_fname }} {{ $user_data->user_lname }} of the changes made to {{ $gender_txt }} password thru {{ $gender_txt }} registered email address.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {{-- change user's password end --}}
                             </div>
                         @if($user_data->user_type === 'student')
                             
@@ -598,7 +626,7 @@
                         <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#usersActLogsCollapseDiv" aria-expanded="true" aria-controls="usersActLogsCollapseDiv">
                             <div>
                                 <span class="card_body_title">User's Activity Logs</span>
-                                <span class="card_body_subtitle">View System Users and their statuses</span>
+                                <span class="card_body_subtitle">View {{ $user_data->user_fname }} {{ $user_data->user_lname}}'s Activity Logs and generate report.</span>
                             </div>
                             <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
                         </button>
@@ -781,7 +809,6 @@
     </script>
 {{-- manage role first open modal end --}}
 
-
 {{-- STUDENT USER's PROFILE UPDATE --}}
 {{-- student user's image update --}}
     <script>
@@ -887,38 +914,54 @@
 {{-- toggle password input visibility --}}
     <script>
         const toggleStudUserNewPassword = document.querySelector('#toggleStudUserNewPassword');
-        const upd_studUser_new_password = document.querySelector('#upd_studUser_new_password');
+        const upd_sysUser_new_password = document.querySelector('#upd_sysUser_new_password');
         toggleStudUserNewPassword.addEventListener('click', function (e) {
             // toggle the type attribute
-            const type = upd_studUser_new_password.getAttribute('type') === 'password' ? 'text' : 'password';
-            upd_studUser_new_password.setAttribute('type', type);
+            const type = upd_sysUser_new_password.getAttribute('type') === 'password' ? 'text' : 'password';
+            upd_sysUser_new_password.setAttribute('type', type);
             // toggle the eye slash icon
             this.classList.toggle('fa-eye-slash');
         });
     </script>
 {{-- toggle password input visibility end --}}
-
+    
+{{-- for password update --}}
+    {{-- <script>
+        $(document).ready(function () {
+            $('#upd_sysUser_new_password_reason').keyup(function () {
+                if ($(this).val() !== '') {
+                    $('#generate_NewSysUserPass_Btn').prop('disabled', false);
+                    $('#upd_sysUser_new_password').prop('disabled', false);
+                }else{
+                    $('#generate_NewSysUserPass_Btn').prop('disabled', true);
+                    $('#upd_sysUser_new_password').prop('disabled', true);
+                }
+            })
+        });  
+    </script> --}}
 {{-- password check strenght --}}
     <script>
-        const newStudUserPass_indicator = document.querySelector(".pass_strenght_indicator_div");
-        const newStudUserPass_input     = document.querySelector("#upd_studUser_new_password");
-        const weak                      = document.querySelector(".weak");
-        const medium                    = document.querySelector(".medium");
-        const strong                    = document.querySelector(".strong");
-        const text                      = document.querySelector("#pass_strenght_txt");
-        const NewStudUserPass_Btn       = document.querySelector("#change_studUser_pass_btn");
-        const generate_NewStudPass_Btn  = document.querySelector("#generate_NewStudPass_Btn");
-        let regExpWeak                  = /[a-z]/;
-        let regExpMedium                = /\d+/;
-        let regExpStrong                = /.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/;
+        const newSysUserPass_indicator    = document.querySelector(".pass_strenght_indicator_div");
+        const newSysUserPass_input        = document.querySelector("#upd_sysUser_new_password");
+        const newSysUserPass_reason_input = document.querySelector("#upd_sysUser_new_password_reason");
+        const weak                        = document.querySelector(".weak");
+        const medium                      = document.querySelector(".medium");
+        const strong                      = document.querySelector(".strong");
+        const text                        = document.querySelector("#pass_strenght_txt");
+        const NewSysUserPass_Btn          = document.querySelector("#change_studUser_pass_btn");
+        const generate_NewSysUserPass_Btn = document.querySelector("#generate_NewSysUserPass_Btn");
+        let regExpWeak                    = /[a-z]/;
+        let regExpMedium                  = /\d+/;
+        let regExpStrong                  = /.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/;
+
         function check_pass_strenght(){
-            if(newStudUserPass_input.value != ""){
-                generate_NewStudPass_Btn.disabled = true;
-                newStudUserPass_indicator.classList.remove("d-none");
-                newStudUserPass_indicator.style.display = "flex";
-                if(newStudUserPass_input.value.length <= 3 && (newStudUserPass_input.value.match(regExpWeak) || newStudUserPass_input.value.match(regExpMedium) || newStudUserPass_input.value.match(regExpStrong)))no=1;
-                if(newStudUserPass_input.value.length >= 6 && ((newStudUserPass_input.value.match(regExpWeak) && newStudUserPass_input.value.match(regExpMedium)) || (newStudUserPass_input.value.match(regExpMedium) && newStudUserPass_input.value.match(regExpStrong)) || (newStudUserPass_input.value.match(regExpWeak) && newStudUserPass_input.value.match(regExpStrong))))no=2;
-                if(newStudUserPass_input.value.length >= 6 && newStudUserPass_input.value.match(regExpWeak) && newStudUserPass_input.value.match(regExpMedium) && newStudUserPass_input.value.match(regExpStrong))no=3;
+            if(newSysUserPass_input.value !== ""){
+                generate_NewSysUserPass_Btn.disabled = true;
+                newSysUserPass_indicator.classList.remove("d-none");
+                newSysUserPass_indicator.style.display = "flex";
+                if(newSysUserPass_input.value.length <= 3 && (newSysUserPass_input.value.match(regExpWeak) || newSysUserPass_input.value.match(regExpMedium) || newSysUserPass_input.value.match(regExpStrong)))no=1;
+                if(newSysUserPass_input.value.length >= 6 && ((newSysUserPass_input.value.match(regExpWeak) && newSysUserPass_input.value.match(regExpMedium)) || (newSysUserPass_input.value.match(regExpMedium) && newSysUserPass_input.value.match(regExpStrong)) || (newSysUserPass_input.value.match(regExpWeak) && newSysUserPass_input.value.match(regExpStrong))))no=2;
+                if(newSysUserPass_input.value.length >= 6 && newSysUserPass_input.value.match(regExpWeak) && newSysUserPass_input.value.match(regExpMedium) && newSysUserPass_input.value.match(regExpStrong))no=3;
                 if(no===1){
                     weak.classList.add("active");
                     text.style.display = "block";
@@ -944,7 +987,7 @@
                     strong.classList.add("active");
                     text.textContent = "password strength is strong";
                     text.classList.add("strong");
-                    NewStudUserPass_Btn.disabled = false;
+                    NewSysUserPass_Btn.disabled = false;
                 }else{
                     strong.classList.remove("active");
                     text.classList.remove("strong");
@@ -952,10 +995,10 @@
                     medium.classList.remove("strong_bgColor");
                 }
             }else{
-                newStudUserPass_indicator.classList.add("d-none");
+                newSysUserPass_indicator.classList.add("d-none");
                 text.style.display = "none";
-                NewStudUserPass_Btn.disabled = true;
-                generate_NewStudPass_Btn.disabled = false;
+                NewSysUserPass_Btn.disabled = true;
+                generate_NewSysUserPass_Btn.disabled = false;
             }
         }
     </script>

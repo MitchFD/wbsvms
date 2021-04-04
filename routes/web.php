@@ -79,6 +79,8 @@ Route::group(['middleware' => 'auth'], function () {
 
 	// for updating system user's profile
 	Route::post('user_management/update_stud_user_profile', ['as' => 'user_management.update_stud_user_profile', 'uses' => 'App\Http\Controllers\UserManagementController@update_stud_user_profile']);
+	// for updating system user's passwords
+	Route::post('user_management/update_user_password', ['as' => 'user_management.update_user_password', 'uses' => 'App\Http\Controllers\UserManagementController@update_user_password']);
 });
 
 // violation entry
