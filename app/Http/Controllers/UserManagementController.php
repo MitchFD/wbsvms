@@ -561,6 +561,9 @@ class UserManagementController extends Controller
             $get_respo_user_id    = $request->get('respo_user_id');
             $get_respo_user_lname = $request->get('respo_user_lname');
             $get_respo_user_fname = $request->get('respo_user_fname');
+        // get responsible user's gender 
+            $get_respo_user_gender_info = Users::select('id', 'user_gender')->where('id', $get_respo_user_id)->first();
+            $get_respo_user_gender      = $get_respo_user_gender_info->user_gender;
 
         // get all request
             $get_upd_stud_user_image = $request->file('upd_stud_user_image');
@@ -592,15 +595,28 @@ class UserManagementController extends Controller
             $stud_orgYearlvl     = $fetch_original_stud->uStud_yearlvl;
             $stud_orgSection     = $fetch_original_stud->uStud_section;
             $stud_orgPhnum       = $fetch_original_stud->uStud_phnum;
-        // user gender format
+        // his/her & Mr./Ms. format and apostrophe
             $old_user_gender = Str::lower($stud_orgGender);
             $new_user_gender = Str::lower($get_upd_studGender);
             if($old_user_gender == 'male'){
                 $userGenderTxt = 'his';
+                $user_mr_ms   = 'Mr.';
             }elseif($old_user_gender == 'female'){
                 $userGenderTxt = 'her';
+                $user_mr_ms   = 'Ms.';
             }else{
                 $userGenderTxt = 'his/her';
+                $user_mr_ms   = 'Mr./Ms.';
+            }
+            if($get_respo_user_gender === 'female'){
+                $respo_his_her = 'her';
+                $respo_mr_ms   = 'Ms.';
+            }elseif($get_respo_user_gender === 'male'){
+                $respo_his_her = 'his';
+                $respo_mr_ms   = 'Mr.';
+            }else{
+                $respo_his_her = 'his/her';
+                $respo_mr_ms   = 'Mr./Ms.';
             }
             $s_s = "'";
         // user image update handler
@@ -691,9 +707,75 @@ class UserManagementController extends Controller
                 $rec_activity->act_respo_users_lname = $get_respo_user_lname;
                 $rec_activity->act_respo_users_fname = $get_respo_user_fname;
                 $rec_activity->act_type              = 'profile update';
-                $rec_activity->act_details           = $get_respo_user_fname. ' ' .$get_respo_user_lname . ' Updated ' . $stud_orgFname . ' ' . $stud_orgLname.''.$s_s.'s Account.';
+                $rec_activity->act_details           = $get_respo_user_fname. ' ' .$get_respo_user_lname . ' Updated ' . $stud_orgFname . ' ' . $stud_orgLname.''.$s_s.'s Profile.';
                 $rec_activity->act_affected_id       = $from_eOldStud_id;
                 $rec_activity->save();
+
+            // send email
+                $details = [
+                    'svms_logo'           => "storage/svms/logos/svms_logo_text.png",
+                    'title'               => 'PROFILE UPDATE',
+                    'recipient'           => $user_mr_ms . ' ' .$stud_orgFname . ' ' . $stud_orgLname,
+                    'responsible_user'    => $respo_mr_ms . ' ' .$get_respo_user_fname . ' ' . $get_respo_user_lname
+                ];
+                $old_profile = [
+                    'user_image'      => 'storage/svms/user_images/'.$stud_orgImage,
+                    'user_email'      => $stud_orgEmail,
+                    'user_role'       => $stud_orgRole,
+                    'user_sdca_id'    => $stud_orgStudNum,
+                    'user_first_name' => $stud_orgFname,
+                    'user_last_name'  => $stud_orgLname,
+                    'user_gender'     => $old_user_gender,
+                    'user_school'     => $stud_orgSchool,
+                    'user_program'    => $stud_orgProgram,
+                    'user_yrlvl'      => $stud_orgYearlvl,
+                    'user_section'    => $stud_orgSection,
+                    'user_phnum'      => $stud_orgPhnum,
+                ];
+                $new_profile = [
+                    'user_image'      => 'storage/svms/user_images/'.$fileNameToStore,
+                    'user_email'      => $get_upd_studEmail,
+                    'user_role'       => $stud_orgRole,
+                    'user_sdca_id'    => $get_upd_studNum,
+                    'user_first_name' => $get_upd_studFname,
+                    'user_last_name'  => $get_upd_studLname,
+                    'user_gender'     => $new_user_gender,
+                    'user_school'     => $get_upd_studSchool,
+                    'user_program'    => $get_upd_studProgram,
+                    'user_yrlvl'      => $get_upd_studYearlvl,
+                    'user_section'    => $get_upd_studSection,
+                    'user_phnum'      => $get_upd_studPhnum,
+                ];
+                // if user has email
+                    if(!empty($stud_orgEmail)){
+                        // notify user from his/her old email
+                        \Mail::to('mfodesierto2@gmail.com')->send(new \App\Mail\ProfileUpdateSendMail($details, $old_profile ,$new_profile));
+
+                        if(!empty($get_upd_studEmail)){
+                            if($stud_orgEmail !== $get_upd_studEmail){
+                                // deactivate account for switching to new email
+                                    $update_users_tbl = DB::table('users')
+                                    ->where('id', $get_selected_userId)
+                                    ->update([
+                                        'user_status'  => 'deactivated',
+                                        'updated_at'   => $now_timestamp
+                                        ]);
+                                    
+                                // record status update to user_status_updates_tbl
+                                    if($stud_orgRole !== 'deactivated'){
+                                        $rec_user_stats_update_tbl = new Userupdatesstatus;
+                                        $rec_user_stats_update_tbl->from_user_id   = $get_selected_userId;
+                                        $rec_user_stats_update_tbl->updated_status = 'deactivated';
+                                        $rec_user_stats_update_tbl->reason_update  = 'switching to a new email address';
+                                        $rec_user_stats_update_tbl->updated_at     = $now_timestamp;
+                                        $rec_user_stats_update_tbl->updated_by     = $get_respo_user_id;
+                                        $rec_user_stats_update_tbl->save();
+                                    }
+                                // notify user that this new email has been registered as a user of SVMS
+                                    \Mail::to($get_upd_studEmail)->send(new \App\Mail\ProfileUpdateNewEmailSendMail($details, $old_profile ,$new_profile));
+                            }
+                        }
+                    }
 
             return back()->withSuccessStatus(''.$stud_orgFname . ' '. $stud_orgLname.''.$s_s.'s Account was updated successfully.');
         }else{
@@ -731,16 +813,22 @@ class UserManagementController extends Controller
             if($get_sel_user_gender === 'female'){
                 $his_her = 'her';
                 $mr_ms   = 'Ms.';
-            }else{
+            }elseif($get_sel_user_gender === 'male'){
                 $his_her = 'his';
                 $mr_ms   = 'Mr.';
+            }else{
+                $his_her = 'his/her';
+                $mr_ms   = 'Mr./Ms.';
             }
             if($get_respo_user_gender === 'female'){
                 $respo_his_her = 'her';
                 $respo_mr_ms   = 'Ms.';
-            }else{
+            }elseif($get_respo_user_gender === 'male'){
                 $respo_his_her = 'his';
                 $respo_mr_ms   = 'Mr.';
+            }else{
+                $respo_his_her = 'his/her';
+                $respo_mr_ms   = 'Mr./Ms.';
             }
         // apostrophe
             $s_s = "'";

@@ -292,29 +292,34 @@
                                                     $btn_label  = "Account is Activated";
                                                     $btn_icon   = "fa fa-toggle-on";
                                                     $btn_action = 'onclick=deactivateUserAccount(this.id)';
+                                                    $question   = 'Deactivate';
                                                 }elseif($user_data->user_status === 'deactivated'){
                                                     // activate account
                                                     $btn_class  = "btn_svms_red";
                                                     $btn_label  = "Account is Deactivated";
                                                     $btn_icon   = "fa fa-toggle-off";
                                                     $btn_action = 'onclick=activateUserAccount(this.id)';
+                                                    $question   = 'Activate';
                                                 }elseif($user_data->user_status === 'pending'){
                                                     $btn_class  = "btn-secondary";
                                                     $btn_label  = "Account is Pending";
                                                     $btn_icon   = "fa fa-spinner";
                                                     $btn_action = 'onclick=activateUserAccount(this.id)';
+                                                    $question   = 'Activate';
                                                 }elseif($user_data->user_status === 'deleted'){
                                                     // user account is deleted - recover option
                                                     $btn_class  = "btn-secondary";
                                                     $btn_label  = "Account is Pending";
                                                     $btn_icon   = "fa fa-spinner";
                                                     $btn_action = 'onclick=activateUserAccount(this.id)';
+                                                    $question   = 'Activate';
                                                 }else{
                                                     // just activate
                                                     $btn_class  = "btn_svms_red";
                                                     $btn_label  = "Account is Pending";
                                                     $btn_icon   = "fa fa-toggle-off";
                                                     $btn_action = 'onclick=activateUserAccount(this.id)';
+                                                    $question   = 'Activate';
                                                 }
                                             }elseif($user_data->user_role_status === 'deactivated'){
                                                 // activate role first
@@ -322,32 +327,44 @@
                                                 $btn_label  = "Account is Deactivated";
                                                 $btn_icon   = "fa fa-toggle-off";
                                                 $btn_action = 'onclick=activateUserAccount(this.id)';
+                                                $question   = 'Activate';
                                             }elseif($user_data->user_role_status === 'pending'){
                                                 // manage role first
                                                 $btn_class  = "btn-secondary";
                                                 $btn_label  = "Account is Pending";
                                                 $btn_icon   = "fa fa-spinner";
                                                 $btn_action = 'onclick=manageRoleFirst(this.id)';
+                                                $question   = 'Activate';
                                             }elseif($user_data->user_role_status === 'deleted'){
                                                 // role is deleted - assign new role
                                                 $btn_class  = "btn-secondary";
                                                 $btn_label  = "Account is Pending";
                                                 $btn_icon   = "fa fa-spinner";
                                                 $btn_action = 'onclick=manageRoleFirst(this.id)';
+                                                $question   = 'Activate';
                                             }else{
                                                 // manage role first
                                                 $btn_class  = "btn-secondary";
                                                 $btn_label  = "Account is Pending";
                                                 $btn_icon   = "fa fa-spinner";
                                                 $btn_action = 'onclick=manageRoleFirst(this.id)';
+                                                $question   = 'Activate';
                                             }
                                         // values for account status end
                                         @endphp     
-                                        <div class="row d-flex justify-content-center mt-2 mb-4">
+                                        <div class="row d-flex justify-content-center mt-2">
                                             <div class="col-lg-8 col-md-10 col-sm-11 p-0 d-flex justify-content-center">
                                                 <div class="btn-group cust_btn_group" role="group" aria-label="User's Account Status / Action">
                                                     <button type="button" class="btn {{ $btn_class }} btn_group_label m-0">{{ $btn_label }}</button>
-                                                    <button type="button" id="{{$user_data->id}}" {{ $btn_action }} class="btn {{ $btn_class }} btn_group_icon m-0"><i class="{{ $btn_icon }}"></i></button>
+                                                    <button type="button" id="{{$user_data->id}}" {{ $btn_action }} class="btn {{ $btn_class }} btn_group_icon m-0" data-toggle="tooltip" data-placement="top" title="{{ $question }} {{ $user_data->user_fname }} {{ $user_data->user_lname}}'s Account?"><i class="{{ $btn_icon }}"></i></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row d-flex justify-content-center mt-2 mb-4">
+                                            <div class="col-lg-8 col-md-10 col-sm-11 p-0 d-flex justify-content-center">
+                                                <div class="btn-group cust_btn_group" role="group" aria-label="User's Account Status / Action">
+                                                    <button type="button" class="btn {{ $btn_class }} btn_group_label m-0">{{ $user_data->user_role }}</button>
+                                                    <button type="button" id="{{$user_data->id}}" class="btn {{ $btn_class }} btn_group_icon m-0" data-toggle="tooltip" data-placement="top" title="Change User's System Role?"><i class="fa fa-pencil"></i></button>
                                                 </div>
                                             </div>
                                         </div>
@@ -400,7 +417,7 @@
                                                     <span class="sec_card_body_title">Edit User's Profile</span>
                                                     <span class="sec_card_body_subtitle">Click the <span class="font-weight-bold">'Save Changes'</span> button to update {{ $user_data->user_fname }} {{ $user_data->user_lname}}'s profile.</span>
                                                 </div>
-                                                <form id="form_studUserUpdateProfile" class="form" method="POST" action="{{route('user_management.update_stud_user_profile')}}" enctype="multipart/form-data">
+                                                <form id="form_studUserUpdateProfile" class="form" method="POST" action="{{route('user_management.update_stud_user_profile')}}" enctype="multipart/form-data" onsubmit="update_studUserInfoBtn.disabled = true; return true;">
                                                     @csrf
                                                     <div class="cb_px25 cb_pb15">
                                                         <div class="row d-flex justify-content-center">
