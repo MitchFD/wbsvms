@@ -566,7 +566,7 @@
                                         <div class="card-body p-0">
                                             <div class="card-header cb_p15x25">
                                                 <span class="sec_card_body_title">Change User's Password</span>
-                                                <span class="sec_card_body_subtitle">Type new password for {{ $user_data->user_fname }} {{ $user_data->user_lname}}'s Account.</span>
+                                                <span class="sec_card_body_subtitle">Type new password for {{ $user_data->user_fname }} {{ $user_data->user_lname}}'s Account. </span>
                                             </div>
                                             <form class="form" method="POST" action="{{route('user_management.update_user_password')}}" enctype="multipart/form-data" onsubmit="change_studUser_pass_btn.disabled = true; return true;">
                                                 @csrf
