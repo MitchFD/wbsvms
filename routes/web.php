@@ -77,8 +77,16 @@ Route::group(['middleware' => 'auth'], function () {
 	// manage role first
 	Route::get('user_management/manage_role_first_modal', 'App\Http\Controllers\UserManagementController@manage_role_first_modal')->name('user_management.manage_role_first_modal');
 
+	// change user's role
+	Route::get('user_management/change_user_role_modal', 'App\Http\Controllers\UserManagementController@change_user_role_modal')->name('user_management.change_user_role_modal');
+	Route::post('user_management/process_change_user_role', 'App\Http\Controllers\UserManagementController@process_change_user_role')->name('user_management.process_change_user_role');
+
 	// for updating system user's profile
 	Route::post('user_management/update_stud_user_profile', ['as' => 'user_management.update_stud_user_profile', 'uses' => 'App\Http\Controllers\UserManagementController@update_stud_user_profile']);
+	Route::post('user_management/update_emp_user_profile', ['as' => 'user_management.update_emp_user_profile', 'uses' => 'App\Http\Controllers\UserManagementController@update_emp_user_profile']);
+	// if switching to new email address
+	Route::post('/user_management/stud_user_switch_new_email_availability_check', 'App\Http\Controllers\UserManagementController@stud_user_switch_new_email_availability_check')->name('user_management.stud_user_switch_new_email_availability_check');
+	Route::post('/user_management/emp_user_switch_new_email_availability_check', 'App\Http\Controllers\UserManagementController@emp_user_switch_new_email_availability_check')->name('user_management.emp_user_switch_new_email_availability_check');
 	// for updating system user's passwords
 	Route::post('user_management/update_user_password', ['as' => 'user_management.update_user_password', 'uses' => 'App\Http\Controllers\UserManagementController@update_user_password']);
 });

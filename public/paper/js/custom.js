@@ -25,6 +25,12 @@
         $("i", this).toggleClass("nc-minimal-up nc-minimal-down");
     });
 // change dropdown collapse icon on button click from main gray card end 
+    $('.custom2_btn_collapse').click(function() {
+        $("i", this).toggleClass("nc-minimal-up nc-minimal-down");
+    });
+// change dropdown icon on user profile - modal
+
+// change dropdown icon on user profile - modal end
 
 // active main gray card collpase on page refresh
     // code here

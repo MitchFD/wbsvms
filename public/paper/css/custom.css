@@ -16,7 +16,7 @@
   --svms_light_card: #f1f1f1;
   --svms_success: #51CBCE;
   --svms_green: #6bd098;
-  --svms_dark_green: #339B62;
+  --svms_dark_green: #2b8654;
   --svms_secondary: #6c757d;
 
   --svms_gray_bg: #e7e7e7;
@@ -1177,7 +1177,7 @@ a.text_svms_gray:hover {
 .custom2_btn_collapse:active:focus {
   background-color: #ffffff !important;
 }
-.custom2_btn_collapse_icon{
+.custom2_btn_collapse i{
   display: block !important;
   font-size: 12px !important;
   font-weight: normal !important;
@@ -1185,6 +1185,14 @@ a.text_svms_gray:hover {
   text-transform: normal !important;
   color: var(--svms_light_blue) !important;
 }
+/* .custom2_btn_collapse_icon{
+  display: block !important;
+  font-size: 12px !important;
+  font-weight: normal !important;
+  text-decoration: none !important;
+  text-transform: normal !important;
+  color: var(--svms_light_blue) !important;
+} */
 .accordion_title{
   display: block;
   font-size: 15px !important;
@@ -1920,6 +1928,7 @@ select.drpdwn_arrow:focus {
 .form label{
   font-weight: bold !important;
   font-size: 13px;
+  color: #9A9A9A;
 }
 
 .light_backDrop_card{

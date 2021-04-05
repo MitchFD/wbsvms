@@ -71,6 +71,16 @@
             </tr>
             <tr style="line-height: 12px; margin: 7px 0 !important;">
                 <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
+                    <p style="margin: 10px 15px 3px 15px !important;"><strong>System Role</strong></p>
+                    <p style="margin: 4px 15px 10px 15px !important;">{{ ucwords($old_profile['user_role']) }}</p>
+                </td>
+                <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
+                    <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_role'] !== $new_profile['user_role']) edited @endif </em></strong></p>
+                    <p style="margin: 4px 15px 10px 15px !important;">{{ ucwords($new_profile['user_role']) }}</p>
+                </td>
+            </tr>
+            <tr style="line-height: 12px; margin: 7px 0 !important; background-color: #f5f5f5;">
+                <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
                     <p style="margin: 10px 15px 3px 15px !important;"><strong>Email</strong></p>
                     <p style="margin: 4px 15px 10px 15px !important;">{{ $old_profile['user_email'] }}</p>
                 </td>
@@ -79,7 +89,7 @@
                     <p style="margin: 4px 15px 10px 15px !important;">{{ $new_profile['user_email'] }}</p>
                 </td>
             </tr>
-            <tr style="line-height: 12px; margin: 7px 0 !important; background-color: #f5f5f5;">
+            <tr style="line-height: 12px; margin: 7px 0 !important;">
                 <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
                     <p style="margin: 10px 15px 3px 15px !important;"><strong>Student Number</strong></p>
                     <p style="margin: 4px 15px 10px 15px !important;">{{ $old_profile['user_sdca_id'] }}</p>
@@ -89,7 +99,7 @@
                     <p style="margin: 4px 15px 10px 15px !important;">{{ $new_profile['user_sdca_id'] }}</p>
                 </td>
             </tr>
-            <tr style="line-height: 12px; margin: 7px 0 !important;">
+            <tr style="line-height: 12px; margin: 7px 0 !important; background-color: #f5f5f5;">
                 <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
                     <p style="margin: 10px 15px 3px 15px !important;"><strong>Last Name</strong></p>
                     <p style="margin: 4px 15px 10px 15px !important;">{{ $old_profile['user_last_name'] }}</p>
@@ -99,7 +109,7 @@
                     <p style="margin: 4px 15px 10px 15px !important;">{{ $new_profile['user_last_name'] }}</p>
                 </td>
             </tr>
-            <tr style="line-height: 12px; margin: 7px 0 !important; background-color: #f5f5f5;">
+            <tr style="line-height: 12px; margin: 7px 0 !important;">
                 <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
                     <p style="margin: 10px 15px 3px 15px !important;"><strong>First Name</strong></p>
                     <p style="margin: 4px 15px 10px 15px !important;">{{ $old_profile['user_first_name'] }}</p>
@@ -109,17 +119,18 @@
                     <p style="margin: 4px 15px 10px 15px !important;">{{ $new_profile['user_first_name'] }}</p>
                 </td>
             </tr>
-            <tr style="line-height: 12px; margin: 7px 0 !important;">
+            <tr style="line-height: 12px; margin: 7px 0 !important; background-color: #f5f5f5;">
                 <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
                     <p style="margin: 10px 15px 3px 15px !important;"><strong>Gender</strong></p>
-                    <p style="margin: 4px 15px 10px 15px !important;">{{ $old_profile['user_gender'] }}</p>
+                    <p style="margin: 4px 15px 10px 15px !important;">{{ ucwords($old_profile['user_gender']) }}</p>
                 </td>
                 <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
                     <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_gender'] !== $new_profile['user_gender']) edited @endif </em></strong></p>
-                    <p style="margin: 4px 15px 10px 15px !important;">{{ $new_profile['user_gender'] }}</p>
+                    <p style="margin: 4px 15px 10px 15px !important;">{{ ucwords($new_profile['user_gender']) }}</p>
                 </td>
             </tr>
-            <tr style="line-height: 12px; margin: 7px 0 !important; background-color: #f5f5f5;">
+            @if($old_profile['user_type'] === 'student')
+            <tr style="line-height: 12px; margin: 7px 0 !important;">
                 <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
                     <p style="margin: 10px 15px 3px 15px !important;"><strong>School</strong></p>
                     <p style="margin: 4px 15px 10px 15px !important;">{{ $old_profile['user_school'] }}</p>
@@ -129,7 +140,7 @@
                     <p style="margin: 4px 15px 10px 15px !important;">{{ $new_profile['user_school'] }}</p>
                 </td>
             </tr>
-            <tr style="line-height: 12px; margin: 7px 0 !important;">
+            <tr style="line-height: 12px; margin: 7px 0 !important; background-color: #f5f5f5;">
                 <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
                     <p style="margin: 10px 15px 3px 15px !important;"><strong>Program/Course</strong></p>
                     <p style="margin: 4px 15px 10px 15px !important;">{{ $old_profile['user_program'] }}</p>
@@ -139,7 +150,7 @@
                     <p style="margin: 4px 15px 10px 15px !important;">{{ $new_profile['user_program'] }}</p>
                 </td>
             </tr>
-            <tr style="line-height: 12px; margin: 7px 0 !important; background-color: #f5f5f5;">
+            <tr style="line-height: 12px; margin: 7px 0 !important;">
                 <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
                     <p style="margin: 10px 15px 3px 15px !important;"><strong>Year Level</strong></p>
                     <p style="margin: 4px 15px 10px 15px !important;">{{ $old_profile['user_yrlvl'] }}</p>
@@ -149,7 +160,7 @@
                     <p style="margin: 4px 15px 10px 15px !important;">{{ $new_profile['user_yrlvl'] }}</p>
                 </td>
             </tr>
-            <tr style="line-height: 12px; margin: 7px 0 !important;">
+            <tr style="line-height: 12px; margin: 7px 0 !important; background-color: #f5f5f5;">
                 <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
                     <p style="margin: 10px 15px 3px 15px !important;"><strong>Section</strong></p>
                     <p style="margin: 4px 15px 10px 15px !important;">{{ $old_profile['user_section'] }}</p>
@@ -159,7 +170,29 @@
                     <p style="margin: 4px 15px 10px 15px !important;">{{ $new_profile['user_section'] }}</p>
                 </td>
             </tr>
-            <tr style="line-height: 12px; margin: 7px 0 !important; background-color: #f5f5f5;">
+            @elseif($old_profile['user_type'] === 'employee')
+                <tr style="line-height: 12px; margin: 7px 0 !important;">
+                    <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
+                        <p style="margin: 10px 15px 3px 15px !important;"><strong>Job Description</strong></p>
+                        <p style="margin: 4px 15px 10px 15px !important;">{{ $old_profile['user_job_desc'] }}</p>
+                    </td>
+                    <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
+                        <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_job_desc'] !== $new_profile['user_job_desc']) edited @endif </em></strong></p>
+                        <p style="margin: 4px 15px 10px 15px !important;">{{ $new_profile['user_job_desc'] }}</p>
+                    </td>
+                </tr>
+                <tr style="line-height: 12px; margin: 7px 0 !important; background-color: #f5f5f5;">
+                    <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
+                        <p style="margin: 10px 15px 3px 15px !important;"><strong>Department</strong></p>
+                        <p style="margin: 4px 15px 10px 15px !important;">{{ $old_profile['user_dept'] }}</p>
+                    </td>
+                    <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
+                        <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_dept'] !== $new_profile['user_dept']) edited @endif </em></strong></p>
+                        <p style="margin: 4px 15px 10px 15px !important;">{{ $new_profile['user_dept'] }}</p>
+                    </td>
+                </tr>
+            @endif
+            <tr style="line-height: 12px; margin: 7px 0 !important;">
                 <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
                     <p style="margin: 10px 15px 3px 15px !important;"><strong>Phone Number</strong></p>
                     <p style="margin: 4px 15px 10px 15px !important;">{{ $old_profile['user_phnum'] }}</p>

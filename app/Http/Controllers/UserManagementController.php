@@ -260,7 +260,7 @@ class UserManagementController extends Controller
         return view('user_management.users_logs');
     }
 
-    // emailavailability check
+    // emailavailability check for creating new user
     public function new_user_email_availability_check(Request $request){
         if($request->get('email')){
             $email = $request->get('email');
@@ -269,6 +269,50 @@ class UserManagementController extends Controller
                 echo 'not_unique';
             }else{
                 echo 'unique';
+            }
+        }
+    }
+
+    // emailavailability check for switching to new email - profile update module
+    // for student user
+    public function stud_user_switch_new_email_availability_check(Request $request){
+        if($request->get('stud_email')){
+            $stud_id    = $request->get('stud_id');
+            $stud_email = $request->get('stud_email');
+            // get user's original email
+            $get_stud_org_email = Users::select('id', 'email')->where('id', $stud_id)->first();
+            $stud_org_email     = $get_stud_org_email->email;
+            
+            if($stud_org_email === $stud_email){
+                echo 'unique';
+            }else{
+                $data = Users::where('email', $stud_email)->whereNotIn('id', [$stud_id])->count();
+                if($data > 0){
+                    echo 'not_unique';
+                }else{
+                    echo 'unique';
+                }
+            }
+        }
+    }
+    // for employee user
+    public function emp_user_switch_new_email_availability_check(Request $request){
+        if($request->get('emp_email')){
+            $emp_id    = $request->get('emp_id');
+            $emp_email = $request->get('emp_email');
+            // get user's original email
+            $get_emp_org_email = Users::select('id', 'email')->where('id', $emp_id)->first();
+            $emp_org_email     = $get_emp_org_email->email;
+            
+            if($emp_org_email === $emp_email){
+                echo 'unique';
+            }else{
+                $data = Users::where('email', $emp_email)->whereNotIn('id', [$emp_id])->count();
+                if($data > 0){
+                    echo 'not_unique';
+                }else{
+                    echo 'unique';
+                }
             }
         }
     }
@@ -564,7 +608,6 @@ class UserManagementController extends Controller
         // get responsible user's gender 
             $get_respo_user_gender_info = Users::select('id', 'user_gender')->where('id', $get_respo_user_id)->first();
             $get_respo_user_gender      = $get_respo_user_gender_info->user_gender;
-
         // get all request
             $get_upd_stud_user_image = $request->file('upd_stud_user_image');
             $get_selected_userId     = $request->get('selected_user_id');
@@ -641,7 +684,6 @@ class UserManagementController extends Controller
                     'user_gender'  => $new_user_gender,
                     'updated_at'   => $now_timestamp
                     ]);
-
         // if update was successful
             if($update_users_tbl){
             // update user_students_tbl
@@ -710,7 +752,6 @@ class UserManagementController extends Controller
                 $rec_activity->act_details           = $get_respo_user_fname. ' ' .$get_respo_user_lname . ' Updated ' . $stud_orgFname . ' ' . $stud_orgLname.''.$s_s.'s Profile.';
                 $rec_activity->act_affected_id       = $from_eOldStud_id;
                 $rec_activity->save();
-
             // send email
                 $details = [
                     'svms_logo'           => "storage/svms/logos/svms_logo_text.png",
@@ -720,6 +761,7 @@ class UserManagementController extends Controller
                 ];
                 $old_profile = [
                     'user_image'      => 'storage/svms/user_images/'.$stud_orgImage,
+                    'user_type'       => $stud_orgType,
                     'user_email'      => $stud_orgEmail,
                     'user_role'       => $stud_orgRole,
                     'user_sdca_id'    => $stud_orgStudNum,
@@ -734,6 +776,7 @@ class UserManagementController extends Controller
                 ];
                 $new_profile = [
                     'user_image'      => 'storage/svms/user_images/'.$fileNameToStore,
+                    'user_type'       => $stud_orgType,
                     'user_email'      => $get_upd_studEmail,
                     'user_role'       => $stud_orgRole,
                     'user_sdca_id'    => $get_upd_studNum,
@@ -760,7 +803,6 @@ class UserManagementController extends Controller
                                         'user_status'  => 'deactivated',
                                         'updated_at'   => $now_timestamp
                                         ]);
-                                    
                                 // record status update to user_status_updates_tbl
                                     if($stud_orgRole !== 'deactivated'){
                                         $rec_user_stats_update_tbl = new Userupdatesstatus;
@@ -776,13 +818,224 @@ class UserManagementController extends Controller
                             }
                         }
                     }
-
             return back()->withSuccessStatus(''.$stud_orgFname . ' '. $stud_orgLname.''.$s_s.'s Account was updated successfully.');
         }else{
             return back()->withFailedStatus(''.$stud_orgFname . ' '. $stud_orgLname.''.$s_s.'s Account Update has failed, Try again  later.');
         }
     }
+    // update employee user's account
+    public function update_emp_user_profile(Request $request){
+        // now timestamp
+            $now_timestamp  = now();
+            $format_now_timestamp = $now_timestamp->format('dmYHis');
+        // get responsible user info for updating this record
+            $get_respo_user_id    = $request->get('respo_user_id');
+            $get_respo_user_lname = $request->get('respo_user_lname');
+            $get_respo_user_fname = $request->get('respo_user_fname');
+        // get responsible user's gender 
+            $get_respo_user_gender_info = Users::select('id', 'user_gender')->where('id', $get_respo_user_id)->first();
+            $get_respo_user_gender      = $get_respo_user_gender_info->user_gender;
+        // get all request
+            $get_upd_emp_user_image = $request->file('upd_emp_user_image');
+            $get_selected_userId    = $request->get('selected_user_id');
+            $get_upd_empEmail       = $request->get('upd_emp_email');
+            $get_upd_empID          = $request->get('upd_emp_id');
+            $get_upd_empLname       = $request->get('upd_emp_lname');
+            $get_upd_empFname       = $request->get('upd_emp_fname');
+            $get_upd_empGender      = $request->get('upd_emp_gender');
+            $get_upd_empJobDesc     = $request->get('upd_emp_jobdesc');
+            $get_upd_empDept        = $request->get('upd_emp_dept');
+            $get_upd_empPhnum       = $request->get('upd_emp_phnum');
+        // get user's original info
+            $fetch_original_user = Users::where('id' , $get_selected_userId)->first();
+            $emp_orgEmail        = $fetch_original_user->email;
+            $emp_orgEmpID        = $fetch_original_user->user_sdca_id;
+            $emp_orgImage        = $fetch_original_user->user_image;
+            $emp_orgLname        = $fetch_original_user->user_lname;
+            $emp_orgFname        = $fetch_original_user->user_fname;
+            $emp_orgGender       = $fetch_original_user->user_gender;
+            $emp_orgRole         = $fetch_original_user->user_role;
+            $emp_orgType         = $fetch_original_user->user_type;
 
+            $fetch_original_emp = Useremployees::where('uEmp_id', $emp_orgEmpID)->first();
+            $emp_orgJobDesc     = $fetch_original_emp->uEmp_job_desc;
+            $emp_orgDept        = $fetch_original_emp->uEmp_dept;
+            $emp_orgPhnum       = $fetch_original_emp->uEmp_phnum;
+        // his/her & Mr./Ms. format and apostrophe
+            $old_user_gender = Str::lower($emp_orgGender);
+            $new_user_gender = Str::lower($get_upd_empGender);
+            if($old_user_gender == 'male'){
+                $userGenderTxt = 'his';
+                $user_mr_ms   = 'Mr.';
+            }elseif($old_user_gender == 'female'){
+                $userGenderTxt = 'her';
+                $user_mr_ms   = 'Ms.';
+            }else{
+                $userGenderTxt = 'his/her';
+                $user_mr_ms   = 'Mr./Ms.';
+            }
+            if($get_respo_user_gender === 'female'){
+                $respo_his_her = 'her';
+                $respo_mr_ms   = 'Ms.';
+            }elseif($get_respo_user_gender === 'male'){
+                $respo_his_her = 'his';
+                $respo_mr_ms   = 'Mr.';
+            }else{
+                $respo_his_her = 'his/her';
+                $respo_mr_ms   = 'Mr./Ms.';
+            }
+            $s_s = "'";
+            // user image update handler
+                if($request->hasFile('upd_emp_user_image')){
+                    $get_filenameWithExt = $request->file('upd_emp_user_image')->getClientOriginalName();
+                    $get_justFile        = pathinfo($get_filenameWithExt, PATHINFO_FILENAME);
+                    $get_justExt         = $request->file('upd_emp_user_image')->getClientOriginalExtension();
+                    $fileNameToStore     = $get_justFile.'_'.$format_now_timestamp.'.'.$get_justExt;
+                    // $uploadImageToPath   = $request->file('upd_emp_user_image')->storeAs('public/storage/svms/user_images',$fileNameToStore);
+                }else{
+                    $fileNameToStore = $emp_orgImage;
+                }
+            // update record from users table
+                $update_users_tbl = DB::table('users')
+                    ->where('id', $get_selected_userId)
+                    ->update([
+                        'email'        => $get_upd_empEmail,
+                        'user_sdca_id' => $get_upd_empID,
+                        'user_image'   => $fileNameToStore,
+                        'user_lname'   => $get_upd_empLname,
+                        'user_fname'   => $get_upd_empFname,
+                        'user_gender'  => $new_user_gender,
+                        'updated_at'   => $now_timestamp
+                        ]);
+            // if update was successful
+                if($update_users_tbl){
+                    // update user_employees_tbl
+                        $update_users_tbl = DB::table('user_employees_tbl')
+                            ->where('uEmp_id', $emp_orgEmpID)
+                            ->update([
+                                'uEmp_id'     => $get_upd_empID,
+                                'uEmp_job_desc'  => $get_upd_empJobDesc,
+                                'uEmp_dept' => $get_upd_empDept,
+                                'uEmp_phnum' => $get_upd_empPhnum
+                                ]);
+                    // store uploaded image to public/storage/svms/user_images
+                        if($request->hasFile('upd_emp_user_image')){
+                            $destinationPath   = public_path('/storage/svms/user_images');
+                            $uploadImageToPath = $request->file('upd_emp_user_image')->move($destinationPath,$fileNameToStore);
+                        }
+                    // record original user's info to edited_old_emp_users_tbl
+                        $rec_orginalUserInfo = new Editedolduseremployees;
+                        $rec_orginalUserInfo->from_user_id     = $get_selected_userId;
+                        $rec_orginalUserInfo->eOld_uRole       = $emp_orgRole;
+                        $rec_orginalUserInfo->eOld_email       = $emp_orgEmail;
+                        $rec_orginalUserInfo->eOld_user_type   = $emp_orgType;
+                        $rec_orginalUserInfo->eOld_user_image  = $emp_orgImage;
+                        $rec_orginalUserInfo->eOld_user_lname  = $emp_orgLname;
+                        $rec_orginalUserInfo->eOld_user_fname  = $emp_orgFname;
+                        $rec_orginalUserInfo->eOld_user_gender = $old_user_gender;
+                        $rec_orginalUserInfo->eOld_sdca_id     = $emp_orgEmpID;
+                        $rec_orginalUserInfo->eOld_job_desc    = $emp_orgJobDesc;
+                        $rec_orginalUserInfo->eOld_dept        = $emp_orgDept;
+                        $rec_orginalUserInfo->eOld_phnum       = $emp_orgPhnum;
+                        $rec_orginalUserInfo->respo_user_id    = $get_selected_userId;
+                        $rec_orginalUserInfo->edited_at        = $now_timestamp;
+                        $rec_orginalUserInfo->save();
+                    // get id from latest update on edited_old_emp_users_tbl
+                        $get_eOldEmp_id  = Editedolduseremployees::select('eOldEmp_id')->where('from_user_id', $get_selected_userId)->latest('edited_at')->first();
+                        $from_eOldEmp_id = $get_eOldEmp_id->eOldEmp_id;
+                    // record new user's info to edited_new_emp_users_tbl
+                        $rec_newStudInfo = new Editednewuseremployees;
+                        $rec_newStudInfo->from_eOldEmp_id  = $from_eOldEmp_id;
+                        $rec_newStudInfo->eNew_email       = $get_upd_empEmail;
+                        $rec_newStudInfo->eNew_uRole       = $emp_orgRole;
+                        $rec_newStudInfo->eNew_user_type   = $emp_orgType;
+                        $rec_newStudInfo->eNew_user_image  = $fileNameToStore;
+                        $rec_newStudInfo->eNew_user_lname  = $get_upd_empLname;
+                        $rec_newStudInfo->eNew_user_fname  = $get_upd_empFname;
+                        $rec_newStudInfo->eNew_user_gender = $new_user_gender;
+                        $rec_newStudInfo->eNew_sdca_id     = $get_upd_empID;
+                        $rec_newStudInfo->eNew_job_desc    = $get_upd_empJobDesc;
+                        $rec_newStudInfo->eNew_dept        = $get_upd_empDept;
+                        $rec_newStudInfo->eNew_phnum       = $get_upd_empPhnum;
+                        $rec_newStudInfo->edited_at        = $now_timestamp;
+                        $rec_newStudInfo->save();
+                    // record activity
+                        $rec_activity = new Useractivites;
+                        $rec_activity->created_at            = $now_timestamp;
+                        $rec_activity->act_respo_user_id     = $get_respo_user_id;
+                        $rec_activity->act_respo_users_lname = $get_respo_user_lname;
+                        $rec_activity->act_respo_users_fname = $get_respo_user_fname;
+                        $rec_activity->act_type              = 'profile update';
+                        $rec_activity->act_details           = $get_respo_user_fname. ' ' .$get_respo_user_lname . ' Updated ' . $emp_orgFname . ' ' . $emp_orgLname.''.$s_s.'s Profile.';
+                        $rec_activity->act_affected_id       = $from_eOldEmp_id;
+                        $rec_activity->save();
+                    // send email
+                        $details = [
+                            'svms_logo'           => "storage/svms/logos/svms_logo_text.png",
+                            'title'               => 'PROFILE UPDATE',
+                            'recipient'           => $user_mr_ms . ' ' .$emp_orgFname . ' ' . $emp_orgLname,
+                            'responsible_user'    => $respo_mr_ms . ' ' .$get_respo_user_fname . ' ' . $get_respo_user_lname
+                        ];
+                        $old_profile = [
+                            'user_image'      => 'storage/svms/user_images/'.$emp_orgImage,
+                            'user_type'       => $emp_orgType,
+                            'user_email'      => $emp_orgEmail,
+                            'user_role'       => $emp_orgRole,
+                            'user_sdca_id'    => $emp_orgEmpID,
+                            'user_first_name' => $emp_orgFname,
+                            'user_last_name'  => $emp_orgLname,
+                            'user_gender'     => $old_user_gender,
+                            'user_job_desc'   => $emp_orgJobDesc,
+                            'user_dept'       => $emp_orgDept,
+                            'user_phnum'      => $emp_orgPhnum,
+                        ];
+                        $new_profile = [
+                            'user_image'      => 'storage/svms/user_images/'.$fileNameToStore,
+                            'user_type'       => $emp_orgType,
+                            'user_email'      => $get_upd_empEmail,
+                            'user_role'       => $emp_orgRole,
+                            'user_sdca_id'    => $get_upd_empID,
+                            'user_first_name' => $get_upd_empFname,
+                            'user_last_name'  => $get_upd_empLname,
+                            'user_gender'     => $get_upd_empGender,
+                            'user_job_desc'   => $get_upd_empJobDesc,
+                            'user_dept'       => $get_upd_empDept,
+                            'user_phnum'      => $get_upd_empPhnum,
+                        ];
+                        // if user has email
+                            if(!empty($emp_orgEmail)){
+                                // notify user from his/her old email
+                                \Mail::to('mfodesierto2@gmail.com')->send(new \App\Mail\ProfileUpdateSendMail($details, $old_profile ,$new_profile));
+        
+                                if(!empty($get_upd_empEmail)){
+                                    if($emp_orgEmail !== $get_upd_empEmail){
+                                        // deactivate account for switching to new email
+                                            $update_users_tbl = DB::table('users')
+                                            ->where('id', $get_selected_userId)
+                                            ->update([
+                                                'user_status'  => 'deactivated',
+                                                'updated_at'   => $now_timestamp
+                                                ]);
+                                        // record status update to user_status_updates_tbl
+                                            if($emp_orgRole !== 'deactivated'){
+                                                $rec_user_stats_update_tbl = new Userupdatesstatus;
+                                                $rec_user_stats_update_tbl->from_user_id   = $get_selected_userId;
+                                                $rec_user_stats_update_tbl->updated_status = 'deactivated';
+                                                $rec_user_stats_update_tbl->reason_update  = 'switching to a new email address';
+                                                $rec_user_stats_update_tbl->updated_at     = $now_timestamp;
+                                                $rec_user_stats_update_tbl->updated_by     = $get_respo_user_id;
+                                                $rec_user_stats_update_tbl->save();
+                                            }
+                                        // notify user that this new email has been registered as a user of SVMS
+                                            \Mail::to($get_upd_empEmail)->send(new \App\Mail\ProfileUpdateNewEmailSendMail($details, $old_profile ,$new_profile));
+                                    }
+                                }
+                            }
+                    return back()->withSuccessStatus(''.$emp_orgFname . ' '. $emp_orgLname.''.$s_s.'s Account was updated successfully.');
+                }else{
+                    return back()->withFailedStatus(''.$emp_orgFname . ' '. $emp_orgLname.''.$s_s.'s Account Update has failed, Try again  later.');
+                }
+    }
     // update user's password
     public function update_user_password(Request $request){
         // now timestamp
@@ -878,7 +1131,10 @@ class UserManagementController extends Controller
                     'sysUser_email'    => $get_sel_user_email,
                     'sysUser_newPass'  => $get_new_user_pass
                 ];
-                \Mail::to('mfodesierto2@gmail.com')->send(new \App\Mail\PasswordUpdateSendMail($details));
+
+                if(!empty($get_sel_user_email)){
+                    \Mail::to('mfodesierto2@gmail.com')->send(new \App\Mail\PasswordUpdateSendMail($details));
+                }
 
             return back()->withSuccessStatus(''.$get_sel_user_fname . ' '. $get_sel_user_lname.''.$s_s.'s Password was updated successfully.');
             // test fetch request data
@@ -892,6 +1148,156 @@ class UserManagementController extends Controller
         }else{
             return back()->withFailedStatus(''.$get_sel_user_fname . ' '. $get_sel_user_lname.''.$s_s.'s Password Update has failed, Try again  later.');
         }
+    }
+    // change user's role
+    public function change_user_role_modal(Request $request){
+        // get the user's id
+            $get_sel_user_id = $request->get('sel_user_id');
+        // get user's information from user tble
+            $get_sel_user_info          = Users::select('id','email', 'user_role', 'user_status', 'user_role_status', 'user_type', 'user_sdca_id', 'user_image', 'user_lname', 'user_fname', 'user_gender', 'registered_by', 'created_at')->where('id', $get_sel_user_id)->first();
+            $get_sel_user_email         = $get_sel_user_info->email;
+            $get_sel_user_role          = $get_sel_user_info->user_role;
+            $get_sel_user_status        = $get_sel_user_info->user_status;
+            $get_sel_user_role_status   = $get_sel_user_info->user_role_status;
+            $get_sel_user_type          = $get_sel_user_info->user_type;
+            $get_sel_user_sdca_id       = $get_sel_user_info->user_sdca_id;
+            $get_sel_user_image         = $get_sel_user_info->user_image;
+            $get_sel_user_lname         = $get_sel_user_info->user_lname;
+            $get_sel_user_fname         = $get_sel_user_info->user_fname;
+            $get_sel_user_gender        = $get_sel_user_info->user_gender;
+            $get_sel_user_registered_by = $get_sel_user_info->registered_by;
+            $get_sel_user_created_at    = $get_sel_user_info->created_at;
+        // filter values
+            if($get_sel_user_type === 'student'){
+                $get_stud_info = Userstudents::select('uStud_num', 'uStud_school', 'uStud_program', 'uStud_yearlvl', 'uStud_section', 'uStud_phnum')->where('uStud_num', $get_sel_user_sdca_id)->first();
+                $sdca_id_title = 'Student Number';
+                $img_filter = 'studImg_background';
+            }else{
+                $get_emp_info = Useremployees::select('uEmp_id', 'uEmp_job_desc', 'uEmp_dept', 'uEmp_phnum')->where('uEmp_id', $get_sel_user_sdca_id)->first();
+                $sdca_id_title = 'Employee ID';
+                $img_filter = 'empImg_background';
+            }
+        // his/her text, apostrophe
+            if($get_sel_user_gender === 'female'){
+                $his_her = 'her';
+                $mr_ms   = 'Ms.';
+            }elseif($get_sel_user_gender === 'male'){
+                $his_her = 'his';
+                $mr_ms   = 'Mr.';
+            }else{
+                $his_her = 'his/her';
+                $mr_ms   = 'Mr./Ms.';
+            }
+            $sq = "'";
+        $output = '';
+        $output .= '
+            <div class="modal-body border-0 p-0">
+                <div class="cust_modal_body_gray">
+                    <div class="accordion shadow cust_accordion_div" id="changeUserRoleModalAccordion_Parent'.$get_sel_user_id.'">
+                        <div class="card custom_accordion_card">
+                            <div class="card-header p-0" id="changeUserRoleCollapse_heading'.$get_sel_user_id.'">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-block custom2_btn_collapse d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#changeUserRoleCollapse_Div'.$get_sel_user_id.'" aria-expanded="true" aria-controls="changeUserRoleCollapse_Div'.$get_sel_user_id.'">
+                                        <div class="d-flex justify-content-start align-items-center">
+                                            <div class="display_user_image_div text-center">
+                                                <img class="'.$img_filter.' shadow-sm" src="'.asset('storage/svms/user_images/'.$get_sel_user_image).'" alt="student user profile">
+                                            </div>
+                                            <div class="information_div">
+                                                <span class="li_info_title">'.$get_sel_user_fname. ' ' .$get_sel_user_lname.'</span>
+                                                <span class="li_info_subtitle">'.ucwords($get_sel_user_role).'</span>
+                                            </div>
+                                        </div>
+                                        <i class="nc-icon nc-minimal-down"></i>
+                                    </button>
+                                </h2>
+                            </div>
+                            <div id="changeUserRoleCollapse_Div'.$get_sel_user_id.'" class="collapse cust_collapse_active cb_t0b12y20" aria-labelledby="changeUserRoleCollapse_heading'.$get_sel_user_id.'" data-parent="#changeUserRoleModalAccordion_Parent'.$get_sel_user_id.'">
+                                <div class="card-body lightBlue_cardBody mb-2">
+                                    <span class="lightBlue_cardBody_blueTitle m-0">'.$sdca_id_title.':</span>
+                                    <span class="lightBlue_cardBody_list mb-2">'.$get_sel_user_sdca_id.'</span>';
+                                    if($get_sel_user_type === 'student'){
+                                        $output .= '
+                                        <span class="lightBlue_cardBody_blueTitle m-0">School</span>
+                                        <span class="lightBlue_cardBody_list mb-2">'.$get_stud_info->uStud_school.'</span>
+                                        <span class="lightBlue_cardBody_blueTitle m-0">Year / Program / Section</span>
+                                        <span class="lightBlue_cardBody_list mb-2">'.$get_stud_info->uStud_yearlvl . ' / ' . $get_stud_info->uStud_program . ' / ' .$get_stud_info->uStud_section.'</span>
+                                        ';
+                                        if(!is_null($get_stud_info->uStud_phnum)){
+                                            $output .= '
+                                            <span class="lightBlue_cardBody_blueTitle m-0">Contact Number</span>
+                                            <span class="lightBlue_cardBody_list mb-2">'.$get_stud_info->uStud_phnum.'</span>
+                                            ';
+                                        }
+                                    }elseif($get_sel_user_type === 'employee'){
+                                        $output .= '
+                                        <span class="lightBlue_cardBody_blueTitle m-0">Department</span>
+                                        <span class="lightBlue_cardBody_list mb-2">'.$get_emp_info->uEmp_dept.'</span>
+                                        <span class="lightBlue_cardBody_blueTitle m-0">Job Description</span>
+                                        <span class="lightBlue_cardBody_list mb-2">'.$get_emp_info->uEmp_job_desc.'</span>
+                                        ';
+                                        if(!is_null($get_emp_info->uEmp_phnum)){
+                                            $output .= '
+                                            <span class="lightBlue_cardBody_blueTitle m-0">Contact Number</span>
+                                            <span class="lightBlue_cardBody_list mb-2">'.$get_emp_info->uEmp_phnum.'</span>
+                                            ';
+                                        }
+                                    }else{
+                                        // unknown user type
+                                    }
+                                    if(!is_null($get_sel_user_email)){
+                                        $output .= '
+                                        <span class="lightBlue_cardBody_blueTitle m-0">Email Address</span>
+                                        <span class="lightBlue_cardBody_list mb-2">'.$get_sel_user_email.'</span>
+                                        ';
+                                    }
+                                    $output .='
+                                    <span class="lightBlue_cardBody_blueTitle m-0">User Type / System Role</span>
+                                    <span class="lightBlue_cardBody_list mb-1">'.ucwords($get_sel_user_type) . ' / System ' . ucwords($get_sel_user_role).'</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <form action="'.route('user_management.process_change_user_role').'" class="changeUserRoleForm" method="POST">
+                    <div class="modal-body pb-0">
+                        <div class="card-body lightBlue_cardBody shadow-none">
+                            <span class="lightBlue_cardBody_notice"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i> Options available for assigning a System Role is based on the user'.$sq.'s (<span class="font-weight-bold font-italic">USER TYPE</span>). The system will notify ' . $mr_ms . ' ' . $get_sel_user_lname . ' of the changes to ' . $his_her . ' account thru ' . $his_her . ' registered email address.
+                        </div>
+                        <div class="card-body lightBlue_cardBody shadow-none mt-2">
+                            <div class="form-group cust_fltr_dropdowns_div mb-1">
+                                <label for="upd_user_type">Select User Type</label>
+                                <select class="form-control cust_fltr_dropdowns drpdwn_arrow" id="upd_user_type" name="upd_user_type">
+                                <option>Employee User</option>
+                                <option>Student User</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="card-body lightBlue_cardBody shadow-none mt-2">
+                            <span class="lightBlue_cardBody_blueTitle grayed_txt">Reason <i class="fa fa-question-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="This will let ' . $get_sel_user_fname . ' ' . $get_sel_user_lname . ' know the reason behind changing ' . $his_her . ' system role."></i></span>
+                            <div class="form-group">
+                                <textarea class="form-control" id="change_user_role_reason" name="change_user_role_reason" rows="3" placeholder="Type reason for changing ' . $get_sel_user_lname.''.$sq.'s Role (Required)" required></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <input type="hidden" name="_token" value="'.csrf_token().'">
+                        <input type="hidden" name="change_role_selected_user_id" value="'.$get_sel_user_id.'">
+                        <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
+                        <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
+                        <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
+                        <div class="btn-group" role="group" aria-label="Basic example">
+                            <button type="button" class="btn btn-round btn-secondary btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                            <button type="submit" class="btn btn-round btn-success btn_show_icon m-0">Apply Changes <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        ';
+        return $output;
+    }
+    // process change of user's role
+    public function process_change_user_role(Request $request){
+        echo 'wow';
     }
 
     // FUNCTIONS FOR SYSTEM ROLES
@@ -1400,21 +1806,18 @@ class UserManagementController extends Controller
     public function manage_role_first_modal(Request $request){
         // get the user's id
             $sel_user_id = $request->get('manage_role_first_id');
-
         // get user's assigned role
             $get_assigned_role    = Users::select('id', 'user_role', 'user_lname', 'user_fname', 'user_gender')->where('id', $sel_user_id)->first();
             $assigned_role        = $get_assigned_role->user_role;
             $assigned_user_lname  = $get_assigned_role->user_lname;
             $assigned_user_fname  = $get_assigned_role->user_fname;
             $assigned_user_gender = $get_assigned_role->user_gender;
-
         // his/her text
             if($assigned_user_gender === 'female'){
                 $his_her = 'her';
             }else{
                 $his_her = 'his';
             }
-        
         // get role information based on user's assigned role
             $get_role_info        = Userroles::where('uRole', $assigned_role)->first();
             $get_uRole_status     = $get_role_info->uRole_status;
@@ -1424,14 +1827,13 @@ class UserManagementController extends Controller
             $get_assUsers_count   = $get_role_info->assUsers_count;
             $get_uRole_created_by = $get_role_info->created_by;
             $get_uRole_created_at = $get_role_info->created_at;
-
         // custom values 
         if($get_assUsers_count > 1){
             $s = 's';
         }else{
             $s = '';
         }
-
+        // output data
         $output = '';
         $output .= '
             <div class="modal-body border-0 p-0">
@@ -1488,7 +1890,6 @@ class UserManagementController extends Controller
                 </div>
             </div>
         ';
-        
         echo $output;
     }
 
@@ -1542,7 +1943,7 @@ class UserManagementController extends Controller
                             </h2>
                         </div>
                         <div id="deactivateStudUserAccountCollapse_Div'.$get_selected_user_id.'" class="collapse cust_collapse_active cb_t0b12y20" aria-labelledby="deactivateStudUserAccountCollapse_heading'.$get_selected_user_id.'" data-parent="#deactivateUserAccountModalAccordion_Parent'.$get_selected_user_id.'">
-                            <div class="card-body lightGreen_cardBody mt-2">
+                            <div class="card-body lightGreen_cardBody mb-2">
                                 <span class="lightGreen_cardBody_greenTitle m-0">Student Number:</span>
                                 <span class="lightGreen_cardBody_list mb-1">'.$get_user_sdca_id.'</span>
                                 <span class="lightGreen_cardBody_greenTitle m-0">School</span>
@@ -1588,7 +1989,7 @@ class UserManagementController extends Controller
                             </h2>
                         </div>
                         <div id="deactivateEmpUserAccountCollapse_Div'.$get_selected_user_id.'" class="collapse cust_collapse_active cb_t0b12y20" aria-labelledby="deactivateEmpUserAccountCollapse_heading'.$get_selected_user_id.'" data-parent="#deactivateUserAccountModalAccordion_Parent'.$get_selected_user_id.'">
-                            <div class="card-body lightBlue_cardBody mt-2">
+                            <div class="card-body lightBlue_cardBody mb-2">
                                 <span class="lightBlue_cardBody_blueTitle m-0">Employee ID:</span>
                                 <span class="lightBlue_cardBody_list mb-1">'.$get_user_sdca_id.'</span>
                                 <span class="lightBlue_cardBody_blueTitle m-0">Job Title</span>
@@ -1762,7 +2163,7 @@ class UserManagementController extends Controller
                             </h2>
                         </div>
                         <div id="activateStudUserAccountCollapse_Div'.$get_selected_user_id.'" class="collapse cust_collapse_active cb_t0b12y20" aria-labelledby="activateStudUserAccountCollapse_heading'.$get_selected_user_id.'" data-parent="#activateUserAccountModalAccordion_Parent'.$get_selected_user_id.'">
-                            <div class="card-body lightGreen_cardBody mt-2">
+                            <div class="card-body lightGreen_cardBody mb-2">
                                 <span class="lightGreen_cardBody_greenTitle m-0">Student Number:</span>
                                 <span class="lightGreen_cardBody_list mb-1">'.$get_user_sdca_id.'</span>
                                 <span class="lightGreen_cardBody_greenTitle m-0">School</span>
@@ -1808,7 +2209,7 @@ class UserManagementController extends Controller
                             </h2>
                         </div>
                         <div id="activateEmpUserAccountCollapse_Div'.$get_selected_user_id.'" class="collapse cust_collapse_active cb_t0b12y20" aria-labelledby="activateEmpUserAccountCollapse_heading'.$get_selected_user_id.'" data-parent="#activateUserAccountModalAccordion_Parent'.$get_selected_user_id.'">
-                            <div class="card-body lightBlue_cardBody mt-2">
+                            <div class="card-body lightBlue_cardBody mb-2">
                                 <span class="lightBlue_cardBody_blueTitle m-0">Employee ID:</span>
                                 <span class="lightBlue_cardBody_list mb-1">'.$get_user_sdca_id.'</span>
                                 <span class="lightBlue_cardBody_blueTitle m-0">Job Title</span>

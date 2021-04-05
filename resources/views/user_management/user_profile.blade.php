@@ -44,7 +44,7 @@
         {{-- directory link --}}
         <div class="row mb-3">
             <div class="col-lg-12 col-md-12 col-sm-12">
-                <a href="{{ route('user_management.overview_users_management', 'overview_users_management') }}" class="directory_link">Users Management</a> <span class="directory_divider"> / </span> <a href="{{ route('user_management.system_users', 'system_users') }}" class="directory_link">System Users </a> <span class="directory_divider"> / </span> <a href="{{ route('user_management.user_profile', 'user_profile') }}" class="directory_active_link">User Profile ~ {{ $user_data->user_fname }} {{ $user_data->user_lname }}</a>
+                <a href="{{ route('user_management.overview_users_management', 'overview_users_management') }}" class="directory_link">Users Management</a> <span class="directory_divider"> / </span> <a href="{{ route('user_management.system_users', 'system_users') }}" class="directory_link">System Users </a> <span class="directory_divider"> / </span> <a href="{{ route('user_management.user_profile', 'user_profile') }}" class="directory_active_link">User Profile <span class="directory_divider"> / </span> {{ $user_data->user_fname }} {{ $user_data->user_lname }}</a>
             </div>
         </div>
 
@@ -364,7 +364,7 @@
                                             <div class="col-lg-8 col-md-10 col-sm-11 p-0 d-flex justify-content-center">
                                                 <div class="btn-group cust_btn_group" role="group" aria-label="User's Account Status / Action">
                                                     <button type="button" class="btn {{ $btn_class }} btn_group_label m-0">{{ $user_data->user_role }}</button>
-                                                    <button type="button" id="{{$user_data->id}}" class="btn {{ $btn_class }} btn_group_icon m-0" data-toggle="tooltip" data-placement="top" title="Change User's System Role?"><i class="fa fa-pencil"></i></button>
+                                                    <button type="button" id="{{$user_data->id}}" onclick="changeUserRole(this.id)" class="btn {{ $btn_class }} btn_group_icon m-0" data-toggle="tooltip" data-placement="top" title="Change User's System Role?"><i class="fa fa-pencil"></i></button>
                                                 </div>
                                             </div>
                                         </div>
@@ -439,6 +439,9 @@
                                                                 </span>
                                                             </div>
                                                             <input id="upd_stud_email" name="upd_stud_email" type="text" class="form-control" @if($user_data->email != 'null') value="{{$user_data->email}}" @else placeholder="Type Email Address" @endif required>
+                                                            <span id="studEmailAvail_notice" class="d-none text-right">
+
+                                                            </span>
                                                         </div>
                                                         <label for="upd_stud_num">Student Number</label>
                                                         <div class="input-group">
@@ -538,7 +541,7 @@
                                                             <input name="upd_stud_phnum" type="number" pattern="[0-9]{11}" min="0" oninput="validity.valid||(value='');" class="form-control" @if($user_stud_info->uStud_phnum != 'null') value="{{$user_stud_info->uStud_phnum}}" @else placeholder="Type Contact Number" @endif required>
                                                         </div>
                                                         <div class="d-flex justify-content-center">
-                                                            <input type="hidden" name="selected_user_id" value="{{$user_data->id}}"/>
+                                                            <input type="hidden" name="selected_user_id" id="selected_user_id" value="{{$user_data->id}}"/>
                                                             <input type="hidden" name="respo_user_id" value="{{auth()->user()->id}}"/>
                                                             <input type="hidden" name="respo_user_lname" value="{{auth()->user()->user_lname}}"/>
                                                             <input type="hidden" name="respo_user_fname" value="{{auth()->user()->user_fname}}"/>
@@ -548,10 +551,119 @@
                                                 </form>
                                             </div>
                                         </div>
-                                    @elseif($user_data === 'employee')
+                                    @elseif($user_data->user_type === 'employee')
+                                        <div class="card card_gbr shadow">
+                                            <div class="card-body p-0">
+                                                <div class="card-header cb_p15x25">
+                                                    <span class="sec_card_body_title">Edit Profile</span>
+                                                    <span class="sec_card_body_subtitle">Click the <span class="font-weight-bold">'Save Changes'</span> button to update {{ $user_data->user_fname }} {{ $user_data->user_lname}}'s profile.</span>
+                                                </div>
+                                                <form id="form_empUserUpdateProfile" class="form" method="POST" action="{{route('user_management.update_emp_user_profile')}}" enctype="multipart/form-data" onsubmit="update_empUserInfoBtn.disabled = true; return true;">
+                                                    @csrf
+                                                    <div class="cb_px25 cb_pb15">
+                                                        <div class="row d-flex justify-content-center">
+                                                            <div class="col-lg-12 col-md-12 col-sm-12 align-items-center">
+                                                                <div class="up_img_div text-center">
+                                                                    <img class="up_user_image emp_imgUpld_targetImg shadow border-gray" src="{{asset('storage/svms/user_images/'.$user_data->user_image)}}" alt="{{$user_data->user_fname }} {{ $user_data->user_lname}}'s profile image'">
+                                                                </div>
+                                                                <div class="user_image_upload_input_div emp_imgUpload">
+                                                                    <i class="nc-icon nc-image emp_imgUpld_TrgtBtn"></i>
+                                                                    <input name="upd_emp_user_image" class="file_upload_input emp_img_imgUpld_fileInpt" type="file" accept="image/*"/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <label for="upd_emp_email">Email Address</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="nc-icon nc-email-85" aria-hidden="true"></i>
+                                                                </span>
+                                                            </div>
+                                                            <input id="upd_emp_email" name="upd_emp_email" type="text" class="form-control" @if($user_data->email != 'null') value="{{$user_data->email}}" @else placeholder="Type Email Address" @endif required>
+                                                            <span id="empEmailAvail_notice" class="d-none text-right">
 
+                                                            </span>
+                                                        </div>
+                                                        <label for="upd_emp_id">Employee ID</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="nc-icon nc-badge" aria-hidden="true"></i>
+                                                                </span>
+                                                            </div>
+                                                            <input id="upd_emp_id" name="upd_emp_id" type="number" min="0" oninput="validity.valid||(value='');" class="form-control" @if($user_data->user_sdca_id != 'null') value="{{$user_data->user_sdca_id}}" @else placeholder="Type Employee ID" @endif required>
+                                                        </div>
+                                                        <label for="upd_emp_lname">Last Name</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="nc-icon nc-single-02"></i>
+                                                                </span>
+                                                            </div>
+                                                            <input id="upd_emp_lname" name="upd_emp_lname" type="text" class="form-control" @if($user_data->user_lname != 'null') value="{{$user_data->user_lname}}" @else placeholder="Type Last Name" @endif required>
+                                                        </div>
+                                                        <label for="upd_emp_fname">First Name</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="nc-icon nc-single-02"></i>
+                                                                </span>
+                                                            </div>
+                                                            <input id="upd_emp_fname" name="upd_emp_fname" type="text" class="form-control" @if($user_data->user_fname != 'null') value="{{$user_data->user_fname}}" @else placeholder="Type First Name" @endif required>
+                                                        </div>
+                                                        <label for="upd_emp_fname">Gender</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="nc-icon nc-single-02"></i>
+                                                                </span>
+                                                            </div>
+                                                            <input id="upd_emp_gender" list="updateGenderOptions" pattern="Male|Female" name="upd_emp_gender" type="text" class="form-control" @if($user_data->user_gender != 'null') value="{{ucfirst($user_data->user_gender)}}" @else placeholder="Select Gender" @endif required>
+                                                            <datalist id="updateGenderOptions">
+                                                                <option value="Male">
+                                                                <option value="Female">
+                                                            </datalist>
+                                                        </div>
+                                                        <label for="upd_emp_jobdesc">Job Description</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="nc-icon nc-briefcase-24" aria-hidden="true"></i>
+                                                                </span>
+                                                            </div>
+                                                            <input id="upd_emp_jobdesc" name="upd_emp_jobdesc" type="text" class="form-control" @if($user_emp_info->uEmp_job_desc != 'null') value="{{$user_emp_info->uEmp_job_desc}}" @else placeholder="Type Job Position" @endif required>
+                                                        </div>
+                                                        <label for="upd_emp_dept">Department</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="nc-icon nc-bank" aria-hidden="true"></i>
+                                                                </span>
+                                                            </div>
+                                                            <input id="upd_emp_dept" name="upd_emp_dept" type="text" class="form-control" @if($user_emp_info->uEmp_dept != 'null') value="{{$user_emp_info->uEmp_dept}}" @else placeholder="Type Department" @endif required>
+                                                        </div>
+                                                        <label for="upd_emp_phnum">Phone NUmber</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="fa fa-mobile" aria-hidden="true"></i>
+                                                                </span>
+                                                            </div>
+                                                            <input name="upd_emp_phnum" type="number" pattern="[0-9]{11}" min="0" oninput="validity.valid||(value='');" class="form-control" @if($user_emp_info->uEmp_phnum != 'null') value="{{$user_emp_info->uEmp_phnum}}" @else placeholder="Type Contact Number" @endif required>
+                                                        </div>
+                                                        <div class="d-flex justify-content-center">
+                                                            <input type="hidden" name="selected_user_id" id="selected_user_id" value="{{$user_data->id}}"/>
+                                                            <input type="hidden" name="respo_user_id" value="{{auth()->user()->id}}"/>
+                                                            <input type="hidden" name="respo_user_lname" value="{{auth()->user()->user_lname}}"/>
+                                                            <input type="hidden" name="respo_user_fname" value="{{auth()->user()->user_fname}}"/>
+                                                            <button type="submit" id="update_empUserInfoBtn" class="btn btn_svms_blue btn-round btn_show_icon" disabled>{{ __('Save Changes') }}<i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
                                     @else
-                                        
+                                         {{-- unknown user type  --}}
                                     @endif
                                     <div class="row">
                                         <div class="col-lg-12 col-md-12 col-sm-12">
@@ -573,7 +685,7 @@
                                                 <div class="cb_px25 cb_pb15">
                                                     <div class="light_backDrop_card mb-2">
                                                         <div class="form-group">
-                                                            <label for="upd_sysUser_new_password_reason">Reason <i class="fa fa-info-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="This will let {{ $user_data->user_fname }} {{ $user_data->user_lname }} know the reason behind updating {{ $gender_txt }} account password."></i></label>
+                                                            <label for="upd_sysUser_new_password_reason">Reason <i class="fa fa-question-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="This will let {{ $user_data->user_fname }} {{ $user_data->user_lname }} know the reason behind updating {{ $gender_txt }} account password."></i></label>
                                                             <textarea class="form-control" id="upd_sysUser_new_password_reason" name="upd_sysUser_new_password_reason" rows="3" placeholder="Type reason for Password Update first (required)" required></textarea>
                                                         </div>
                                                     </div>
@@ -753,23 +865,23 @@
             </div>
         </div>
     {{-- manage user role first modal --}}
-    {{-- verify credential for updating user's profile modal --}}
-        <div class="modal fade" id="verifyPasswordModal" tabindex="-1" role="dialog" aria-labelledby="verifyPasswordModalLabel" aria-hidden="true">
+    {{-- manage user role first modal --}}
+        <div class="modal fade" id="changeUserRoleModal" tabindex="-1" role="dialog" aria-labelledby="changeUserRoleModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content cust_modal">
                     <div class="modal-header border-0">
-                        <span class="modal-title cust_modal_title" id="verifyPasswordModalLabel">Manage Assigned Role First </span>
+                        <span class="modal-title cust_modal_title" id="changeUserRoleModalLabel">Change User's Role?</span>
                         <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div id="verifyPasswordHtmlData">
+                    <div id="changeUserRoleHtmlData">
                     
                     </div>
                 </div>
             </div>
         </div>
-    {{-- verify credential for updating user's profile modal --}}
+    {{-- manage user role first modal --}}
 
 @endsection
 
@@ -810,6 +922,24 @@
 
 {{-- manage role first open modal --}}
     <script>
+        function changeUserRole(sel_user_id){
+            var sel_user_id = sel_user_id;
+            var _token = $('input[name="_token"]').val();
+            $.ajax({
+                url:"{{ route('user_management.change_user_role_modal') }}",
+                method:"GET",
+                data:{sel_user_id:sel_user_id, _token:_token},
+                success: function(data){
+                    $('#changeUserRoleHtmlData').html(data); 
+                    $('#changeUserRoleModal').modal('show');
+                }
+            });
+        }
+    </script>
+{{-- manage role first open modal end --}}
+
+{{-- change user role open modal --}}
+    <script>
         function manageRoleFirst(manage_role_first_id){
             var manage_role_first_id = manage_role_first_id;
             var _token = $('input[name="_token"]').val();
@@ -824,7 +954,7 @@
             });
         }
     </script>
-{{-- manage role first open modal end --}}
+{{-- change user role open modal end --}}
 
 {{-- STUDENT USER's PROFILE UPDATE --}}
 {{-- student user's image update --}}
@@ -847,7 +977,7 @@
             });
         });
     </script>
-{{-- student user's image update --}}
+{{-- student user's image update end --}}
 {{-- display datalist options based on previous selected option --}}
     {{-- selected school --}}
     <script>
@@ -928,34 +1058,68 @@
     </script>
 {{-- disable update button on student profile update if any of inputs have chagned end --}}
 
-{{-- toggle password input visibility --}}
+{{-- EMPLOYEE USER's PROFILE UPDATE --}}
+{{-- employee profile image --}}
     <script>
-        const toggleStudUserNewPassword = document.querySelector('#toggleStudUserNewPassword');
-        const upd_sysUser_new_password = document.querySelector('#upd_sysUser_new_password');
-        toggleStudUserNewPassword.addEventListener('click', function (e) {
-            // toggle the type attribute
-            const type = upd_sysUser_new_password.getAttribute('type') === 'password' ? 'text' : 'password';
-            upd_sysUser_new_password.setAttribute('type', type);
-            // toggle the eye slash icon
-            this.classList.toggle('fa-eye-slash');
+        $(document).ready(function() {
+            var readURL = function(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        $('.emp_imgUpld_targetImg').attr('src', e.target.result);
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+            $(".emp_img_imgUpld_fileInpt").on('change', function(){
+                readURL(this);
+            });
+            $(".emp_imgUpld_TrgtBtn").on('click', function() {
+                $(".emp_img_imgUpld_fileInpt").click();
+            });
         });
     </script>
+{{-- employee profile image end --}}
+{{-- disable update button on employee profile update if any of inputs have chagned --}}
+    <script>
+        $(window).on('load', function(e){
+            $('#form_empUserUpdateProfile').each(function(){
+                $(this).data('serialized', $(this).serialize())
+            }).on('change input', function(){
+                $(this).find('#update_empUserInfoBtn').prop('disabled', $(this).serialize() == $(this).data('serialized'));
+                /* Check if input with type files has changed */
+                var changedFiles = $( ":file" ).filter(function( index ) {
+                    return this.value != this.defaultValue;
+                }).length;
+                if ( changedFiles > 0) {
+                    $(this).find('#update_empUserInfoBtn, input[type="file"]')
+                        .prop('disabled', false);
+                }
+            }).find('#update_empUserInfoBtn').prop('disabled', true);
+        });
+    </script>
+{{-- disable update button on employee profile update if any of inputs have chagned end --}}
+
+{{-- toggle password input visibility --}}
+    {{-- for employee user --}}
+        
+    {{-- for employee user end --}}
+    {{-- for student user --}}
+        <script>
+            const toggleStudUserNewPassword = document.querySelector('#toggleStudUserNewPassword');
+            const upd_sysUser_new_password = document.querySelector('#upd_sysUser_new_password');
+            toggleStudUserNewPassword.addEventListener('click', function (e) {
+                // toggle the type attribute
+                const type = upd_sysUser_new_password.getAttribute('type') === 'password' ? 'text' : 'password';
+                upd_sysUser_new_password.setAttribute('type', type);
+                // toggle the eye slash icon
+                this.classList.toggle('fa-eye-slash');
+            });
+        </script>
+    {{-- for student user end --}}
 {{-- toggle password input visibility end --}}
     
 {{-- for password update --}}
-    {{-- <script>
-        $(document).ready(function () {
-            $('#upd_sysUser_new_password_reason').keyup(function () {
-                if ($(this).val() !== '') {
-                    $('#generate_NewSysUserPass_Btn').prop('disabled', false);
-                    $('#upd_sysUser_new_password').prop('disabled', false);
-                }else{
-                    $('#generate_NewSysUserPass_Btn').prop('disabled', true);
-                    $('#upd_sysUser_new_password').prop('disabled', true);
-                }
-            })
-        });  
-    </script> --}}
 {{-- password check strenght --}}
     <script>
         const newSysUserPass_indicator    = document.querySelector(".pass_strenght_indicator_div");
@@ -1020,5 +1184,106 @@
         }
     </script>
 {{-- password check strenght end --}}
+
+{{-- email availability for new emai on user's profile update --}}
+    {{-- for student user --}}
+        <script>
+            $(document).ready(function(){
+                $('#upd_stud_email').blur(function(){
+                    var error_email = '';
+                    var stud_id = $('#selected_user_id').val();
+                    var stud_email = $('#upd_stud_email').val();
+                    var _token = $('input[name="_token"]').val();
+                    var filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+                    // console.log(stud_id);
+                    // console.log(stud_email);
+                    if(!filter.test(stud_email)){    
+                        $('#studEmailAvail_notice').removeClass('d-none');
+                        $('#studEmailAvail_notice').addClass('invalid-feedback');
+                        $('#studEmailAvail_notice').addClass('d-block');
+                        // $('#prepend_status').addClass('is_invalid');
+                        $('#studEmailAvail_notice').html('<strong>Invalid Email Format!</strong>');
+                        $('#upd_stud_email').addClass('is-invalid');
+                    }else{
+                        $.ajax({
+                            url:"{{ route('user_management.stud_user_switch_new_email_availability_check') }}",
+                            method:"POST",
+                            data:{stud_id:stud_id, stud_email:stud_email, _token:_token},
+                            success:function(result){
+                                if(result == 'unique'){
+                                    $('#studEmailAvail_notice').removeClass('d-none');
+                                    $('#studEmailAvail_notice').removeClass('invalid-feedback');
+                                    $('#studEmailAvail_notice').addClass('valid-feedback');
+                                    $('#studEmailAvail_notice').html('<strong>Email Available.</strong>');
+                                    $('#upd_stud_email').removeClass('is-invalid');
+                                    $('#upd_stud_email').addClass('is-valid');
+                                    // console.log('unique');
+                                }else{
+                                    $('#studEmailAvail_notice').removeClass('d-none');
+                                    $('#studEmailAvail_notice').addClass('invalid-feedback');
+                                    $('#studEmailAvail_notice').addClass('d-block');
+                                    // $('#prepend_status').addClass('is_invalid');
+                                    $('#studEmailAvail_notice').html('<strong>Email already in use!</strong>');
+                                    $('#upd_stud_email').addClass('is-invalid');
+                                    $('#update_studUserInfoBtn').attr('disabled', 'disabled');
+                                    // console.log('duplicate');
+                                }
+                            }
+                        })
+                    }
+                });
+            });
+        </script>
+    {{-- for student user --}}
+    {{-- for employee user --}}
+        <script>
+            $(document).ready(function(){
+                $('#upd_emp_email').blur(function(){
+                    var error_email = '';
+                    var emp_id = $('#selected_user_id').val();
+                    var emp_email = $('#upd_emp_email').val();
+                    var _token = $('input[name="_token"]').val();
+                    var filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+                    // console.log(emp_id);
+                    // console.log(emp_email);
+                    if(!filter.test(emp_email)){    
+                        $('#empEmailAvail_notice').removeClass('d-none');
+                        $('#empEmailAvail_notice').addClass('invalid-feedback');
+                        $('#empEmailAvail_notice').addClass('d-block');
+                        // $('#prepend_status').addClass('is_invalid');
+                        $('#empEmailAvail_notice').html('<strong>Invalid Email Format!</strong>');
+                        $('#upd_emp_email').addClass('is-invalid');
+                    }else{
+                        $.ajax({
+                            url:"{{ route('user_management.emp_user_switch_new_email_availability_check') }}",
+                            method:"POST",
+                            data:{emp_id:emp_id, emp_email:emp_email, _token:_token},
+                            success:function(result){
+                                if(result == 'unique'){
+                                    $('#empEmailAvail_notice').removeClass('d-none');
+                                    $('#empEmailAvail_notice').removeClass('invalid-feedback');
+                                    $('#empEmailAvail_notice').addClass('valid-feedback');
+                                    $('#empEmailAvail_notice').html('<strong>Email Available.</strong>');
+                                    $('#upd_emp_email').removeClass('is-invalid');
+                                    $('#upd_emp_email').addClass('is-valid');
+                                    // console.log('unique');
+                                }else{
+                                    $('#empEmailAvail_notice').removeClass('d-none');
+                                    $('#empEmailAvail_notice').addClass('invalid-feedback');
+                                    $('#empEmailAvail_notice').addClass('d-block');
+                                    // $('#prepend_status').addClass('is_invalid');
+                                    $('#empEmailAvail_notice').html('<strong>Email already in use!</strong>');
+                                    $('#upd_emp_email').addClass('is-invalid');
+                                    $('#update_empUserInfoBtn').attr('disabled', 'disabled');
+                                    // console.log('duplicate');
+                                }
+                            }
+                        })
+                    }
+                });
+            });
+        </script>
+    {{-- for employee user --}}
+{{-- email availability for new emai on user's profile update end --}}
 
 @endpush
