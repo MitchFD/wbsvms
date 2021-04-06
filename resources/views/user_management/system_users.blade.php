@@ -376,7 +376,7 @@
                                                                             ?><img class="assignedUsersCirclesImgs2 whiteImg_border1" src="{{asset('storage/svms/user_images/'.$display_8userImgs->user_image)}}" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="@if(auth()->user()->id === $display_8userImgs->id) You @else {{$display_8userImgs->user_fname. ' ' .$display_8userImgs->user_lname}} @endif"> <?php
                                                                         }
                                                                         ?>
-                                                                        <div class="moreImgsCounterDiv2" data-toggle="tooltip" data-placement="top" title="{{$more_count}} more @if($more_count >= 1) user @else users @endif">
+                                                                        <div class="moreImgsCounterDiv2" data-toggle="tooltip" data-placement="top" title="{{$more_count}} more @if($more_count > 1) users @else user @endif">
                                                                             <span class="moreImgsCounterTxt2">+{{$more_count}}</span>
                                                                         </div>
                                                                         <?php
@@ -437,7 +437,7 @@
                                                                             ?><img class="assignedUsersCirclesImgs2 gray_image_filter whiteImg_border1" src="{{asset('storage/svms/user_images/'.$display_8userImgs->user_image)}}" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="@if(auth()->user()->id === $display_8userImgs->id) You @else {{$display_8userImgs->user_fname. ' ' .$display_8userImgs->user_lname}} @endif"> <?php
                                                                         }
                                                                         ?>
-                                                                        <div class="moreImgsCounterDiv2" data-toggle="tooltip" data-placement="top" title="{{$more_count}} more @if($more_count >= 1) user @else users @endif">
+                                                                        <div class="moreImgsCounterDiv2" data-toggle="tooltip" data-placement="top" title="{{$more_count}} more @if($more_count > 1) users @else user @endif">
                                                                             <span class="moreImgsCounterTxt2">+{{$more_count}}</span>
                                                                         </div>
                                                                         <?php
@@ -490,7 +490,7 @@
                                                                             ?><img class="assignedUsersCirclesImgs2 gray_image_filter whiteImg_border1" src="{{asset('storage/svms/user_images/'.$display_8userImgs->user_image)}}" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="@if(auth()->user()->id === $display_8userImgs->id) You @else {{$display_8userImgs->user_fname. ' ' .$display_8userImgs->user_lname}} @endif"> <?php
                                                                         }
                                                                         ?>
-                                                                        <div class="moreImgsCounterDiv2" data-toggle="tooltip" data-placement="top" title="{{$more_count}} more @if($more_count >= 1) user @else users @endif">
+                                                                        <div class="moreImgsCounterDiv2" data-toggle="tooltip" data-placement="top" title="{{$more_count}} more @if($more_count > 1) users @else user @endif">
                                                                             <span class="moreImgsCounterTxt2">+{{$more_count}}</span>
                                                                         </div>
                                                                         <?php

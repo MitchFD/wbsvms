@@ -865,7 +865,7 @@
             </div>
         </div>
     {{-- manage user role first modal --}}
-    {{-- manage user role first modal --}}
+    {{-- change user's System Role modal --}}
         <div class="modal fade" id="changeUserRoleModal" tabindex="-1" role="dialog" aria-labelledby="changeUserRoleModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content cust_modal">
@@ -881,7 +881,24 @@
                 </div>
             </div>
         </div>
-    {{-- manage user role first modal --}}
+    {{-- change user's System Role modal --}}
+    {{-- add New System Role modal --}}
+        <div class="modal fade" id="addNewSystemRoleModal" tabindex="-1" role="dialog" aria-labelledby="addNewSystemRoleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="addNewSystemRoleModalLabel">Add New System Role?</span>
+                        <button type="button" id="back_btn" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="addNewSystemRoleHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{-- add New System Role modal end --}}
 
 @endsection
 
@@ -922,24 +939,6 @@
 
 {{-- manage role first open modal --}}
     <script>
-        function changeUserRole(sel_user_id){
-            var sel_user_id = sel_user_id;
-            var _token = $('input[name="_token"]').val();
-            $.ajax({
-                url:"{{ route('user_management.change_user_role_modal') }}",
-                method:"GET",
-                data:{sel_user_id:sel_user_id, _token:_token},
-                success: function(data){
-                    $('#changeUserRoleHtmlData').html(data); 
-                    $('#changeUserRoleModal').modal('show');
-                }
-            });
-        }
-    </script>
-{{-- manage role first open modal end --}}
-
-{{-- change user role open modal --}}
-    <script>
         function manageRoleFirst(manage_role_first_id){
             var manage_role_first_id = manage_role_first_id;
             var _token = $('input[name="_token"]').val();
@@ -954,7 +953,44 @@
             });
         }
     </script>
+{{-- manage role first open modal end --}}
+
+{{-- change user role open modal --}}
+    <script>
+        function changeUserRole(sel_user_id){
+            var sel_user_id = sel_user_id;
+            var _token = $('input[name="_token"]').val();
+            $('#addNewSystemRoleModal').modal('hide');
+            $.ajax({
+                url:"{{ route('user_management.change_user_role_modal') }}",
+                method:"GET",
+                data:{sel_user_id:sel_user_id, _token:_token},
+                success: function(data){
+                    $('#changeUserRoleHtmlData').html(data); 
+                    $('#changeUserRoleModal').modal('show');
+                }
+            });
+        }
+    </script>
 {{-- change user role open modal end --}}
+{{-- add new system role open modal --}}
+<script>
+    function add_newSystemRole_modal(prev_user_id){
+        var prev_user_id = prev_user_id;
+        var _token = $('input[name="_token"]').val();
+        $('#changeUserRoleModal').modal('hide');
+        $.ajax({
+            url:"{{ route('user_management.add_new_system_role_modal') }}",
+            method:"GET",
+            data:{prev_user_id:prev_user_id, _token:_token},
+            success: function(data){
+                $('#addNewSystemRoleHtmlData').html(data); 
+                $('#addNewSystemRoleModal').modal('show');
+            }
+        });
+    }
+</script>
+{{-- add new system role open modal end --}}
 
 {{-- STUDENT USER's PROFILE UPDATE --}}
 {{-- student user's image update --}}
@@ -1285,5 +1321,43 @@
         </script>
     {{-- for employee user --}}
 {{-- email availability for new emai on user's profile update end --}}
+
+{{-- CHANGE USER'S ROLE --}}
+{{-- get user type from <select id="upd_user_type"... value --}}
+    <script>
+        function userType_onchange(){
+            var default_user_type = document.querySelector("#change_user_sys_type");
+            var emp_uRoles_div    = document.querySelector("#emp_uRoles_div");
+            var stud_uRoles_div   = document.querySelector("#stud_uRoles_div");
+            $('input[name="change_user_sys_role"]').prop('checked',false);
+            // console.log(default_user_type.value);
+            if(default_user_type.value === 'employee'){
+                stud_uRoles_div.classList.remove("d-block");
+                stud_uRoles_div.classList.add("d-none");
+                emp_uRoles_div.classList.remove("d-none");
+                emp_uRoles_div.classList.add("d-block");
+            }else if(default_user_type.value === 'student'){
+                emp_uRoles_div.classList.remove("d-block");
+                emp_uRoles_div.classList.add("d-none");
+                stud_uRoles_div.classList.remove("d-none");
+                stud_uRoles_div.classList.add("d-block");
+            }else{
+
+            }
+        }
+    </script>
+{{-- get user type from <select id="upd_user_type"... value end--}}
+{{-- disable submit button on Change User Role Modal if any of inputs have chagned --}}
+    {{-- <script>
+        $(window).on('load', function(){
+            $('#form_changeUserRole').each(function(){
+                $(this).data('serialized', $(this).serialize())
+            }).on('change input select', function(){
+                $(this).find('#submit_changeUserRoleBtn').prop('disabled', $(this).serialize() == $(this).data('serialized'));
+                console.log('nagbago');
+            }).find('#submit_changeUserRoleBtn').prop('disabled', true);
+        });
+    </script> --}}
+{{-- disable submit button on Change User Role Modal if any of inputs have chagned end --}}
 
 @endpush

@@ -81,6 +81,9 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('user_management/change_user_role_modal', 'App\Http\Controllers\UserManagementController@change_user_role_modal')->name('user_management.change_user_role_modal');
 	Route::post('user_management/process_change_user_role', 'App\Http\Controllers\UserManagementController@process_change_user_role')->name('user_management.process_change_user_role');
 
+	// add new system role
+	Route::get('user_management/add_new_system_role_modal', 'App\Http\Controllers\UserManagementController@add_new_system_role_modal')->name('user_management.add_new_system_role_modal');
+
 	// for updating system user's profile
 	Route::post('user_management/update_stud_user_profile', ['as' => 'user_management.update_stud_user_profile', 'uses' => 'App\Http\Controllers\UserManagementController@update_stud_user_profile']);
 	Route::post('user_management/update_emp_user_profile', ['as' => 'user_management.update_emp_user_profile', 'uses' => 'App\Http\Controllers\UserManagementController@update_emp_user_profile']);

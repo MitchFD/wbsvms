@@ -1,8 +1,16 @@
 // initianlize tooltip 
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
-    })
+    });
 
+// toggle icon class on button click
+    $('.custom2_btn_collapse').click(function() {
+        $("i", this).toggleClass("nc-minimal-up nc-minimal-down");
+    });
+    $('.cust_btn_smcircle3').click(function() {
+        $("i", this).toggleClass("nc-minimal-up nc-minimal-down");
+    });
+    
 // change dropdown collapse icon on button click from main gray card
     // for all colllapse cards
     $('.acc_collapse_cards').click(function() {
@@ -25,12 +33,6 @@
         $("i", this).toggleClass("nc-minimal-up nc-minimal-down");
     });
 // change dropdown collapse icon on button click from main gray card end 
-    $('.custom2_btn_collapse').click(function() {
-        $("i", this).toggleClass("nc-minimal-up nc-minimal-down");
-    });
-// change dropdown icon on user profile - modal
-
-// change dropdown icon on user profile - modal end
 
 // active main gray card collpase on page refresh
     // code here

@@ -474,6 +474,10 @@ fieldset[disabled] .btn_svms_blue.active {
   padding-top: 7px !important;
 }
 
+.p10{
+  padding: 10px !important;
+}
+
 .p12{
   padding: 12px !important;
 }
@@ -509,6 +513,26 @@ fieldset[disabled] .btn_svms_blue.active {
   position: relative;
   cursor: pointer !important;
   margin: 0 10px 0 0 !important;
+}
+
+.cust_radioInptDiv2{
+  display: -ms-flexbox !important;
+  display: flex !important;
+  -ms-flex-align: center !important;
+  align-items: center !important;
+  width: 100%;
+  margin: 0 !important;
+}
+.cust_radioInptDiv2 input{
+  position: relative;
+  cursor: pointer !important;
+  margin: 0 10px 0 0 !important;
+}
+.cust_radioInptDiv2 label{
+  color: #66615b !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  padding: 0px !important;
 }
 
 /* modal customizations */
@@ -611,7 +635,16 @@ fieldset[disabled] .btn_svms_blue.active {
   text-transform: normal !important;
   color: var(--svms_light_blue);
 }
-
+/* white card body */
+.LightBlue2_cardBody{
+  display: block;
+  line-height: 1.5 !important;
+  background-color: #E9E9EB !important;
+  color: var(--svms_blue);
+  padding: 12px 15px !important;
+  border-radius: 12px !important;
+  margin: 0;
+}
 /* light blue card body */
 .lightBlue_cardBody{
   display: block;
@@ -1153,6 +1186,13 @@ a.text_svms_gray:hover {
   overflow: hidden !important;
   padding: 0 !important;
   margin: 0 !important;
+}
+.cust_accordion_div2{
+  border-radius: 4px !important;
+  border: 1px solid #dddddd;
+  overflow: hidden !important;
+  padding: 0 !important;
+  margin: 0;
 }
 .custom_accordion_card{
   border-bottom: 1px solid #F8F9FA !important;
@@ -1724,6 +1764,29 @@ a.text_svms_gray:hover {
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
 }
 
+.cust_fltr_dropdowns2{
+  font-size: 14px;
+  font-weight: normal;
+  margin: 0 !important;
+  padding: 10px !important; 
+  box-shadow: none;
+  color: #66615b;
+  cursor: pointer;
+  height: 40px !important;
+   
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+.cust_fltr_dropdowns2::placeholder {
+  opacity: 1;
+  color: #66615b !important;
+  font-weight: normal !important;
+}
+
+
 .br_lft_sde{
   border-bottom-left-radius: 30px;
   border-top-left-radius: 30px;
@@ -1752,7 +1815,6 @@ select.drpdwn_arrow {
     5px 5px;
   background-repeat: no-repeat;
 }
-
 select.drpdwn_arrow:focus {
   background-image:
     linear-gradient(45deg, gray 50%, transparent 50%),
@@ -1760,6 +1822,32 @@ select.drpdwn_arrow:focus {
   background-position:
     calc(100% - 15px) 21px,
     calc(100% - 20px) 21px;
+  background-size:
+    5px 5px,
+    5px 5px;
+  background-repeat: no-repeat;
+  border-color: none;
+  outline: 0;
+}
+select.drpdwn_arrow2 {
+  background-image:
+    linear-gradient(45deg, transparent 50%, #b3b0ad 50%),
+    linear-gradient(135deg, #b3b0ad 50%, transparent 50%);
+  background-position:
+    calc(100% - 20px) calc(1em + 2px),
+    calc(100% - 15px) calc(1em + 2px);
+  background-size:
+    5px 5px,
+    5px 5px;
+  background-repeat: no-repeat;
+}
+select.drpdwn_arrow2:focus {
+  background-image:
+    linear-gradient(45deg, gray 50%, transparent 50%),
+    linear-gradient(135deg, transparent 50%, gray 50%);
+  background-position:
+    calc(100% - 15px) 15px,
+    calc(100% - 20px) 15px;
   background-size:
     5px 5px,
     5px 5px;
@@ -1926,9 +2014,10 @@ select.drpdwn_arrow:focus {
 }
 
 .form label{
-  font-weight: bold !important;
+  font-weight: bold;
   font-size: 13px;
   color: #9A9A9A;
+  margin: 0 0 5px;
 }
 
 .light_backDrop_card{

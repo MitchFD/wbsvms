@@ -1167,15 +1167,20 @@ class UserManagementController extends Controller
             $get_sel_user_gender        = $get_sel_user_info->user_gender;
             $get_sel_user_registered_by = $get_sel_user_info->registered_by;
             $get_sel_user_created_at    = $get_sel_user_info->created_at;
+        // get all system roles
+            $get_all_emp_roles  = Userroles::select('uRole_id', 'uRole_status', 'uRole_type', 'uRole', 'uRole_access')->where('uRole_status', '!=', 'deleted')->where('uRole_type', 'employee')->get();
+            $get_all_stud_roles = Userroles::select('uRole_id', 'uRole_status', 'uRole_type', 'uRole', 'uRole_access')->where('uRole_status', '!=', 'deleted')->where('uRole_type', 'student')->get();
         // filter values
             if($get_sel_user_type === 'student'){
                 $get_stud_info = Userstudents::select('uStud_num', 'uStud_school', 'uStud_program', 'uStud_yearlvl', 'uStud_section', 'uStud_phnum')->where('uStud_num', $get_sel_user_sdca_id)->first();
                 $sdca_id_title = 'Student Number';
                 $img_filter = 'studImg_background';
-            }else{
+            }else if($get_sel_user_type === 'employee'){
                 $get_emp_info = Useremployees::select('uEmp_id', 'uEmp_job_desc', 'uEmp_dept', 'uEmp_phnum')->where('uEmp_id', $get_sel_user_sdca_id)->first();
                 $sdca_id_title = 'Employee ID';
                 $img_filter = 'empImg_background';
+            }else{
+
             }
         // his/her text, apostrophe
             if($get_sel_user_gender === 'female'){
@@ -1258,22 +1263,119 @@ class UserManagementController extends Controller
                         </div>
                     </div>
                 </div>
-                <form action="'.route('user_management.process_change_user_role').'" class="changeUserRoleForm" method="POST">
+                <form id="form_changeUserRole" action="'.route('user_management.process_change_user_role').'" class="changeUserRoleForm form" enctype="multipart/form-data" method="POST" onsubmit="submit_changeUserRoleBtn.disabled = true; return true;">
                     <div class="modal-body pb-0">
                         <div class="card-body lightBlue_cardBody shadow-none">
                             <span class="lightBlue_cardBody_notice"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i> Options available for assigning a System Role is based on the user'.$sq.'s (<span class="font-weight-bold font-italic">USER TYPE</span>). The system will notify ' . $mr_ms . ' ' . $get_sel_user_lname . ' of the changes to ' . $his_her . ' account thru ' . $his_her . ' registered email address.
                         </div>
                         <div class="card-body lightBlue_cardBody shadow-none mt-2">
                             <div class="form-group cust_fltr_dropdowns_div mb-1">
-                                <label for="upd_user_type">Select User Type</label>
-                                <select class="form-control cust_fltr_dropdowns drpdwn_arrow" id="upd_user_type" name="upd_user_type">
-                                <option>Employee User</option>
-                                <option>Student User</option>
+                                <label for="change_user_sys_type">Select User Type</label>
+                                <select class="form-control cust_fltr_dropdowns2 drpdwn_arrow2" id="change_user_sys_type" name="change_user_sys_type" onchange="userType_onchange()">
+                                '; 
+                                if($get_sel_user_type === 'employee'){
+                                    $output .= '<option selected="selected" class="d-none" value="0">Select User'.$sq.'s Type</option>';
+                                }elseif($get_sel_user_type === 'student'){
+                                    $output .= '<option selected="selected" class="d-none" value="0">Select User'.$sq.'s Type</option>';
+                                }else{
+                                    $output .= '<option selected="selected" value="0">Select User'.$sq.'s Type</option>';
+                                }
+                                $output .= '
+                                <option value="employee" '; if($get_sel_user_type === 'employee'){ $output .= ' selected="selected" '; } $output .='>Employee User</option>
+                                <option value="student" '; if($get_sel_user_type === 'student'){ $output .= ' selected="selected" '; } $output .='>Student User</option>
                                 </select>
                             </div>
                         </div>
                         <div class="card-body lightBlue_cardBody shadow-none mt-2">
-                            <span class="lightBlue_cardBody_blueTitle grayed_txt">Reason <i class="fa fa-question-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="This will let ' . $get_sel_user_fname . ' ' . $get_sel_user_lname . ' know the reason behind changing ' . $his_her . ' system role."></i></span>
+                            <label for="upd_user_role">Assign Role <i class="fa fa-question-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Below Options are System Role/s Available only for the Studen Type User."></i></label>
+                            <div id="emp_uRoles_div" class="'; if($get_sel_user_type === 'employee'){ $output .='d-block'; }else{ $output .='d-none';} $output .= '">';
+                            // employee roles selection
+                            if(count($get_all_emp_roles) > 0){
+                                foreach($get_all_emp_roles->sortBy('uRole_id') as $get_emp_role){
+                                    $output .= '
+                                    <div class="accordion shadow-none cust_accordion_div2 mb-1" id="changeUserRoleOption_Parent'.$get_emp_role->uRole_id.'">
+                                        <div class="card custom_accordion_card">
+                                            <div class="card-header p10 d-flex justify-content-between align-items-center" id="changeUserRoleOption_heading'.$get_emp_role->uRole_id.'">
+                                                <div class="form-check cust_radioInptDiv2">
+                                                    <input class="form-check-input" type="radio" name="change_user_sys_role" id="radio_InpRoleId'.$get_emp_role->uRole_id.'" value="'.$get_emp_role->uRole.'"'; if($get_sel_user_role === $get_emp_role->uRole){ $output .= 'checked'; } $output .=' required>
+                                                    <label class="form-check-label" for="radio_InpRoleId'.$get_emp_role->uRole_id.'">'.ucwords($get_emp_role->uRole).'</label>
+                                                </div>
+                                                <button class="btn cust_btn_smcircle3" type="button" data-toggle="collapse" data-target="#changeUserRoleOption_Div'.$get_emp_role->uRole_id.'" aria-expanded="true" aria-controls="changeUserRoleOption_Div'.$get_emp_role->uRole_id.'">
+                                                    <i class="nc-icon nc-minimal-down"></i>
+                                                </button>
+                                            </div>
+                                            <div id="changeUserRoleOption_Div'.$get_emp_role->uRole_id.'" class="collapse cust_collapse_active cb_t0b12y20" aria-labelledby="changeUserRoleOption_heading'.$get_emp_role->uRole_id.'" data-parent="#changeUserRoleOption_Parent'.$get_emp_role->uRole_id.'">
+                                                <div class="card-body lightBlue_cardBody">
+                                                    <span class="lightBlue_cardBody_blueTitle">Default Access Controls:</span>
+                                                    ';
+                                                    $index = 1;
+                                                    foreach(json_decode(json_encode($get_emp_role->uRole_access), true) as $get_emp_role_access){
+                                                        $output .= '<span class="lightBlue_cardBody_list"><span class="font-weight-bold">'.$index++.'. </span> '.ucwords($get_emp_role_access).'</span>';
+                                                    }
+                                                    $output .= '
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    ';
+                                }
+                            }else{
+                                $output .= '
+                                <div class="card-body LightBlue2_cardBody">
+                                    <span class="lightBlue_cardBody_notice font-italic"><i class="fa fa-info-circle" aria-hidden="true"></i> There are no System Roles available for Employee Type Users!</span>
+                                </div>
+                                ';
+                            }
+                            $output .= '
+                            </div>
+                            <div id="stud_uRoles_div" class="'; if($get_sel_user_type === 'student'){ $output .='d-block'; }else{ $output .='d-none';} $output .= '">';
+                            // student roles options
+                            if(count($get_all_stud_roles) > 0){
+                                foreach($get_all_stud_roles->sortBy('uRole_id') as $get_stud_role){
+                                    $output .= '
+                                    <div class="accordion shadow-none cust_accordion_div2 mb-1" id="changeUserRoleOption_Parent'.$get_stud_role->uRole_id.'">
+                                        <div class="card custom_accordion_card">
+                                            <div class="card-header p10 d-flex justify-content-between align-items-center" id="changeUserRoleOption_heading'.$get_stud_role->uRole_id.'">
+                                                <div class="form-check cust_radioInptDiv2">
+                                                    <input class="form-check-input" type="radio" name="change_user_sys_role" id="radio_InpRoleId'.$get_stud_role->uRole_id.'" value="'.$get_stud_role->uRole.'"'; if($get_sel_user_role === $get_stud_role->uRole){ $output .= 'checked'; } $output .='>
+                                                    <label class="form-check-label" for="radio_InpRoleId'.$get_stud_role->uRole_id.'">'.ucwords($get_stud_role->uRole).'</label>
+                                                </div>
+                                                <button class="btn cust_btn_smcircle3" type="button" data-toggle="collapse" data-target="#changeUserRoleOption_Div'.$get_stud_role->uRole_id.'" aria-expanded="true" aria-controls="changeUserRoleOption_Div'.$get_stud_role->uRole_id.'">
+                                                    <i class="nc-icon nc-minimal-down"></i>
+                                                </button>
+                                            </div>
+                                            <div id="changeUserRoleOption_Div'.$get_stud_role->uRole_id.'" class="collapse cust_collapse_active cb_t0b12y20" aria-labelledby="changeUserRoleOption_heading'.$get_stud_role->uRole_id.'" data-parent="#changeUserRoleOption_Parent'.$get_stud_role->uRole_id.'">
+                                                <div class="card-body lightGreen_cardBody">
+                                                    <span class="lightGreen_cardBody_greenTitle">Default Access Controls:</span>
+                                                    ';
+                                                    $index = 1;
+                                                    foreach(json_decode(json_encode($get_stud_role->uRole_access), true) as $get_stud_role_access){
+                                                        $output .= '<span class="lightGreen_cardBody_list"><span class="font-weight-bold">'.$index++.'. </span> '.ucwords($get_stud_role_access).'</span>';
+                                                    }
+                                                    $output .= '
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    ';
+                                }
+                            }else{
+                                $output .= '
+                                <div class="card-body LightBlue2_cardBody">
+                                    <span class="lightBlue_cardBody_notice font-italic"><i class="fa fa-info-circle" aria-hidden="true"></i> There are no System Roles available for Student Type Users!</span>
+                                </div>
+                                ';
+                            }
+                            $output .= '
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <a href="#" id="'.$get_sel_user_id.'" onclick="add_newSystemRole_modal(this.id)" class="btn btn-block btn_svms_blue cust_bt_links shadow" role="button"><i class="nc-icon nc-simple-add mr-1" aria-hidden="true"></i> Add New System Role</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body lightBlue_cardBody shadow-none mt-2">
+                            <label>Reason <i class="fa fa-question-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="This will let ' . $get_sel_user_fname . ' ' . $get_sel_user_lname . ' know the reason behind changing ' . $his_her . ' system role."></i></label>
                             <div class="form-group">
                                 <textarea class="form-control" id="change_user_role_reason" name="change_user_role_reason" rows="3" placeholder="Type reason for changing ' . $get_sel_user_lname.''.$sq.'s Role (Required)" required></textarea>
                             </div>
@@ -1287,7 +1389,7 @@ class UserManagementController extends Controller
                         <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
                         <div class="btn-group" role="group" aria-label="Basic example">
                             <button type="button" class="btn btn-round btn-secondary btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
-                            <button type="submit" class="btn btn-round btn-success btn_show_icon m-0">Apply Changes <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                            <button id="submit_changeUserRoleBtn" type="submit" class="btn btn-round btn-success btn_show_icon m-0">Apply Changes <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
                         </div>
                     </div>
                 </form>
@@ -1297,7 +1399,22 @@ class UserManagementController extends Controller
     }
     // process change of user's role
     public function process_change_user_role(Request $request){
-        echo 'wow';
+        // get all request
+            $get_selected_user_id   = $request->get('change_role_selected_user_id');
+            $get_new_user_type      = $request->get('change_user_sys_type');
+            $get_new_user_role      = $request->get('change_user_sys_role');
+            $get_change_role_reason = $request->get('change_user_role_reason');
+            $get_respo_user_id      = $request->get('respo_user_id');
+            $get_respo_user_lname   = $request->get('respo_user_lname');
+            $get_respo_user_fname   = $request->get('respo_user_fname');  
+
+            echo 'Selected User ID : ' . $get_selected_user_id . ' <br />';
+            echo 'Selected User TYPE : ' . $get_new_user_type . ' <br />';
+            echo 'Selected User ROLE : ' . $get_new_user_role . ' <br />';
+            echo 'REASON : ' . $get_change_role_reason . ' <br />';
+            echo '<br />';
+            echo 'by user id : ' . $get_respo_user_id . ' <br />';
+            echo 'by user name : ' . $get_respo_user_fname . ' ' . $get_respo_user_lname . ' <br />';
     }
 
     // FUNCTIONS FOR SYSTEM ROLES
@@ -1343,9 +1460,9 @@ class UserManagementController extends Controller
                 $record_act->act_affected_id       = $newly_reg_role_id;
                 $record_act->save();
 
-            return back()->withSuccessStatus('New System Role was registered successfully!');
+            return back()->withSuccessStatus('New System Role: ' . $get_create_role_name. ' was registered successfully!');
         }else{
-            return back()->withFailedStatus('New System Role has failed to register. Try again later.');
+            return back()->withFailedStatus('New System Role: ' . $get_create_role_name. ' has failed to register. Try again later.');
         }
 
         // test fetch request data
@@ -1357,6 +1474,149 @@ class UserManagementController extends Controller
             // echo 'by: ' .$get_respo_user_id. ' <br />';
             // echo 'lname: ' .$get_respo_user_lname. ' <br />';
             // echo 'fname: ' .$get_respo_user_fname. ' <br />';
+    }
+    // add new system role modal
+    public function add_new_system_role_modal(Request $request){
+        // get previous user's id to get back to change user's role modal
+            $get_prev_user_id = $request->get('prev_user_id');
+        // get roles based on role type
+            $get_all_emp_type_roles  = Userroles::select('uRole_id', 'uRole_status', 'uRole_type', 'uRole', 'uRole_access', 'assUsers_count', 'created_by', 'created_at')->where('uRole_status', '!=', 'deleted')->where('uRole_type', 'employee')->get();
+            $get_all_stud_type_roles = Userroles::select('uRole_id', 'uRole_status', 'uRole_type', 'uRole', 'uRole_access', 'assUsers_count', 'created_by', 'created_at')->where('uRole_status', '!=', 'deleted')->where('uRole_type', 'student')->get();
+
+        $output = '';
+        $output .= '
+            <div class="modal-body border-0 p-0">
+                <div class="cust_modal_body_gray">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 m-0">
+                            <div class="card LightBlue2_cardBody shadow-none">
+                                Employee
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-lg-12 col-md-12 col-sm-12 m-0">
+                            <div class="card cust_listCard shadow">
+                            ';
+                            foreach($get_all_emp_type_roles->sortBy('uRole_id') as $emp_type_role){
+                                $count_assigned_emp_users = Userroles::where('uRole', $emp_type_role->uRole)->count();
+                                $output .= '
+                                <div class="card-header cust_listCard_header3">
+                                    <div>
+                                        <span class="accordion_title">'.$emp_type_role->uRole.'';if($emp_type_role->assUsers_count>1){$output.='s';}$output .='</span>';
+                                        if($emp_type_role->assUsers_count <= 0){
+                                            $output .= '<span class="font-italic text_svms_red"> No Assigned Users. </span>';
+                                        }
+                                        $output .='
+                                    </div>
+                                    <div class="assignedUsersCirclesDiv">';
+                                        if($count_assigned_emp_users > 14){
+                                            $get_only_14_emp_users = Users::select('id', 'user_image', 'user_lname', 'user_fname')->where('user_role', $emp_type_role->uRole)->take(13)->get();
+                                            $more_emp_users_count = $count_assigned_emp_users - 13;
+                                            foreach($get_only_14_emp_users->sortBy('id') as $display_8_emp_users){
+                                                $output .= '<img class="assignedUsersCirclesImgs2 whiteImg_border1" src="'.asset('storage/svms/user_images/'.$display_8_emp_users->user_image).'" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="';if(auth()->user()->id === $display_8_emp_users->id){$output .='You';}else{ $output .= ''.$display_8_emp_users->user_fname . ' ' .$display_8_emp_users->user_lname. ' ';} $output .= '">';
+                                            }
+                                            $output .= '
+                                            <div class="moreImgsCounterDiv2" data-toggle="tooltip" data-placement="top" title="'.$more_emp_users_count.' more '; if($more_emp_users_count > 1){ $output .= 'users'; }else{ $output .= 'user'; } $output .='">
+                                                <span class="moreImgsCounterTxt2">+ ' .$more_emp_users_count.'</span>
+                                            </div>
+                                            ';
+                                        }else{
+                                            $get_all_assigned_emp_users = Users::select('id', 'user_image', 'user_lname', 'user_fname')->where('user_role', $emp_type_role->uRole)->get();
+                                            foreach($get_all_assigned_emp_users->sortBy('id') as $assigned_emp_user){
+                                                $output .= '<img class="assignedUsersCirclesImgs2 whiteImg_border1" src="'.asset('storage/svms/user_images/'.$assigned_emp_user->user_image).'" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="';if(auth()->user()->id === $assigned_emp_user->id){$output .='You';}else{ $output .= ''.$assigned_emp_user->user_fname . ' ' .$assigned_emp_user->user_lname. ' ';} $output .= '">';
+                                            }
+                                        }
+                                    $output .= '
+                                    </div>
+                                </div>
+                                ';
+                            }
+                            $output .= '
+                            </div>
+                        </div>
+                    </div>  
+                </div>
+                <form action="'.route('user_management.create_new_system_role').'" class="form" enctype="multipart/form-data" method="POST" onsubmit="submit_newSystemRole_btn.disabled = true; return true;">
+                    <div class="modal-body pb-0">
+                        <div class="card-body lightBlue_cardBody shadow-none">
+                            <label for="create_role_name">Role Name</label>
+                            <div class="input-group mb-1">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="nc-icon nc-badge"></i>
+                                    </span>
+                                </div>
+                                <input id="create_role_name" name="create_role_name" type="text" class="form-control" placeholder="Type New Role Name" value="'.old('create_role_name').'" required>
+                            </div>
+                        </div>
+                        <div class="card-body lightBlue_cardBody shadow-none mt-2">
+                            <div class="form-group cust_fltr_dropdowns_div mb-1">
+                                <label for="create_role_type">Select Role Type <i class="fa fa-question-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Role type selection is required for system preference."></i></label>
+                                <select class="form-control cust_fltr_dropdowns2 drpdwn_arrow2" id="create_role_type" name="create_role_type" required>
+                                    <option value="employee" selected>Employee User</option>
+                                    <option value="student">Student User</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="card-body lightGreen_cardBody mt-2">
+                            <span class="lightGreen_cardBody_greenTitle">Default Access Controls:</span>
+                            <div class="form-group mx-0 mt-0 mb-1">
+                                <div class="custom-control custom-checkbox align-items-center">
+                                    <input type="checkbox" name="create_role_access[]" value="profile" class="custom-control-input cursor_pointer" id="my_profile_mod" checked>
+                                    <label class="custom-control-label lightGreen_cardBody_chckboxLabel" for="my_profile_mod">My Profile</label>
+                                </div>
+                            </div>
+                            <div class="form-group mx-0 mt-0 mb-1">
+                                <div class="custom-control custom-checkbox align-items-center">
+                                    <input type="checkbox" name="create_role_access[]" value="violation entry" class="custom-control-input cursor_pointer" id="violation_entry_mod" checked>
+                                    <label class="custom-control-label lightGreen_cardBody_chckboxLabel" for="violation_entry_mod">Violation Entry</label>
+                                </div>
+                            </div>
+                            <div class="form-group mx-0 mt-0 mb-1">
+                                <div class="custom-control custom-checkbox align-items-center">
+                                    <input type="checkbox" name="create_role_access[]" value="student handbook" class="custom-control-input cursor_pointer" id="student_handbook_mod" checked>
+                                    <label class="custom-control-label lightGreen_cardBody_chckboxLabel" for="student_handbook_mod">Student Handbook</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body lightRed_cardBody mt-2">
+                            <span class="lightRed_cardBody_redTitle">Administrative Access Controls:</span>
+                            <span class="lightRed_cardBody_notice"><i class="fa fa-lock" aria-hidden="true"></i> Below Modules are Administrative Access Controls that are not recommended for regular System Roles but you can enable them for this role if you wish to.</span>
+                            <div class="form-group mx-0 mt-2 mb-1">
+                                <div class="custom-control custom-checkbox align-items-center">
+                                    <input type="checkbox" name="create_role_access[]" value="dashboard" class="custom-control-input cursor_pointer" id="dashboard_mod">
+                                    <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="dashboard_mod">Dashboard</label>
+                                </div>
+                            </div>
+                            <div class="form-group mx-0 mt-0 mb-1">
+                                <div class="custom-control custom-checkbox align-items-center">
+                                    <input type="checkbox" name="create_role_access[]" value="users management" class="custom-control-input cursor_pointer" id="users_management_mod">
+                                    <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="users_management_mod">Users Management</label>
+                                </div>
+                            </div>
+                            <div class="form-group mx-0 mt-0 mb-1">
+                                <div class="custom-control custom-checkbox align-items-center">
+                                    <input type="checkbox" name="create_role_access[]" value="violation records" class="custom-control-input cursor_pointer" id="violation_record_mod">
+                                    <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="violation_record_mod">Violation Records</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <input type="hidden" name="_token" value="'.csrf_token().'">
+                        <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
+                        <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
+                        <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
+                        <div class="btn-group" role="group" aria-label="Basic example">
+                            <button id="'.$get_prev_user_id.'" onclick="changeUserRole(this.id)" type="button" class="btn btn-round btn-success btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                            <button id="submit_newSystemRole_btn" type="submit" class="btn btn-round btn_svms_blue btn_show_icon m-0">Save New Role <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        ';
+        return $output;
     }
     // update role
     public function update_user_role(Request $request){

@@ -590,8 +590,8 @@
                                             </div>
                                             <div class="form-group mx-0 mt-0 mb-1">
                                                 <div class="custom-control custom-checkbox align-items-center">
-                                                    <input type="checkbox" name="create_role_access[]" value="user management" class="custom-control-input cursor_pointer" id="users_management_mod">
-                                                    <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="users_management_mod">User Management</label>
+                                                    <input type="checkbox" name="create_role_access[]" value="users management" class="custom-control-input cursor_pointer" id="users_management_mod">
+                                                    <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="users_management_mod">Users Management</label>
                                                 </div>
                                             </div>
                                             <div class="form-group mx-0 mt-0 mb-1">
@@ -606,7 +606,7 @@
                                                 <input type="hidden" name="respo_user_id" value="{{auth()->user()->id}}">
                                                 <input type="hidden" name="respo_user_lname" value="{{auth()->user()->user_lname}}">
                                                 <input type="hidden" name="respo_user_fname" value="{{auth()->user()->user_fname}}">
-                                                <button type="submit" class="btn saveNewSystemRoleBtn btn_svms_blue btn-round btn_show_icon" disabled>{{ __('Save Changes') }}<i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                                                <button type="submit" class="btn saveNewSystemRoleBtn btn_svms_blue btn-round btn_show_icon" disabled>{{ __('Save New System Role') }}<i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
                                             </div>
                                         </div>
                                     </form>
