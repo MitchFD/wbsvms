@@ -322,7 +322,6 @@ class UserManagementController extends Controller
         $this->validate($request, [
             'email' => 'email',
         ]);
-
         // get all request
             $create_emp_role      = $request->get('create_emp_role');
             $create_emp_id        = $request->get('create_emp_id');
@@ -336,7 +335,6 @@ class UserManagementController extends Controller
             $get_respo_user_id    = $request->get('respo_user_id');
             $get_respo_user_lname = $request->get('respo_user_lname');
             $get_respo_user_fname = $request->get('respo_user_fname');
-
         // custom values
             $now_timestamp        = now();
             $active_txt           = 'active';
@@ -346,7 +344,6 @@ class UserManagementController extends Controller
             $get_current_year     = $now_timestamp->format('Y');
             $lower_emp_role       = Str::lower($create_emp_role);
             $lower_emp_gender     = Str::lower($create_emp_gender);
-        
         // user image handler
             if($request->hasFile('create_emp_user_image')){
                 $get_filenameWithExt = $request->file('create_emp_user_image')->getClientOriginalName();
@@ -357,15 +354,11 @@ class UserManagementController extends Controller
             }else{
                 $fileNameToStore = $employee_image;
             }
-
         // generate unique password
             $create_emp_password = Str::lower($create_emp_lname).'@svms'.$get_current_year;
-
         // get the status of selected system role
             $get_status_selected_role = Userroles::select('uRole_status')->where('uRole', $lower_emp_role)->first();
             $status_of_selected_role  = $get_status_selected_role->uRole_status;
-
-
         // save data to users table
             $reg_emp_user = new Users;
             $reg_emp_user->email             = $create_emp_email;
@@ -391,13 +384,11 @@ class UserManagementController extends Controller
             $reg_emp_info->uEmp_phnum    = $create_emp_phnum;
             $reg_emp_info->created_at    = $now_timestamp;
             $reg_emp_info->save();
-
         // if registration was a success
         if($reg_emp_user AND $reg_emp_info){
             // get new user's id for activity reference
                 $get_new_emp_user_id = Users::select('id')->where('user_sdca_id', $create_emp_id)->latest('created_at')->first();
                 $new_reg_user_id     = $get_new_emp_user_id->id;
-
             // get current number of assigned users for selected role
                 $get_sel_role_assUsers_count = Userroles::select('uRole_id', 'uRole', 'assUsers_count')->where('uRole', $lower_emp_role)->first();
                 $get_sel_uRole_id            = $get_sel_role_assUsers_count->uRole_id;
@@ -411,7 +402,6 @@ class UserManagementController extends Controller
                                 'assUsers_count' => $add_1_assUsers_count,
                                 'updated_at'     => $now_timestamp
                             ]);
-
             if($update_assUsers_count_n){
                 // record activity
                 $record_act = new Useractivites;
@@ -423,7 +413,6 @@ class UserManagementController extends Controller
                 $record_act->act_details           = 'Registered ' .$create_emp_fname. ' ' .$create_emp_lname. ' as a ' .$create_emp_role. ' of the system.';
                 $record_act->act_affected_id       = $new_reg_user_id;
                 $record_act->save();
-            
                 if($record_act){
                     return back()->withSuccessStatus('New Employee User Account was registered successfully!');
                 }else{
@@ -435,7 +424,6 @@ class UserManagementController extends Controller
         }else{
             return back()->withFailedStatus('New Employee User Account has failed to register. Try again later.');
         }
-
         // echo 'REGISTER NEW EMPLOYEE USER <br />';
         // echo 'System Role: ' .$create_emp_role. ' <br />';
         // echo 'System Role Status: ' .$status_of_selected_role. ' <br />';
@@ -1049,18 +1037,15 @@ class UserManagementController extends Controller
         // get new pass
             $get_new_user_pass           = $request->get('upd_sysUser_new_password');
             $get_reasons_for_pass_update = $request->get('upd_sysUser_new_password_reason');
-
         // get selected user's info
             $get_sel_user_info   = Users::select('id', 'email', 'user_lname', 'user_fname', 'user_gender')->where('id', $get_sel_user_id)->first();
             $get_sel_user_email  = $get_sel_user_info->email;
             $get_sel_user_fname  = $get_sel_user_info->user_fname;
             $get_sel_user_lname  = $get_sel_user_info->user_lname;
             $get_sel_user_gender = $get_sel_user_info->user_gender;
-
         // get responsible user's gender 
             $get_respo_user_gender_info = Users::select('id', 'user_gender')->where('id', $get_respo_user_id)->first();
             $get_respo_user_gender      = $get_respo_user_gender_info->user_gender;
-
         // custom values
         // his/her & Mr./Ms.
             if($get_sel_user_gender === 'female'){
@@ -1085,10 +1070,8 @@ class UserManagementController extends Controller
             }
         // apostrophe
             $s_s = "'";
-        
         // hass pass
             $hash_new_user_pass = Hash::make($get_new_user_pass);
-
         // update users table
             $update_sys_users_tbl = DB::table('users')
             ->where('id', $get_sel_user_id)
@@ -1105,11 +1088,9 @@ class UserManagementController extends Controller
                 $rec_pass_update->reason_update  = $get_reasons_for_pass_update;
                 $rec_pass_update->updated_at     = $now_timestamp;
                 $rec_pass_update->save();
-
             // get id from latest update on password_updates_tbl
                 $get_pass_upd_id  = Passwordupdate::select('pass_upd_id')->where('sel_user_id', $get_sel_user_id)->latest('updated_at')->first();
                 $from_pass_upd_id = $get_pass_upd_id->pass_upd_id;
-
             // record activity
                 $rec_activity = new Useractivites;
                 $rec_activity->created_at            = $now_timestamp;
@@ -1120,7 +1101,6 @@ class UserManagementController extends Controller
                 $rec_activity->act_details           = $get_respo_user_fname. ' ' .$get_respo_user_lname . ' Updated ' . $get_sel_user_fname . ' ' . $get_sel_user_lname.''.$s_s.'s Password.';
                 $rec_activity->act_affected_id       = $from_pass_upd_id;
                 $rec_activity->save();
-
             // send email
                 $details = [
                     'svms_logo'        => "storage/svms/logos/svms_logo_text.png",
@@ -1131,11 +1111,9 @@ class UserManagementController extends Controller
                     'sysUser_email'    => $get_sel_user_email,
                     'sysUser_newPass'  => $get_new_user_pass
                 ];
-
                 if(!empty($get_sel_user_email)){
                     \Mail::to('mfodesierto2@gmail.com')->send(new \App\Mail\PasswordUpdateSendMail($details));
                 }
-
             return back()->withSuccessStatus(''.$get_sel_user_fname . ' '. $get_sel_user_lname.''.$s_s.'s Password was updated successfully.');
             // test fetch request data
                 // echo 'New Password for ' .$get_sel_user_fname. ' ' .$get_sel_user_lname. '<br />';
@@ -1202,7 +1180,7 @@ class UserManagementController extends Controller
                         <div class="card custom_accordion_card">
                             <div class="card-header p-0" id="changeUserRoleCollapse_heading'.$get_sel_user_id.'">
                                 <h2 class="mb-0">
-                                    <button class="btn btn-block custom2_btn_collapse d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#changeUserRoleCollapse_Div'.$get_sel_user_id.'" aria-expanded="true" aria-controls="changeUserRoleCollapse_Div'.$get_sel_user_id.'">
+                                    <button class="btn btn-block custom2_btn_collapse cb_x12y20 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#changeUserRoleCollapse_Div'.$get_sel_user_id.'" aria-expanded="true" aria-controls="changeUserRoleCollapse_Div'.$get_sel_user_id.'">
                                         <div class="d-flex justify-content-start align-items-center">
                                             <div class="display_user_image_div text-center">
                                                 <img class="'.$img_filter.' shadow-sm" src="'.asset('storage/svms/user_images/'.$get_sel_user_image).'" alt="student user profile">
@@ -1266,108 +1244,93 @@ class UserManagementController extends Controller
                 <form id="form_changeUserRole" action="'.route('user_management.process_change_user_role').'" class="changeUserRoleForm form" enctype="multipart/form-data" method="POST" onsubmit="submit_changeUserRoleBtn.disabled = true; return true;">
                     <div class="modal-body pb-0">
                         <div class="card-body lightBlue_cardBody shadow-none">
-                            <span class="lightBlue_cardBody_notice"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i> Options available for assigning a System Role is based on the user'.$sq.'s (<span class="font-weight-bold font-italic">USER TYPE</span>). The system will notify ' . $mr_ms . ' ' . $get_sel_user_lname . ' of the changes to ' . $his_her . ' account thru ' . $his_her . ' registered email address.
+                            <span class="lightBlue_cardBody_notice"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i> Options available for assigning a System Role is based on the user'.$sq.'s <span class="font-weight-bold font-italic">USER TYPE</span>. The system will notify ' . $mr_ms . ' ' . $get_sel_user_lname . ' of the changes to ' . $his_her . ' account thru ' . $his_her . ' registered email address.
                         </div>
                         <div class="card-body lightBlue_cardBody shadow-none mt-2">
-                            <div class="form-group cust_fltr_dropdowns_div mb-1">
-                                <label for="change_user_sys_type">Select User Type</label>
-                                <select class="form-control cust_fltr_dropdowns2 drpdwn_arrow2" id="change_user_sys_type" name="change_user_sys_type" onchange="userType_onchange()">
-                                '; 
-                                if($get_sel_user_type === 'employee'){
-                                    $output .= '<option selected="selected" class="d-none" value="0">Select User'.$sq.'s Type</option>';
-                                }elseif($get_sel_user_type === 'student'){
-                                    $output .= '<option selected="selected" class="d-none" value="0">Select User'.$sq.'s Type</option>';
+                            <label for="upd_user_role">Assign Role <i class="fa fa-question-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Below Options are ' . ucwords($get_sel_user_type) . ' Type System Role/s because ' . $mr_ms . ' ' . $get_sel_user_lname . ' is a ' . ucwords($get_sel_user_type) . ' Type User."></i></label>
+                            ';
+                            if($get_sel_user_type === 'employee'){
+                                if(count($get_all_emp_roles) > 0){
+                                    foreach($get_all_emp_roles->sortBy('uRole_id') as $get_emp_role){
+                                        $output .= '
+                                        <div class="accordion shadow-none cust_accordion_div2 mb-1" id="changeUserRoleOption_Parent'.$get_emp_role->uRole_id.'">
+                                            <div class="card custom_accordion_card">
+                                                <div class="card-header p10 d-flex justify-content-between align-items-center" id="changeUserRoleOption_heading'.$get_emp_role->uRole_id.'">
+                                                    <div class="form-check cust_radioInptDiv2">
+                                                        <input class="form-check-input" type="radio" name="change_user_sys_role" id="radio_InpRoleId'.$get_emp_role->uRole_id.'" value="'.$get_emp_role->uRole.'"'; if($get_sel_user_role === $get_emp_role->uRole){ $output .= 'checked'; } $output .=' required>
+                                                        <label class="form-check-label" for="radio_InpRoleId'.$get_emp_role->uRole_id.'">'.ucwords($get_emp_role->uRole).'</label>
+                                                    </div>
+                                                    <button class="btn cust_btn_smcircle3" type="button" data-toggle="collapse" data-target="#changeUserRoleOption_Div'.$get_emp_role->uRole_id.'" aria-expanded="true" aria-controls="changeUserRoleOption_Div'.$get_emp_role->uRole_id.'">
+                                                        <i class="nc-icon nc-minimal-down"></i>
+                                                    </button>
+                                                </div>
+                                                <div id="changeUserRoleOption_Div'.$get_emp_role->uRole_id.'" class="collapse cust_collapse_active cb_t0b12y20" aria-labelledby="changeUserRoleOption_heading'.$get_emp_role->uRole_id.'" data-parent="#changeUserRoleOption_Parent'.$get_emp_role->uRole_id.'">
+                                                    <div class="card-body lightBlue_cardBody">
+                                                        <span class="lightBlue_cardBody_blueTitle">Default Access Controls:</span>
+                                                        ';
+                                                        $index = 1;
+                                                        foreach(json_decode(json_encode($get_emp_role->uRole_access), true) as $get_emp_role_access){
+                                                            $output .= '<span class="lightBlue_cardBody_list"><span class="font-weight-bold">'.$index++.'. </span> '.ucwords($get_emp_role_access).'</span>';
+                                                        }
+                                                        $output .= '
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        ';
+                                    }
                                 }else{
-                                    $output .= '<option selected="selected" value="0">Select User'.$sq.'s Type</option>';
-                                }
-                                $output .= '
-                                <option value="employee" '; if($get_sel_user_type === 'employee'){ $output .= ' selected="selected" '; } $output .='>Employee User</option>
-                                <option value="student" '; if($get_sel_user_type === 'student'){ $output .= ' selected="selected" '; } $output .='>Student User</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="card-body lightBlue_cardBody shadow-none mt-2">
-                            <label for="upd_user_role">Assign Role <i class="fa fa-question-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Below Options are System Role/s Available only for the Studen Type User."></i></label>
-                            <div id="emp_uRoles_div" class="'; if($get_sel_user_type === 'employee'){ $output .='d-block'; }else{ $output .='d-none';} $output .= '">';
-                            // employee roles selection
-                            if(count($get_all_emp_roles) > 0){
-                                foreach($get_all_emp_roles->sortBy('uRole_id') as $get_emp_role){
                                     $output .= '
-                                    <div class="accordion shadow-none cust_accordion_div2 mb-1" id="changeUserRoleOption_Parent'.$get_emp_role->uRole_id.'">
-                                        <div class="card custom_accordion_card">
-                                            <div class="card-header p10 d-flex justify-content-between align-items-center" id="changeUserRoleOption_heading'.$get_emp_role->uRole_id.'">
-                                                <div class="form-check cust_radioInptDiv2">
-                                                    <input class="form-check-input" type="radio" name="change_user_sys_role" id="radio_InpRoleId'.$get_emp_role->uRole_id.'" value="'.$get_emp_role->uRole.'"'; if($get_sel_user_role === $get_emp_role->uRole){ $output .= 'checked'; } $output .=' required>
-                                                    <label class="form-check-label" for="radio_InpRoleId'.$get_emp_role->uRole_id.'">'.ucwords($get_emp_role->uRole).'</label>
+                                    <div class="card-body LightBlue2_cardBody">
+                                        <span class="lightBlue_cardBody_notice font-italic"><i class="fa fa-info-circle" aria-hidden="true"></i> There are no System Roles available for Employee Type Users!</span>
+                                    </div>
+                                    ';
+                                }
+                            }else if($get_sel_user_type === 'student'){
+                                if(count($get_all_stud_roles) > 0){
+                                    foreach($get_all_stud_roles->sortBy('uRole_id') as $get_stud_role){
+                                        $output .= '
+                                        <div class="accordion shadow-none cust_accordion_div2 mb-1" id="changeUserRoleOption_Parent'.$get_stud_role->uRole_id.'">
+                                            <div class="card custom_accordion_card">
+                                                <div class="card-header p10 d-flex justify-content-between align-items-center" id="changeUserRoleOption_heading'.$get_stud_role->uRole_id.'">
+                                                    <div class="form-check cust_radioInptDiv2">
+                                                        <input class="form-check-input" type="radio" name="change_user_sys_role" id="radio_InpRoleId'.$get_stud_role->uRole_id.'" value="'.$get_stud_role->uRole.'"'; if($get_sel_user_role === $get_stud_role->uRole){ $output .= 'checked'; } $output .='>
+                                                        <label class="form-check-label" for="radio_InpRoleId'.$get_stud_role->uRole_id.'">'.ucwords($get_stud_role->uRole).'</label>
+                                                    </div>
+                                                    <button class="btn cust_btn_smcircle3" type="button" data-toggle="collapse" data-target="#changeUserRoleOption_Div'.$get_stud_role->uRole_id.'" aria-expanded="true" aria-controls="changeUserRoleOption_Div'.$get_stud_role->uRole_id.'">
+                                                        <i class="nc-icon nc-minimal-down"></i>
+                                                    </button>
                                                 </div>
-                                                <button class="btn cust_btn_smcircle3" type="button" data-toggle="collapse" data-target="#changeUserRoleOption_Div'.$get_emp_role->uRole_id.'" aria-expanded="true" aria-controls="changeUserRoleOption_Div'.$get_emp_role->uRole_id.'">
-                                                    <i class="nc-icon nc-minimal-down"></i>
-                                                </button>
-                                            </div>
-                                            <div id="changeUserRoleOption_Div'.$get_emp_role->uRole_id.'" class="collapse cust_collapse_active cb_t0b12y20" aria-labelledby="changeUserRoleOption_heading'.$get_emp_role->uRole_id.'" data-parent="#changeUserRoleOption_Parent'.$get_emp_role->uRole_id.'">
-                                                <div class="card-body lightBlue_cardBody">
-                                                    <span class="lightBlue_cardBody_blueTitle">Default Access Controls:</span>
-                                                    ';
-                                                    $index = 1;
-                                                    foreach(json_decode(json_encode($get_emp_role->uRole_access), true) as $get_emp_role_access){
-                                                        $output .= '<span class="lightBlue_cardBody_list"><span class="font-weight-bold">'.$index++.'. </span> '.ucwords($get_emp_role_access).'</span>';
-                                                    }
-                                                    $output .= '
+                                                <div id="changeUserRoleOption_Div'.$get_stud_role->uRole_id.'" class="collapse cust_collapse_active cb_t0b12y20" aria-labelledby="changeUserRoleOption_heading'.$get_stud_role->uRole_id.'" data-parent="#changeUserRoleOption_Parent'.$get_stud_role->uRole_id.'">
+                                                    <div class="card-body lightGreen_cardBody">
+                                                        <span class="lightGreen_cardBody_greenTitle">Default Access Controls:</span>
+                                                        ';
+                                                        $index = 1;
+                                                        foreach(json_decode(json_encode($get_stud_role->uRole_access), true) as $get_stud_role_access){
+                                                            $output .= '<span class="lightGreen_cardBody_list"><span class="font-weight-bold">'.$index++.'. </span> '.ucwords($get_stud_role_access).'</span>';
+                                                        }
+                                                        $output .= '
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
+                                        ';
+                                    }
+                                }else{
+                                    $output .= '
+                                    <div class="card-body LightBlue2_cardBody">
+                                        <span class="lightBlue_cardBody_notice font-italic"><i class="fa fa-info-circle" aria-hidden="true"></i> There are no System Roles available for Student Type Users!</span>
                                     </div>
                                     ';
                                 }
                             }else{
                                 $output .= '
                                 <div class="card-body LightBlue2_cardBody">
-                                    <span class="lightBlue_cardBody_notice font-italic"><i class="fa fa-info-circle" aria-hidden="true"></i> There are no System Roles available for Employee Type Users!</span>
+                                    <span class="lightBlue_cardBody_notice font-italic"><i class="fa fa-info-circle" aria-hidden="true"></i> ' . $get_sel_user_fname . ' ' . $get_sel_user_lname.''.$sq.'s User Type is unknown!</span>
                                 </div>
                                 ';
                             }
                             $output .= '
-                            </div>
-                            <div id="stud_uRoles_div" class="'; if($get_sel_user_type === 'student'){ $output .='d-block'; }else{ $output .='d-none';} $output .= '">';
-                            // student roles options
-                            if(count($get_all_stud_roles) > 0){
-                                foreach($get_all_stud_roles->sortBy('uRole_id') as $get_stud_role){
-                                    $output .= '
-                                    <div class="accordion shadow-none cust_accordion_div2 mb-1" id="changeUserRoleOption_Parent'.$get_stud_role->uRole_id.'">
-                                        <div class="card custom_accordion_card">
-                                            <div class="card-header p10 d-flex justify-content-between align-items-center" id="changeUserRoleOption_heading'.$get_stud_role->uRole_id.'">
-                                                <div class="form-check cust_radioInptDiv2">
-                                                    <input class="form-check-input" type="radio" name="change_user_sys_role" id="radio_InpRoleId'.$get_stud_role->uRole_id.'" value="'.$get_stud_role->uRole.'"'; if($get_sel_user_role === $get_stud_role->uRole){ $output .= 'checked'; } $output .='>
-                                                    <label class="form-check-label" for="radio_InpRoleId'.$get_stud_role->uRole_id.'">'.ucwords($get_stud_role->uRole).'</label>
-                                                </div>
-                                                <button class="btn cust_btn_smcircle3" type="button" data-toggle="collapse" data-target="#changeUserRoleOption_Div'.$get_stud_role->uRole_id.'" aria-expanded="true" aria-controls="changeUserRoleOption_Div'.$get_stud_role->uRole_id.'">
-                                                    <i class="nc-icon nc-minimal-down"></i>
-                                                </button>
-                                            </div>
-                                            <div id="changeUserRoleOption_Div'.$get_stud_role->uRole_id.'" class="collapse cust_collapse_active cb_t0b12y20" aria-labelledby="changeUserRoleOption_heading'.$get_stud_role->uRole_id.'" data-parent="#changeUserRoleOption_Parent'.$get_stud_role->uRole_id.'">
-                                                <div class="card-body lightGreen_cardBody">
-                                                    <span class="lightGreen_cardBody_greenTitle">Default Access Controls:</span>
-                                                    ';
-                                                    $index = 1;
-                                                    foreach(json_decode(json_encode($get_stud_role->uRole_access), true) as $get_stud_role_access){
-                                                        $output .= '<span class="lightGreen_cardBody_list"><span class="font-weight-bold">'.$index++.'. </span> '.ucwords($get_stud_role_access).'</span>';
-                                                    }
-                                                    $output .= '
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    ';
-                                }
-                            }else{
-                                $output .= '
-                                <div class="card-body LightBlue2_cardBody">
-                                    <span class="lightBlue_cardBody_notice font-italic"><i class="fa fa-info-circle" aria-hidden="true"></i> There are no System Roles available for Student Type Users!</span>
-                                </div>
-                                ';
-                            }
-                            $output .= '
-                            </div>
                             <div class="row mt-2">
                                 <div class="col-lg-12 col-md-12 col-sm-12">
                                     <a href="#" id="'.$get_sel_user_id.'" onclick="add_newSystemRole_modal(this.id)" class="btn btn-block btn_svms_blue cust_bt_links shadow" role="button"><i class="nc-icon nc-simple-add mr-1" aria-hidden="true"></i> Add New System Role</a>
@@ -1389,7 +1352,7 @@ class UserManagementController extends Controller
                         <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
                         <div class="btn-group" role="group" aria-label="Basic example">
                             <button type="button" class="btn btn-round btn-secondary btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
-                            <button id="submit_changeUserRoleBtn" type="submit" class="btn btn-round btn-success btn_show_icon m-0">Apply Changes <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                            <button id="submit_changeUserRoleBtn" type="submit" class="btn btn-round btn-success btn_show_icon m-0" disabled>Apply Changes <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
                         </div>
                     </div>
                 </form>
@@ -1399,28 +1362,131 @@ class UserManagementController extends Controller
     }
     // process change of user's role
     public function process_change_user_role(Request $request){
+        // custom values
+            $now_timestamp = now();
+            $sq = "'";
         // get all request
             $get_selected_user_id   = $request->get('change_role_selected_user_id');
-            $get_new_user_type      = $request->get('change_user_sys_type');
             $get_new_user_role      = $request->get('change_user_sys_role');
             $get_change_role_reason = $request->get('change_user_role_reason');
             $get_respo_user_id      = $request->get('respo_user_id');
             $get_respo_user_lname   = $request->get('respo_user_lname');
             $get_respo_user_fname   = $request->get('respo_user_fname');  
-
-            echo 'Selected User ID : ' . $get_selected_user_id . ' <br />';
-            echo 'Selected User TYPE : ' . $get_new_user_type . ' <br />';
-            echo 'Selected User ROLE : ' . $get_new_user_role . ' <br />';
-            echo 'REASON : ' . $get_change_role_reason . ' <br />';
-            echo '<br />';
-            echo 'by user id : ' . $get_respo_user_id . ' <br />';
-            echo 'by user name : ' . $get_respo_user_fname . ' ' . $get_respo_user_lname . ' <br />';
+        // test request
+            // echo 'Selected User ID : ' . $get_selected_user_id . ' <br />';
+            // echo 'Selected User ROLE : ' . $get_new_user_role . ' <br />';
+            // echo 'REASON : ' . $get_change_role_reason . ' <br />';
+            // echo '<br />';
+            // echo 'by user id : ' . $get_respo_user_id . ' <br />';
+            // echo 'by user name : ' . $get_respo_user_fname . ' ' . $get_respo_user_lname . ' <br />';
+        // get selected user's information from users table
+            $get_sel_user_info    = Users::select('id', 'email', 'user_role', 'user_type', 'user_sdca_id', 'user_lname', 'user_fname', 'user_gender')->where('id', $get_selected_user_id)->first();
+            $get_sel_user_email   = $get_sel_user_info->email;
+            $get_sel_user_role    = $get_sel_user_info->user_role;
+            $get_sel_user_type    = $get_sel_user_info->user_type;
+            $get_sel_user_sdca_id = $get_sel_user_info->user_sdca_id;
+            $get_sel_user_lname   = $get_sel_user_info->user_lname;
+            $get_sel_user_fname   = $get_sel_user_info->user_fname;
+            $get_sel_user_gender  = $get_sel_user_info->user_gender;
+        // get responsible user's information from users table
+            $get_respo_user_gender_info = Users::select('id', 'user_gender')->where('id', $get_respo_user_id)->first();
+            $get_respo_user_gender      = $get_respo_user_gender_info->user_gender;
+        // his/her & Mr./Ms.
+            if($get_sel_user_gender === 'female'){
+                $his_her = 'her';
+                $mr_ms   = 'Ms.';
+            }elseif($get_sel_user_gender === 'male'){
+                $his_her = 'his';
+                $mr_ms   = 'Mr.';
+            }else{
+                $his_her = 'his/her';
+                $mr_ms   = 'Mr./Ms.';
+            }
+            if($get_respo_user_gender === 'female'){
+                $respo_his_her = 'her';
+                $respo_mr_ms   = 'Ms.';
+            }elseif($get_respo_user_gender === 'male'){
+                $respo_his_her = 'his';
+                $respo_mr_ms   = 'Mr.';
+            }else{
+                $respo_his_her = 'his/her';
+                $respo_mr_ms   = 'Mr./Ms.';
+            }
+        // get old user's role from user_roles_tbl
+            $get_oldSys_uRole_info     = Userroles::select('uRole_id', 'uRole', 'assUsers_count')->where('uRole', $get_sel_user_role)->first();
+            $get_oldSys_uRole_id       = $get_oldSys_uRole_info->uRole_id;
+            $get_oldSys_uRole          = $get_oldSys_uRole_info->uRole;
+            $get_oldSys_assUsers_count = $get_oldSys_uRole_info->assUsers_count;
+        // get new user's role from user_roles_tbl
+            $get_newSys_uRole_info     = Userroles::select('uRole_id', 'uRole', 'assUsers_count')->where('uRole', $get_new_user_role)->first();
+            $get_newSys_uRole_id       = $get_newSys_uRole_info->uRole_id;
+            $get_newSys_uRole          = $get_newSys_uRole_info->uRole;
+            $get_newSys_assUsers_count = $get_newSys_uRole_info->assUsers_count;
+        // update user's role from users table
+            $update_sys_users_tbl = DB::table('users')
+                ->where('id', $get_selected_user_id)
+                ->update([
+                    'user_role'   => $get_new_user_role,
+                    'user_status' => 'active',
+                    'updated_at'  => $now_timestamp
+                    ]);
+        // update role count from user_roles_tbl
+            if($update_sys_users_tbl){
+                // new counts for old and new roles
+                    $old_uRole_assUsers_count = $get_oldSys_assUsers_count - 1;
+                    $new_uRole_assUsers_count = $get_newSys_assUsers_count + 1;
+                // update old role count
+                    $update_old_role_count_tbl = DB::table('user_roles_tbl')
+                        ->where('uRole', $get_sel_user_role)
+                        ->update([
+                            'assUsers_count' => $old_uRole_assUsers_count,
+                            'updated_at'     => $now_timestamp
+                            ]);
+                // update new role count
+                    $update_new_role_count_tbl = DB::table('user_roles_tbl')
+                        ->where('uRole', $get_new_user_role)
+                        ->update([
+                            'assUsers_count' => $new_uRole_assUsers_count,
+                            'updated_at'     => $now_timestamp
+                            ]);
+                if($update_old_role_count_tbl AND $update_new_role_count_tbl){
+                    // record activity
+                        $rec_activity = new Useractivites;
+                        $rec_activity->created_at            = $now_timestamp;
+                        $rec_activity->act_respo_user_id     = $get_respo_user_id;
+                        $rec_activity->act_respo_users_lname = $get_respo_user_lname;
+                        $rec_activity->act_respo_users_fname = $get_respo_user_fname;
+                        $rec_activity->act_type              = 'change user'.$sq.'s role';
+                        $rec_activity->act_details           = $get_respo_user_fname. ' ' .$get_respo_user_lname . ' Changed ' . $get_sel_user_fname . ' ' . $get_sel_user_lname.''.$sq.'s System Role from ' .ucwords($get_sel_user_role). ' Role to ' .ucwords($get_new_user_role).' Role.';
+                        $rec_activity->act_affected_id       = $get_selected_user_id;
+                        $rec_activity->save();
+                    // send email
+                        $details = [
+                            'svms_logo'          => "storage/svms/logos/svms_logo_text.png",
+                            'title'              => 'PASSWORD UPDATE',
+                            'recipient'          => $mr_ms . ' ' .$get_sel_user_fname . ' ' . $get_sel_user_lname,
+                            'responsible_user'   => $respo_mr_ms . ' ' .$get_respo_user_fname . ' ' . $get_respo_user_lname,
+                            'change_role_reason' => $get_change_role_reason,
+                            'old_sys_role'       => ucwords($get_sel_user_role),
+                            'new_sys_role'       => ucwords($get_new_user_role)
+                        ];
+                        if(!empty($get_sel_user_email)){
+                            \Mail::to('mfodesierto2@gmail.com')->send(new \App\Mail\ChangeUserSysRoleSendMail($details));
+                        }
+                    return back()->withSuccessStatus(''.$get_sel_user_fname . ' '. $get_sel_user_lname.''.$sq.'s Role was updated successfully.');
+                }else{
+                    return back()->withFailedStatus('Updating System Roles old/New counts has failed, Try again  later.');
+                }
+            }else{
+                return back()->withFailedStatus('Changing ' .$get_sel_user_lname . ' '. $get_sel_user_fname.''.$sq.'s System Role has failed, Try again  later.');
+            }
     }
 
     // FUNCTIONS FOR SYSTEM ROLES
     // create new role
     public function create_new_system_role(Request $request){
         // get all requests
+            $get_prev_modal_id      = $request->get('prev_modal_id');
             $get_create_role_name   = $request->get('create_role_name');
             $get_create_role_type   = $request->get('create_role_type');
             $get_create_role_access = json_decode(json_encode($request->get('create_role_access')));
@@ -1480,59 +1546,130 @@ class UserManagementController extends Controller
         // get previous user's id to get back to change user's role modal
             $get_prev_user_id = $request->get('prev_user_id');
         // get roles based on role type
-            $get_all_emp_type_roles  = Userroles::select('uRole_id', 'uRole_status', 'uRole_type', 'uRole', 'uRole_access', 'assUsers_count', 'created_by', 'created_at')->where('uRole_status', '!=', 'deleted')->where('uRole_type', 'employee')->get();
-            $get_all_stud_type_roles = Userroles::select('uRole_id', 'uRole_status', 'uRole_type', 'uRole', 'uRole_access', 'assUsers_count', 'created_by', 'created_at')->where('uRole_status', '!=', 'deleted')->where('uRole_type', 'student')->get();
+            $get_all_emp_type_roles    = Userroles::select('uRole_id', 'uRole_status', 'uRole_type', 'uRole', 'uRole_access', 'assUsers_count', 'created_by', 'created_at')->where('uRole_status', '!=', 'deleted')->where('uRole_type', 'employee')->get();
+            $get_all_stud_type_roles   = Userroles::select('uRole_id', 'uRole_status', 'uRole_type', 'uRole', 'uRole_access', 'assUsers_count', 'created_by', 'created_at')->where('uRole_status', '!=', 'deleted')->where('uRole_type', 'student')->get();
+            $count_all_emp_type_roles  = Userroles::where('uRole_status', '!=', 'deleted')->where('uRole_type', 'employee')->count();
+            $count_all_stud_type_roles = Userroles::where('uRole_status', '!=', 'deleted')->where('uRole_type', 'student')->count();
 
         $output = '';
         $output .= '
             <div class="modal-body border-0 p-0">
                 <div class="cust_modal_body_gray">
-                    <div class="row">
-                        <div class="col-lg-12 col-md-12 col-sm-12 m-0">
-                            <div class="card LightBlue2_cardBody shadow-none">
-                                Employee
+                    <div class="accordion shadow-none cust_accordion_div" id="empTypeRolesModalAccordion_Parent">
+                        <div class="card custom_accordion_card">
+                            <div class="card-header p-0" id="empTypeRolesCollapse_heading">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-block custom2_btn_collapse cb_x12y20 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#empTypeRolesCollapse_Div" aria-expanded="true" aria-controls="empTypeRolesCollapse_Div">
+                                        <div>
+                                            <span class="li_info_title">Employee Type Roles</span>
+                                            <span class="li_info_subtitle">'.$count_all_emp_type_roles.' System '; if($count_all_emp_type_roles > 1){ $output .= ' Roles '; }else{ $output .= ' Role '; } $output .= ' Found</span>
+                                        </div>
+                                        <i class="nc-icon nc-minimal-down"></i>
+                                    </button>
+                                </h2>
                             </div>
-                        </div>
-                    </div>
-                    <div class="row mt-2">
-                        <div class="col-lg-12 col-md-12 col-sm-12 m-0">
-                            <div class="card cust_listCard shadow">
-                            ';
-                            foreach($get_all_emp_type_roles->sortBy('uRole_id') as $emp_type_role){
-                                $count_assigned_emp_users = Userroles::where('uRole', $emp_type_role->uRole)->count();
-                                $output .= '
-                                <div class="card-header cust_listCard_header3">
-                                    <div>
-                                        <span class="accordion_title">'.$emp_type_role->uRole.'';if($emp_type_role->assUsers_count>1){$output.='s';}$output .='</span>';
-                                        if($emp_type_role->assUsers_count <= 0){
-                                            $output .= '<span class="font-italic text_svms_red"> No Assigned Users. </span>';
-                                        }
-                                        $output .='
-                                    </div>
-                                    <div class="assignedUsersCirclesDiv">';
-                                        if($count_assigned_emp_users > 14){
-                                            $get_only_14_emp_users = Users::select('id', 'user_image', 'user_lname', 'user_fname')->where('user_role', $emp_type_role->uRole)->take(13)->get();
-                                            $more_emp_users_count = $count_assigned_emp_users - 13;
-                                            foreach($get_only_14_emp_users->sortBy('id') as $display_8_emp_users){
-                                                $output .= '<img class="assignedUsersCirclesImgs2 whiteImg_border1" src="'.asset('storage/svms/user_images/'.$display_8_emp_users->user_image).'" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="';if(auth()->user()->id === $display_8_emp_users->id){$output .='You';}else{ $output .= ''.$display_8_emp_users->user_fname . ' ' .$display_8_emp_users->user_lname. ' ';} $output .= '">';
-                                            }
+                            <div id="empTypeRolesCollapse_Div" class="collapse cust_collapse_active cb_t0b12y20" aria-labelledby="empTypeRolesCollapse_heading" data-parent="#empTypeRolesModalAccordion_Parent">
+                                <div class="row mt-0 mb-2">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 m-0">
+                                        <div class="card cust_listCard shadow-none">
+                                        ';
+                                        foreach($get_all_emp_type_roles->sortBy('uRole_id') as $emp_type_role){
+                                            $count_assigned_emp_users = Userroles::where('uRole', $emp_type_role->uRole)->count();
                                             $output .= '
-                                            <div class="moreImgsCounterDiv2" data-toggle="tooltip" data-placement="top" title="'.$more_emp_users_count.' more '; if($more_emp_users_count > 1){ $output .= 'users'; }else{ $output .= 'user'; } $output .='">
-                                                <span class="moreImgsCounterTxt2">+ ' .$more_emp_users_count.'</span>
+                                            <div class="card-header cust_listCard_header3 bg_F4F4F5">
+                                                <div>
+                                                    <span class="accordion_title">'.$emp_type_role->uRole.'';if($emp_type_role->assUsers_count>1){$output.='s';}$output .='</span>';
+                                                    if($emp_type_role->assUsers_count <= 0){
+                                                        $output .= '<span class="font-italic text_svms_red"> No Assigned Users. </span>';
+                                                    }
+                                                    $output .='
+                                                </div>
+                                                <div class="assignedUsersCirclesDiv">';
+                                                    if($count_assigned_emp_users > 14){
+                                                        $get_only_14_emp_users = Users::select('id', 'user_image', 'user_lname', 'user_fname')->where('user_role', $emp_type_role->uRole)->take(13)->get();
+                                                        $more_emp_users_count = $count_assigned_emp_users - 13;
+                                                        foreach($get_only_14_emp_users->sortBy('id') as $display_13_emp_users){
+                                                            $output .= '<img class="assignedUsersCirclesImgs2 F4F4F5_border" src="'.asset('storage/svms/user_images/'.$display_13_emp_users->user_image).'" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="';if(auth()->user()->id === $display_13_emp_users->id){$output .='You';}else{ $output .= ''.$display_13_emp_users->user_fname . ' ' .$display_13_emp_users->user_lname. ' ';} $output .= '">';
+                                                        }
+                                                        $output .= '
+                                                        <div class="moreImgsCounterDiv2" data-toggle="tooltip" data-placement="top" title="'.$more_emp_users_count.' more '; if($more_emp_users_count > 1){ $output .= 'users'; }else{ $output .= 'user'; } $output .='">
+                                                            <span class="moreImgsCounterTxt2">+ ' .$more_emp_users_count.'</span>
+                                                        </div>
+                                                        ';
+                                                    }else{
+                                                        $get_all_assigned_emp_users = Users::select('id', 'user_image', 'user_lname', 'user_fname')->where('user_role', $emp_type_role->uRole)->get();
+                                                        foreach($get_all_assigned_emp_users->sortBy('id') as $assigned_emp_user){
+                                                            $output .= '<img class="assignedUsersCirclesImgs2 F4F4F5_border" src="'.asset('storage/svms/user_images/'.$assigned_emp_user->user_image).'" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="';if(auth()->user()->id === $assigned_emp_user->id){$output .='You';}else{ $output .= ''.$assigned_emp_user->user_fname . ' ' .$assigned_emp_user->user_lname. ' ';} $output .= '">';
+                                                        }
+                                                    }
+                                                $output .= '
+                                                </div>
                                             </div>
                                             ';
-                                        }else{
-                                            $get_all_assigned_emp_users = Users::select('id', 'user_image', 'user_lname', 'user_fname')->where('user_role', $emp_type_role->uRole)->get();
-                                            foreach($get_all_assigned_emp_users->sortBy('id') as $assigned_emp_user){
-                                                $output .= '<img class="assignedUsersCirclesImgs2 whiteImg_border1" src="'.asset('storage/svms/user_images/'.$assigned_emp_user->user_image).'" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="';if(auth()->user()->id === $assigned_emp_user->id){$output .='You';}else{ $output .= ''.$assigned_emp_user->user_fname . ' ' .$assigned_emp_user->user_lname. ' ';} $output .= '">';
-                                            }
                                         }
-                                    $output .= '
+                                        $output .= '
+                                        </div>
                                     </div>
                                 </div>
-                                ';
-                            }
-                            $output .= '
+                            </div>
+                        </div>
+                    </div>  
+                    <div class="accordion shadow-none cust_accordion_div mt-2" id="studTypeRolesModalAccordion_Parent">
+                        <div class="card custom_accordion_card">
+                            <div class="card-header p-0" id="studTypeRolesCollapse_heading">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-block custom2_btn_collapse cb_x12y20 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#studTypeRolesCollapse_Div" aria-expanded="true" aria-controls="studTypeRolesCollapse_Div">
+                                        <div>
+                                            <span class="li_info_title">Student Type Roles</span>
+                                            <span class="li_info_subtitle">'.$count_all_stud_type_roles.' System '; if($count_all_stud_type_roles > 1){ $output .= ' Roles '; }else{ $output .= ' Role '; } $output .= ' Found</span>
+                                        </div>
+                                        <i class="nc-icon nc-minimal-down"></i>
+                                    </button>
+                                </h2>
+                            </div>
+                            <div id="studTypeRolesCollapse_Div" class="collapse cust_collapse_active cb_t0b12y20" aria-labelledby="studTypeRolesCollapse_heading" data-parent="#studTypeRolesModalAccordion_Parent">
+                                <div class="row mt-0 mb-2">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 m-0">
+                                        <div class="card cust_listCard shadow-none">
+                                        ';
+                                        foreach($get_all_stud_type_roles->sortBy('uRole_id') as $stud_type_role){
+                                            $count_assigned_stud_users = Userroles::where('uRole', $stud_type_role->uRole)->count();
+                                            $output .= '
+                                            <div class="card-header cust_listCard_header3 bg_F4F4F5">
+                                                <div>
+                                                    <span class="accordion_title">'.$stud_type_role->uRole.'';if($stud_type_role->assUsers_count>1){$output.='s';}$output .='</span>';
+                                                    if($stud_type_role->assUsers_count <= 0){
+                                                        $output .= '<span class="font-italic text_svms_red"> No Assigned Users. </span>';
+                                                    }
+                                                    $output .='
+                                                </div>
+                                                <div class="assignedUsersCirclesDiv">';
+                                                    if($count_assigned_stud_users > 14){
+                                                        $get_only_14_emp_users = Users::select('id', 'user_image', 'user_lname', 'user_fname')->where('user_role', $stud_type_role->uRole)->take(13)->get();
+                                                        $more_stud_users_count = $count_assigned_stud_users - 13;
+                                                        foreach($get_only_14_emp_users->sortBy('id') as $display_13_stud_users){
+                                                            $output .= '<img class="assignedUsersCirclesImgs2 F4F4F5_border" src="'.asset('storage/svms/user_images/'.$display_13_stud_users->user_image).'" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="';if(auth()->user()->id === $display_13_stud_users->id){$output .='You';}else{ $output .= ''.$display_13_stud_users->user_fname . ' ' .$display_13_stud_users->user_lname. ' ';} $output .= '">';
+                                                        }
+                                                        $output .= '
+                                                        <div class="moreImgsCounterDiv2" data-toggle="tooltip" data-placement="top" title="'.$more_stud_users_count.' more '; if($more_stud_users_count > 1){ $output .= 'users'; }else{ $output .= 'user'; } $output .='">
+                                                            <span class="moreImgsCounterTxt2">+ ' .$more_stud_users_count.'</span>
+                                                        </div>
+                                                        ';
+                                                    }else{
+                                                        $get_all_assigned_stud_users = Users::select('id', 'user_image', 'user_lname', 'user_fname')->where('user_role', $stud_type_role->uRole)->get();
+                                                        foreach($get_all_assigned_stud_users->sortBy('id') as $assigned_stud_user){
+                                                            $output .= '<img class="assignedUsersCirclesImgs2 F4F4F5_border" src="'.asset('storage/svms/user_images/'.$assigned_stud_user->user_image).'" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="';if(auth()->user()->id === $assigned_stud_user->id){$output .='You';}else{ $output .= ''.$assigned_stud_user->user_fname . ' ' .$assigned_stud_user->user_lname. ' ';} $output .= '">';
+                                                        }
+                                                    }
+                                                $output .= '
+                                                </div>
+                                            </div>
+                                            ';
+                                        }
+                                        $output .= '
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>  

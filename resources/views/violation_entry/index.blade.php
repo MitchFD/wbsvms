@@ -191,7 +191,7 @@
 {{-- initialize tooltip end --}}
 
 {{-- live search --}}
-    <script>
+    {{-- <script>
         $(document).ready(function(){
             fetch_search_result();
             function fetch_search_result(query = ''){
@@ -210,6 +210,6 @@
                 fetch_search_result(query);
             });
         });
-    </script>
+    </script> --}}
 {{-- live search end --}}
 @endpush
