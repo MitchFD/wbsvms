@@ -89,17 +89,20 @@
         </div>
 
         <div class="row d-flex justify-content-center mt-3">
-            <div class="col-lg-6 col-md-6 col-sm-12">
-                <div class="form-group cust_search_form_group">
-                    <input type="text" class="form-control cust_search_input" id="search_student" name="search_student" placeholder="Search student by name of student number...">
-                    <i class="nc-icon nc-zoom-split"></i>
+            <div class="col-lg-7 col-md-10 col-sm-12">
+                <div class="input-group cust_inpGrp_div">
+                    <input type="text" id="search_violators" name="search_violators" class="form-control input_grpInpt" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                    <i class="nc-icon nc-zoom-split input_grpIcon"></i>
+                    <div class="input-group-append">
+                        <button class="btn btn_svms_red input_grpBtn" id="openViolator_modal" type="button"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-lg-8 col-md-12 col-sm-12">
-                        <div class="list-group mt-3 shadow cust_list_group_ve" id="displaySearchSudentResults">
+                        <div class="list-group mt-3 shadow cust_list_group_ve" id="displaySearchViolators_results">
                             <a href="#" data-toggle="modal" data-target="#violationEntryModal" class="list-group-item list-group-item-action cust_lg_item_ve">
                                 <div class="display_user_image_div text-center">
-                                    <img class="display_user_image default_stud_img_border shadow-sm" src="{{asset('storage/svms/user_images/default_student_img.jpg')}}" alt="student's image">
+                                    <img class="display_violator_image shadow-sm" src="{{asset('storage/svms/user_images/default_student_img.jpg')}}" alt="student's image">
                                 </div>
                                 <div class="information_div">
                                     <span class="li_info_title">Mitch Frankein O. Desierto</span>
@@ -182,13 +185,29 @@
 @endsection
 
 @push('scripts')
-{{-- initialize tooltip --}}
-    <script>
-        $(function () {
-            $('[data-toggle="tooltip"]').tooltip()
-        })
-    </script>
-{{-- initialize tooltip end --}}
+{{-- live search violators --}}
+    {{-- <script>
+        $(document).ready(function(){
+            $('#search_violators').tokenfield({
+                autocomplete :{
+                    source: function(request, response)
+                    {
+                        jQuery.get("{{ url('violation_entry.search_violators') }}", {
+                            query : request.term
+                        }, function(data){
+                            data = JSON.parse(data);
+                            response(data);
+                        });
+                    },
+                    delay: 100
+                }
+            });
+            $('#openViolator_modal').click(function(){
+                $('#displaySearchViolators_results').text($('#search_violators').val());
+            });
+        });
+    </script> --}}
+{{-- live search violators end --}}
 
 {{-- live search --}}
     {{-- <script>

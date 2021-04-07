@@ -17,21 +17,6 @@
         // $('#actLogs_collapseIconToggle').toggle('1000');
         $("i", this).toggleClass("nc-minimal-up nc-minimal-down");
     });
-    // for system roles card collapse icon
-        $('#listUserRoles_collapseBtnToggle').click(function() {
-            // $('#actLogs_collapseIconToggle').toggle('1000');
-            $("i", this).toggleClass("nc-minimal-up nc-minimal-down");
-        });
-    // for user registration form
-        $('#createUser_collapseBtnToggle').click(function() {
-            // $('#actLogs_collapseIconToggle').toggle('1000');
-            $("i", this).toggleClass("nc-minimal-up nc-minimal-down");
-        });
-    // for syste role registration form
-    $('#createSystemRole_collapseBtnToggle').click(function() {
-        // $('#actLogs_collapseIconToggle').toggle('1000');
-        $("i", this).toggleClass("nc-minimal-up nc-minimal-down");
-    });
 // change dropdown collapse icon on button click from main gray card end 
 
 // active main gray card collpase on page refresh

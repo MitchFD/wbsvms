@@ -84,7 +84,7 @@
                         $user_alt_image = 'disabled_user_image';
                     }   
                 }
-            }else{
+            }else if($user_data->user_type === 'employee'){
                 $user_emp_info   = App\Models\Useremployees::where('uEmp_id', $user_data->user_sdca_id)->first();
                 $custom_nav_pill = 'custom_nav_link_blue';
                 if($user_data->user_role_status === 'active'){
@@ -109,6 +109,8 @@
                         $user_alt_image = 'disabled_user_image';
                     }   
                 }
+            }else{
+                $custom_nav_pill = 'custom_nav_link_gray';
             }
         // filter for user types end 
         @endphp
