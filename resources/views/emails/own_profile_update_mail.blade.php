@@ -13,10 +13,7 @@
     <h3>{{$details['title']}}</h3>
 
     <p>Greetings {{ $details['recipient'] }},</p>
-    <p>This email is to notify you that the System Administrator of the Student Violation Management System has updated your profile for the following reason/s:</p>
-    <p>~ <em>{{ $details['svms_logo'] }}</em></p>
-    <br />
-    <p>Below are the changes made to your account information:</p>
+    <p>This email is to notify you that you have updated your profile for your SVMS account. Below are the changes you have made:</p>
     <br />
     {{-- changes comparison --}}
     <table style="
@@ -182,7 +179,7 @@
                         <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_sdca_id'] !== $new_profile['user_sdca_id']) edited @endif </em></strong></p>
                         <p style="margin: 4px 15px 10px 15px !important;">{{ $new_profile['user_sdca_id'] }}</p>
                     </td>
-                </tr>
+                </tr>   
                 <tr style="line-height: 12px; margin: 7px 0 !important;">
                     <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
                         <p style="margin: 10px 15px 3px 15px !important;"><strong>Job Description</strong></p>
@@ -203,6 +200,8 @@
                         <p style="margin: 4px 15px 10px 15px !important;">{{ $new_profile['user_dept'] }}</p>
                     </td>
                 </tr>
+            @else
+                {{-- no print --}}
             @endif
             <tr style="line-height: 12px; margin: 7px 0 !important;">
                 <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
@@ -219,10 +218,10 @@
     <br />
     @if($old_profile['user_email'] !== $new_profile['user_email'])
         {{-- <p>The system has deactivated your account because your email has changed. We have sent a message to your new email address <strong> ({{ $new_profile['user_email'] }}) </strong> for instructions to Activate your account again.</p> --}}
-        <p>We have sent a message to your new email address <strong> ({{ $new_profile['user_email'] }}) </strong> for instructions to access our system.</p>
-    @else
-        <p>Kindly head to this link <a href="http://127.0.0.1:8000/">Student Violation Mangement System</a> and log in to the system to view your updated profile and/or edit these changes if incorrect details were found.</p>
+        <p>Our system noticed that you have switched to a new email address. We have sent a message to your new email address <strong> ({{ $new_profile['user_email'] }}) </strong> for instructions to access our system.</p>
     @endif
+    <p>If you don't recognize this update, you can email us back to restore your old profile information. Or head to this link <a href="http://127.0.0.1:8000/">Student Violation Mangement System</a> and login to the system to edit incorrect updates.</p>
+    <br />
     <p>Thank you for your time, and have a good day.</p>
 </body>
 </html>

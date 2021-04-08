@@ -785,22 +785,29 @@ class UserManagementController extends Controller
                         if(!empty($get_upd_studEmail)){
                             if($stud_orgEmail !== $get_upd_studEmail){
                                 // deactivate account for switching to new email
-                                    $update_users_tbl = DB::table('users')
-                                    ->where('id', $get_selected_userId)
-                                    ->update([
-                                        'user_status'  => 'deactivated',
-                                        'updated_at'   => $now_timestamp
-                                        ]);
+                                    // $update_users_tbl = DB::table('users')
+                                    // ->where('id', $get_selected_userId)
+                                    // ->update([
+                                    //     'user_status'  => 'deactivated',
+                                    //     'updated_at'   => $now_timestamp
+                                    //     ]);
                                 // record status update to user_status_updates_tbl
-                                    if($stud_orgRole !== 'deactivated'){
-                                        $rec_user_stats_update_tbl = new Userupdatesstatus;
-                                        $rec_user_stats_update_tbl->from_user_id   = $get_selected_userId;
-                                        $rec_user_stats_update_tbl->updated_status = 'deactivated';
-                                        $rec_user_stats_update_tbl->reason_update  = 'switching to a new email address';
-                                        $rec_user_stats_update_tbl->updated_at     = $now_timestamp;
-                                        $rec_user_stats_update_tbl->updated_by     = $get_respo_user_id;
-                                        $rec_user_stats_update_tbl->save();
-                                    }
+                                    // if($stud_orgRole !== 'deactivated'){
+                                    //     $rec_user_stats_update_tbl = new Userupdatesstatus;
+                                    //     $rec_user_stats_update_tbl->from_user_id   = $get_selected_userId;
+                                    //     $rec_user_stats_update_tbl->updated_status = 'deactivated';
+                                    //     $rec_user_stats_update_tbl->reason_update  = 'switching to a new email address';
+                                    //     $rec_user_stats_update_tbl->updated_at     = $now_timestamp;
+                                    //     $rec_user_stats_update_tbl->updated_by     = $get_respo_user_id;
+                                    //     $rec_user_stats_update_tbl->save();
+                                    // }
+                                    $rec_user_stats_update_tbl = new Userupdatesstatus;
+                                    $rec_user_stats_update_tbl->from_user_id   = $get_selected_userId;
+                                    $rec_user_stats_update_tbl->updated_status = 'active';
+                                    $rec_user_stats_update_tbl->reason_update  = 'switching to a new email address';
+                                    $rec_user_stats_update_tbl->updated_at     = $now_timestamp;
+                                    $rec_user_stats_update_tbl->updated_by     = $get_respo_user_id;
+                                    $rec_user_stats_update_tbl->save();
                                 // notify user that this new email has been registered as a user of SVMS
                                     \Mail::to($get_upd_studEmail)->send(new \App\Mail\ProfileUpdateNewEmailSendMail($details, $old_profile ,$new_profile));
                             }
@@ -998,22 +1005,29 @@ class UserManagementController extends Controller
                                 if(!empty($get_upd_empEmail)){
                                     if($emp_orgEmail !== $get_upd_empEmail){
                                         // deactivate account for switching to new email
-                                            $update_users_tbl = DB::table('users')
-                                            ->where('id', $get_selected_userId)
-                                            ->update([
-                                                'user_status'  => 'deactivated',
-                                                'updated_at'   => $now_timestamp
-                                                ]);
+                                            // $update_users_tbl = DB::table('users')
+                                            // ->where('id', $get_selected_userId)
+                                            // ->update([
+                                            //     'user_status'  => 'deactivated',
+                                            //     'updated_at'   => $now_timestamp
+                                            //     ]);
                                         // record status update to user_status_updates_tbl
-                                            if($emp_orgRole !== 'deactivated'){
-                                                $rec_user_stats_update_tbl = new Userupdatesstatus;
-                                                $rec_user_stats_update_tbl->from_user_id   = $get_selected_userId;
-                                                $rec_user_stats_update_tbl->updated_status = 'deactivated';
-                                                $rec_user_stats_update_tbl->reason_update  = 'switching to a new email address';
-                                                $rec_user_stats_update_tbl->updated_at     = $now_timestamp;
-                                                $rec_user_stats_update_tbl->updated_by     = $get_respo_user_id;
-                                                $rec_user_stats_update_tbl->save();
-                                            }
+                                            // if($emp_orgRole !== 'deactivated'){
+                                            //     $rec_user_stats_update_tbl = new Userupdatesstatus;
+                                            //     $rec_user_stats_update_tbl->from_user_id   = $get_selected_userId;
+                                            //     $rec_user_stats_update_tbl->updated_status = 'deactivated';
+                                            //     $rec_user_stats_update_tbl->reason_update  = 'switching to a new email address';
+                                            //     $rec_user_stats_update_tbl->updated_at     = $now_timestamp;
+                                            //     $rec_user_stats_update_tbl->updated_by     = $get_respo_user_id;
+                                            //     $rec_user_stats_update_tbl->save();
+                                            // }
+                                            $rec_user_stats_update_tbl = new Userupdatesstatus;
+                                            $rec_user_stats_update_tbl->from_user_id   = $get_selected_userId;
+                                            $rec_user_stats_update_tbl->updated_status = 'active';
+                                            $rec_user_stats_update_tbl->reason_update  = 'switching to a new email address';
+                                            $rec_user_stats_update_tbl->updated_at     = $now_timestamp;
+                                            $rec_user_stats_update_tbl->updated_by     = $get_respo_user_id;
+                                            $rec_user_stats_update_tbl->save();
                                         // notify user that this new email has been registered as a user of SVMS
                                             \Mail::to($get_upd_empEmail)->send(new \App\Mail\ProfileUpdateNewEmailSendMail($details, $old_profile ,$new_profile));
                                     }

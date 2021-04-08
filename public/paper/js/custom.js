@@ -2,6 +2,10 @@
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
     });
+    // tooltip fro modals
+        $('.modal').on('show.bs.modal', function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        });
 
 // toggle icon class on button click
     $('.custom2_btn_collapse').click(function() {

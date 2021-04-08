@@ -1333,7 +1333,7 @@
                 $(this).find('#submit_changeUserRoleBtn').prop('disabled', $(this).serialize() == $(this).data('serialized'));
                 console.log('nagbago');
             }).find('#submit_changeUserRoleBtn').prop('disabled', true);
-        })
+        });
     </script>
 {{-- disable submit button on Change User Role Modal if any of inputs have chagned end --}}
 

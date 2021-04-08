@@ -55,25 +55,25 @@ class ProfileController extends Controller
     }
 
     // update employee account information
-    public function update_emp_user_profile(Request $request){
+    public function update_emp_user_own_profile(Request $request){
         // validate
             // $this->validate($request, [
-            //     'upd_emp_user_image' => 'image|nullable|max:1999'
+            //     'upd_emp_own_user_image' => 'image|nullable|max:1999'
             // ]);
         // now timestamp
             $now_timestamp  = now();
             $format_now_timestamp = $now_timestamp->format('dmYHis');
         // get all request
-            $get_upd_emp_user_image = $request->file('upd_emp_user_image');
-            $get_selected_userId    = $request->get('selected_user_id');
-            $get_upd_empEmail       = $request->get('upd_emp_email');
-            $get_upd_empId          = $request->get('upd_emp_id');
-            $get_upd_empLname       = $request->get('upd_emp_lname');
-            $get_upd_empFname       = $request->get('upd_emp_fname');
-            $get_upd_empGender      = $request->get('upd_emp_gender');
-            $get_upd_empJobdesc     = $request->get('upd_emp_jobdesc');
-            $get_upd_empDept        = $request->get('upd_emp_dept');
-            $get_upd_empPhnum       = $request->get('upd_emp_phnum');
+            $get_selected_userId    = $request->get('own_user_id');
+            $get_upd_emp_user_image = $request->file('upd_emp_own_user_image');
+            $get_upd_empEmail       = $request->get('upd_emp_own_email');
+            $get_upd_empId          = $request->get('upd_emp_own_id');
+            $get_upd_empLname       = $request->get('upd_emp_own_lname');
+            $get_upd_empFname       = $request->get('upd_emp_own_fname');
+            $get_upd_empGender      = $request->get('updateGenderOptions');
+            $get_upd_empJobdesc     = $request->get('upd_emp_own_jobdesc');
+            $get_upd_empDept        = $request->get('upd_emp_own_dept');
+            $get_upd_empPhnum       = $request->get('upd_emp_own_phnum');
         // get user's original info
             $fetch_original_user = Users::where('id' , $get_selected_userId)->first();
             $emp_org_empEmail    = $fetch_original_user->email;
@@ -94,18 +94,21 @@ class ProfileController extends Controller
                 $new_user_gender = Str::lower($get_upd_empGender);
                 if($old_user_gender == 'male'){
                     $userGenderTxt = 'his';
+                    $user_mr_ms   = 'Mr.';
                 }elseif($old_user_gender == 'female'){
                     $userGenderTxt = 'her';
+                    $user_mr_ms   = 'Ms.';
                 }else{
                     $userGenderTxt = 'his/her';
+                    $user_mr_ms   = 'Mr./Ms.';
                 }
         // user image update handler
-            if($request->hasFile('upd_emp_user_image')){
-                $get_filenameWithExt = $request->file('upd_emp_user_image')->getClientOriginalName();
+            if($request->hasFile('upd_emp_own_user_image')){
+                $get_filenameWithExt = $request->file('upd_emp_own_user_image')->getClientOriginalName();
                 $get_justFile        = pathinfo($get_filenameWithExt, PATHINFO_FILENAME);
-                $get_justExt         = $request->file('upd_emp_user_image')->getClientOriginalExtension();
+                $get_justExt         = $request->file('upd_emp_own_user_image')->getClientOriginalExtension();
                 $fileNameToStore     = $get_justFile.'_'.$format_now_timestamp.'.'.$get_justExt;
-                // $uploadImageToPath   = $request->file('upd_emp_user_image')->storeAs('public/storage/svms/user_images',$fileNameToStore);
+                // $uploadImageToPath   = $request->file('upd_emp_own_user_image')->storeAs('public/storage/svms/user_images',$fileNameToStore);
             }else{
                 $fileNameToStore = $emp_org_empImage;
             }
@@ -134,9 +137,9 @@ class ProfileController extends Controller
                             'uEmp_phnum'    => $get_upd_empPhnum
                             ]);
                 // store uploaded image to public/storage/svms/user_images
-                    if($request->hasFile('upd_emp_user_image')){
+                    if($request->hasFile('upd_emp_own_user_image')){
                         $destinationPath   = public_path('/storage/svms/user_images');
-                        $uploadImageToPath = $request->file('upd_emp_user_image')->move($destinationPath,$fileNameToStore);
+                        $uploadImageToPath = $request->file('upd_emp_own_user_image')->move($destinationPath,$fileNameToStore);
                     }
                 // record original user's info to edited_old_emp_users_tbl
                     $rec_orginalUserInfo = new Editedolduseremployees;
@@ -184,7 +187,74 @@ class ProfileController extends Controller
                     $rec_activity->act_details           = $emp_org_empFname. ' ' . $emp_org_empLname . ' Updated ' .$userGenderTxt. ' Account.';
                     $rec_activity->act_affected_id       = $from_eOldEmp_id;
                     $rec_activity->save();
+                // send email
+                    $details = [
+                        'svms_logo'           => "storage/svms/logos/svms_logo_text.png",
+                        'title'               => 'PROFILE UPDATE',
+                        'recipient'           => $user_mr_ms . ' ' .$emp_org_empFname . ' ' . $emp_org_empLname
+                    ];
+                    $old_profile = [
+                        'user_image'      => 'storage/svms/user_images/'.$emp_org_empImage,
+                        'user_type'       => $emp_org_empuType,
+                        'user_email'      => $emp_org_empEmail,
+                        'user_role'       => $emp_org_empuRole,
+                        'user_sdca_id'    => $emp_org_empID,
+                        'user_first_name' => $emp_org_empFname,
+                        'user_last_name'  => $emp_org_empLname,
+                        'user_gender'     => $old_user_gender,
+                        'user_job_desc'   => $emp_org_empJobdesc,
+                        'user_dept'       => $emp_org_empDept,
+                        'user_phnum'      => $emp_org_empPhnum,
+                    ];
+                    $new_profile = [
+                        'user_image'      => 'storage/svms/user_images/'.$fileNameToStore,
+                        'user_type'       => $emp_org_empuType,
+                        'user_email'      => $get_upd_empEmail,
+                        'user_role'       => $emp_org_empuRole,
+                        'user_sdca_id'    => $get_upd_empId,
+                        'user_first_name' => $get_upd_empFname,
+                        'user_last_name'  => $get_upd_empLname,
+                        'user_gender'     => $get_upd_empGender,
+                        'user_job_desc'   => $get_upd_empJobdesc,
+                        'user_dept'       => $get_upd_empDept,
+                        'user_phnum'      => $get_upd_empPhnum,
+                    ];
+                    // if user has email
+                        if(!empty($emp_org_empEmail)){
+                            // notify user from his/her old email
+                            \Mail::to('mfodesierto2@gmail.com')->send(new \App\Mail\OwnProfileUpdateSendMail($details, $old_profile ,$new_profile));
 
+                            if(!empty($get_upd_empEmail)){
+                                if($emp_org_empEmail !== $get_upd_empEmail){
+                                    // deactivate account for switching to new email
+                                        // $update_users_tbl = DB::table('users')
+                                        // ->where('id', $get_selected_userId)
+                                        // ->update([
+                                        //     'user_status'  => 'deactivated',
+                                        //     'updated_at'   => $now_timestamp
+                                        //     ]);
+                                    // record status update to user_status_updates_tbl
+                                        // if($emp_orgRole !== 'deactivated'){
+                                        //     $rec_user_stats_update_tbl = new Userupdatesstatus;
+                                        //     $rec_user_stats_update_tbl->from_user_id   = $get_selected_userId;
+                                        //     $rec_user_stats_update_tbl->updated_status = 'deactivated';
+                                        //     $rec_user_stats_update_tbl->reason_update  = 'switching to a new email address';
+                                        //     $rec_user_stats_update_tbl->updated_at     = $now_timestamp;
+                                        //     $rec_user_stats_update_tbl->updated_by     = $get_respo_user_id;
+                                        //     $rec_user_stats_update_tbl->save();
+                                        // }
+                                        $rec_user_stats_update_tbl = new Userupdatesstatus;
+                                        $rec_user_stats_update_tbl->from_user_id   = $get_selected_userId;
+                                        $rec_user_stats_update_tbl->updated_status = 'active';
+                                        $rec_user_stats_update_tbl->reason_update  = 'switching to a new email address';
+                                        $rec_user_stats_update_tbl->updated_at     = $now_timestamp;
+                                        $rec_user_stats_update_tbl->updated_by     = $get_selected_userId;
+                                        $rec_user_stats_update_tbl->save();
+                                    // notify user that this new email has been registered as a user of SVMS
+                                        \Mail::to($get_upd_empEmail)->send(new \App\Mail\OwnProfileUpdateNewEmailSendMail($details, $old_profile ,$new_profile));
+                                }
+                            }
+                        }
                     return back()->withSuccessStatus('Your Account was updated successfully.');
             }else{
                 return back()->withFailedStatus('Your Account was updated successfully.');

@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class ProfileUpdateNewEmailSendMail extends Mailable
+class OwnProfileUpdateSendMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -34,6 +34,6 @@ class ProfileUpdateNewEmailSendMail extends Mailable
      */
     public function build()
     {
-        return $this->subject('Email Registration')->view('emails.profile_update_new_email_mail');
+        return $this->subject('Profile Update')->view('emails.own_profile_update_mail');
     }
 }
