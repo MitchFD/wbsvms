@@ -38,8 +38,15 @@ Route::group(['middleware' => 'auth'], function () {
 
 	// custom profile
 	Route::get('profile/index', ['as' => 'profile.index', 'uses' => 'App\Http\Controllers\ProfileController@index']);
+	// update profile
 	Route::post('profile/update_emp_user_own_profile', ['as' => 'profile.update_emp_user_own_profile', 'uses' => 'App\Http\Controllers\ProfileController@update_emp_user_own_profile']);
-	Route::post('profile/update_stud_user_profile', ['as' => 'profile.update_stud_user_profile', 'uses' => 'App\Http\Controllers\ProfileController@update_stud_user_profile']);
+	Route::post('profile/update_stud_user_own_profile', ['as' => 'profile.update_stud_user_own_profile', 'uses' => 'App\Http\Controllers\ProfileController@update_stud_user_own_profile']);
+	// new email availability check
+	Route::post('/profile/emp_user_switch_new_email_availability_check', 'App\Http\Controllers\ProfileController@emp_user_switch_new_email_availability_check')->name('profile.emp_user_switch_new_email_availability_check');
+	Route::post('/profile/stud_user_switch_new_email_availability_check', 'App\Http\Controllers\ProfileController@stud_user_switch_new_email_availability_check')->name('profile.stud_user_switch_new_email_availability_check');
+	// change password
+	Route::post('profile/check_my_old_password', ['as' => 'profile.check_my_old_password', 'uses' => 'App\Http\Controllers\ProfileController@check_my_old_password']);
+	Route::post('profile/update_my_password', ['as' => 'profile.update_my_password', 'uses' => 'App\Http\Controllers\ProfileController@update_my_password']);
 });
 
 // user management

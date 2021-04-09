@@ -745,7 +745,8 @@ class UserManagementController extends Controller
                     'svms_logo'           => "storage/svms/logos/svms_logo_text.png",
                     'title'               => 'PROFILE UPDATE',
                     'recipient'           => $user_mr_ms . ' ' .$stud_orgFname . ' ' . $stud_orgLname,
-                    'responsible_user'    => $respo_mr_ms . ' ' .$get_respo_user_fname . ' ' . $get_respo_user_lname
+                    'responsible_user'    => $respo_mr_ms . ' ' .$get_respo_user_fname . ' ' . $get_respo_user_lname,
+                    'date_of_changes'     => $now_timestamp
                 ];
                 $old_profile = [
                     'user_image'      => 'storage/svms/user_images/'.$stud_orgImage,
@@ -781,6 +782,7 @@ class UserManagementController extends Controller
                     if(!empty($stud_orgEmail)){
                         // notify user from his/her old email
                         \Mail::to('mfodesierto2@gmail.com')->send(new \App\Mail\ProfileUpdateSendMail($details, $old_profile ,$new_profile));
+                        // notify user from his page when currently logged in
 
                         if(!empty($get_upd_studEmail)){
                             if($stud_orgEmail !== $get_upd_studEmail){
@@ -810,6 +812,8 @@ class UserManagementController extends Controller
                                     $rec_user_stats_update_tbl->save();
                                 // notify user that this new email has been registered as a user of SVMS
                                     \Mail::to($get_upd_studEmail)->send(new \App\Mail\ProfileUpdateNewEmailSendMail($details, $old_profile ,$new_profile));
+                                // logged out user form the system with notification mesasge to check his/her old email
+
                             }
                         }
                     }
@@ -969,7 +973,8 @@ class UserManagementController extends Controller
                             'svms_logo'           => "storage/svms/logos/svms_logo_text.png",
                             'title'               => 'PROFILE UPDATE',
                             'recipient'           => $user_mr_ms . ' ' .$emp_orgFname . ' ' . $emp_orgLname,
-                            'responsible_user'    => $respo_mr_ms . ' ' .$get_respo_user_fname . ' ' . $get_respo_user_lname
+                            'responsible_user'    => $respo_mr_ms . ' ' .$get_respo_user_fname . ' ' . $get_respo_user_lname,
+                            'date_of_changes'     => $now_timestamp
                         ];
                         $old_profile = [
                             'user_image'      => 'storage/svms/user_images/'.$emp_orgImage,
@@ -1000,8 +1005,9 @@ class UserManagementController extends Controller
                         // if user has email
                             if(!empty($emp_orgEmail)){
                                 // notify user from his/her old email
-                                \Mail::to('mfodesierto2@gmail.com')->send(new \App\Mail\ProfileUpdateSendMail($details, $old_profile ,$new_profile));
-        
+                                    \Mail::to('mfodesierto2@gmail.com')->send(new \App\Mail\ProfileUpdateSendMail($details, $old_profile ,$new_profile));
+                                // notify user from his page when currently logged in
+                                    
                                 if(!empty($get_upd_empEmail)){
                                     if($emp_orgEmail !== $get_upd_empEmail){
                                         // deactivate account for switching to new email
@@ -1030,6 +1036,8 @@ class UserManagementController extends Controller
                                             $rec_user_stats_update_tbl->save();
                                         // notify user that this new email has been registered as a user of SVMS
                                             \Mail::to($get_upd_empEmail)->send(new \App\Mail\ProfileUpdateNewEmailSendMail($details, $old_profile ,$new_profile));
+                                        // logged out user form the system with notification mesasge to check his/her old email
+
                                     }
                                 }
                             }

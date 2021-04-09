@@ -118,7 +118,7 @@ class LoginController extends Controller
     
     public function logout(Request $request){
         // now timestamp
-        $now_timestamp = now();
+            $now_timestamp = now();
         // get user's info
             $user_id          = auth()->user()->id;
             $user_lname       = auth()->user()->user_lname;
@@ -134,8 +134,8 @@ class LoginController extends Controller
             $record_act->act_affected_id       = $user_id;
             $record_act->save();
         // log out user an dredirect to login page
-        Auth::logout();
-        return redirect('/');
+            Auth::logout();
+            return redirect('/');
     }
 
 

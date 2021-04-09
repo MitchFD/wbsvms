@@ -13,9 +13,10 @@
     <h3>SVMS ACCOUNT CONFIRMATION</h3>
 
     <p>Greetings {{ $details['recipient'] }},</p>
-    <p>Your email <strong> ({{ $new_profile['user_email'] }}) </strong> has been registered as a system {{ ucwords($new_profile['user_role']) }} of the Student Violation Management System, a web-based system developed for the implementation of the policies, rules, and regulations of St. Dominic College of Asia and to manage and monitor violations committed by its college students.</p>
-    <p>The System Administrator of SVMS has updated your registered email address from: {{ $old_profile['user_email'] }} to this new email address: {{ $new_profile['user_email'] }}.</p>
-    <p>Kindly head to this link <a href="http://127.0.0.1:8000/">Student Violation Mangement System</a> and log in to the system to view your updated profile and/or edit these changes if incorrect details were found.</p>
+    <p>This Email address has been registered as a <strong> system {{ ucwords($new_profile['user_role']) }} </strong> of the Student Violation Management System, a web-based system developed for the implementation of the policies, rules, and regulations of St. Dominic College of Asia and to manage and monitor violations committed by its college students.</p>
+    <p>The System Administrator of SVMS has updated your registered email address from: {{ $old_profile['user_email'] }} to this new email address.</p>
+    <p>Your Account Password is still the same.</p>
+    <p>If you do not expect or are unaware of these changes to your account, you can email us back to restore your old profile information. Or head to this link <a href="http://127.0.0.1:8000/">Student Violation Mangement System</a> and log in to the system with your new email address <strong> ({{ $new_profile['user_email'] }}) </strong> to view and/or edit your profile.</p>
     {{-- <p>To Activate your account, you can do the following options:</p>
     <ol>
         <li>Report to the Department of Student Discipline Office and look for Mr. Apolonio Silva for further instructions, or;</li>
@@ -28,9 +29,6 @@
             </ol>
         </li>
       </ol> --}}
-    <br />
-    <p>If you don't recognize this registration, you can email us back to terminate this registration and delete your email from our system and any information our system has associated with this email address. Or visit us at the Student Discipline Office for your concern/s.</p>
-    <br />
     <p>Thank you for your time, and have a good day.</p>
 </body>
 </html>

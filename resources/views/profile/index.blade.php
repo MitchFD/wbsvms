@@ -255,9 +255,9 @@
                                                 <span class="cat_title_txt">Gender</span>
                                                 @if(!is_null(auth()->user()->user_gender))
                                                     @if(auth()->user()->user_gender === 'male')
-                                                        <span class="up_info_txt mb-0"><i class="fa fa-male"></i> {{ auth()->user()->user_gender}}</span> 
+                                                        <span class="up_info_txt mb-0"><i class="fa fa-male"></i> {{ ucwords(auth()->user()->user_gender) }}</span> 
                                                     @elseif(auth()->user()->user_gender === 'female')
-                                                        <span class="up_info_txt mb-0"><i class="fa fa-female"></i> {{ auth()->user()->user_gender}}</span> 
+                                                        <span class="up_info_txt mb-0"><i class="fa fa-female"></i> {{ ucwords(auth()->user()->user_gender) }}</span> 
                                                     @else
                                                         <span class="up_info_txt mb-0 font-italic text_svms_red"><i class="fa fa-exclamation-circle"></i> gender unknown</span>
                                                     @endif
@@ -490,14 +490,211 @@
                                             </div>
                                         </div>
                                     @elseif(auth()->user()->user_type === 'student')
+                                        <div class="card card_gbr shadow">
+                                            <div class="card-body p-0">
+                                                <div class="card-header cb_p15x25">
+                                                    <span class="sec_card_body_title">Edit Profile</span>
+                                                    <span class="sec_card_body_subtitle">Click the <span class="font-weight-bold">'Save Changes'</span> button to save the changes you've made and this will update your profile.</span>
+                                                </div>
+                                                <form id="form_studUpdateOwnProfile" class="form" method="POST" action="{{route('profile.update_stud_user_own_profile')}}" enctype="multipart/form-data" onsubmit="update_studUserOwnProfileBtn.disabled = true; return true;">
+                                                    @csrf
+                                                    <div class="cb_px25 cb_pb15">
+                                                        <div class="row d-flex justify-content-center">
+                                                            <div class="col-lg-12 col-md-12 col-sm-12 align-items-center">
+                                                                <div class="up_img_div text-center">
+                                                                    <img class="up_stud_user_image studOwn_imgUpld_targetImg shadow border-gray" src="{{asset('storage/svms/user_images/'.auth()->user()->user_image)}}" alt="{{auth()->user()->user_fname }} {{ auth()->user()->user_lname}}'s profile image'">
+                                                                </div>
+                                                                <div class="user_image_upload_input_div stud_imgUpload">
+                                                                    <i class="nc-icon nc-image stud_imgUpld_TrgtBtn"></i>
+                                                                    <input name="upd_stud_own_user_image" class="file_upload_input studOwn_img_imgUpld_fileInpt" type="file" accept="image/*"/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <label for="upd_stud_own_email">Email Address</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="nc-icon nc-email-85" aria-hidden="true"></i>
+                                                                </span>
+                                                            </div>
+                                                            <input id="upd_stud_own_email" name="upd_stud_own_email" type="text" class="form-control" @if(auth()->user()->email != 'null') value="{{auth()->user()->email}}" @else placeholder="Type Email Address" @endif required>
+                                                            <span id="studEmailAvail_notice" class="d-none text-right">
 
+                                                            </span>
+                                                        </div>
+                                                        <label for="upd_stud_own_id">Student Number</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="nc-icon nc-badge" aria-hidden="true"></i>
+                                                                </span>
+                                                            </div>
+                                                            <input id="upd_stud_own_id" name="upd_stud_own_id" type="number" min="0" oninput="validity.valid||(value='');" class="form-control" @if(auth()->user()->user_sdca_id != 'null') value="{{auth()->user()->user_sdca_id}}" @else placeholder="Type Student Number" @endif required>
+                                                        </div>
+                                                        <label for="upd_stud_own_lname">Last Name</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="nc-icon nc-single-02"></i>
+                                                                </span>
+                                                            </div>
+                                                            <input id="upd_stud_own_lname" name="upd_stud_own_lname" type="text" class="form-control" @if(auth()->user()->user_lname != 'null') value="{{auth()->user()->user_lname}}" @else placeholder="Type Last Name" @endif required>
+                                                        </div>
+                                                        <label for="upd_stud_own_fname">First Name</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="nc-icon nc-single-02"></i>
+                                                                </span>
+                                                            </div>
+                                                            <input id="upd_stud_own_fname" name="upd_stud_own_fname" type="text" class="form-control" @if(auth()->user()->user_fname != 'null') value="{{auth()->user()->user_fname}}" @else placeholder="Type First Name" @endif required>
+                                                        </div>
+                                                        <label for="upd_stud_own_gender">Gender</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="nc-icon nc-single-02"></i>
+                                                                </span>
+                                                            </div>
+                                                            <input id="upd_stud_own_gender" list="updateStudGenderOptions" pattern="Male|Female" name="upd_stud_own_gender" type="text" class="form-control" @if(auth()->user()->user_gender != 'null') value="{{ucfirst(auth()->user()->user_gender)}}" @else placeholder="Select Gender" @endif required>
+                                                            <datalist id="updateStudGenderOptions">
+                                                                <option value="Male">
+                                                                <option value="Female">
+                                                            </datalist>
+                                                        </div>
+                                                        <label for="upd_stud_own_school">School</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="nc-icon nc-badge" aria-hidden="true"></i>
+                                                                </span>
+                                                            </div>
+                                                            <input id="upd_stud_own_school" list="updateStudSchoolOptions" pattern="SASE|SBCS|SIHTM|SHSP" name="upd_stud_own_school" type="text" class="form-control" @if($user_stud_info->uStud_school != 'null') value="{{$user_stud_info->uStud_school}}" @else placeholder="Type Your School" @endif required>
+                                                            <datalist id="updateStudSchoolOptions">
+                                                                <option value="SASE">
+                                                                <option value="SBCS">
+                                                                <option value="SIHTM">
+                                                                <option value="SHSP">
+                                                            </datalist>
+                                                        </div>
+                                                        <label for="upd_stud_own_program">Program</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="nc-icon nc-badge" aria-hidden="true"></i>
+                                                                </span>
+                                                            </div>
+                                                            <input id="upd_stud_own_program" list="updateStudProgramOptions" pattern="BS Psychology|BS Education|BA Communication|BSBA|BSA|BSIT|BSCS|BMA|BSHM|BSTM|BS Biology|BS Pharmacy|BS Radiologic Technology|BS Physical Therapy|BS Medical Technology|BS Nursing" name="upd_stud_own_program" type="text" class="form-control" @if($user_stud_info->uStud_program != 'null') value="{{$user_stud_info->uStud_program}}" @else placeholder="Type Your Program" @endif required>
+                                                            <datalist id="updateStudProgramOptions">
+                                                                
+                                                            </datalist>
+                                                        </div>
+                                                        <label for="upd_stud_own_yearlvl">Year Level</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="nc-icon nc-badge" aria-hidden="true"></i>
+                                                                </span>
+                                                            </div>
+                                                            <input id="upd_stud_own_yearlvl" list="updateStudYearlvlOptions" pattern="FIRST YEAR|SECOND YEAR|THIRD YEAR|FOURTH YEAR|FIFTH YEAR" name="upd_stud_own_yearlvl" type="text" class="form-control" @if($user_stud_info->uStud_yearlvl != 'null') value="{{$user_stud_info->uStud_yearlvl}}" @else placeholder="Type Your Year Level" @endif required>
+                                                            <datalist id="updateStudYearlvlOptions">
+
+                                                            </datalist>
+                                                        </div>
+                                                        <label for="upd_stud_own_section">Section</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="nc-icon nc-badge" aria-hidden="true"></i>
+                                                                </span>
+                                                            </div>
+                                                            <input id="upd_stud_own_section" name="upd_stud_own_section" type="text" class="form-control" @if($user_stud_info->uStud_section != 'null') value="{{$user_stud_info->uStud_section}}" @else placeholder="Type Your Section" @endif required>
+                                                        </div>
+                                                        <label for="upd_stud_own_phnum">Phone NUmber</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="fa fa-mobile" aria-hidden="true"></i>
+                                                                </span>
+                                                            </div>
+                                                            <input id="upd_stud_own_phnum" name="upd_stud_own_phnum" type="number" pattern="[0-9]{11}" min="0" oninput="validity.valid||(value='');" class="form-control" @if($user_stud_info->uStud_phnum != 'null') value="{{$user_stud_info->uStud_phnum}}" @else placeholder="Type Contact Number" @endif required>
+                                                        </div>
+                                                        <div class="d-flex justify-content-center">
+                                                            <input type="hidden" name="own_user_id" id="own_user_id" value="{{auth()->user()->id}}"/>
+                                                            <button type="submit" id="update_studUserOwnProfileBtn" class="btn btn-success btn-round btn_show_icon" disabled>{{ __('Save Changes') }}<i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
                                     @else
 
                                     @endif
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <span class="cust_info_txtwicon"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i>The System will notify you of all the changes you've made thru your registered email address. If you switched to a new email address, you will be logged out from the system and you need to log in again using the new email.</span>
+                                        </div>
+                                    </div>
                                 </div>
                                 {{-- change password --}}
                                 <div class="tab-pane fade" id="div_userChangePassword_tab{{auth()->user()->id}}" role="tabpanel" aria-labelledby="pills_userChangePassword_tab{{auth()->user()->id}}">
-                                
+                                    <div class="card card_gbr shadow">
+                                        <div class="card-body p-0">
+                                            <div class="card-header cb_p15x25">
+                                                <span class="sec_card_body_title">Change Password</span>
+                                                <span class="sec_card_body_subtitle">Type your old password first for password change.</span>
+                                            </div>
+                                            <form class="form" method="POST" action="{{route('profile.update_my_password')}}" enctype="multipart/form-data" onsubmit="change_myPass_btn.disabled = true; return true;">
+                                                @csrf
+                                                <div class="cb_px25 cb_pb15">
+                                                    <div class="light_backDrop_card mb-2">
+                                                        <label for="my_oldPass_input">Type Old Password First</label>
+                                                        <div class="input-group paswrd_inpt_fld">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="nc-icon nc-key-25" aria-hidden="true"></i>
+                                                                </span>
+                                                            </div>
+                                                            <input type="password" id="my_oldPass_input" name="my_oldPass_input" class="form-control" placeholder="Type your current password" required>
+                                                            <i class="fa fa-eye" id="toggleMyOldPassword"></i>
+                                                        </div>
+                                                        <span id="myOldPass_notice" class="d-none text-right">
+
+                                                        </span>
+                                                    </div>
+                                                    <div class="light_backDrop_card mb-2">
+                                                        <label for="upd_myNew_password">Type New Password <i class="fa fa-info-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Include numbers, symbols, and uppercase and lowercase letters to have a strong password."></i></label>
+                                                        <div class="input-group paswrd_inpt_fld">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="nc-icon nc-key-25" aria-hidden="true"></i>
+                                                                </span>
+                                                            </div>
+                                                            <input onkeyup="check_my_pass_strenght()" type="password" id="upd_myNew_password" name="upd_myNew_password" class="form-control" placeholder="Type a new password" required disabled>
+                                                            <i class="fa fa-eye" id="toggleMyNewPassword"></i>
+                                                        </div>
+                                                        <div class="pass_strenght_indicator_div d-none">
+                                                            <span class="weak"></span>
+                                                            <span class="medium"></span>
+                                                            <span class="strong"></span>
+                                                        </div>
+                                                        <div id="pass_strenght_txt">
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-flex justify-content-center ">
+                                                        <input type="hidden" name="selected_user_own_id" value="{{auth()->user()->id}}"/>
+                                                        <button id="change_myPass_btn" type="submit" class="btn btn-success btn-round btn_show_icon" disabled>Update My Password<i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <span class="cust_info_txtwicon"><i class="nc-icon nc-circle-10 mr-1" aria-hidden="true"></i>The System will notify you of the changes your made to your password thru your registered email address.</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -608,7 +805,175 @@
         });
     </script>
     {{-- student --}}
+    <script>
+        $(document).ready(function() {
+            var readURL = function(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        $('.studOwn_imgUpld_targetImg').attr('src', e.target.result);
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+            $(".studOwn_img_imgUpld_fileInpt").on('change', function(){
+                readURL(this);
+            });
+            $(".stud_imgUpld_TrgtBtn").on('click', function() {
+                $(".studOwn_img_imgUpld_fileInpt").click();
+            });
+        });
+    </script>
 {{-- user image upload end --}}
+{{-- display datalist options based on previous selected option --}}
+    {{-- selected school --}}
+    <script>
+        $(document).ready(function() {
+            $("#upd_stud_own_school").on("change paste keyup", function() {
+                var selectedSchool = $(this).val();
+                document.getElementById('upd_stud_own_program').value = '';
+                document.getElementById('upd_stud_own_yearlvl').value = '';
+                if(selectedSchool != ''){
+                    if(selectedSchool == 'SASE'){
+                        $("#updateStudProgramOptions").html('<option value="BS Psychology"> \
+                                                    <option value="BS Education"> \
+                                                    <option value="BA Communication">');
+                    }else if(selectedSchool == 'SBCS'){
+                        $("#updateStudProgramOptions").html('<option value="BSBA"> \
+                                                    <option value="BSA"> \
+                                                    <option value="BSIT"> \
+                                                    <option value="BMA">');
+                    }else if(selectedSchool == 'SIHTM'){
+                        $("#updateStudProgramOptions").html('<option value="BSHM"> \
+                                                    <option value="BSTM">');
+                    }else if(selectedSchool == 'SHSP'){
+                        $("#updateStudProgramOptions").html('<option value="BS Biology"> \
+                                                    <option value="BS Pharmacy"> \
+                                                    <option value="BS Radiologic Technology"> \
+                                                    <option value="BS Physical Therapy"> \
+                                                    <option value="BS Medical Technology"> \
+                                                    <option value="BS Nursing">');
+                    }else{
+                        $("#updateStudProgramOptions").html('<option value="Select School First"></option>');
+                    }
+                }else{
+                    $("#updateStudProgramOptions").html('<option value="Select School First"></option>');
+                }
+            });
+        });
+    </script>
+    {{-- selected program --}}
+    <script>
+        $(document).ready(function() {
+            $("#upd_stud_own_program").on("change paste keyup", function() {
+                var selectedProgram = $(this).val();
+                document.getElementById('upd_stud_own_yearlvl').value = '';
+                if(selectedProgram != ''){
+                    if(selectedProgram == 'BSA' || selectedProgram == 'BS Physical Therapy'){
+                        $("#updateStudYearlvlOptions").html('<option value="FIRST YEAR"> \
+                                                <option value="SECOND YEAR"> \
+                                                <option value="THIRD YEAR"> \
+                                                <option value="FOURTH YEAR"> \
+                                                <option value="FIFTH YEAR">');
+                    }else{
+                        $("#updateStudYearlvlOptions").html('<option value="FIRST YEAR"> \
+                                                <option value="SECOND YEAR"> \
+                                                <option value="THIRD YEAR"> \
+                                                <option value="FOURTH YEAR">');
+                    }
+                }else{
+                    $("#updateStudYearlvlOptions").html('<option value="Select Program First"></option>');
+                }
+            });
+        });
+    </script>
+{{-- display datalist options based on previous selected option --}}
+{{-- email availability check --}}
+    {{-- employee --}}
+    <script>
+        $(document).ready(function(){
+            $('#upd_emp_own_email').blur(function(){
+                var error_email = '';
+                var emp_id = $('#own_user_id').val();
+                var emp_email = $('#upd_emp_own_email').val();
+                var _token = $('input[name="_token"]').val();
+                var filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+                if(!filter.test(emp_email)){    
+                    $('#empEmailAvail_notice').removeClass('d-none');
+                    $('#empEmailAvail_notice').addClass('invalid-feedback');
+                    $('#empEmailAvail_notice').addClass('d-block');
+                    $('#empEmailAvail_notice').html('<strong>Invalid Email Format!</strong>');
+                    $('#upd_emp_own_email').addClass('is-invalid');
+                }else{
+                    $.ajax({
+                        url:"{{ route('profile.emp_user_switch_new_email_availability_check') }}",
+                        method:"POST",
+                        data:{emp_id:emp_id, emp_email:emp_email, _token:_token},
+                        success:function(result){
+                            if(result == 'unique'){
+                                $('#empEmailAvail_notice').removeClass('d-none');
+                                $('#empEmailAvail_notice').removeClass('invalid-feedback');
+                                $('#empEmailAvail_notice').addClass('valid-feedback');
+                                $('#empEmailAvail_notice').html('<strong>Email Available.</strong>');
+                                $('#upd_emp_own_email').removeClass('is-invalid');
+                                $('#upd_emp_own_email').addClass('is-valid');
+                            }else{
+                                $('#empEmailAvail_notice').removeClass('d-none');
+                                $('#empEmailAvail_notice').addClass('invalid-feedback');
+                                $('#empEmailAvail_notice').addClass('d-block');
+                                $('#empEmailAvail_notice').html('<strong>Email already in use!</strong>');
+                                $('#upd_emp_own_email').addClass('is-invalid');
+                                $('#update_empUserOwnProfileBtn').attr('disabled', 'disabled');
+                            }
+                        }
+                    })
+                }
+            });
+        });
+    </script>
+    {{-- student --}}
+    <script>
+        $(document).ready(function(){
+            $('#upd_stud_own_email').blur(function(){
+                var error_email = '';
+                var stud_id = $('#own_user_id').val();
+                var stud_email = $('#upd_stud_own_email').val();
+                var _token = $('input[name="_token"]').val();
+                var filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+                if(!filter.test(stud_email)){    
+                    $('#studEmailAvail_notice').removeClass('d-none');
+                    $('#studEmailAvail_notice').addClass('invalid-feedback');
+                    $('#studEmailAvail_notice').addClass('d-block');
+                    $('#studEmailAvail_notice').html('<strong>Invalid Email Format!</strong>');
+                    $('#upd_stud_own_email').addClass('is-invalid');
+                }else{
+                    $.ajax({
+                        url:"{{ route('profile.stud_user_switch_new_email_availability_check') }}",
+                        method:"POST",
+                        data:{stud_id:stud_id, stud_email:stud_email, _token:_token},
+                        success:function(result){
+                            if(result == 'unique'){
+                                $('#studEmailAvail_notice').removeClass('d-none');
+                                $('#studEmailAvail_notice').removeClass('invalid-feedback');
+                                $('#studEmailAvail_notice').addClass('valid-feedback');
+                                $('#studEmailAvail_notice').html('<strong>Email Available.</strong>');
+                                $('#upd_stud_own_email').removeClass('is-invalid');
+                                $('#upd_stud_own_email').addClass('is-valid');
+                            }else{
+                                $('#studEmailAvail_notice').removeClass('d-none');
+                                $('#studEmailAvail_notice').addClass('invalid-feedback');
+                                $('#studEmailAvail_notice').addClass('d-block');
+                                $('#studEmailAvail_notice').html('<strong>Email already in use!</strong>');
+                                $('#upd_stud_own_email').addClass('is-invalid');
+                                $('#update_studUserOwnProfileBtn').attr('disabled', 'disabled');
+                            }
+                        }
+                    })
+                }
+            });
+        });
+    </script>
+{{-- email availability check end --}}
 {{-- disable/enable submit buttons of Edit Profile Forms --}}
     {{-- employee form --}}
     <script>
@@ -628,5 +993,146 @@
         });
     </script>
     {{-- student form --}}
+    <script>
+        $(window).on('load', function(e){
+            $('#form_studUpdateOwnProfile').each(function(){
+                $(this).data('serialized', $(this).serialize())
+            }).on('change input', function(){
+                $(this).find('#update_studUserOwnProfileBtn').prop('disabled', $(this).serialize() == $(this).data('serialized'));
+                var changedFiles = $( ":file" ).filter(function( index ) {
+                    return this.value != this.defaultValue;
+                }).length;
+                if ( changedFiles > 0) {
+                    $(this).find('#update_studUserOwnProfileBtn, input[type="file"]')
+                        .prop('disabled', false);
+                }
+            }).find('#update_studUserOwnProfileBtn').prop('disabled', true);
+        });
+    </script>
 {{-- disable/enable submit buttons of Edit Profile Forms end --}}
+{{-- toggle password input visibility --}}
+    <script>
+        const toggleMyOldPassword = document.querySelector('#toggleMyOldPassword');
+        const my_oldPass_input = document.querySelector('#my_oldPass_input');
+        toggleMyOldPassword.addEventListener('click', function (e) {
+            // toggle the type attribute
+            const type = my_oldPass_input.getAttribute('type') === 'password' ? 'text' : 'password';
+            my_oldPass_input.setAttribute('type', type);
+            // toggle the eye slash icon
+            this.classList.toggle('fa-eye-slash');
+        });
+    </script>
+    <script>
+        const toggleMyNewPassword = document.querySelector('#toggleMyNewPassword');
+        const upd_myNew_password = document.querySelector('#upd_myNew_password');
+        toggleMyNewPassword.addEventListener('click', function (e) {
+            // toggle the type attribute
+            const type = upd_myNew_password.getAttribute('type') === 'password' ? 'text' : 'password';
+            upd_myNew_password.setAttribute('type', type);
+            // toggle the eye slash icon
+            this.classList.toggle('fa-eye-slash');
+        });
+    </script>
+{{-- toggle password input visibility end --}}
+{{-- verify my old password --}}
+    <script>
+        $(document).ready(function(){
+            $('#my_oldPass_input').blur(function(){
+                var my_id = $('#selected_user_own_id').val();
+                var my_old_pass = $('#my_oldPass_input').val();
+                var _token = $('input[name="_token"]').val();
+                if(my_old_pass !== ''){
+                    // console.log(my_id);
+                    // console.log(my_old_pass);
+                    $.ajax({
+                        url:"{{ route('profile.check_my_old_password') }}",
+                        method:"POST",
+                        data:{my_id:my_id, my_old_pass:my_old_pass, _token:_token},
+                        success:function(result){
+                            if(result === 'same'){
+                                $('#myOldPass_notice').removeClass('d-none');
+                                $('#myOldPass_notice').addClass('d-block');
+                                $('#myOldPass_notice').removeClass('invalid-feedback');
+                                $('#myOldPass_notice').addClass('valid-feedback');
+                                $('#myOldPass_notice').html('<strong>Current Password Matched!</strong>');
+                                $('#my_oldPass_input').removeClass('is-invalid');
+                                $('#my_oldPass_input').addClass('is-valid');
+                                $('#upd_myNew_password').prop('disabled', false);
+                            }else{
+                                $('#myOldPass_notice').removeClass('d-none');
+                                $('#myOldPass_notice').addClass('d-block');
+                                $('#myOldPass_notice').addClass('invalid-feedback');
+                                $('#myOldPass_notice').html('<strong>Current Password does not Match!</strong>');
+                                $('#my_oldPass_input').addClass('is-invalid');
+                                $('#change_myPass_btn').attr('disabled', 'disabled');
+                                $('#upd_myNew_password').prop('disabled', true);
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+{{-- verify my old password end --}}
+{{-- password check strenght --}} 
+    <script>
+        const myNewPass_indicator  = document.querySelector(".pass_strenght_indicator_div");
+        const myNewPass_input      = document.querySelector("#upd_myNew_password");
+        const weak                 = document.querySelector(".weak");
+        const medium               = document.querySelector(".medium");
+        const strong               = document.querySelector(".strong");
+        const text                 = document.querySelector("#pass_strenght_txt");
+        const myNewPass_Btn_submit = document.querySelector("#change_myPass_btn");
+        let regExpWeak             = /[a-z]/;
+        let regExpMedium           = /\d+/;
+        let regExpStrong           = /.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/;
+
+        function check_my_pass_strenght(){
+            if(myNewPass_input.value !== ""){
+                myNewPass_indicator.classList.remove("d-none");
+                myNewPass_indicator.style.display = "flex";
+                if(myNewPass_input.value.length <= 3 && (myNewPass_input.value.match(regExpWeak) || myNewPass_input.value.match(regExpMedium) || myNewPass_input.value.match(regExpStrong)))no=1;
+                if(myNewPass_input.value.length >= 6 && ((myNewPass_input.value.match(regExpWeak) && myNewPass_input.value.match(regExpMedium)) || (myNewPass_input.value.match(regExpMedium) && myNewPass_input.value.match(regExpStrong)) || (myNewPass_input.value.match(regExpWeak) && myNewPass_input.value.match(regExpStrong))))no=2;
+                if(myNewPass_input.value.length >= 6 && myNewPass_input.value.match(regExpWeak) && myNewPass_input.value.match(regExpMedium) && myNewPass_input.value.match(regExpStrong))no=3;
+                if(no===1){
+                    weak.classList.add("active");
+                    text.style.display = "block";
+                    text.textContent   = "Your Password strength is too week";
+                    text.classList.add("weak");
+                }
+                if(no===2){
+                    medium.classList.add("active");
+                    weak.classList.remove("active");
+                    weak.classList.add("medium_bgColor");
+                    text.textContent = "Your Password strength not too strong";
+                    text.classList.add("medium");
+                }else{
+                    medium.classList.remove("active");
+                    weak.classList.remove("medium_bgColor");
+                    text.classList.remove("medium");
+                }
+                if(no===3){
+                    weak.classList.remove("active");
+                    strong.classList.remove("active");
+                    weak.classList.add("strong_bgColor");
+                    medium.classList.add("strong_bgColor");
+                    strong.classList.add("active");
+                    text.textContent = "Your password strength is strong";
+                    text.classList.add("strong");
+                    myNewPass_Btn_submit.disabled = false;
+                }else{
+                    strong.classList.remove("active");
+                    text.classList.remove("strong");
+                    weak.classList.remove("strong_bgColor");
+                    medium.classList.remove("strong_bgColor");
+                }
+            }else{
+                myNewPass_indicator.classList.add("d-none");
+                text.style.display = "none";
+                myNewPass_Btn_submit.disabled = true;
+            }
+        }
+    </script>
+{{-- password check strenght end --}}
+
 @endpush

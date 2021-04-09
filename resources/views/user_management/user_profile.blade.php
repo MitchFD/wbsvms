@@ -268,9 +268,9 @@
                                                     <span class="cat_title_txt">Gender</span>
                                                     @if(!is_null($user_data->user_gender))
                                                         @if($user_data->user_gender === 'male')
-                                                            <span class="up_info_txt mb-0"><i class="fa fa-male"></i> {{ $user_data->user_gender}}</span> 
+                                                            <span class="up_info_txt mb-0"><i class="fa fa-male"></i> {{ ucwords($user_data->user_gender) }}</span> 
                                                         @elseif($user_data->user_gender === 'female')
-                                                            <span class="up_info_txt mb-0"><i class="fa fa-female"></i> {{ $user_data->user_gender}}</span> 
+                                                            <span class="up_info_txt mb-0"><i class="fa fa-female"></i> {{ ucwords($user_data->user_gender) }}</span> 
                                                         @else
                                                             <span class="up_info_txt mb-0 font-italic text_svms_red"><i class="fa fa-exclamation-circle"></i> gender unknown</span>
                                                         @endif
@@ -700,7 +700,7 @@
                                                                 </span>
                                                             </div>
                                                             <input type="password" onkeyup="check_pass_strenght()" id="upd_sysUser_new_password" name="upd_sysUser_new_password" class="form-control" placeholder="Type new password" required>
-                                                            <i class="fa fa-eye" id="toggleStudUserNewPassword"></i>
+                                                            <i class="fa fa-eye" id="toggleUserNewPassword"></i>
                                                         </div>
                                                         <div class="pass_strenght_indicator_div d-none">
                                                             <span class="weak"></span>
@@ -739,11 +739,6 @@
                                 </div>
                             {{-- change user's password end --}}
                             </div>
-                        @if($user_data->user_type === 'student')
-                            
-                        @else
-                            
-                        @endif
                         </div>
                     </div>
                 </div>
@@ -1021,6 +1016,8 @@
         $(document).ready(function() {
             $("#upd_stud_school").on("change paste keyup", function() {
                 var selectedSchool = $(this).val();
+                document.getElementById('upd_stud_program').value = '';
+                document.getElementById('upd_stud_yearlvl').value = '';
                 if(selectedSchool != ''){
                     if(selectedSchool == 'SASE'){
                         $("#updateStudProgramOptions").html('<option value="BS Psychology"> \
@@ -1055,6 +1052,7 @@
         $(document).ready(function() {
             $("#upd_stud_program").on("change paste keyup", function() {
                 var selectedProgram = $(this).val();
+                document.getElementById('upd_stud_yearlvl').value = '';
                 if(selectedProgram != ''){
                     if(selectedProgram == 'BSA' || selectedProgram == 'BS Physical Therapy'){
                         $("#updateStudYearlvlOptions").html('<option value="FIRST YEAR"> \
@@ -1138,22 +1136,17 @@
 {{-- disable update button on employee profile update if any of inputs have chagned end --}}
 
 {{-- toggle password input visibility --}}
-    {{-- for employee user --}}
-        
-    {{-- for employee user end --}}
-    {{-- for student user --}}
-        <script>
-            const toggleStudUserNewPassword = document.querySelector('#toggleStudUserNewPassword');
-            const upd_sysUser_new_password = document.querySelector('#upd_sysUser_new_password');
-            toggleStudUserNewPassword.addEventListener('click', function (e) {
-                // toggle the type attribute
-                const type = upd_sysUser_new_password.getAttribute('type') === 'password' ? 'text' : 'password';
-                upd_sysUser_new_password.setAttribute('type', type);
-                // toggle the eye slash icon
-                this.classList.toggle('fa-eye-slash');
-            });
-        </script>
-    {{-- for student user end --}}
+    <script>
+        const toggleUserNewPassword = document.querySelector('#toggleUserNewPassword');
+        const upd_sysUser_new_password = document.querySelector('#upd_sysUser_new_password');
+        toggleUserNewPassword.addEventListener('click', function (e) {
+            // toggle the type attribute
+            const type = upd_sysUser_new_password.getAttribute('type') === 'password' ? 'text' : 'password';
+            upd_sysUser_new_password.setAttribute('type', type);
+            // toggle the eye slash icon
+            this.classList.toggle('fa-eye-slash');
+        });
+    </script>
 {{-- toggle password input visibility end --}}
     
 {{-- for password update --}}
