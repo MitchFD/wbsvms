@@ -104,7 +104,7 @@ Route::group(['middleware' => 'auth'], function () {
 // violation entry
 Route::group(['middleware' => 'auth'], function () {
 	Route::get('violation_entry/index', ['as' => 'violation_entry.index', 'uses' => 'App\Http\Controllers\ViolationEntryController@index']);
-	Route::get('violation_entry/search_violators', ['as' => 'violation_entry.search_violators', 'uses' => 'App\Http\Controllers\ViolationEntryController@search_violators'])->name('violation_entry.search_violators');
+	Route::get('violation_entry/search_violators', 'App\Http\Controllers\ViolationEntryController@search_violators')->name('violation_entry.search_violators');
 });
 
 // violation records

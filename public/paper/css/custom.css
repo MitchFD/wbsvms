@@ -478,7 +478,19 @@ fieldset[disabled] .btn_svms_blue.active {
   width: 15px;
   margin-top: 3px !important;
 }
-
+.cust_info_txtwicon2{
+  display: flex;
+  font-size: 13px !important;
+  font-weight: normal;
+  text-decoration: none !important;
+  text-transform: normal !important;
+  color: var(--svms_blue); 
+  /* align-items: center !important; */
+}
+.cust_info_txtwicon2 i{
+  width: 15px;
+  margin-top: 3px !important;
+}
 /* cursor customizations */
 .cursor_pointer{
   cursor: pointer !important;
@@ -580,10 +592,17 @@ fieldset[disabled] .btn_svms_blue.active {
   padding: 16px !important;
   background-color: #e7e7e7 !important;
 }
+.cust_modal_body_gray2{
+  padding: 16px !important;
+  background-color: #F4F4F5 !important;
+}
 
 /* global background-colors */
 .bg_F4F4F5{
   background-color: #F4F4F5 !important;
+}
+.bg_E7E7E7{
+  background-color: #E7E7E7 !important;
 }
 
 /* global card customization */
@@ -613,8 +632,14 @@ fieldset[disabled] .btn_svms_blue.active {
 .cb_x12y20{
   padding: 12px 20px !important;
 }
+.cb_x12y15{
+  padding: 12px 15px !important;
+}
 .cb_t0b12y20{
   padding: 0px 20px 12px 20px !important;
+}
+.cb_t0b12y15{
+  padding: 0px 15px 12px 15px !important;
 }
 .cb_t0b25x25{
   padding: 0px 25px 25px 25px !important;
@@ -846,6 +871,10 @@ fieldset[disabled] .btn_svms_blue.active {
 }
 .lightRed_cardBody_chckboxLabel:hover{
   color: var(--svms_med_dark_red) !important;
+  font-weight: bold !important;
+}
+/* red checkbox */
+input[type=checkbox]:checked + .lightRed_cardBody_chckboxLabel{
   font-weight: bold !important;
 }
 
@@ -1227,6 +1256,11 @@ a.text_svms_gray:hover {
   margin: 0;
   transition: all 0.2s;
 }
+.custom_accordion_card2{
+  border: none !important;
+  margin: 0;
+  transition: all 0.2s;
+}
 .custom2_btn_collapse{
   line-height: 1.5;
   background-color: transparent;
@@ -1246,6 +1280,32 @@ a.text_svms_gray:hover {
   background-color: #ffffff !important;
 }
 .custom2_btn_collapse i{
+  display: block !important;
+  font-size: 12px !important;
+  font-weight: normal !important;
+  text-decoration: none !important;
+  text-transform: normal !important;
+  color: var(--svms_light_blue) !important;
+}
+.custom3_btn_collapse{
+  line-height: 1.5;
+  background-color: #F4F4F5;
+  padding: 15px 25px;
+  text-transform: none;
+  text-align: left !important;
+  margin: 0 !important;
+  border-radius: 15px;
+}
+.custom3_btn_collapse:hover{
+  background-color: #F4F4F5 !important;
+  overflow: hidden;
+}
+.custom3_btn_collapse:focus,
+.custom3_btn_collapse:active,
+.custom3_btn_collapse:active:focus {
+  background-color: #F4F4F5 !important;
+}
+.custom3_btn_collapse i{
   display: block !important;
   font-size: 12px !important;
   font-weight: normal !important;
@@ -1359,6 +1419,14 @@ a.text_svms_gray:hover {
 }
 
 /* custom user image display */
+.violators_cards_div{
+  display: block;
+  background-color: #ffffff;
+  padding: 15px;
+  border-radius: 12px;
+  text-align: right !important;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
 .display_user_image_div{
   display: block;
   margin: 0 !important;
@@ -1375,6 +1443,19 @@ a.text_svms_gray:hover {
   background-repeat: no-repeat !important;
   background-color: var(--svms_red);
   border: 3px solid var(--svms_red);
+}
+.display_violator_image2{
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  border-radius: 50%;
+  position: relative;
+  object-fit: cover !important;
+  background-size: cover !important;
+  background-position: 50% 50% !important;
+  background-repeat: no-repeat !important;
+  background-color: var(--svms_red);
+  border: 2px solid var(--svms_red);
 }
 .display_user_image{
   width: 60px;
@@ -1473,6 +1554,12 @@ a.text_svms_gray:hover {
 .li_info_subtitle{
   display: block;
   font-size: 14px;
+  font-weight: normal;
+  color: var(--svms_light_blue);
+}
+.li_info_subtitle2{
+  display: block;
+  font-size: 13px;
   font-weight: normal;
   color: var(--svms_light_blue);
 }
@@ -1602,9 +1689,29 @@ a.text_svms_gray:hover {
   color: var(--svms_blue) !important;
 }
 
-
-
 /* violation entry */
+.sdca_logo_img{
+  display: block;
+  width: 500px;
+  height: auto;
+  margin: 0 auto 5px;
+}
+.dsas_text{
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+}
+.sdu_text{
+  display: block;
+  font-size: 13px;
+  font-weight: normal;
+}
+.violation_text{
+  display: block;
+  margin-top: 5px;
+  font-size: 16px;
+  font-weight: bold;
+}
 .cust_inpGrp_div{
   margin: 0;
 }
@@ -1625,6 +1732,22 @@ a.text_svms_gray:hover {
   color: var(--svms_red) !important;
   border: 2px solid var(--svms_red);
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+} 
+.input_grpInpt2{
+  padding: 10px !important; 
+  border: 1px solid #de8b8d;
+  box-shadow: none !important;
+  font-size: 14px !important;
+  color: var(--svms_red) !important;
+}
+.input_grpInpt2::placeholder{
+  color: #de8b8d;
+  opacity: 1;
+}
+.input_grpInpt2:hover,
+.input_grpInpt2:focus{
+  border: 1px solid var(--svms_red);
+  box-shadow: none !important;
 } 
 .input_grpIcon{
   position: absolute;

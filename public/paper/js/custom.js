@@ -14,6 +14,18 @@
     $('.cust_btn_smcircle3').click(function() {
         $("i", this).toggleClass("nc-minimal-up nc-minimal-down");
     });
+    // on modals
+    $('.modal').on('show.bs.modal', function () {
+        $('.custom2_btn_collapse').click(function() {
+            $("i", this).toggleClass("nc-minimal-up nc-minimal-down");
+        });
+        $('.custom3_btn_collapse').click(function() {
+            $("i", this).toggleClass("nc-minimal-up nc-minimal-down");
+        });
+        $('.cust_btn_smcircle3').click(function() {
+            $("i", this).toggleClass("nc-minimal-up nc-minimal-down");
+        });
+    });
     
 // change dropdown collapse icon on button click from main gray card
     // for all colllapse cards
