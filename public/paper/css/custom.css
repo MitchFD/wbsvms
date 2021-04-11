@@ -2166,6 +2166,39 @@ select.drpdwn_arrow2:focus {
   font-size: 14px !important;
 }
 
+/* main dashboard */
+.dash_card_footer{
+  border-top: 1px solid #F4F3EF !important;
+  font-size: 14px;
+  color: var(--svms_light_blue);
+}
+.dash_cards_img{
+  height: 70px;
+  width: auto;
+}
+.dash_cards_text_div{
+  display: block;
+  line-height: normal;
+  text-align: end;
+}
+.dash_card_title{
+  display: block;
+  font-size: 18px;
+  font-weight: normal;
+  text-transform: uppercase;
+  text-align: right !important;
+  margin: 0;
+  color: #9A9A9A;
+}
+.dash_card_count{
+  display: block;
+  font-size: 28px;
+  margin: 0;
+  font-weight: bold;
+  color: var(--svms_blue);
+}
+
+
 /* mini dashboard overview */
 .su_dash_div{
   display: block;
