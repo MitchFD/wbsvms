@@ -91,7 +91,7 @@
         <div class="row d-flex justify-content-center mt-3">
             <div class="col-lg-7 col-md-10 col-sm-12">
                 <div class="input-group cust_inpGrp_div">
-                    <input type="text" id="search_violators" name="search_violators" class="form-control input_grpInpt" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                    <input type="text" id="search_violators" name="search_violators" class="form-control input_grpInpt" placeholder="Recipient's username" aria-label="Recipient's username" autocomplete="off">
                     <i class="nc-icon nc-zoom-split input_grpIcon"></i>
                     <div class="input-group-append">
                         <button class="btn btn_svms_red input_grpBtn" id="openViolator_modal" type="button"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
@@ -99,8 +99,11 @@
                 </div>
                 <div class="row">
                     <div class="col-lg-8 col-md-12 col-sm-12">
-                        <div class="list-group mt-3 shadow cust_list_group_ve" id="displaySearchViolators_results">
-                            {{-- <a href="#" data-toggle="modal" data-target="#violationEntryModal" class="list-group-item list-group-item-action cust_lg_item_ve">
+                        <div id="displaySearchViolators_results">
+
+                        </div>
+                        {{-- <div class="list-group mt-3 shadow cust_list_group_ve" id="displaySearchViolators_results">
+                            <a href="#" data-toggle="modal" data-target="#violationEntryModal" class="list-group-item list-group-item-action cust_lg_item_ve">
                                 <div class="display_user_image_div text-center">
                                     <img class="display_violator_image shadow-sm" src="{{asset('storage/svms/user_images/default_student_img.jpg')}}" alt="student's image">
                                 </div>
@@ -117,8 +120,8 @@
                                     <span class="li_info_title">Mitch Frankein O. Desierto</span>
                                     <span class="li_info_subtitle"><span class="font-weight-bold">20150348 </span> | SBCS - BSIT 4A | Male</span>
                                 </div>
-                            </a> --}}
-                        </div>
+                            </a>
+                        </div> --}}
                     </div>
                 </div>
             </div>
@@ -293,7 +296,7 @@
                                     @php
                                         $now_timestamp = now();
                                     @endphp
-                                    <span class="cust_info_txtwicon2"><i class="nc-icon nc-calendar-60 mr-1" aria-hidden="true"></i> {{ date('F d, Y', strtotime($now_timestamp)) }} -  {{ date('D', strtotime($now_timestamp)) }} at {{ date('g:i A', strtotime($now_timestamp)) }}</span>
+                                    <span class="cust_info_txtwicon2 font-weight-bold"><i class="nc-icon nc-calendar-60 mr-1" aria-hidden="true"></i> {{ date('F d, Y', strtotime($now_timestamp)) }} -  {{ date('D', strtotime($now_timestamp)) }} at {{ date('g:i A', strtotime($now_timestamp)) }}</span>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 d-flex justify-content-end">
                                     <input type="hidden" name="violators[]" value="secret">
@@ -427,25 +430,26 @@
 {{-- live search violators --}}
     <script>
         // $(document).ready(function(){
-        //     $('#search_violators').tokenfield({
-        //         autocomplete :{
-        //             source: function(request, response)
-        //             {
-        //                 jQuery.get("{{ url('violation_entry.search_violators') }}", {
-        //                     query : request.term
-        //                 }, function(data){
-        //                     data = JSON.parse(data);
-        //                     response(data);
-        //                 });
-        //             },
-        //             delay: 100
-        //         }
-        //     });
-        //     $('#openViolator_modal').click(function(){
-        //         $('#displaySearchViolators_results').text($('#search_violators').val());
-        //     });
-        // });
+            //     $('#search_violators').tokenfield({
+            //         autocomplete :{
+            //             source: function(request, response)
+            //             {
+            //                 jQuery.get("{{ url('violation_entry.search_violators') }}", {
+            //                     query : request.term
+            //                 }, function(data){
+            //                     data = JSON.parse(data);
+            //                     response(data);
+            //                 });
+            //             },
+            //             delay: 100
+            //         }
+            //     });
+            //     $('#openViolator_modal').click(function(){
+            //         $('#displaySearchViolators_results').text($('#search_violators').val());
+            //     });
+            // });
         $(document).ready(function(){
+            var resultsDisplay = document.querySelector("#displaySearchViolators_results");
             fetch_searchViolators_results();
             function fetch_searchViolators_results(violators_query = ''){
                 $.ajax({
@@ -460,7 +464,14 @@
             }
             $(document).on('keyup', '#search_violators', function(){
                 var violator_query = $(this).val();
-                fetch_searchViolators_results(violator_query);
+                if(violator_query === ''){
+                    resultsDisplay.classList.remove("d-block");
+                    resultsDisplay.classList.add("d-none");
+                }else{
+                    fetch_searchViolators_results(violator_query);
+                    resultsDisplay.classList.remove("d-none");
+                    resultsDisplay.classList.add("d-block");
+                }
             });
         });
     </script>

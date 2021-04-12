@@ -1822,6 +1822,31 @@ a.text_svms_gray:hover {
 .cust_lg_item_ve:active{
   background-color: #FDF7F7 !important;
 }
+.cust_lg_item_ve2{
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  justify-content: start !important;
+  align-items: center !important;
+  border-bottom: 1px solid #E7E7E7 !important;
+}
+.cust_lg_item_ve2:hover{
+  background-color: #FDF7F7 !important;
+}
+.cust_lg_item_ve2:focus,
+.cust_lg_item_ve2:active{
+  background-color: #FDF7F7 !important;
+}
+
+.no_data_fount_list{
+  padding: 12px 20px;
+  font-size: 14px;
+  font-style: italic;
+  background-color: #e7e7e7;
+  box-shadow: none;
+  border-radius: 12px;
+}
 
 .youIndicator{
   font-weight: normal !important;
@@ -2258,6 +2283,9 @@ select.drpdwn_arrow2:focus {
 .grn_highlight{
   background-color: #A5E2C1 !important;
 }
+.red_highlight{
+  background-color: #E5A2A3 !important;
+}
 
 .form label{
   font-weight: bold;
@@ -2349,3 +2377,12 @@ select.drpdwn_arrow2:focus {
 }
 
 /* date filter input end */
+
+
+/* chart customization */
+.cust_chart_cointainer{
+  /* position: relative; */
+  height: 50vh;
+  width: 79vw;
+  padding: 0;
+}
