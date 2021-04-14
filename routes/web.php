@@ -104,8 +104,14 @@ Route::group(['middleware' => 'auth'], function () {
 // violation entry
 Route::group(['middleware' => 'auth'], function () {
 	Route::get('violation_entry/index', ['as' => 'violation_entry.index', 'uses' => 'App\Http\Controllers\ViolationEntryController@index']);
+	// live search violators
 	Route::get('violation_entry/search_violators', 'App\Http\Controllers\ViolationEntryController@search_violators')->name('violation_entry.search_violators');
-	Route::get('violation_entry/open_violatin_form_modal', 'App\Http\Controllers\ViolationEntryController@open_violatin_form_modal')->name('violation_entry.open_violatin_form_modal');
+	// get selected student's info for pill display
+	Route::get('violation_entry/get_selected_student_info', 'App\Http\Controllers\ViolationEntryController@get_selected_student_info')->name('violation_entry.get_selected_student_info');
+	// open violation form
+	Route::get('violation_entry/open_violation_form_modal', 'App\Http\Controllers\ViolationEntryController@open_violation_form_modal')->name('violation_entry.open_violation_form_modal');
+	// submit and process violation form
+	Route::post('violation_entry/submit_violation_form', 'App\Http\Controllers\ViolationEntryController@submit_violation_form')->name('violation_entry.submit_violation_form');
 });
 
 // violation records

@@ -31,10 +31,16 @@ class ViolationEntryController extends Controller
                 if($total_row > 0){
                     $output .= '<div class="list-group mt-3 shadow cust_list_group_ve" id="displaySearchViolators_results">';
                     foreach($data as $result){
+                        // check student's image (use default image if student has no image from database)
+                        if(!is_null($result->user_image) OR !empty($result->user_image)){
+                            $display_violator_image = $result->user_image;
+                        }else{
+                            $display_violator_image = 'default_student_img.jpg';
+                        }
                         $output .= '
                             <a href="#" id="'.$result->id.'" onclick="addViolator(this.id)" class="list-group-item list-group-item-action cust_lg_item_ve">
                                 <div class="display_user_image_div text-center">
-                                    <img class="display_violator_image shadow-sm" src="'.asset('storage/svms/user_images/'.$result->user_image.'').'" alt="violator'.$sq.'s image">
+                                    <img class="display_violator_image shadow-sm" src="'.asset('storage/svms/user_images/'.$display_violator_image.'').'" alt="violator'.$sq.'s image">
                                 </div>
                                 <div class="information_div">
                                     <span class="li_info_title">'.preg_replace('/('.$violators_query.')/i','<span class="red_highlight">$1</span>', $result->user_fname) . ' ' . preg_replace('/('.$violators_query.')/i','<span class="red_highlight">$1</span>', $result->user_lname).'</span>
@@ -59,13 +65,45 @@ class ViolationEntryController extends Controller
         }
     }
 
+    // get selected student's info for pill display
+    public function get_selected_student_info(Request $request){
+        if($request->ajax()){
+            // get student's ID
+            $sel_student_id = $request->get('violatorID');
+            // get student's information
+            $get_selected_student_info = Users::select('id', 'user_lname', 'user_fname', 'user_image')->where('id', $sel_student_id)->first();
+            $get_student_image         = $get_selected_student_info->user_image;
+            $get_student_fname         = $get_selected_student_info->user_fname;
+            $get_student_lname         = $get_selected_student_info->user_lname;
+            // check student's image (use default image if student has no image from database)
+            if(!is_null($get_selected_student_info->user_image) OR !empty($get_selected_student_info->user_image)){
+                $display_student_image = $get_student_image;
+            }else{
+                $display_student_image = 'default_student_img.jpg';
+            }
+
+            $data = array(
+                'sel_student_lname'   => $get_student_lname,
+                'sel_student_fname'   => $get_student_fname,
+                'sel_student_image'   => $display_student_image
+               );
+         
+            echo json_encode($data);
+        }
+    }
+
     // violation form
-    public function open_violatin_form_modal(Request $request){
+    public function open_violation_form_modal(Request $request){
         // get all selected violators
-        $get_all_violators = json_decode(json_encode($request->get('violators_ids')));
+        $get_all_violators = $request->get('violators_ids');
+        $count_sel_v       = count(explode(",",$get_all_violators));
         $now_timestamp     = now();
         $sq                = "'";
-
+        if($count_sel_v > 1){
+            $s = 's';
+        }else{
+            $s = '';
+        }
         $output = '';
         $output .= '
             <div class="modal-body pt-0">
@@ -86,7 +124,7 @@ class ViolationEntryController extends Controller
                                         <button class="btn btn-block custom3_btn_collapse cb_x12y15 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#selectedViolatorsCollapse_Div" aria-expanded="true" aria-controls="selectedViolatorsCollapse_Div">
                                             <div>
                                                 <span class="li_info_title">Violators</span>
-                                                <span class="li_info_subtitle">3 Students Selected</span>
+                                                <span class="li_info_subtitle">'.$count_sel_v . ' student'.$s.' selected</span>
                                             </div>
                                             <i class="nc-icon nc-minimal-up"></i>
                                         </button>
@@ -94,35 +132,47 @@ class ViolationEntryController extends Controller
                                 </div>
                                 <div id="selectedViolatorsCollapse_Div" class="collapse cust_collapse_active show cb_t0b12y15 bg_F4F4F5" aria-labelledby="empTypeRolesCollapse_heading" data-parent="#empTypeRolesModalAccordion_Parent">
                                     <div class="row mt-0">
-                                        <div class="col-lg-6 col-md-6 col-sm-12 m-0">
-                                            <div class="violators_cards_div mb-2 d-flex justify-content-start align-items-center">
-                                                <div class="display_user_image_div text-center">
-                                                    <img class="display_violator_image2 shadow-sm" src="'.asset("storage/svms/user_images/default_student_img.jpg").'" alt="student'.$sq.'s image">
-                                                </div>
-                                                <div class="information_div">
-                                                    <span class="li_info_title">Mitch Frankein O. Desierto</span>
-                                                    <span class="li_info_subtitle2"><span class="font-weight-bold">20150348 </span> | SBCS - BSIT 4A | Male</span>
+                                    ';
+                                    if($count_sel_v > 0){
+                                        foreach(json_decode($get_all_violators, true) as $violator){
+                                            // get student's information
+                                            $stud_info = Users::select('id', 'user_lname', 'user_fname', 'user_sdca_id', 'user_image', 'user_gender')->where('id', $violator)->first();
+                                            $stud_id = $stud_info->id;
+                                            $stud_lname = $stud_info->user_lname;
+                                            $stud_fname = $stud_info->user_fname;
+                                            $stud_image = $stud_info->user_image;
+                                            $stud_gender = $stud_info->user_gender;
+                                            // check student's image (use default image if student has no image from database)
+                                            if(!is_null($stud_image) OR !empty($stud_image)){
+                                                $display_student_image = $stud_image;
+                                            }else{
+                                                $display_student_image = 'default_student_img.jpg';
+                                            }
+                                            $output .= '
+                                            <div class="col-lg-6 col-md-6 col-sm-12 m-0">
+                                                <div class="violators_cards_div mb-2 d-flex justify-content-start align-items-center">
+                                                    <div class="display_user_image_div text-center">
+                                                        <img class="display_violator_image2 shadow-sm" src="'.asset('storage/svms/user_images/'.$display_student_image).'" alt="student'.$sq.'s image">
+                                                    </div>
+                                                    <div class="information_div">
+                                                        <span class="li_info_title">'.$stud_fname . ' ' . $stud_lname.'</span>
+                                                        <span class="li_info_subtitle2"><span class="font-weight-bold">'.$stud_id.' </span> | SBCS - BSIT 4A | ' . ucwords($stud_gender).'</span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="col-lg-6 col-md-6 col-sm-12 m-0">
-                                            <div class="violators_cards_div mb-2 d-flex justify-content-start align-items-center">
-                                                <div class="display_user_image_div text-center">
-                                                    <img class="display_violator_image2 shadow-sm" src="'.asset("storage/svms/user_images/default_student_img.jpg").'" alt="student'.$sq.'s image">
-                                                </div>
-                                                <div class="information_div">
-                                                    <span class="li_info_title">Mitch Frankein O. Desierto</span>
-                                                    <span class="li_info_subtitle2"><span class="font-weight-bold">20150348 </span> | SBCS - BSIT 4A | Male</span>
-                                                </div>
-                                            </div>
-                                        </div>
+                                            ';
+                                        }
+                                    }else{
+
+                                    }
+                                    $output .= '
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <form id="form_addViolation" action="#" enctype="multipart/form-data" method="POST" onsubmit="submit_violationForm_btn.disabled = true; return true;">
+                <form id="form_addViolation" action="'.route('violation_entry.submit_violation_form').'" enctype="multipart/form-data" method="POST" onsubmit="submit_violationForm_btn.disabled = true; return true;">
                     <div class="row mt-3">
                         <div class="col-lg-6 col-md-6 col-sm-12 pr-0">
                             <div class="lightRed_cardBody h-100">
@@ -206,13 +256,13 @@ class ViolationEntryController extends Controller
                             <div class="lightRed_cardBody">
                                 <span class="lightRed_cardBody_redTitle">Others:</span>
                                 <div class="input-group mb-2">
-                                    <input type="text" id="addOtherOffenses_input" onkeyup="otherOffenses_InputHas_txt()" name="other_offenses[]" class="form-control input_grpInpt2" placeholder="Type Other Offense" aria-label="Type Other Offense" aria-describedby="other-offenses-input">
+                                    <input type="text" id="addOtherOffenses_input" name="other_offenses[]" class="form-control input_grpInpt2" placeholder="Type Other Offense" aria-label="Type Other Offense" aria-describedby="other-offenses-input">
                                     <div class="input-group-append">
                                         <button class="btn btn_svms_red m-0" id="btn_addAnother_input" type="button" disabled><i class="nc-icon nc-simple-add font-weight-bold" aria-hidden="true"></i></button>
                                     </div>
                                 </div>
                                 <div class="addedInputFields_div">
-                                    {{-- new input field --}}
+
                                 </div>
                             </div>
                         </div>
@@ -222,7 +272,12 @@ class ViolationEntryController extends Controller
                             <span class="cust_info_txtwicon2 font-weight-bold"><i class="nc-icon nc-calendar-60 mr-1" aria-hidden="true"></i> '.date("F d, Y", strtotime($now_timestamp)) . ' -  ' . date("D", strtotime($now_timestamp)) . ' at ' . date("g:i A", strtotime($now_timestamp)) .'</span>
                         </div>
                         <div class="col-lg-6 col-md-6 col-sm-12 d-flex justify-content-end">
-                            <input type="hidden" name="violators[]" value="secret">
+                        ';
+                        foreach(json_decode($get_all_violators, true) as $violator_id){
+                            $output .= '<input type="hidden" name="violator_ids[]" value="'.$violator_id.'">';
+                        }
+                        $output .= '
+                            <input type="hidden" name="violation_timestamp" value="'.$now_timestamp.'">
                             <input type="hidden" name="_token" value="'.csrf_token().'">
                             <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
                             <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
@@ -237,5 +292,35 @@ class ViolationEntryController extends Controller
             </div>
         ';
         return $output;
+    }
+
+    // process violation form
+    public function submit_violation_form(Request $request){
+        // get all request
+        $get_selected_students     = json_decode(json_encode($request->get('violator_ids')));
+        $get_violation_timestamp   = $request->get('violation_timestamp');
+        $get_respo_user_id         = $request->get('respo_user_id');
+        $get_respo_user_lname      = $request->get('respo_user_lname');
+        $get_respo_user_fname      = $request->get('respo_user_fname');   
+        $get_minor_offenses        = json_decode(json_encode($request->get('minor_offenses')));
+        $get_less_serious_offenses = json_decode(json_encode($request->get('less_serious_offenses')));
+        $get_other_offenses        = json_decode(json_encode($request->get('other_offenses')));
+
+        echo json_encode($get_selected_students);
+        echo '<br/>';
+        echo $get_violation_timestamp;
+        echo '<br/>';
+        echo $get_respo_user_id;
+        echo '<br/>';
+        echo $get_respo_user_lname;
+        echo '<br/>';
+        echo $get_respo_user_fname;
+        echo '<br/>';
+        echo json_encode($get_minor_offenses);
+        echo '<br/>';
+        echo json_encode($get_less_serious_offenses);
+        echo '<br/>';
+        echo json_encode($get_other_offenses);
+        echo '<br/>';
     }
 }

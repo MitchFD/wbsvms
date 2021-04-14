@@ -98,7 +98,7 @@
                         <button class="btn cust_tagInput_removeBtn"><i class="fa fa-times"></i></button>
                     </div> --}}
                     <input type="text" id="search_violators" name="search_violators" class="cust_tagInput_field" id="tagInput_searchViolators" placeholder="Search Students..." />
-                    <button class="btn btn_svms_red cust_tagInput_button float-right" id="openViolationFormModal_btn" onclick="openViolationFormModal_btn()" type="button" disabled><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
+                    <button class="btn btn_svms_red cust_tagInput_button" id="openViolationFormModal_btn" onclick="openViolationFormModal_btn()" type="button" disabled><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
                 </div>
                 {{-- <div class="input-group cust_inpGrp_div mt-3">
                     <input type="text" id="search_violators" name="search_violators" class="form-control input_grpInpt" placeholder="Search Students by name or student number" aria-label="Search Students by name or student number" autocomplete="off">
@@ -217,15 +217,24 @@
 {{-- violation form --}}
     {{-- check if others' input has text then enable add new input button --}}
     <script>
-        const otherOffenses_input  = document.querySelector("#addOtherOffenses_input");
-        const otherOffensesAdd_Btn = document.querySelector("#btn_addAnother_input");
-        function otherOffenses_InputHas_txt(){
-            if(otherOffenses_input.value !== ""){
-                otherOffensesAdd_Btn.disabled = false;
-            }else{
-                otherOffensesAdd_Btn.disabled = true;
-            }
-        }
+        $('#violationEntryModal').on('show.bs.modal', function () {
+            const otherOffenses_input  = document.querySelector("#addOtherOffenses_input");
+            const otherOffensesAdd_Btn = document.querySelector("#btn_addAnother_input");
+            $(otherOffenses_input).keyup(function(){
+                if(otherOffenses_input.value !== ""){
+                    otherOffensesAdd_Btn.disabled = false;
+                }else{
+                    otherOffensesAdd_Btn.disabled = true;
+                }
+            });
+            // function otherOffenses_InputHas_txt(){
+            //     if(otherOffenses_input.value !== ""){
+            //         otherOffensesAdd_Btn.disabled = false;
+            //     }else{
+            //         otherOffensesAdd_Btn.disabled = true;
+            //     }
+            // }
+        });
     </script>
     {{-- adding new input for other offenses --}}
     <script>
@@ -314,17 +323,34 @@
             var cust_tagInput_div = document.querySelector(".cust_tagInput_div");
             var openViolationFormModal_btn = document.querySelector("#openViolationFormModal_btn");
             var existing_violators_ids = [];
-            // append pill
-            pill_tag_html = '<div class="cust_tagInput_pill" id="'+violatorID+'">' +
-                                '<img class="cust_tagInput_img" src="{{asset("storage/svms/user_images/2x2_09042021183001.jpg")}}" alt="students image">'+
-                                '<span> ' + violatorID + ' </span>' +
-                                '<button class="btn cust_tagInput_removeBtn"><i class="fa fa-times"></i></button>' +
-                            '</div>';
+            var student_info_lname = null;
+            var student_info_fname = null;
+            var student_info_image = null;
+            // get student's info for pill display
+            $.ajax({
+                url:"{{ route('violation_entry.get_selected_student_info') }}",
+                method:"GET",
+                data:{violatorID:violatorID},
+                dataType:'json',
+                async: false,
+                global: false,
+                success:function(data){
+                    student_info_lname = data.sel_student_lname;
+                    student_info_fname = data.sel_student_fname;
+                    student_info_image = data.sel_student_image;
+                }
+            });
+            // pill to append before input field
+            pill_tag_html = '<div class="cust_tagInput_pill" id="'+violatorID+'"> \
+                                <img class="cust_tagInput_img" src="{{asset("storage/svms/user_images")}}/'+student_info_image+'" alt="students image"> \
+                                <span class="cust_tagInput_name"> ' + student_info_fname + ' ' + student_info_lname + ' </span> \
+                                <button class="btn btn_svms_red cust_tagInput_removeBtn"><i class="fa fa-times"></i></button> \
+                            </div>';
             // push all existing pills to existing_violators_ids array
             $(".cust_tagInput_pill").each(function(){
                 existing_violators_ids.push($(this).attr("id"));
             });
-            console.log(existing_violators_ids);
+            // console.log(existing_violators_ids);
             // check if id already exist
             if(existing_violators_ids.indexOf(violatorID) !== -1){
                 alert('Student is already on the list');
@@ -365,10 +391,10 @@
                 existing_violators_ids.push($(this).attr("id"));
             });
             var violators_ids = JSON.stringify(existing_violators_ids);
-            console.log(existing_violators_ids);
-            console.log(violators_ids);
+            // console.log(existing_violators_ids);
+            // console.log(violators_ids);
             $.ajax({
-                    url:"{{ route('violation_entry.open_violatin_form_modal') }}",
+                    url:"{{ route('violation_entry.open_violation_form_modal') }}",
                     method:"GET",
                     data:{violators_ids:violators_ids, _token:_token},
                     // dataType:'json',

@@ -2388,8 +2388,8 @@ select.drpdwn_arrow2:focus {
 
 /* custom tag inputs */
 .cust_tagInput_div{
-  border-radius: 30px;
-  padding: 0 0 0 45px; 
+  border-radius: 31px;
+  padding: 5px 10px 10px 45px; 
   border: 2px solid #de8b8d;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
   font-size: 18px !important;
@@ -2406,10 +2406,12 @@ select.drpdwn_arrow2:focus {
 .cust_tagInput_field{
   display: inline-block;
   border: 0 !important;
-  padding: 5px;
-  margin: 7px 0 9px 0;
+  padding: 8px 5px 2px 5px;
+  margin: 5px 0 5px 5px;
   cursor: text;
-  align-items: center;
+  align-items: center !important;
+  vertical-align: middle !important;
+  background-color: transparent !important;
 }
 .cust_tagInput_field::placeholder{
   color: #de8b8d;
@@ -2420,6 +2422,7 @@ select.drpdwn_arrow2:focus {
   color: var(--svms_red) !important;
   border: 0 !important;
   outline: none !important;
+  background-color: transparent !important;
 } 
 .cust_tagInput_div .cust_tagInput_icon{
   position: absolute;
@@ -2428,29 +2431,33 @@ select.drpdwn_arrow2:focus {
   font-weight: bold;
   cursor: default !important;
   left: 35px;
-  top: 18px;
+  top: 23px;
   z-index: 100;
 }
 .cust_tagInput_button{
-  margin: -1px -1px -1px 0;
-  padding: 15px 20px 16px 20px !important;
-  font-size: 18px;
-  border-bottom-right-radius: 30px;
-  border-top-right-radius: 30px;
+  position: absolute;
+  right: 23px;
+  top: 0;
+  z-index: 100;
+  padding: 10px !important;
+  font-size: 16px;
+  height: 45px;
+  width: 45px;
+  border-radius: 50%;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
 }
 .cust_tagInput_pill{
   display: inline-block;
-  margin: auto 0 auto 5px;
-  background: var(--svms_red);
-  font-size: 14px;
+  margin: 5px 0 auto 5px;
+  background: #C6393C;
   color:white;
-  text-align: left;
+  text-align: center;
   padding: 0 5px 0 0 !important;
   border-radius: 25px;
-  align-items: center;
+  align-items: center !important;
   vertical-align: middle !important;
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+  /* box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important; */
 }
 .cust_tagInput_removeBtn{
   display: inline-block;
@@ -2462,15 +2469,6 @@ select.drpdwn_arrow2:focus {
   border-radius: 12px;
   align-items: center;
   font-weight: normal;
-  background-color: var(--svms_med_dark_red2) !important;
-  color: var(--white) !important;
-  box-shadow: none !important;
-}
-.cust_tagInput_removeBtn:hover,
-.cust_tagInput_removeBtn:focus,
-.cust_tagInput_removeBtn:active{
-  background-color: var(--svms_med_dark_red) !important;
-  color: var(--white) !important;
   box-shadow: none !important;
 }
 .cust_tagInput_img{
@@ -2486,4 +2484,9 @@ select.drpdwn_arrow2:focus {
   background-repeat: no-repeat !important;
   background-color: var(--svms_red);
   border: 0 !important;
+}
+.cust_tagInput_name{
+  align-self: baseline !important;
+  margin: auto 0 !important;
+  font-size: 13px;
 }
