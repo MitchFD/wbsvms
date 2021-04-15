@@ -370,7 +370,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-lg-12 col-md-12 col-sm-12">
-                                    <span class="cust_info_txtwicon"><i class="fa fa-info-circle font-weight-bold" aria-hidden="true"></i> The system will automatically generate a unique password for the newly registered user account and will notify the person thru his/her registered Email Address.</span>
+                                    <span class="cust_info_txtwicon"><i class="fa fa-info-circle font-weight-bold mr-1" aria-hidden="true"></i> The system will automatically generate a unique password for the newly registered user account and will notify the person thru his/her registered Email Address.</span>
                                 </div>
                             </div>
                         </div>

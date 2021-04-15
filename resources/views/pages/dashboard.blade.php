@@ -15,7 +15,7 @@
         {{-- schools violators counts --}}
         <div class="row">
             <div class="col-lg-3 col-md-3 col-sm-6">
-                <div class="card shadow">
+                <div class="card card_gbr card_ofh shadow">
                     <div class="card-body d-flex justify-content-between align-items-center">
                         <img class="dash_cards_img" src="{{asset('storage/svms/sdca_images/schools_logos/sbcs.jpg')}}" alt="SBCS Logo">
                         <div class="dash_cards_text_div">
@@ -29,7 +29,7 @@
                 </div>
             </div>
             <div class="col-lg-3 col-md-3 col-sm-6">
-                <div class="card shadow">
+                <div class="card card_gbr card_ofh shadow">
                     <div class="card-body d-flex justify-content-between align-items-center">
                         <img class="dash_cards_img" src="{{asset('storage/svms/sdca_images/schools_logos/shsp.jpg')}}" alt="SHSP Logo">
                         <div class="dash_cards_text_div">
@@ -43,7 +43,7 @@
                 </div>
             </div>
             <div class="col-lg-3 col-md-3 col-sm-6">
-                <div class="card shadow">
+                <div class="card card_gbr card_ofh shadow">
                     <div class="card-body d-flex justify-content-between align-items-center">
                         <img class="dash_cards_img" src="{{asset('storage/svms/sdca_images/schools_logos/sihtm.jpg')}}" alt="SIHTM Logo">
                         <div class="dash_cards_text_div">
@@ -57,7 +57,7 @@
                 </div>
             </div>
             <div class="col-lg-3 col-md-3 col-sm-6">
-                <div class="card shadow">
+                <div class="card card_gbr card_ofh shadow">
                     <div class="card-body d-flex justify-content-between align-items-center">
                         <img class="dash_cards_img" src="{{asset('storage/svms/sdca_images/schools_logos/sase.jpg')}}" alt="SASE Logo">
                         <div class="dash_cards_text_div">
@@ -403,12 +403,12 @@
             type: 'line',
             data: {
                 labels: [
-                    'January', 'February', 'March', 'April'
+                    'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'
                 ],
                 datasets: [
                     {
                         label: 'SBCS',
-                        data: [9, 15, 18, 20],
+                        data: [0, 15, 18, 20],
                         fill: true,
                         backgroundColor: 'rgb(114, 114, 114, 0.04)',
                         borderColor: '#727272',
@@ -418,7 +418,7 @@
                     },
                     {
                         label: 'SHSP',
-                        data: [5, 8, 5, 12],
+                        data: [0, 8, 5, 12],
                         fill: true,
                         backgroundColor: 'rgb(0, 113, 58, 0.04)',
                         borderColor: '#00713A',

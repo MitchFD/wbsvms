@@ -54,12 +54,12 @@
                                         <span class="sidebar-normal">{{ __(' Overview ') }}</span>
                                     </a>
                                 </li>
-                                <li class="{{ $elementActive == 'user_management' ? 'active' : '' }}">
+                                {{-- <li class="{{ $elementActive == 'user_management' ? 'active' : '' }}">
                                     <a style="padding-left: 25px !important;" href="{{ route('user_management.index', 'user_management') }}">
                                         <i class="nc-icon nc-minimal-right sidebar-mini-icon"></i>
                                         <span class="sidebar-normal">{{ __(' Default ') }}</span>
                                     </a>
-                                </li>
+                                </li> --}}
                                 <li class="{{ $elementActive == 'create_users' ? 'active' : '' }}">
                                     <a style="padding-left: 25px !important;" href="{{ route('user_management.create_users', 'create_users') }}">
                                         <i class="nc-icon nc-minimal-right sidebar-mini-icon"></i>

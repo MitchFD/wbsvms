@@ -2093,6 +2093,35 @@ select.drpdwn_arrow2:focus {
   outline: 0;
 }
 
+.cust_selectDropdownBox{
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 15px 20px !important; 
+  border: none;
+  box-shadow: none;
+  color: #66615b;
+  height: 50px !important;
+  /* remove default arrow */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  text-indent: 1px;
+  text-overflow: '';
+}
+/* remove default arrow for IE10 */
+.cust_selectDropdownBox::-ms-expand {
+  display: none;
+}
+.cust_selectDropdownBox:hover,
+.cust_selectDropdownBox:focus {
+  border: none;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.cust_selectDropdownBox > option{
+  padding: 10px !important;
+}
+
 /* system users module */
 .cust_srchInpt_div {
   border-radius: 25px;
@@ -2129,6 +2158,7 @@ select.drpdwn_arrow2:focus {
   border: 1px solid #ffffff;
 }
 
+.cust_srchInpt_div:hover,
 .cust_srchInpt_div:focus-within{
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
 }
