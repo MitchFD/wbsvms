@@ -42,6 +42,9 @@ The above copyright notice and this permission notice shall be included in all c
     <!-- CSS Just for demo purpose, don't include it in your project -->
     {{-- <link href="{{ asset('paper') }}/demo/demo.css" rel="stylesheet" /> --}}
 
+    {{-- link for datepicker from daterangepicker.com --}}
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
 </head>
 
 <body class="{{ $class }}">
@@ -79,6 +82,11 @@ The above copyright notice and this permission notice shall be included in all c
 
     {{-- customized scripts --}}
     <script src="{{ asset('paper') }}/js/custom.js"></script>
+
+    {{-- script for datapicker from daterangepicker.com --}}
+    {{-- <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script> --}}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     
     @stack('scripts')
 

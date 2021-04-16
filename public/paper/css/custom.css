@@ -24,6 +24,11 @@
   --svms_gray_bg_hover: #dddddd;
 }
 
+/* custom font sizes */
+.fs_13px{
+  font-size: 13px !important;
+}
+
 /* login page */
 .login_bg{
   background-repeat: no-repeat !important;
@@ -502,6 +507,39 @@ fieldset[disabled] .btn_svms_blue.active {
   width: 35%;
 }
 
+.cust_td_info{
+  display: inline-block;
+  margin-left: 10px;
+}
+.actLogs_tdTitle{
+  display: block;
+  margin: 0;
+  font-size: 14px;
+  color: var(--svms_blue);
+}
+.actLogs_tdSubTitle{
+  display: block;
+  margin: 0;
+  font-size: 13px;
+  font-weight: normal;
+}
+.sub1{
+ color: var(--svms_blue);
+}
+.sub2{
+  color:#9a9a9a !important;
+}
+.subDiv{
+  color:#9a9a9a !important;
+}
+.actLogs_content{
+  display: block;
+  margin: 0;
+  font-size: 13px;
+  font-weight: normal;
+  color: var(--svms_blue);
+}
+
 /* padding customizations */
 .pt7{
   padding-top: 7px !important;
@@ -878,8 +916,6 @@ fieldset[disabled] .btn_svms_blue.active {
 input[type=checkbox]:checked + .lightRed_cardBody_chckboxLabel{
   font-weight: bold !important;
 }
-
-
 
 /* directory link */
 .directory_divider{
@@ -1968,6 +2004,29 @@ a.text_svms_gray:hover {
   margin: 0 !important;
 }
 
+/* custom inputs */
+.cust_input{
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: normal;
+  padding: 10px !important; 
+  border: none;
+  box-shadow: none;
+  color: #66615b;
+  height: 45px !important;
+}
+.cust_input:hover,
+.cust_input:focus {
+  border: none;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.cust_input_hasvalue{
+  font-weight: bold;
+  border: none;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
 /* custom dropdowns */
 .cust_fltr_dropdowns_div{
   margin: 0;
@@ -2118,8 +2177,29 @@ select.drpdwn_arrow2:focus {
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
 }
 
-.cust_selectDropdownBox > option{
-  padding: 10px !important;
+.cust_selectDropdownBox2{
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: normal;
+  padding: 10px 15px !important; 
+  border: none;
+  box-shadow: none;
+  color: #66615b;
+  height: 45px !important;
+  /* remove default arrow */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  text-indent: 1px;
+  text-overflow: '';
+}
+/* remove default arrow for IE10 */
+.cust_selectDropdownBox2::-ms-expand {
+  display: none;
+}
+.cust_selectDropdownBox2:hover,
+.cust_selectDropdownBox2:focus {
+  border: none;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
 }
 
 /* system users module */

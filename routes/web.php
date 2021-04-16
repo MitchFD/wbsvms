@@ -117,6 +117,7 @@ Route::group(['middleware' => 'auth'], function () {
 // violation records
 Route::group(['middleware' => 'auth'], function () {
 	Route::get('violation_records/index', ['as' => 'violation_records.index', 'uses' => 'App\Http\Controllers\ViolationRecordsController@index']);
+	Route::get('violation_records/users_logs_filter_table', 'App\Http\Controllers\ViolationRecordsController@users_logs_filter_table')->name('violation_records.users_logs_filter_table');
 });
 
 // student handbook
