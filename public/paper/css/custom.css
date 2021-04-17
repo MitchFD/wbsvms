@@ -2022,7 +2022,7 @@ a.text_svms_gray:hover {
 }
 
 .cust_input_hasvalue{
-  font-weight: bold;
+  font-weight: bold !important;
   border: none;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
 }
@@ -2186,6 +2186,7 @@ select.drpdwn_arrow2:focus {
   box-shadow: none;
   color: #66615b;
   height: 45px !important;
+  cursor: pointer;
   /* remove default arrow */
   -webkit-appearance: none;
   -moz-appearance: none;

@@ -69,87 +69,92 @@
                             </button>
                         </div>
                         <div id="actLogsFilterOptionsCollapseDiv" class="collapse show cb_t0b15x25" aria-labelledby="actLogsFilterOptionsCollapseHeading" data-parent="#actLogsFilterOptionsCollapseParent">
-                            <span class="cust_status_title mb-2">Users Filter Options <i class="fa fa-info-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Filter options for specific types of users."></i></span>
-                            <div class="row">
-                                <div class="col-lg-12 col-md-12 col-sm-12">
-                                    <div class="form-group">
-                                        <select class="form-control cust_selectDropdownBox2 drpdwn_arrow" id="actLogsFiltr_selectUserTypes">
-                                            <option value="0" selected>All User Types</option>
-                                            <option value="employee">Employee Users</option>
-                                            <option value="student">Student Users</option>
-                                        </select>
+                            <form id="form_filterUserLogsTable" class="form" method="POST" action="#" enctype="multipart/form-data">
+                                @csrf
+                                <span class="cust_status_title mb-2">Users Filter Options <i class="fa fa-info-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Filter options for specific types of users."></i></span>
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <div class="form-group">
+                                            <select id="actLogsFiltr_selectUserTypes" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
+                                                <option value="0" selected>All User Types</option>
+                                                <option value="employee">Employee Users</option>
+                                                <option value="student">Student Users</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-12 col-md-12 col-sm-12">
-                                    <div class="form-group">
-                                        <select class="form-control cust_selectDropdownBox2 drpdwn_arrow" id="actLogsFiltr_selectUserRoles">
-                                            <option value="0" selected>All Users Roles</option>
-                                            @php
-                                                $all_roles = App\Models\Userroles::select('uRole_id', 'uRole')->get();
-                                            @endphp
-                                            @if(count($all_roles) > 0)
-                                                @foreach($all_roles->sortBy('id') as $select_role)
-                                                    <option value="{{$select_role->uRole}}">{{ ucwords($select_role->uRole) }}</option>
-                                                @endforeach
-                                            @else
-                                                
-                                            @endif
-                                        </select>
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <div class="form-group">
+                                            <select id="actLogsFiltr_selectUserRoles" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
+                                               @php
+                                                    $all_roles = App\Models\Userroles::select('uRole_id', 'uRole', 'uRole_type')->get();
+                                                @endphp
+                                                @if(count($all_roles) > 0)
+                                                    <option value="0" data-default-roles="all_roles" selected>All Users Roles</option>
+                                                    @foreach($all_roles->sortBy('id') as $select_role)
+                                                        <option value="{{$select_role->uRole}}" data-role-type="{{$select_role->uRole_type}}">{{ ucwords($select_role->uRole) }}</option>
+                                                    @endforeach
+                                                @else
+                                                    <option value="" disabled selected>No Roles Found!</option>
+                                                @endif
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-12 col-md-12 col-sm-12">
-                                    <div class="form-group">
-                                        <select class="form-control cust_selectDropdownBox2 drpdwn_arrow" id="actLogsFiltr_selectUsers">
-                                            <option value="0" selected>All Users</option>
-                                            @php
-                                                $all_users = App\Models\Users::select('id', 'user_lname', 'user_fname')->get();
-                                            @endphp
-                                            @if(count($all_users) > 0)
-                                                @foreach($all_users->sortBy('id') as $select_user)
-                                                    <option value="{{$select_user->id}}">{{$select_user->user_fname }} {{ $select_user->user_lname }}</option>
-                                                @endforeach
-                                            @else
-                                                
-                                            @endif
-                                        </select>
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <div class="form-group">
+                                            <select id="actLogsFiltr_selectUsers" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
+                                                @php
+                                                    $all_users = App\Models\Users::select('id', 'user_type', 'user_role', 'user_lname', 'user_fname')->get();
+                                                @endphp
+                                                @if(count($all_users) > 0)
+                                                    <option value="0" data-default-users="all_users" selected>All Users</option>
+                                                    @foreach($all_users->sortBy('id') as $select_user)
+                                                        <option value="{{$select_user->id}}" data-user-type="{{$select_user->user_type}}" data-user-role="{{$select_user->user_role}}">{{$select_user->user_fname }} {{ $select_user->user_lname }}</option>
+                                                    @endforeach
+                                                @else
+                                                    <option value="" disabled selected>No Users Found!</option>
+                                                @endif
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <span class="cust_status_title mb-2 mt-3">Logs Filter Options <i class="fa fa-info-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Filter options for specific types of users."></i></span>
-                            <div class="row">
-                                <div class="col-lg-12 col-md-12 col-sm-12">
-                                    <div class="form-group">
-                                        <select class="form-control cust_selectDropdownBox2 drpdwn_arrow" id="actLogsFiltr_selectCategories">
-                                            <option value="0" selected>All Categories</option>
-                                            @php
-                                                $all_act_types = App\Models\Useractivites::select('act_type')->groupBy('act_type')->get();
-                                            @endphp
-                                            @if(count($all_act_types) > 0)
-                                                @foreach($all_act_types->sortBy('id') as $select_category)
-                                                    <option value="{{$select_category->act_type}}">{{ucwords($select_category->act_type) }}</option>
-                                                @endforeach
-                                            @else
-                                                
-                                            @endif
-                                        </select>
+                                <span class="cust_status_title mb-2 mt-3">Logs Filter Options <i class="fa fa-info-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Filter options for specific types of users."></i></span>
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <div class="form-group">
+                                            <select id="actLogsFiltr_selectCategories" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
+                                                <option value="0" selected>All Categories</option>
+                                                @php
+                                                    $all_act_types = App\Models\Useractivites::select('act_type')->groupBy('act_type')->get();
+                                                @endphp
+                                                @if(count($all_act_types) > 0)
+                                                    @foreach($all_act_types->sortBy('id') as $select_category)
+                                                        <option value="{{$select_category->act_type}}">{{ucwords($select_category->act_type) }}</option>
+                                                    @endforeach
+                                                @else
+                                                    
+                                                @endif
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-12 col-md-12 col-sm-12">
-                                    {{-- <label class="custom_label" for="actLogsFiltr_datepickerRange">Date Range</label> --}}
-                                    <input id="actLogsFiltr_datepickerRange" name="actLogsFiltr_datepickerRange" type="text" class="form-control cust_input" placeholder="Select Date Range" value="{{ old('actLogsFiltr_datepickerRange') }}" />
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        {{-- <label class="custom_label" for="actLogsFiltr_datepickerRange">Date Range</label> --}}
+                                        <input id="actLogsFiltr_datepickerRange" name="actLogsFiltr_datepickerRange" type="text" class="form-control cust_input" placeholder="Select Date Range" />
+                                        <input type="hidden" name="hidden_dateRangeFrom" id="hidden_dateRangeFrom">
+                                        <input type="hidden" name="hidden_dateRangeTo" id="hidden_dateRangeTo">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row mt-3">
-                                <div class="col-lg-12 col-md-12 col-sm-12 text-right">
-                                    <a href="#" class="btn btn-success cust_bt_links shadow" role="button"><i class="fa fa-print mr-1" aria-hidden="true"></i> Generate Report</a>
+                                <div class="row mt-3">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 text-right">
+                                        <a href="#" class="btn btn-success cust_bt_links shadow" role="button"><i class="fa fa-print mr-1" aria-hidden="true"></i> Generate Report</a>
+                                    </div>
                                 </div>
-                            </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -211,7 +216,7 @@
                                 </thead>
                                 <tbody class="tbody_svms_white" id="usersActLogs_tbody">
                                     {{-- ajax data table --}}
-                                    <tr>
+                                    {{-- <tr>
                                         <td class="pl12 d-flex justify-content-start align-items-center">
                                             <img class="rslts_userImgs rslts_emp" src="{{asset('storage/svms/user_images/employee_user_image.jpg')}}" alt="user image">
                                             <div class="cust_td_info">
@@ -227,7 +232,7 @@
                                         </td>
                                         <td><span class="actLogs_content">Profile Update</span></td>
                                         <td><span class="actLogs_content">Mitch Desierto updates his profile infomration</span></td>
-                                    </tr>
+                                    </tr> --}}
                                 </tbody>
                             </table>
                         </div>
@@ -253,7 +258,48 @@
 {{-- live search --}}
     <script>
         $(document).ready(function(){ 
-            // range
+            // funciton for date range picker
+            function loadActLogsTable(){
+                var logs_search = document.getElementById('actLogsFiltr_liveSearch');
+                var logs_userTypes = document.getElementById("actLogsFiltr_selectUserTypes");
+                var logs_userRoles = document.getElementById("actLogsFiltr_selectUserRoles");
+                var logs_users = document.getElementById("actLogsFiltr_selectUsers");
+                var logs_category = document.getElementById("actLogsFiltr_selectCategories");
+                var logs_rangefrom = document.getElementById("hidden_dateRangeFrom");
+                var logs_rangeTo = document.getElementById("hidden_dateRangeTo");
+
+                console.log(logs_search.value);
+                console.log(logs_userTypes.value);
+                console.log(logs_userRoles.value);
+                console.log(logs_users.value);
+                console.log(logs_category.value);
+                console.log(logs_rangefrom.value);
+                console.log(logs_rangeTo.value);
+                $.ajax({
+                    url:"{{ route('violation_records.users_logs_filter_table') }}",
+                    method:"GET",
+                    data:{
+                        logs_search:logs_search, 
+                        logs_userTypes:logs_userTypes, 
+                        logs_userRoles:logs_userRoles,
+                        logs_users:logs_users,
+                        logs_category:logs_category,
+                        logs_rangefrom:logs_rangefrom,
+                        logs_rangeTo:logs_rangeTo
+                        },
+                    dataType:'json',
+                    success:function(data){
+                        $('#usersActLogs_tbody').html(data.users_logs_table);
+                    }
+                });
+            }
+
+            // function for capitalizing first letter of a word
+            function capitalizeFirstLetter(string) {
+                return string.charAt(0).toUpperCase() + string.slice(1);
+            }
+
+            // daterange picker
             $('#actLogsFiltr_datepickerRange').daterangepicker({
                 timePicker: true,
                 showDropdowns: true,
@@ -266,71 +312,157 @@
                     format: 'MMMM DD, YYYY - hh:mm A',
                     cancelLabel: 'Clear'
                     }
-            }, function(start, end, label) {
-                var from_range = start.format('YYYY-MM-DD HH:MM:SS');
-                var to_range = end.format('YYYY-MM-DD HH:MM:SS');
-                console.log('From:' + from_range);
-                console.log('To:' + to_range);
             });
             $('#actLogsFiltr_datepickerRange').on('cancel.daterangepicker', function(ev, picker) {
+                document.getElementById("hidden_dateRangeFrom").value = '';
+                document.getElementById("hidden_dateRangeTo").value = '';
                 $(this).val('');
                 $(this).removeClass('cust_input_hasvalue');
+                loadActLogsTable();
             });
             $('#actLogsFiltr_datepickerRange').on('apply.daterangepicker', function(ev, picker) {
-                // $(this).val(picker.startDate.format('MMMM DD, YYYY - hh:mm A') + ' to ' + picker.endDate.format('MMMM DD, YYYY - hh:mm A'));
+                // for hidden data range inputs
+                var start_range = picker.startDate.format('YYYY-MM-DD HH:MM:SS');
+                var end_range = picker.endDate.format('YYYY-MM-DD HH:MM:SS');
+                document.getElementById("hidden_dateRangeFrom").value = start_range;
+                document.getElementById("hidden_dateRangeTo").value = end_range;
+                // for date range display
                 $(this).val(picker.startDate.format('MMMM DD, YYYY') + ' - ' + picker.endDate.format('MMMM DD, YYYY'));
                 $(this).addClass('cust_input_hasvalue');
+                loadActLogsTable();
             });
+
+            // live search filter
+            $('#actLogsFiltr_liveSearch').on('keyup', loadActLogsTable);
             
-            function loadActLogsTable(){
-                // var logs_search = $('#actLogsFiltr_liveSearch').val();
-                var logs_userTypes = $('#actLogsFiltr_selectUserTypes').val();
-                var logs_userRoles = $('#actLogsFiltr_selectUserRoles').val();
-                var logs_users = $('#actLogsFiltr_selectUsers').val();
-                var logs_category = $('#actLogsFiltr_selectCategories').val();
-                // console.log(logs_search);
-                console.log(logs_userTypes);
-                console.log(logs_userRoles);
-                console.log(logs_users);
-                console.log(logs_category);
-                // $.ajax({
-                //     url:"{{ route('violation_records.users_logs_filter_table') }}",
-                //     method:"GET",
-                //     data:{logs_search:logs_search, logs_users:logs_users, logs_category:logs_category},
-                //     dataType:'json',
-                //     success:function(data){
-                //         $('#usersActLogs_tbody').html(data.users_logs_table);
-                //     }
-                // });
+            // user type filter
+            $('#actLogsFiltr_selectUserTypes').on('change paste keyup', function(){
+                var selectedUserType = $(this).val();
+                if(selectedUserType !== 0){
+                    document.getElementById("actLogsFiltr_selectUserTypes").classList.add("cust_input_hasvalue");
+                    emp_type = 'employee';
+                    stud_type = 'student';
+                    all_roles = 'all_roles';
+                    all_users = 'all_users';
+                    if(selectedUserType === 'employee'){
+                        // value for System Roles Filter based on selected user type
+                        $('#actLogsFiltr_selectUserRoles option[data-role-type="' + stud_type + '"]').hide();
+                        $('#actLogsFiltr_selectUserRoles option[data-role-type="' + emp_type + '"]').show();
+                        $('#actLogsFiltr_selectUserRoles option[data-default-roles="' + all_roles + '"]').html('All Employee Type Roles');
+                        $('#actLogsFiltr_selectUserRoles').val(0);
+                        // value for System Users Filter based on selected user type
+                        $('#actLogsFiltr_selectUsers option[data-user-type="' + stud_type + '"]').hide();
+                        $('#actLogsFiltr_selectUsers option[data-user-type="' + emp_type + '"]').show();
+                        $('#actLogsFiltr_selectUsers option[data-default-users="' + all_users + '"]').html('All Employee Type Users');
+                        $('#actLogsFiltr_selectUsers').val(0);
+                    }else if(selectedUserType === 'student'){
+                        // value for System Roles Filter based on selected user type
+                        $('#actLogsFiltr_selectUserRoles option[data-role-type="' + emp_type + '"]').hide();
+                        $('#actLogsFiltr_selectUserRoles option[data-role-type="' + stud_type + '"]').show();
+                        $('#actLogsFiltr_selectUserRoles option[data-default-roles="' + all_roles + '"]').html('All Student Type Roles');
+                        $('#actLogsFiltr_selectUserRoles').val(0);
+                        // value for System Users Filter based on selected user type
+                        $('#actLogsFiltr_selectUsers option[data-user-type="' + stud_type + '"]').show();
+                        $('#actLogsFiltr_selectUsers option[data-user-type="' + emp_type + '"]').hide();
+                        $('#actLogsFiltr_selectUsers option[data-default-users="' + all_users + '"]').html('All Student Type Users');
+                        $('#actLogsFiltr_selectUsers').val(0);
+                    }else{
+                        // value for System Roles Filter based on selected user type
+                        $('#actLogsFiltr_selectUserRoles option[data-role-type="' + stud_type + '"]').show();
+                        $('#actLogsFiltr_selectUserRoles option[data-role-type="' + emp_type + '"]').show();
+                        $('#actLogsFiltr_selectUserRoles option[data-default-roles="' + all_roles + '"]').html('All Roles');
+                        $('#actLogsFiltr_selectUserRoles').val(0);
+                        // value for System Users Filter based on selected user type
+                        $('#actLogsFiltr_selectUsers option[data-user-type="' + stud_type + '"]').show();
+                        $('#actLogsFiltr_selectUsers option[data-user-type="' + emp_type + '"]').show();
+                        $('#actLogsFiltr_selectUsers option[data-default-users="' + all_users + '"]').html('All Users');
+                        $('#actLogsFiltr_selectUsers').val(0);
+                    }
+                }else{
+                    document.getElementById("actLogsFiltr_selectUserTypes").classList.remove("cust_input_hasvalue");
+                }
+                loadActLogsTable();
+            });
 
+            // user role filter
+            $('#actLogsFiltr_selectUserRoles').on('change paste keyup', function(){
+                var selectedUserRole = $(this).val();
+                if(selectedUserRole != 0){
+                    document.getElementById("actLogsFiltr_selectUserRoles").classList.add("cust_input_hasvalue");
+                    all_users = 'all_users';
+                    emp_type = 'employee';
+                    stud_type = 'student';
+                    // value for System Users Filter based on selected Role
+                    $('#actLogsFiltr_selectUsers option[data-user-role="' + selectedUserRole + '"]').show();
+                    $('#actLogsFiltr_selectUsers option[data-user-role!="' + selectedUserRole + '"]').hide();
+                    $('#actLogsFiltr_selectUsers option[data-default-users="' + all_users + '"]').html('All ' + capitalizeFirstLetter(selectedUserRole)+'s');
+                    $('#actLogsFiltr_selectUsers').val(0);
+                }else{
+                    // check selected user type first 
+                    var sel_user_type = document.getElementById("actLogsFiltr_selectUserTypes");
+                    emp_type = 'employee';
+                    stud_type = 'student';
+                    all_roles = 'all_roles';
+                    all_users = 'all_users';
+                    // console.log(sel_user_type.value);
+                    if(sel_user_type.value === 'employee'){
+                        // value for System Roles Filter based on selected user type
+                        $('#actLogsFiltr_selectUserRoles option[data-role-type="' + stud_type + '"]').hide();
+                        $('#actLogsFiltr_selectUserRoles option[data-role-type="' + emp_type + '"]').show();
+                        $('#actLogsFiltr_selectUserRoles option[data-default-roles="' + all_roles + '"]').html('All Employee Type Roles');
+                        $('#actLogsFiltr_selectUserRoles').val(0);
+                        // value for System Users Filter based on selected user type
+                        $('#actLogsFiltr_selectUsers option[data-user-type="' + stud_type + '"]').hide();
+                        $('#actLogsFiltr_selectUsers option[data-user-type="' + emp_type + '"]').show();
+                        $('#actLogsFiltr_selectUsers option[data-default-users="' + all_users + '"]').html('All Employee Type Users');
+                        $('#actLogsFiltr_selectUsers').val(0);
+                    }else if(sel_user_type.value === 'student'){
+                        // value for System Roles Filter based on selected user type
+                        $('#actLogsFiltr_selectUserRoles option[data-role-type="' + emp_type + '"]').hide();
+                        $('#actLogsFiltr_selectUserRoles option[data-role-type="' + stud_type + '"]').show();
+                        $('#actLogsFiltr_selectUserRoles option[data-default-roles="' + all_roles + '"]').html('All Student Type Roles');
+                        $('#actLogsFiltr_selectUserRoles').val(0);
+                        // value for System Users Filter based on selected user type
+                        $('#actLogsFiltr_selectUsers option[data-user-type="' + stud_type + '"]').show();
+                        $('#actLogsFiltr_selectUsers option[data-user-type="' + emp_type + '"]').hide();
+                        $('#actLogsFiltr_selectUsers option[data-default-users="' + all_users + '"]').html('All Student Type Users');
+                        $('#actLogsFiltr_selectUsers').val(0);
+                    }else{
+                        // value for System Roles Filter based on selected user type
+                        $('#actLogsFiltr_selectUserRoles option[data-role-type="' + stud_type + '"]').show();
+                        $('#actLogsFiltr_selectUserRoles option[data-role-type="' + emp_type + '"]').show();
+                        $('#actLogsFiltr_selectUserRoles option[data-default-roles="' + all_roles + '"]').html('All Roles');
+                        $('#actLogsFiltr_selectUserRoles').val(0);
 
-                // input styles
-                if(logs_userTypes !== 0){
-                    $('#actLogsFiltr_selectUserTypes').addClass('cust_input_hasvalue');
-                }else{
-                    $('#actLogsFiltr_selectUserTypes').removeClass('cust_input_hasvalue');
+                        $('#actLogsFiltr_selectUsers option').show();
+                        document.getElementById("actLogsFiltr_selectUserRoles").classList.remove("cust_input_hasvalue");
+                        $('#actLogsFiltr_selectUsers option[data-default-users]').html('All Users');
+                    }
                 }
-                if(logs_userRoles !== 0){
-                    $('#actLogsFiltr_selectUserRoles').addClass('cust_input_hasvalue');
+                loadActLogsTable();
+            });
+
+            // user filter
+            $('#actLogsFiltr_selectUsers').on('change paste keyup', function(){
+                var selectedUser = $(this).val();
+                if(selectedUser !== 0){
+                    document.getElementById("actLogsFiltr_selectUsers").classList.add("cust_input_hasvalue");
                 }else{
-                    $('#actLogsFiltr_selectUserRoles').removeClass('cust_input_hasvalue');
+                    document.getElementById("actLogsFiltr_selectUsers").classList.remove("cust_input_hasvalue");
                 }
-                if(logs_users !== 0){
-                    $('#actLogsFiltr_selectUsers').addClass('cust_input_hasvalue');
+                loadActLogsTable();
+            });
+
+            // act category filter
+            $('#actLogsFiltr_selectCategories').on('change paste keyup', function(){
+                var selectedCategory = $(this).val();
+                if(selectedCategory !== 0){
+                    document.getElementById("actLogsFiltr_selectCategories").classList.add("cust_input_hasvalue");
                 }else{
-                    $('#actLogsFiltr_selectUsers').removeClass('cust_input_hasvalue');
+                    document.getElementById("actLogsFiltr_selectCategories").classList.remove("cust_input_hasvalue");
                 }
-                if(logs_category !== 0){
-                    $('#actLogsFiltr_selectCategories').addClass('cust_input_hasvalue');
-                }else{
-                    $('#actLogsFiltr_selectCategories').removeClass('cust_input_hasvalue');
-                }
-            }
-            // $('#actLogsFiltr_liveSearch').on('keyup', loadActLogsTable);
-            $('#actLogsFiltr_selectUserTypes').on('change', loadActLogsTable);
-            $('#actLogsFiltr_selectUserRoles').on('change', loadActLogsTable);
-            $('#actLogsFiltr_selectUsers').on('change', loadActLogsTable);
-            $('#actLogsFiltr_selectCategories').on('change', loadActLogsTable);
+                loadActLogsTable();
+            });
         });
     </script>
 {{-- live search end --}}
