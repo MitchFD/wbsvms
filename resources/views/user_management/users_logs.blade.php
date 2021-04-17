@@ -238,12 +238,16 @@
                         </div>
                     </div>
                     <div class="row d-flex justify-content-center align-items-center">
-                        <div class="col-lg-6 col-md-6 col-sm-12">
+                        <div class="col-lg-4 col-md-4 col-sm-12 text-left">
                             <span>Total Data: <span class="font-weight-bold" id="total_data_count"> </span> </span>
                         </div>
-                        {{-- <div class="col-lg-6 col-md-6 col-sm-12 d-flex justify-content-end align-items-end">
-                            <a href="#" class="btn btn-success cust_bt_links shadow" role="button"><i class="fa fa-print mr-1" aria-hidden="true"></i> Generate Report</a>
-                        </div> --}}
+                        <div class="col-lg-8 col-md-8 col-sm-12 d-flex justify-content-end">
+                            @csrf
+                            <div id="usersActLogs_pagination">
+
+                            </div>
+                            {{-- <a href="#" class="btn btn-success cust_bt_links shadow" role="button"><i class="fa fa-print mr-1" aria-hidden="true"></i> Generate Report</a> --}}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -260,21 +264,21 @@
         $(document).ready(function(){ 
             // funciton for date range picker
             function loadActLogsTable(){
-                var logs_search = document.getElementById('actLogsFiltr_liveSearch');
-                var logs_userTypes = document.getElementById("actLogsFiltr_selectUserTypes");
-                var logs_userRoles = document.getElementById("actLogsFiltr_selectUserRoles");
-                var logs_users = document.getElementById("actLogsFiltr_selectUsers");
-                var logs_category = document.getElementById("actLogsFiltr_selectCategories");
-                var logs_rangefrom = document.getElementById("hidden_dateRangeFrom");
-                var logs_rangeTo = document.getElementById("hidden_dateRangeTo");
+                var logs_search = document.getElementById('actLogsFiltr_liveSearch').value;
+                var logs_userTypes = document.getElementById("actLogsFiltr_selectUserTypes").value;
+                var logs_userRoles = document.getElementById("actLogsFiltr_selectUserRoles").value;
+                var logs_users = document.getElementById("actLogsFiltr_selectUsers").value;
+                var logs_category = document.getElementById("actLogsFiltr_selectCategories").value;
+                var logs_rangefrom = document.getElementById("hidden_dateRangeFrom").value;
+                var logs_rangeTo = document.getElementById("hidden_dateRangeTo").value;
 
-                console.log(logs_search.value);
-                console.log(logs_userTypes.value);
-                console.log(logs_userRoles.value);
-                console.log(logs_users.value);
-                console.log(logs_category.value);
-                console.log(logs_rangefrom.value);
-                console.log(logs_rangeTo.value);
+                console.log(logs_search);
+                console.log(logs_userTypes);
+                console.log(logs_userRoles);
+                console.log(logs_users);
+                console.log(logs_category);
+                console.log(logs_rangefrom);
+                console.log(logs_rangeTo);
                 $.ajax({
                     url:"{{ route('violation_records.users_logs_filter_table') }}",
                     method:"GET",
@@ -290,6 +294,8 @@
                     dataType:'json',
                     success:function(data){
                         $('#usersActLogs_tbody').html(data.users_logs_table);
+                        $('#usersActLogs_pagination').html(data.paginate);
+                        $('#total_data_count').html(data.total_rows);
                     }
                 });
             }

@@ -520,7 +520,7 @@ fieldset[disabled] .btn_svms_blue.active {
 .actLogs_tdSubTitle{
   display: block;
   margin: 0;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: normal;
 }
 .sub1{
@@ -530,12 +530,12 @@ fieldset[disabled] .btn_svms_blue.active {
   color:#9a9a9a !important;
 }
 .subDiv{
-  color:#9a9a9a !important;
+  color:#d8d8d8 !important;
 }
 .actLogs_content{
   display: block;
   margin: 0;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: normal;
   color: var(--svms_blue);
 }
@@ -2269,6 +2269,10 @@ select.drpdwn_arrow2:focus {
   background-color: var(--svms_green) !important;
   border: 3px solid var(--svms_green) !important;
 }
+.rslts_unknown{
+  background-color: var(--svms_text_gray) !important;
+  border: 3px solid var(--svms_text_gray) !important;
+}
 /* .rslts_deact{
   border: 3px solid var(--svms_text_gray);
   background-color: var(--svms_text_gray) !important;
@@ -2392,6 +2396,9 @@ select.drpdwn_arrow2:focus {
 /* highlight search results */
 .grn_highlight{
   background-color: #A5E2C1 !important;
+}
+.grn_highlight2{
+  background-color: #D2F1E0 !important;
 }
 .red_highlight{
   background-color: #E5A2A3 !important;
