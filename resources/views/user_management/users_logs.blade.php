@@ -204,6 +204,15 @@
                         </div> --}}
                     </div>
                     <div class="row mt-3">
+                        <div class="col-lg-12 col-sm-12">
+                            <span class="cust_table_filters_title"> Filters: </span>
+                            <span id="filter_userTypes_txt" class="cust_table_filters_texts"> All User Types </span> <span class="cust_table_filters_texts_divider"> / </span>
+                            <span id="filter_userRoles_txt" class="cust_table_filters_texts"> All User Roles </span> <span class="cust_table_filters_texts_divider"> / </span>
+                            <span id="filter_users_txt" class="cust_table_filters_texts"> All Users </span> <span class="cust_table_filters_texts_divider"> / </span>
+                            <span id="filter_logCat_txt" class="cust_table_filters_texts"> All Log Categories </span> <span class="cust_table_filters_texts_divider"> / </span>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
                         <div class="col-lg-12 col-md-12 col-sm-12">
                             <table class="table table-hover cust_table shadow">
                                 <thead class="thead_svms_blue">
@@ -280,7 +289,7 @@
                 console.log(logs_rangefrom);
                 console.log(logs_rangeTo);
                 $.ajax({
-                    url:"{{ route('violation_records.users_logs_filter_table') }}",
+                    url:"{{ route('user_management.users_logs_filter_table') }}",
                     method:"GET",
                     data:{
                         logs_search:logs_search, 
@@ -361,6 +370,11 @@
                         $('#actLogsFiltr_selectUsers option[data-user-type="' + emp_type + '"]').show();
                         $('#actLogsFiltr_selectUsers option[data-default-users="' + all_users + '"]').html('All Employee Type Users');
                         $('#actLogsFiltr_selectUsers').val(0);
+                        // inner HTML for filter texts
+                        $('#filter_userTypes_txt').html('All Employee Type Users');
+                        $('#filter_userRoles_txt').html('All Employee Type Roles');
+                        $('#filter_users_txt').html('All Employee Type Users');
+                        document.getElementById("filter_userTypes_txt").classList.add("font-weight-bold");
                     }else if(selectedUserType === 'student'){
                         // value for System Roles Filter based on selected user type
                         $('#actLogsFiltr_selectUserRoles option[data-role-type="' + emp_type + '"]').hide();
@@ -372,6 +386,11 @@
                         $('#actLogsFiltr_selectUsers option[data-user-type="' + emp_type + '"]').hide();
                         $('#actLogsFiltr_selectUsers option[data-default-users="' + all_users + '"]').html('All Student Type Users');
                         $('#actLogsFiltr_selectUsers').val(0);
+                        // inner HTML for filter texts
+                        $('#filter_userTypes_txt').html('All Student Type Users');
+                        $('#filter_userRoles_txt').html('All Student Type Roles');
+                        $('#filter_users_txt').html('All Student Type Users');
+                        document.getElementById("filter_userTypes_txt").classList.add("font-weight-bold");
                     }else{
                         // value for System Roles Filter based on selected user type
                         $('#actLogsFiltr_selectUserRoles option[data-role-type="' + stud_type + '"]').show();
@@ -383,6 +402,11 @@
                         $('#actLogsFiltr_selectUsers option[data-user-type="' + emp_type + '"]').show();
                         $('#actLogsFiltr_selectUsers option[data-default-users="' + all_users + '"]').html('All Users');
                         $('#actLogsFiltr_selectUsers').val(0);
+                        // inner HTML for filter texts
+                        $('#filter_userTypes_txt').html('All User Types');
+                        $('#filter_userRoles_txt').html('All User Roles');
+                        $('#filter_users_txt').html('All Users');
+                        document.getElementById("filter_userTypes_txt").classList.remove("font-weight-bold");
                     }
                 }else{
                     document.getElementById("actLogsFiltr_selectUserTypes").classList.remove("cust_input_hasvalue");
@@ -395,6 +419,7 @@
                 var selectedUserRole = $(this).val();
                 if(selectedUserRole != 0){
                     document.getElementById("actLogsFiltr_selectUserRoles").classList.add("cust_input_hasvalue");
+                    all_roles = 'all_roles';
                     all_users = 'all_users';
                     emp_type = 'employee';
                     stud_type = 'student';
@@ -403,6 +428,10 @@
                     $('#actLogsFiltr_selectUsers option[data-user-role!="' + selectedUserRole + '"]').hide();
                     $('#actLogsFiltr_selectUsers option[data-default-users="' + all_users + '"]').html('All ' + capitalizeFirstLetter(selectedUserRole)+'s');
                     $('#actLogsFiltr_selectUsers').val(0);
+                    // inner HTML for filter texts
+                    $('#filter_userRoles_txt').html(capitalizeFirstLetter(selectedUserRole) + ' Role');
+                    $('#filter_users_txt').html('All ' + capitalizeFirstLetter(selectedUserRole)+'s');
+                    document.getElementById("filter_userRoles_txt").classList.add("font-weight-bold");
                 }else{
                     // check selected user type first 
                     var sel_user_type = document.getElementById("actLogsFiltr_selectUserTypes");
@@ -422,6 +451,10 @@
                         $('#actLogsFiltr_selectUsers option[data-user-type="' + emp_type + '"]').show();
                         $('#actLogsFiltr_selectUsers option[data-default-users="' + all_users + '"]').html('All Employee Type Users');
                         $('#actLogsFiltr_selectUsers').val(0);
+                        // inner HTML for filter texts
+                        $('#filter_userRoles_txt').html('All Employee Type Roles');
+                        $('#filter_users_txt').html('All Employee Type Users');
+                        document.getElementById("filter_userRoles_txt").classList.add("font-weight-bold");
                     }else if(sel_user_type.value === 'student'){
                         // value for System Roles Filter based on selected user type
                         $('#actLogsFiltr_selectUserRoles option[data-role-type="' + emp_type + '"]').hide();
@@ -433,6 +466,10 @@
                         $('#actLogsFiltr_selectUsers option[data-user-type="' + emp_type + '"]').hide();
                         $('#actLogsFiltr_selectUsers option[data-default-users="' + all_users + '"]').html('All Student Type Users');
                         $('#actLogsFiltr_selectUsers').val(0);
+                        // inner HTML for filter texts
+                        $('#filter_userRoles_txt').html('All Student Type Roles');
+                        $('#filter_users_txt').html('All Student Type Users');
+                        document.getElementById("filter_userRoles_txt").classList.add("font-weight-bold");
                     }else{
                         // value for System Roles Filter based on selected user type
                         $('#actLogsFiltr_selectUserRoles option[data-role-type="' + stud_type + '"]').show();
@@ -443,6 +480,10 @@
                         $('#actLogsFiltr_selectUsers option').show();
                         document.getElementById("actLogsFiltr_selectUserRoles").classList.remove("cust_input_hasvalue");
                         $('#actLogsFiltr_selectUsers option[data-default-users]').html('All Users');
+                        // inner HTML for filter texts
+                        $('#filter_userRoles_txt').html('All Users Roles');
+                        $('#filter_users_txt').html('All Users');
+                        document.getElementById("filter_userRoles_txt").classList.remove("font-weight-bold");
                     }
                 }
                 loadActLogsTable();
@@ -453,8 +494,21 @@
                 var selectedUser = $(this).val();
                 if(selectedUser !== 0){
                     document.getElementById("actLogsFiltr_selectUsers").classList.add("cust_input_hasvalue");
+                    document.getElementById("filter_users_txt").classList.add("font-weight-bold");
+                    var selectedUser_id = document.getElementById('actLogsFiltr_selectUsers').value;
+                    var _token = $('input[name="_token"]').val();
+                    $.ajax({
+                        url:"{{ route('user_management.users_logs_filter_table_user_info') }}",
+                        method:"GET",
+                        data:{selectedUser_id:selectedUser_id, _token:_token},
+                        // dataType:'json',
+                        success:function(data){
+                            $('#filter_users_txt').html(data);
+                        }
+                    });
                 }else{
                     document.getElementById("actLogsFiltr_selectUsers").classList.remove("cust_input_hasvalue");
+                    document.getElementById("filter_users_txt").classList.remove("font-weight-bold");
                 }
                 loadActLogsTable();
             });
@@ -464,10 +518,20 @@
                 var selectedCategory = $(this).val();
                 if(selectedCategory !== 0){
                     document.getElementById("actLogsFiltr_selectCategories").classList.add("cust_input_hasvalue");
+                    $('#filter_logCat_txt').html(capitalizeFirstLetter(selectedCategory) + ' histories');
+                    document.getElementById("filter_logCat_txt").classList.add("font-weight-bold");
                 }else{
                     document.getElementById("actLogsFiltr_selectCategories").classList.remove("cust_input_hasvalue");
+                    $('#filter_logCat_txt').html('All Log History');
+                    document.getElementById("filter_logCat_txt").classList.remove("font-weight-bold");
                 }
                 loadActLogsTable();
+            });
+
+            // hanle page link
+            $('.page-link').on('click', function(){
+                var this_page_link = $(this).innerText;
+                console.log(this_page_link);
             });
         });
     </script>

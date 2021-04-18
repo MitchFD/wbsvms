@@ -99,6 +99,12 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::post('/user_management/emp_user_switch_new_email_availability_check', 'App\Http\Controllers\UserManagementController@emp_user_switch_new_email_availability_check')->name('user_management.emp_user_switch_new_email_availability_check');
 	// for updating system user's passwords
 	Route::post('user_management/update_user_password', ['as' => 'user_management.update_user_password', 'uses' => 'App\Http\Controllers\UserManagementController@update_user_password']);
+
+	// USER LOGS MODULE
+	// filter users logs table
+	Route::get('user_management/users_logs_filter_table', 'App\Http\Controllers\UserManagementController@users_logs_filter_table')->name('user_management.users_logs_filter_table');
+	// get selected user's info based on selected user filter
+	Route::get('user_management/users_logs_filter_table_user_info', 'App\Http\Controllers\UserManagementController@users_logs_filter_table_user_info')->name('user_management.users_logs_filter_table_user_info');
 });
 
 // violation entry

@@ -1072,6 +1072,25 @@ a.text_svms_gray:hover {
   display: block;
 }
 
+.cust_table_filters_title{
+  display: inline-block;
+  font-size: 13px;
+  font-weight: normal;
+  color: var(--svms_light_blue2);
+}
+.cust_table_filters_texts{
+  display: inline-block;
+  font-size: 13px;
+  font-weight: normal;
+  color: var(--svms_blue);
+}
+.cust_table_filters_texts_divider{
+  display: inline-block;
+  font-size: 13px;
+  font-weight: normal !important;
+  color: var(--svms_blue);
+}
+
 /* .tbody_svms_white tr{
   cursor: pointer !important;
 } */
