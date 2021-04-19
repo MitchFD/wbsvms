@@ -2809,6 +2809,10 @@ class UserManagementController extends Controller
     // filter user logs table 
     public function users_logs_filter_table(Request $request){
         if($request->ajax()){
+            // custom var
+            $output = '';
+            $paginate = '';
+            $total_matched_results = '';
             // get all request
             $logs_search = $request->get('logs_search');
             $logs_userTypes = $request->get('logs_userTypes');
@@ -2817,32 +2821,66 @@ class UserManagementController extends Controller
             $logs_category = $request->get('logs_category');
             $logs_rangefrom = $request->get('logs_rangefrom');
             $logs_rangeTo = $request->get('logs_rangeTo');
-            $output = '';
-            $paginate = '';
-            $total_matched_results = '';
 
-            if($logs_search !== ''){
+            if($logs_search != ''){
                 $filter_user_logs_table = DB::table('users_activity_tbl')
-                                                ->join('users', 'users_activity_tbl.act_respo_user_id', '=', 'users.id')
-                                                ->select('users_activity_tbl.*', 'users.id', 'users.user_role', 'users.user_status', 'users.user_role_status', 'users.user_type', 'users.user_sdca_id', 'users.user_image', 'users.user_gender')
-                                                ->where('users.user_sdca_id', 'like', '%'.$logs_search.'%')
-                                                ->orWhere('users.user_role', 'like', '%'.$logs_search.'%')
-                                                ->orWhere('users.user_type', 'like', '%'.$logs_search.'%')
-                                                ->orWhere('users.user_gender', 'like', '%'.$logs_search.'%')
-                                                ->orWhere('users_activity_tbl.act_respo_users_lname', 'like', '%'.$logs_search.'%')
-                                                ->orWhere('users_activity_tbl.act_respo_users_fname', 'like', '%'.$logs_search.'%')
-                                                ->orWhere('users_activity_tbl.act_type', 'like', '%'.$logs_search.'%')
-                                                ->orWhere('users_activity_tbl.act_details', 'like', '%'.$logs_search.'%')
-                                                ->paginate(10);
+                                        ->join('users', 'users_activity_tbl.act_respo_user_id', '=', 'users.id')
+                                        ->select('users_activity_tbl.*', 'users.id', 'users.user_role', 'users.user_status', 'users.user_role_status', 'users.user_type', 'users.user_sdca_id', 'users.user_image', 'users.user_gender')
+                                        ->where('users.user_sdca_id', 'like', '%'.$logs_search.'%')
+                                        ->orWhere('users.user_role', 'like', '%'.$logs_search.'%')
+                                        ->orWhere('users.user_type', 'like', '%'.$logs_search.'%')
+                                        ->orWhere('users.user_gender', 'like', '%'.$logs_search.'%')
+                                        ->orWhere('users_activity_tbl.act_respo_users_lname', 'like', '%'.$logs_search.'%')
+                                        ->orWhere('users_activity_tbl.act_respo_users_fname', 'like', '%'.$logs_search.'%')
+                                        ->orWhere('users_activity_tbl.act_type', 'like', '%'.$logs_search.'%')
+                                        ->orWhere('users_activity_tbl.act_details', 'like', '%'.$logs_search.'%')
+                                        // ->where(function($query) use ($logs_userTypes, $logs_userRoles, $logs_users, $logs_category, $logs_rangefrom, $logs_rangeTo){
+                                        //     if($logs_userTypes != 0 OR !empty($logs_userTypes)){
+                                        //         $query->where('users.user_type', '=', $logs_userTypes);
+                                        //     }
+                                        //     if($logs_userRoles != 0 OR !empty($logs_userRoles)){
+                                        //         $query->where('users.user_role', '=', $logs_userRoles);
+                                        //     }
+                                        //     if($logs_users != 0 OR !empty($logs_users)){
+                                        //         $query->where('users.id', '=', $logs_users);
+                                        //     }
+                                        //     if($logs_category != 0 OR !empty($logs_category)){
+                                        //         $query->where('users_activity_tbl.act_type', '=', $logs_category);
+                                        //     }
+                                        //     if($logs_rangefrom != 0 OR !empty($logs_rangefrom) AND $logs_rangeTo != 0 OR !empty($logs_rangeTo)){
+                                        //         $query->whereBetween('users_activity_tbl.created_at', [$logs_rangefrom, $logs_rangeTo]);
+                                        //     }
+                                        // })
+                                        ->orderBy('users_activity_tbl.created_at', 'DESC')
+                                        ->paginate(10);
                 $total_matched_results = count($filter_user_logs_table) . ' of ' . $filter_user_logs_table->total() . ' Matched Results';
             }else{
                 $filter_user_logs_table = DB::table('users_activity_tbl')
                                                 ->join('users', 'users_activity_tbl.act_respo_user_id', '=', 'users.id')
                                                 ->select('users_activity_tbl.*', 'users.id', 'users.user_role', 'users.user_status', 'users.user_role_status', 'users.user_type', 'users.user_sdca_id', 'users.user_image', 'users.user_gender')
+                                                ->where(function($query) use ($logs_userTypes, $logs_userRoles, $logs_users, $logs_category, $logs_rangefrom, $logs_rangeTo){
+                                                    if($logs_userTypes != 0 OR !empty($logs_userTypes)){
+                                                        $query->where('users.user_type', '=', $logs_userTypes);
+                                                    }
+                                                    if($logs_userRoles != 0 OR !empty($logs_userRoles)){
+                                                        $query->where('users.user_role', '=', $logs_userRoles);
+                                                    }
+                                                    if($logs_users != 0 OR !empty($logs_users)){
+                                                        $query->where('users.id', '=', $logs_users);
+                                                    }
+                                                    if($logs_category != 0 OR !empty($logs_category)){
+                                                        $query->where('users_activity_tbl.act_type', '=', $logs_category);
+                                                    }
+                                                    if($logs_rangefrom != 0 OR !empty($logs_rangefrom) AND $logs_rangeTo != 0 OR !empty($logs_rangeTo)){
+                                                        $query->whereBetween('users_activity_tbl.created_at', [$logs_rangefrom, $logs_rangeTo]);
+                                                    }
+                                                })
+                                                ->orderBy('users_activity_tbl.created_at', 'DESC')
                                                 ->paginate(10);
+                $total_matched_results = count($filter_user_logs_table) . ' of ' . $filter_user_logs_table->total() . ' Records';   
             }
             if(count($filter_user_logs_table) > 0){
-                foreach($filter_user_logs_table->sortBy('act_id') as $users_logs){
+                foreach($filter_user_logs_table as $users_logs){
                     // custom values
                     if($users_logs->user_type === 'employee'){
                         $img_border = 'rslts_emp';
@@ -2862,8 +2900,8 @@ class UserManagementController extends Controller
                         </td>
                         <td>
                             <div class="d-inline">
-                                <span class="actLogs_content">'.date('F d, Y', strtotime($users_logs->created_at)). '</span>
-                                <span class="actLogs_tdSubTitle sub2">'.date('D', strtotime($users_logs->created_at)). ' at ' .date('g:i A', strtotime($users_logs->created_at)).'</span>
+                                <span class="actLogs_content">'.preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', date('F d, Y', strtotime($users_logs->created_at))) . '</span>
+                                <span class="actLogs_tdSubTitle sub2">'.preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', date('D', strtotime($users_logs->created_at))) . ' '.preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', date('g:i A', strtotime($users_logs->created_at))) . '</span>
                             </div>
                         </td>
                         <td><span class="actLogs_content">'.preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', $users_logs->act_type) . '</span></td>
@@ -2877,7 +2915,7 @@ class UserManagementController extends Controller
                         <td align="center" colspan="7">
                             <div class="no_data_div d-flex justify-content-center align-items-center text-center flex-column">
                                 <img class="illustration_svg" src="'. asset('storage/svms/illustrations/no_matching_users_found.svg') .'" alt="no matching users found">
-                                <span class="font-italic">No Matching Users Found for <span class="font-weight-bold"> ' . $logs_search.'...</span></span>
+                                <span class="font-italic">No Matching Users Found!
                             </div>
                         </td>
                     </tr>

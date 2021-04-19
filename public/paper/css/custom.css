@@ -2627,3 +2627,86 @@ select.drpdwn_arrow2:focus {
   margin: auto 0 !important;
   font-size: 13px;
 }
+
+/* custom daterangepicker */
+/* apply button */
+.applyBtn {
+  background-color: #6bd098;
+  color: #FFFFFF;
+}
+
+.applyBtn:hover,
+.applyBtn:focus,
+.applyBtn:active,
+.applyBtn.active,
+.applyBtn:active:focus,
+.applyBtn:active:hover,
+.applyBtn.active:focus,
+.applyBtn.active:hover,
+.show>.applyBtn.dropdown-toggle,
+.show>.applyBtn.dropdown-toggle:focus,
+.show>.applyBtn.dropdown-toggle:hover {
+  background-color: #44c47d !important;
+  color: #FFFFFF !important;
+  box-shadow: none !important;
+}
+
+.applyBtn:not([data-action]):hover {
+  box-shadow: none;
+}
+
+.applyBtn.disabled,
+.applyBtn.disabled:hover,
+.applyBtn.disabled:focus,
+.applyBtn.disabled.focus,
+.applyBtn.disabled:active,
+.applyBtn.disabled.active,
+.applyBtn:disabled,
+.applyBtn:disabled:hover,
+.applyBtn:disabled:focus,
+.applyBtn:disabled.focus,
+.applyBtn:disabled:active,
+.applyBtn:disabled.active,
+.applyBtn[disabled],
+.applyBtn[disabled]:hover,
+.applyBtn[disabled]:focus,
+.applyBtn[disabled].focus,
+.applyBtn[disabled]:active,
+.applyBtn[disabled].active,
+fieldset[disabled] .applyBtn,
+fieldset[disabled] .applyBtn:hover,
+fieldset[disabled] .applyBtn:focus,
+fieldset[disabled] .applyBtn.focus,
+fieldset[disabled] .applyBtn:active,
+fieldset[disabled] .applyBtn.active {
+  background-color: #6bd098;
+  border-color: #6bd098;
+}
+
+.applyBtn.btn-simple {
+  color: #6bd098;
+  border-color: #6bd098;
+}
+
+.applyBtn.btn-simple:hover,
+.applyBtn.btn-simple:focus,
+.applyBtn.btn-simple:active {
+  background-color: transparent;
+  color: #44c47d;
+  border-color: #44c47d;
+  box-shadow: none;
+}
+
+.applyBtn.btn-link {
+  color: #6bd098;
+}
+
+.applyBtn.btn-link:hover,
+.applyBtn.btn-link:focus,
+.applyBtn.btn-link:active,
+.applyBtn.btn-link:active:focus {
+  background-color: transparent;
+  color: #44c47d;
+  text-decoration: none;
+  box-shadow: none;
+}
