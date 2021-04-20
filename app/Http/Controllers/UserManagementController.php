@@ -276,34 +276,36 @@ class UserManagementController extends Controller
                 $filter_user_logs_table = DB::table('users_activity_tbl')
                                         ->join('users', 'users_activity_tbl.act_respo_user_id', '=', 'users.id')
                                         ->select('users_activity_tbl.*', 'users.id', 'users.user_role', 'users.user_status', 'users.user_role_status', 'users.user_type', 'users.user_sdca_id', 'users.user_image', 'users.user_gender')
-                                        // ->where(function($query) use ($logs_userTypes, $logs_userRoles, $logs_users, $logs_category, $logs_rangefrom, $logs_rangeTo){
-                                        //     if($logs_userTypes != 0 OR !empty($logs_userTypes)){
-                                        //         $query->where('users.user_type', '=', $logs_userTypes);
-                                        //     }
-                                        //     if($logs_userRoles != 0 OR !empty($logs_userRoles)){
-                                        //         $query->where('users.user_role', '=', $logs_userRoles);
-                                        //     }
-                                        //     if($logs_users != 0 OR !empty($logs_users)){
-                                        //         $query->where('users.id', '=', $logs_users);
-                                        //     }
-                                        //     if($logs_category != 0 OR !empty($logs_category)){
-                                        //         $query->where('users_activity_tbl.act_type', '=', $logs_category);
-                                        //     }
-                                        //     if($logs_rangefrom != 0 OR !empty($logs_rangefrom) AND $logs_rangeTo != 0 OR !empty($logs_rangeTo)){
-                                        //         $query->whereBetween('users_activity_tbl.created_at', [$logs_rangefrom, $logs_rangeTo]);
-                                        //     }
-                                        // })
-                                        ->where('users.user_sdca_id', 'like', '%'.$logs_search.'%')
-                                        ->orWhere('users.user_role', 'like', '%'.$logs_search.'%')
-                                        ->orWhere('users.user_type', 'like', '%'.$logs_search.'%')
-                                        ->orWhere('users.user_gender', 'like', '%'.$logs_search.'%')
-                                        ->orWhere('users_activity_tbl.act_respo_users_lname', 'like', '%'.$logs_search.'%')
-                                        ->orWhere('users_activity_tbl.act_respo_users_fname', 'like', '%'.$logs_search.'%')
-                                        ->orWhere('users_activity_tbl.act_type', 'like', '%'.$logs_search.'%')
-                                        ->orWhere('users_activity_tbl.act_details', 'like', '%'.$logs_search.'%')
+                                        ->where(function($query) use ($logs_search) {
+                                            return $query->orWhere('users.user_sdca_id', 'like', '%'.$logs_search.'%')
+                                                        ->orWhere('users.user_role', 'like', '%'.$logs_search.'%')
+                                                        ->orWhere('users.user_type', 'like', '%'.$logs_search.'%')
+                                                        ->orWhere('users.user_gender', 'like', '%'.$logs_search.'%')
+                                                        ->orWhere('users_activity_tbl.act_respo_users_lname', 'like', '%'.$logs_search.'%')
+                                                        ->orWhere('users_activity_tbl.act_respo_users_fname', 'like', '%'.$logs_search.'%')
+                                                        ->orWhere('users_activity_tbl.act_type', 'like', '%'.$logs_search.'%')
+                                                        ->orWhere('users_activity_tbl.act_details', 'like', '%'.$logs_search.'%');
+                                        })
+                                        ->where(function($query) use ($logs_userTypes, $logs_userRoles, $logs_users, $logs_category, $logs_rangefrom, $logs_rangeTo){
+                                            if($logs_userTypes != 0 OR !empty($logs_userTypes)){
+                                                return $query->where('users.user_type', '=', $logs_userTypes);
+                                            }
+                                            if($logs_userRoles != 0 OR !empty($logs_userRoles)){
+                                                return $query->where('users.user_role', '=', $logs_userRoles);
+                                            }
+                                            if($logs_users != 0 OR !empty($logs_users)){
+                                                return $query->where('users.id', '=', $logs_users);
+                                            }
+                                            if($logs_category != 0 OR !empty($logs_category)){
+                                                return $query->where('users_activity_tbl.act_type', '=', $logs_category);
+                                            }
+                                            if($logs_rangefrom != 0 OR !empty($logs_rangefrom) AND $logs_rangeTo != 0 OR !empty($logs_rangeTo)){
+                                                return $query->whereBetween('users_activity_tbl.created_at', [$logs_rangefrom, $logs_rangeTo]);
+                                            }
+                                        })
                                         ->orderBy('users_activity_tbl.created_at', 'DESC')
                                         ->paginate(10);
-                $total_matched_results = count($filter_user_logs_table) . ' of ' . $filter_user_logs_table->total() . ' Matched Results';
+                $matched_result_txt = ' Matched Result';
             }else{
                 $filter_user_logs_table = DB::table('users_activity_tbl')
                                         ->join('users', 'users_activity_tbl.act_respo_user_id', '=', 'users.id')
@@ -327,13 +329,23 @@ class UserManagementController extends Controller
                                         })
                                         ->orderBy('users_activity_tbl.created_at', 'DESC')
                                         ->paginate(10);
-                // $total_filtered_result = count($filter_user_logs_table);
-                // if($total_filtered_result > 0){
-
-                // }
-                $total_matched_results = count($filter_user_logs_table) . ' of ' . $filter_user_logs_table->total() . ' Records';   
+                $matched_result_txt = ' Record';
             }
-            if(count($filter_user_logs_table) > 0){
+            // total filtered date
+            $count_filtered_result = count($filter_user_logs_table);
+            $total_filtered_result = $filter_user_logs_table->total();
+            // plural text
+            if($total_filtered_result > 0){
+                if($total_filtered_result > 1){
+                    $s = 's';
+                }else{
+                    $s = '';
+                }
+            }else{
+                $s = '';
+            }
+            $total_matched_results = $filter_user_logs_table->firstItem() . ' - ' . $filter_user_logs_table->lastItem() . ' of ' . $total_filtered_result . ' ' . $matched_result_txt.''.$s;
+            if($count_filtered_result > 0){
                 foreach($filter_user_logs_table as $users_logs){
                     // custom values
                     if($users_logs->user_type === 'employee'){
@@ -2934,7 +2946,7 @@ class UserManagementController extends Controller
     }
 
     // FUNCTIONS FOR USER LOGS MODULE
-    // filter user logs table 
+    // filter user logs table ~ not used anymore
     public function users_logs_filter_table(Request $request){
         if($request->ajax()){
             // custom var
@@ -3059,6 +3071,7 @@ class UserManagementController extends Controller
             echo json_encode($data);
         }
     }
+    // ~not used anymore
     
     // get user's info based on selected filter
     public function users_logs_filter_table_user_info(Request $request){

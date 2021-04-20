@@ -151,7 +151,7 @@
                                 </div>
                                 <div class="row mt-3">
                                     <div class="col-lg-12 col-md-12 col-sm-12 text-right">
-                                        <a href="#" class="btn btn-success cust_bt_links shadow" role="button"><i class="fa fa-refresh mr-1" aria-hidden="true"></i> Generate Report</a>
+                                        <button type="button" onclick="generateActLogs_modal()" class="btn btn-success cust_bt_links shadow"><i class="fa fa-refresh mr-1" aria-hidden="true"></i> Generate Report</button>
                                         <button type="button" id="resetActLogsFilter_btn" class="btn btn_svms_blue cust_bt_links shadow" disabled><i class="fa fa-refresh mr-1" aria-hidden="true"></i> Reset</button>
                                     </div>
                                     {{-- <div class="col-lg-8 col-md-7 col-sm-12 text-right">
@@ -688,4 +688,26 @@
         });
     </script>
 {{-- Activity Logs Filter end --}}
+
+{{-- generate activity logs for print --}}
+    <script>
+        function generateActLogs_modal(){
+            var logs_search = document.getElementById('actLogsFiltr_liveSearch').value;
+            var logs_userTypes = document.getElementById("actLogsFiltr_selectUserTypes").value;
+            var logs_userRoles = document.getElementById("actLogsFiltr_selectUserRoles").value;
+            var logs_users = document.getElementById("actLogsFiltr_selectUsers").value;
+            var logs_category = document.getElementById("actLogsFiltr_selectCategories").value;
+            var logs_rangefrom = document.getElementById("hidden_dateRangeFrom").value;
+            var logs_rangeTo = document.getElementById("hidden_dateRangeTo").value;
+
+            console.log(logs_search);
+            console.log(logs_userTypes);
+            console.log(logs_userRoles);
+            console.log(logs_users);
+            console.log(logs_category);
+            console.log(logs_rangefrom);
+            console.log(logs_rangeTo);
+        }
+    </script>
+{{-- generate activity logs for print --}}
 @endpush
