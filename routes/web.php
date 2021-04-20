@@ -62,7 +62,8 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('system_users', ['as' => 'user_management.system_users', 'uses' => 'App\Http\Controllers\UserManagementController@system_users']);
 		Route::get('user_profile/{user_id}', ['as' => 'user_management.user_profile', 'uses' => 'App\Http\Controllers\UserManagementController@user_profile']);
 	Route::get('system_roles', ['as' => 'user_management.system_roles', 'uses' => 'App\Http\Controllers\UserManagementController@system_roles']);
-	Route::get('users_logs', ['as' => 'user_management.users_logs', 'uses' => 'App\Http\Controllers\UserManagementController@users_logs']);
+	// Route::get('users_logs', ['as' => 'user_management.users_logs', 'uses' => 'App\Http\Controllers\UserManagementController@users_logs']);
+	Route::get('user_management/users_logs', 'App\Http\Controllers\UserManagementController@users_logs')->name('user_management.users_logs');
 
 	// for activate/deactivate system users
 	Route::get('user_management/deactivate_user_account_modal', 'App\Http\Controllers\UserManagementController@deactivate_user_account_modal')->name('user_management.deactivate_user_account_modal');

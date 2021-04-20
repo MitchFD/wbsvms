@@ -151,8 +151,12 @@
                                 </div>
                                 <div class="row mt-3">
                                     <div class="col-lg-12 col-md-12 col-sm-12 text-right">
-                                        <a href="#" class="btn btn-success cust_bt_links shadow" role="button"><i class="fa fa-print mr-1" aria-hidden="true"></i> Generate Report</a>
+                                        <a href="#" class="btn btn-success cust_bt_links shadow" role="button"><i class="fa fa-refresh mr-1" aria-hidden="true"></i> Generate Report</a>
+                                        <button type="button" id="resetActLogsFilter_btn" class="btn btn_svms_blue cust_bt_links shadow" disabled><i class="fa fa-refresh mr-1" aria-hidden="true"></i> Reset</button>
                                     </div>
+                                    {{-- <div class="col-lg-8 col-md-7 col-sm-12 text-right">
+                                        <a href="#" class="btn btn-success cust_bt_links shadow" role="button"><i class="fa fa-print mr-1" aria-hidden="true"></i> Generate Report</a>
+                                    </div> --}}
                                 </div>
                             </form>
                         </div>
@@ -254,6 +258,7 @@
                         </div>
                         <div class="col-lg-8 col-md-8 col-sm-12 d-flex justify-content-end">
                             @csrf
+                            <input type="hidden" name="hidden_page" id="hidden_page" value="1" />
                             <div id="usersActLogs_pagination">
 
                             </div>
@@ -270,8 +275,33 @@
 @endsection
 
 @push('scripts')
-{{-- live search --}}
+{{-- Activity Logs Filter --}}
     <script>
+        function getData(page){
+            $.ajax(
+            {
+                url: '?page=' + page,
+                type: "get",
+                datatype: "html"
+            }).done(function(data){
+                // $("#tag_container").empty().html(data);
+                location.hash = page;
+            }).fail(function(jqXHR, ajaxOptions, thrownError){
+                alert('No response from server');
+            });
+        }
+
+        $(window).on('hashchange', function() {
+            if (window.location.hash) {
+                var page = window.location.hash.replace('#', '');
+                if (page == Number.NaN || page <= 0) {
+                    return false;
+                }else{
+                    getData(page);
+                }
+            }
+        });
+        
         $(document).ready(function(){ 
             loadActLogsTable();
             // funciton for date range picker
@@ -283,6 +313,7 @@
                 var logs_category = document.getElementById("actLogsFiltr_selectCategories").value;
                 var logs_rangefrom = document.getElementById("hidden_dateRangeFrom").value;
                 var logs_rangeTo = document.getElementById("hidden_dateRangeTo").value;
+                var page = document.getElementById("hidden_page").value;
 
                 console.log(logs_search);
                 console.log(logs_userTypes);
@@ -291,8 +322,17 @@
                 console.log(logs_category);
                 console.log(logs_rangefrom);
                 console.log(logs_rangeTo);
+                console.log(page);
+
+                // for disabling/ enabling reset filter button
+                if(logs_userTypes != 0 || logs_userRoles != 0 || logs_users != 0 || logs_category != 0 || logs_rangefrom != '' || logs_rangeTo != ''){
+                    $('#resetActLogsFilter_btn').prop('disabled', false);
+                }else{
+                    $('#resetActLogsFilter_btn').prop('disabled', true);
+                }
+
                 $.ajax({
-                    url:"{{ route('user_management.users_logs_filter_table') }}",
+                    url:"{{ route('user_management.users_logs') }}",
                     method:"GET",
                     data:{
                         logs_search:logs_search, 
@@ -301,7 +341,8 @@
                         logs_users:logs_users,
                         logs_category:logs_category,
                         logs_rangefrom:logs_rangefrom,
-                        logs_rangeTo:logs_rangeTo
+                        logs_rangeTo:logs_rangeTo,
+                        page:page
                         },
                     dataType:'json',
                     success:function(data){
@@ -339,6 +380,8 @@
                 // inner HTML for filter texts
                 $('#filter_date_txt').html('From Previous Days up to this day');
                 document.getElementById("filter_date_txt").classList.remove("font-weight-bold");
+                // table paginatin set to 1
+                $('#hidden_page').val(1);
                 loadActLogsTable();
             });
             $('#actLogsFiltr_datepickerRange').on('apply.daterangepicker', function(ev, picker) {
@@ -353,6 +396,8 @@
                 // inner HTML for filter texts
                 $('#filter_date_txt').html('From ' + picker.startDate.format('MMMM DD, YYYY') + ' to ' + picker.endDate.format('MMMM DD, YYYY'));
                 document.getElementById("filter_date_txt").classList.add("font-weight-bold");
+                // table paginatin set to 1
+                $('#hidden_page').val(1);
                 loadActLogsTable();
             });
 
@@ -372,6 +417,8 @@
             // user type filter
             $('#actLogsFiltr_selectUserTypes').on('change paste keyup', function(){
                 var selectedUserType = $(this).val();
+                // table paginatin set to 1
+                $('#hidden_page').val(1);
                 emp_type = 'employee';
                 stud_type = 'student';
                 all_roles = 'all_roles';
@@ -448,7 +495,6 @@
                     document.getElementById("filter_userTypes_txt").classList.remove("font-weight-bold");
                     document.getElementById("filter_userRoles_txt").classList.remove("font-weight-bold");
                     document.getElementById("filter_users_txt").classList.remove("font-weight-bold");
-
                 }
                 loadActLogsTable();
             });
@@ -456,6 +502,8 @@
             // user role filter
             $('#actLogsFiltr_selectUserRoles').on('change paste keyup', function(){
                 var selectedUserRole = $(this).val();
+                // table paginatin set to 1
+                $('#hidden_page').val(1);
                 if(selectedUserRole != 0){
                     document.getElementById("actLogsFiltr_selectUserRoles").classList.add("cust_input_hasvalue");
                     all_roles = 'all_roles';
@@ -535,6 +583,8 @@
             // user filter
             $('#actLogsFiltr_selectUsers').on('change paste keyup', function(){
                 var selectedUser = $(this).val();
+                // table paginatin set to 1
+                $('#hidden_page').val(1);
                 if(selectedUser != 0){
                     document.getElementById("actLogsFiltr_selectUsers").classList.add("cust_input_hasvalue");
                     document.getElementById("filter_users_txt").classList.add("font-weight-bold");
@@ -560,6 +610,8 @@
             // act category filter
             $('#actLogsFiltr_selectCategories').on('change paste keyup', function(){
                 var selectedCategory = $(this).val();
+                // table paginatin set to 1
+                $('#hidden_page').val(1);
                 if(selectedCategory != 0){
                     document.getElementById("actLogsFiltr_selectCategories").classList.add("cust_input_hasvalue");
                     $('#filter_logCat_txt').html(capitalizeFirstLetter(selectedCategory) + ' histories');
@@ -572,12 +624,68 @@
                 loadActLogsTable();
             });
 
+            // reset filter
+            $('#resetActLogsFilter_btn').on('click', function(){
+                emp_type = 'employee';
+                stud_type = 'student';
+                all_roles = 'all_roles';
+                all_users = 'all_users';
+                // table paginatin set to 1
+                $('#hidden_page').val(1);
+                // User Type
+                document.getElementById("actLogsFiltr_selectUserTypes").classList.remove("cust_input_hasvalue");
+                $('#actLogsFiltr_selectUserTypes').val(0);
+                // User Role
+                $('#actLogsFiltr_selectUserRoles option[data-role-type="' + stud_type + '"]').show();
+                $('#actLogsFiltr_selectUserRoles option[data-role-type="' + emp_type + '"]').show();
+                $('#actLogsFiltr_selectUserRoles option[data-default-roles="' + all_roles + '"]').html('All Roles');
+                document.getElementById("actLogsFiltr_selectUserRoles").classList.remove("cust_input_hasvalue");
+                $('#actLogsFiltr_selectUserRoles').val(0);
+                // Users
+                $('#actLogsFiltr_selectUsers option[data-user-type="' + stud_type + '"]').show();
+                $('#actLogsFiltr_selectUsers option[data-user-type="' + emp_type + '"]').show();
+                $('#actLogsFiltr_selectUsers option[data-default-users="' + all_users + '"]').html('All Users');
+                document.getElementById("actLogsFiltr_selectUsers").classList.remove("cust_input_hasvalue");
+                $('#actLogsFiltr_selectUsers').val(0);
+                // inner HTML for filter texts
+                $('#filter_userTypes_txt').html('All User Types');
+                $('#filter_userRoles_txt').html('All User Roles');
+                $('#filter_users_txt').html('All Users');
+                document.getElementById("filter_userTypes_txt").classList.remove("font-weight-bold");
+                document.getElementById("filter_userRoles_txt").classList.remove("font-weight-bold");
+                document.getElementById("filter_users_txt").classList.remove("font-weight-bold");
+                // categories
+                document.getElementById("actLogsFiltr_selectCategories").classList.remove("cust_input_hasvalue");
+                $('#actLogsFiltr_selectCategories').val(0);
+                $('#filter_logCat_txt').html('All Log History');
+                document.getElementById("filter_logCat_txt").classList.remove("font-weight-bold");
+                // for hidden data range inputs
+                document.getElementById("hidden_dateRangeFrom").value = '';
+                document.getElementById("hidden_dateRangeTo").value = '';
+                // for date range display
+                document.getElementById("actLogsFiltr_datepickerRange").classList.remove("cust_input_hasvalue");
+                document.getElementById("actLogsFiltr_datepickerRange").value = '';
+                // inner HTML for filter texts
+                $('#filter_date_txt').html('From Previous Days up to this day');
+                document.getElementById("filter_date_txt").classList.remove("font-weight-bold");
+                $(this).prop('disabled', true);
+                loadActLogsTable();
+            });
+
             // hanle page link
-            $('.page-link').on('click', function(){
-                var this_page_link = $(this).innerText;
-                console.log(this_page_link);
+            $(document).on('click', '.pagination a', function(event){
+                event.preventDefault();
+                
+                var page = $(this).attr('href').split('page=')[1];
+                $('#hidden_page').val(page);
+                console.log($(this).val());
+
+                loadActLogsTable();
+                getData(page);
+                $('li').removeClass('active');
+                $(this).parent('li').addClass('active');
             });
         });
     </script>
-{{-- live search end --}}
+{{-- Activity Logs Filter end --}}
 @endpush

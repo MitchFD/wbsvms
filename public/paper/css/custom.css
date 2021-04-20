@@ -520,7 +520,7 @@ fieldset[disabled] .btn_svms_blue.active {
 .actLogs_tdSubTitle{
   display: block;
   margin: 0;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: normal;
 }
 .sub1{
@@ -535,7 +535,7 @@ fieldset[disabled] .btn_svms_blue.active {
 .actLogs_content{
   display: block;
   margin: 0;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: normal;
   color: var(--svms_blue);
 }
