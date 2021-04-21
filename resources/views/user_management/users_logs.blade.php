@@ -143,20 +143,20 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-12 col-md-12 col-sm-12">
-                                        {{-- <label class="custom_label" for="actLogsFiltr_datepickerRange">Date Range</label> --}}
                                         <input id="actLogsFiltr_datepickerRange" name="actLogsFiltr_datepickerRange" type="text" class="form-control cust_input" placeholder="Select Date Range" />
                                         <input type="hidden" name="hidden_dateRangeFrom" id="hidden_dateRangeFrom">
                                         <input type="hidden" name="hidden_dateRangeTo" id="hidden_dateRangeTo">
+                                        {{-- @php
+                                            $count_actLogs = App\Models\Useractivites::all()->count();
+                                        @endphp --}}
+                                        <input type="hidden" name="hidden_totalDataFound" id="hidden_totalDataFound">
                                     </div>
                                 </div>
                                 <div class="row mt-3">
                                     <div class="col-lg-12 col-md-12 col-sm-12 text-right">
-                                        <button type="button" onclick="generateActLogs_modal()" class="btn btn-success cust_bt_links shadow"><i class="fa fa-refresh mr-1" aria-hidden="true"></i> Generate Report</button>
+                                        <button type="button" id="generateActLogs_btn" onclick="generateActLogs_modal()" class="btn btn-success cust_bt_links shadow"><i class="nc-icon nc-single-copy-04 mr-1" aria-hidden="true"></i> Generate Report</button>
                                         <button type="button" id="resetActLogsFilter_btn" class="btn btn_svms_blue cust_bt_links shadow" disabled><i class="fa fa-refresh mr-1" aria-hidden="true"></i> Reset</button>
                                     </div>
-                                    {{-- <div class="col-lg-8 col-md-7 col-sm-12 text-right">
-                                        <a href="#" class="btn btn-success cust_bt_links shadow" role="button"><i class="fa fa-print mr-1" aria-hidden="true"></i> Generate Report</a>
-                                    </div> --}}
                                 </div>
                             </form>
                         </div>
@@ -172,37 +172,13 @@
                                 <i class="nc-icon nc-zoom-split" aria-hidden="true"></i>    
                             </div>
                         </div>
-                        {{-- <div class="col-lg-2 col-md-4 col-sm-6">
+                        {{-- <div class="col-lg-7 col-md-4 col-sm-2">
                             <div class="form-group">
-                                <select class="form-control cust_selectDropdownBox drpdwn_arrow" id="actLogsFiltr_selectUsers">
-                                    <option value="0" selected>All Users</option>
-                                    @php
-                                        $all_users = App\Models\Users::select('id', 'user_lname', 'user_fname')->get();
-                                    @endphp
-                                    @if(count($all_users) > 0)
-                                        @foreach($all_users->sortBy('id') as $select_user)
-                                            <option value="{{$select_user->id}}">{{$select_user->user_fname }} {{ $select_user->user_lname }}</option>
-                                        @endforeach
-                                    @else
-                                        
-                                    @endif
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-lg-2 col-md-4 col-sm-6">
-                            <div class="form-group">
-                                <select class="form-control cust_selectDropdownBox drpdwn_arrow" id="actLogsFiltr_selectCategories">
-                                    <option value="0" selected>All Categories</option>
-                                    @php
-                                        $all_act_types = App\Models\Useractivites::select('act_type')->groupBy('act_type')->get();
-                                    @endphp
-                                    @if(count($all_act_types) > 0)
-                                        @foreach($all_act_types->sortBy('id') as $select_category)
-                                            <option value="{{$select_category->act_type}}">{{ucwords($select_category->act_type) }}</option>
-                                        @endforeach
-                                    @else
-                                        
-                                    @endif
+                                <select id="actLogsFiltr_numOfRows" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
+                                    <option value="10" selected>10</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
                                 </select>
                             </div>
                         </div> --}}
@@ -231,23 +207,6 @@
                                 </thead>
                                 <tbody class="tbody_svms_white" id="usersActLogs_tbody">
                                     {{-- ajax data table --}}
-                                    {{-- <tr>
-                                        <td class="pl12 d-flex justify-content-start align-items-center">
-                                            <img class="rslts_userImgs rslts_emp" src="{{asset('storage/svms/user_images/employee_user_image.jpg')}}" alt="user image">
-                                            <div class="cust_td_info">
-                                                <span class="actLogs_tdTitle font-weight-bold">John Doe</span>
-                                                <span class="actLogs_tdSubTitle"><span class="sub1">20150348 </span> <span class="subDiv"> | </span> <span class="sub2"> Administrator</span></span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="d-inline">
-                                                <span class="actLogs_content">January 1, 2021</span>
-                                                <span class="actLogs_tdSubTitle sub2">Thursday - 10:40 PM</span>
-                                            </div>
-                                        </td>
-                                        <td><span class="actLogs_content">Profile Update</span></td>
-                                        <td><span class="actLogs_content">Mitch Desierto updates his profile infomration</span></td>
-                                    </tr> --}}
                                 </tbody>
                             </table>
                         </div>
@@ -271,12 +230,30 @@
     </div>
 
     {{-- modals --}}
+    {{-- generate users logs report confirmation modal --}}
+        <div class="modal fade" id="generateActLogsConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="generateActLogsConfirmationModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="generateActLogsConfirmationModalLabel">Generate Report?</span>
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="generateActLogsConfirmationHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{-- generate users logs report confirmation modal end --}}
 
 @endsection
 
 @push('scripts')
 {{-- Activity Logs Filter --}}
     <script>
+        // function for ajax table pagination
         function getData(page){
             $.ajax(
             {
@@ -284,13 +261,11 @@
                 type: "get",
                 datatype: "html"
             }).done(function(data){
-                // $("#tag_container").empty().html(data);
                 location.hash = page;
             }).fail(function(jqXHR, ajaxOptions, thrownError){
                 alert('No response from server');
             });
         }
-
         $(window).on('hashchange', function() {
             if (window.location.hash) {
                 var page = window.location.hash.replace('#', '');
@@ -301,9 +276,11 @@
                 }
             }
         });
+        // function for ajax table pagination end
         
         $(document).ready(function(){ 
             loadActLogsTable();
+
             // funciton for date range picker
             function loadActLogsTable(){
                 var logs_search = document.getElementById('actLogsFiltr_liveSearch').value;
@@ -314,6 +291,7 @@
                 var logs_rangefrom = document.getElementById("hidden_dateRangeFrom").value;
                 var logs_rangeTo = document.getElementById("hidden_dateRangeTo").value;
                 var page = document.getElementById("hidden_page").value;
+                const ajax_logs_totalData = 0;
 
                 console.log(logs_search);
                 console.log(logs_userTypes);
@@ -323,13 +301,6 @@
                 console.log(logs_rangefrom);
                 console.log(logs_rangeTo);
                 console.log(page);
-
-                // for disabling/ enabling reset filter button
-                if(logs_userTypes != 0 || logs_userRoles != 0 || logs_users != 0 || logs_category != 0 || logs_rangefrom != '' || logs_rangeTo != ''){
-                    $('#resetActLogsFilter_btn').prop('disabled', false);
-                }else{
-                    $('#resetActLogsFilter_btn').prop('disabled', true);
-                }
 
                 $.ajax({
                     url:"{{ route('user_management.users_logs') }}",
@@ -349,8 +320,25 @@
                         $('#usersActLogs_tbody').html(data.users_logs_table);
                         $('#usersActLogs_pagination').html(data.paginate);
                         $('#total_data_count').html(data.total_rows);
+                        $('#hidden_totalDataFound').val(data.total_data_found);
+
+                        // for disabling/ enabling generate report button
+                        var logs_totalData = document.getElementById("hidden_totalDataFound").value;
+                        console.log(logs_totalData);
+                        if(logs_totalData > 0){
+                            $('#generateActLogs_btn').prop('disabled', false);
+                        }else{
+                            $('#generateActLogs_btn').prop('disabled', true);
+                        }
                     }
                 });
+                
+                // for disabling/ enabling reset filter button
+                if(logs_userTypes != 0 || logs_userRoles != 0 || logs_users != 0 || logs_category != 0 || logs_rangefrom != '' || logs_rangeTo != ''){
+                    $('#resetActLogsFilter_btn').prop('disabled', false);
+                }else{
+                    $('#resetActLogsFilter_btn').prop('disabled', true);
+                }
             }
 
             // function for capitalizing first letter of a word
@@ -411,6 +399,7 @@
                     $('#filter_liveSearch_txt').html('...');
                     document.getElementById("filter_liveSearch_txt").classList.remove("font-weight-bold");
                 }
+                $('#hidden_page').val(1);
                 loadActLogsTable();
             });
 
@@ -437,7 +426,7 @@
                         $('#actLogsFiltr_selectUsers option[data-default-users="' + all_users + '"]').html('All Employee Type Users');
                         $('#actLogsFiltr_selectUsers').val(0);
                         // inner HTML for filter texts
-                        $('#filter_userTypes_txt').html('All Employee Type Users');
+                        $('#filter_userTypes_txt').html('Employee Type Users');
                         $('#filter_userRoles_txt').html('All Employee Type Roles');
                         $('#filter_users_txt').html('All Employee Type Users');
                         document.getElementById("filter_userTypes_txt").classList.add("font-weight-bold");
@@ -453,7 +442,7 @@
                         $('#actLogsFiltr_selectUsers option[data-default-users="' + all_users + '"]').html('All Student Type Users');
                         $('#actLogsFiltr_selectUsers').val(0);
                         // inner HTML for filter texts
-                        $('#filter_userTypes_txt').html('All Student Type Users');
+                        $('#filter_userTypes_txt').html('Student Type Users');
                         $('#filter_userRoles_txt').html('All Student Type Roles');
                         $('#filter_users_txt').html('All Student Type Users');
                         document.getElementById("filter_userTypes_txt").classList.add("font-weight-bold");
@@ -692,6 +681,7 @@
 {{-- generate activity logs for print --}}
     <script>
         function generateActLogs_modal(){
+            // values
             var logs_search = document.getElementById('actLogsFiltr_liveSearch').value;
             var logs_userTypes = document.getElementById("actLogsFiltr_selectUserTypes").value;
             var logs_userRoles = document.getElementById("actLogsFiltr_selectUserRoles").value;
@@ -699,6 +689,14 @@
             var logs_category = document.getElementById("actLogsFiltr_selectCategories").value;
             var logs_rangefrom = document.getElementById("hidden_dateRangeFrom").value;
             var logs_rangeTo = document.getElementById("hidden_dateRangeTo").value;
+            var logs_totalData = document.getElementById("hidden_totalDataFound").value;
+            var _token = $('input[name="_token"]').val();
+
+            // inner texts
+            var txt_logs_userTypes = document.getElementById("filter_userTypes_txt").innerText;
+            var txt_logs_userRoles = document.getElementById("filter_userRoles_txt").innerText;
+            var txt_logs_users = document.getElementById("filter_users_txt").innerText;
+            var txt_logs_category = document.getElementById("filter_logCat_txt").innerText;
 
             console.log(logs_search);
             console.log(logs_userTypes);
@@ -707,6 +705,31 @@
             console.log(logs_category);
             console.log(logs_rangefrom);
             console.log(logs_rangeTo);
+            console.log(logs_totalData);
+
+            $.ajax({
+                url:"{{ route('user_management.generate_act_logs_confirmation_modal') }}",
+                method:"GET",
+                data:{
+                    logs_search:logs_search, 
+                    logs_userTypes:logs_userTypes, 
+                    logs_userRoles:logs_userRoles, 
+                    logs_users:logs_users, 
+                    logs_category:logs_category, 
+                    logs_rangefrom:logs_rangefrom,
+                    logs_rangeTo:logs_rangeTo,
+                    logs_totalData:logs_totalData,
+                    txt_logs_userTypes:txt_logs_userTypes, 
+                    txt_logs_userRoles:txt_logs_userRoles,
+                    txt_logs_users:txt_logs_users,
+                    txt_logs_category:txt_logs_category,
+                    _token:_token
+                    },
+                success: function(data){
+                    $('#generateActLogsConfirmationHtmlData').html(data); 
+                    $('#generateActLogsConfirmationModal').modal('show');
+                }
+            });
         }
     </script>
 {{-- generate activity logs for print --}}

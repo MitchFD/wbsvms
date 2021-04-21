@@ -106,6 +106,10 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('user_management/users_logs_filter_table', 'App\Http\Controllers\UserManagementController@users_logs_filter_table')->name('user_management.users_logs_filter_table');
 	// get selected user's info based on selected user filter
 	Route::get('user_management/users_logs_filter_table_user_info', 'App\Http\Controllers\UserManagementController@users_logs_filter_table_user_info')->name('user_management.users_logs_filter_table_user_info');
+	// generate users activity logs confiration modal
+	Route::get('user_management/generate_act_logs_confirmation_modal', 'App\Http\Controllers\UserManagementController@generate_act_logs_confirmation_modal')->name('user_management.generate_act_logs_confirmation_modal'); 
+	// process export of activity logs = PDF
+	Route::post('user_management/process_generate_act_logs_report', 'App\Http\Controllers\UserManagementController@process_generate_act_logs_report')->name('user_management.process_generate_act_logs_report');
 });
 
 // violation entry

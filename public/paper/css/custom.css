@@ -2507,6 +2507,11 @@ select.drpdwn_arrow2:focus {
   justify-content: center !important;
 }
 
+/* custom icons */
+.cust_i_1{
+  color: var(--svms_blue);
+}
+
 /* date filter input */
 .cust_date_filterInput{
   cursor: pointer !important;

@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Mail\Mailable;
+use PDF;
 
 class UserManagementController extends Controller
 {
@@ -305,7 +306,7 @@ class UserManagementController extends Controller
                                         })
                                         ->orderBy('users_activity_tbl.created_at', 'DESC')
                                         ->paginate(10);
-                $matched_result_txt = ' Matched Result';
+                $matched_result_txt = ' Matched Records';
             }else{
                 $filter_user_logs_table = DB::table('users_activity_tbl')
                                         ->join('users', 'users_activity_tbl.act_respo_user_id', '=', 'users.id')
@@ -341,10 +342,11 @@ class UserManagementController extends Controller
                 }else{
                     $s = '';
                 }
+                $total_matched_results = $filter_user_logs_table->firstItem() . ' - ' . $filter_user_logs_table->lastItem() . ' of ' . $total_filtered_result . ' ' . $matched_result_txt.''.$s;
             }else{
                 $s = '';
+                $total_matched_results = 'No Records Found';
             }
-            $total_matched_results = $filter_user_logs_table->firstItem() . ' - ' . $filter_user_logs_table->lastItem() . ' of ' . $total_filtered_result . ' ' . $matched_result_txt.''.$s;
             if($count_filtered_result > 0){
                 foreach($filter_user_logs_table as $users_logs){
                     // custom values
@@ -381,7 +383,7 @@ class UserManagementController extends Controller
                         <td align="center" colspan="7">
                             <div class="no_data_div d-flex justify-content-center align-items-center text-center flex-column">
                                 <img class="illustration_svg" src="'. asset('storage/svms/illustrations/no_matching_users_found.svg') .'" alt="no matching users found">
-                                <span class="font-italic">No Matching Users Found!
+                                <span class="font-italic">No Records Found!
                             </div>
                         </td>
                     </tr>
@@ -391,7 +393,8 @@ class UserManagementController extends Controller
             $data = array(
                 'users_logs_table' => $output,
                 'paginate' => $paginate,
-                'total_rows' => $total_matched_results
+                'total_rows' => $total_matched_results,
+                'total_data_found' => $total_filtered_result
                );
          
             echo json_encode($data);
@@ -3093,5 +3096,263 @@ class UserManagementController extends Controller
             // echo json_encode($data);
             echo $data;
         }
+    }
+    // generate users activity logs confirmation on modal
+    public function generate_act_logs_confirmation_modal(Request $request){
+        // get all request
+        // values
+        $logs_search    = $request->get('logs_search');
+        $logs_userTypes = $request->get('logs_userTypes');
+        $logs_userRoles = $request->get('logs_userRoles');
+        $logs_users     = $request->get('logs_users');
+        $logs_category  = $request->get('logs_category');
+        $logs_rangefrom = $request->get('logs_rangefrom');
+        $logs_rangeTo   = $request->get('logs_rangeTo');
+        $logs_totalData = $request->get('logs_totalData');
+        // inner texts
+        $txt_logs_userTypes = $request->get('txt_logs_userTypes');
+        $txt_logs_userRoles = $request->get('txt_logs_userRoles');
+        $txt_logs_users     = $request->get('txt_logs_users');
+        $txt_logs_category  = $request->get('txt_logs_category');
+        
+        // plural 
+        if($logs_totalData > 1){
+            $s = 's';
+        }else{
+            $s = '';
+        }
+        if($logs_totalData > 0){
+            $dis_enable_printBtn = '';
+            $results_found = $logs_totalData . ' Result'.$s.' Found.';
+        }else{
+            $dis_enable_printBtn = 'disabled';
+            $results_found = 'No Results Found!';
+        }
+        // date range
+        if(!empty($logs_rangefrom) OR $logs_rangefrom != 0){
+            $fil_fromDate = date('F d, Y, D, g:i A ', strtotime($logs_rangefrom));
+            $fil_fromDateClass = 'font-weight-bold';
+        }else{
+            $fil_fromDate = ' previous days up';
+            $fil_fromDateClass = 'font-weight-normal';
+        }
+        if(!empty($logs_rangeTo) OR $logs_rangeTo != 0){
+            $fil_toDate = date('F d, Y, D, g:i A', strtotime($logs_rangeTo)).'.';
+            $fil_toDateClass = 'font-weight-bold';
+        }else{
+            $fil_toDate = ' this day.';
+            $fil_toDateClass = 'font-weight-normal';
+        }
+        $output = '';
+        $output .='
+            <div class="modal-body border-0 py-0">
+                <div class="card-body lightBlue_cardBody shadow-none">
+                    <span class="lightBlue_cardBody_blueTitle">Repoort Contents:</span>
+                    <span class="lightBlue_cardBody_notice">The system will generate a report based on the filters you have applied as shown below.</span>
+                </div>
+                <div class="card-body lightBlue_cardBody shadow-none mt-2">
+                    <span class="lightBlue_cardBody_blueTitle">Applied Filters:</span>
+                    <span class="lightBlue_cardBody_notice"><i class="fa fa-check-square-o text-success mr-1" aria-hidden="true"></i> '.$txt_logs_userTypes.'</span>
+                    <span class="lightBlue_cardBody_notice"><i class="fa fa-check-square-o text-success mr-1" aria-hidden="true"></i> '.$txt_logs_userRoles.'</span>
+                    <span class="lightBlue_cardBody_notice"><i class="fa fa-check-square-o text-success mr-1" aria-hidden="true"></i> '.$txt_logs_users.'</span>
+                    <span class="lightBlue_cardBody_notice"><i class="fa fa-check-square-o text-success mr-1" aria-hidden="true"></i> '.$txt_logs_category.'</span>
+                    ';
+                    if(!empty($logs_search) OR $logs_search != 0){
+                        $output .= '
+                        <span class="lightBlue_cardBody_blueTitle mt-3">Search Filter:</span>
+                        <span class="lightBlue_cardBody_notice"><i class="fa fa-search text-success mr-1" aria-hidden="true"></i> ' . $logs_search . '</span>
+                        ';
+                    }
+                    $output .= '
+                    
+                    <span class="lightBlue_cardBody_blueTitle mt-3">Date Range:</span>
+                    <span class="lightBlue_cardBody_notice"><i class="fa fa-calendar-check-o text-success mr-1" aria-hidden="true"></i> From <span class="'.$fil_fromDateClass.'"> '.$fil_fromDate . ' </span> to <span class="'.$fil_toDateClass.'">  ' . $fil_toDate.' </span></span>
+                </div>
+                <div class="card-body lightBlue_cardBody shadow-none mt-2">
+                    <span class="lightBlue_cardBody_blueTitle">Total Data:</span>
+                    <span class="lightBlue_cardBody_notice"><i class="fa fa-list-ul text-success mr-1" aria-hidden="true"></i> ' . $results_found . '</span>
+                </div>
+            </div>
+            <form action="'.route('user_management.process_generate_act_logs_report').'" method="POST" enctype="multipart/form-data" onsubmit="process_ActLogsReport_btn.disabled = true; return true;">
+                <div class="modal-footer border-0">
+                    <input type="hidden" name="_token" value="'.csrf_token().'">
+                    <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
+                    <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
+                    <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
+
+                    <input type="hidden" name="logs_search" value="'.$logs_search.'">
+                    <input type="hidden" name="logs_userTypes" value="'.$logs_userTypes.'">
+                    <input type="hidden" name="logs_userRoles" value="'.$logs_userRoles.'">
+                    <input type="hidden" name="logs_users" value="'.$logs_users.'">
+                    <input type="hidden" name="logs_category" value="'.$logs_category.'">
+                    <input type="hidden" name="logs_rangefrom" value="'.$logs_rangefrom.'">
+                    <input type="hidden" name="logs_rangeTo" value="'.$logs_rangeTo.'">
+                    <div class="btn-group" role="group" aria-label="Basic example">
+                        <button type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                        <button id="process_ActLogsReport_btn" type="submit" class="btn btn-round btn-success btn_show_icon m-0" ' .$dis_enable_printBtn.'>Export Report <i class="nc-icon nc-single-copy-04 btn_icon_show_right" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+            </form>
+        ';
+        echo $output;
+    }
+    // process PDF export of activity logs
+    public function process_generate_act_logs_report(Request $request){
+        // get all request
+        $logs_search    = $request->get('logs_search');
+        $logs_userTypes = $request->get('logs_userTypes');
+        $logs_userRoles = $request->get('logs_userRoles');
+        $logs_users     = $request->get('logs_users');
+        $logs_category  = $request->get('logs_category');
+        $logs_rangefrom = $request->get('logs_rangefrom');
+        $logs_rangeTo   = $request->get('logs_rangeTo');
+        // check value
+        // echo 'logs_search: ' . $logs_search . ' <br/>';
+        // echo 'logs_userTypes: ' . $logs_userTypes . ' <br/>';
+        // echo 'logs_userRoles: ' . $logs_userRoles . ' <br/>';
+        // echo 'logs_users: ' . $logs_users . ' <br/>';
+        // echo 'logs_category: ' . $logs_category . ' <br/>';
+        // echo 'logs_rangefrom: ' . $logs_rangefrom . ' <br/>';
+        // echo 'logs_rangeTo: ' . $logs_rangeTo . ' <br/>';
+
+        if($logs_search != ''){
+            $filter_user_logs_table = DB::table('users_activity_tbl')
+                                    ->join('users', 'users_activity_tbl.act_respo_user_id', '=', 'users.id')
+                                    ->select('users_activity_tbl.*', 'users.id', 'users.user_role', 'users.user_status', 'users.user_role_status', 'users.user_type', 'users.user_sdca_id', 'users.user_image', 'users.user_gender')
+                                    ->where(function($query) use ($logs_search) {
+                                        return $query->orWhere('users.user_sdca_id', 'like', '%'.$logs_search.'%')
+                                                    ->orWhere('users.user_role', 'like', '%'.$logs_search.'%')
+                                                    ->orWhere('users.user_type', 'like', '%'.$logs_search.'%')
+                                                    ->orWhere('users.user_gender', 'like', '%'.$logs_search.'%')
+                                                    ->orWhere('users_activity_tbl.act_respo_users_lname', 'like', '%'.$logs_search.'%')
+                                                    ->orWhere('users_activity_tbl.act_respo_users_fname', 'like', '%'.$logs_search.'%')
+                                                    ->orWhere('users_activity_tbl.act_type', 'like', '%'.$logs_search.'%')
+                                                    ->orWhere('users_activity_tbl.act_details', 'like', '%'.$logs_search.'%');
+                                    })
+                                    ->where(function($query) use ($logs_userTypes, $logs_userRoles, $logs_users, $logs_category, $logs_rangefrom, $logs_rangeTo){
+                                        if($logs_userTypes != 0 OR !empty($logs_userTypes)){
+                                            return $query->where('users.user_type', '=', $logs_userTypes);
+                                        }
+                                        if($logs_userRoles != 0 OR !empty($logs_userRoles)){
+                                            return $query->where('users.user_role', '=', $logs_userRoles);
+                                        }
+                                        if($logs_users != 0 OR !empty($logs_users)){
+                                            return $query->where('users.id', '=', $logs_users);
+                                        }
+                                        if($logs_category != 0 OR !empty($logs_category)){
+                                            return $query->where('users_activity_tbl.act_type', '=', $logs_category);
+                                        }
+                                        if($logs_rangefrom != 0 OR !empty($logs_rangefrom) AND $logs_rangeTo != 0 OR !empty($logs_rangeTo)){
+                                            return $query->whereBetween('users_activity_tbl.created_at', [$logs_rangefrom, $logs_rangeTo]);
+                                        }
+                                    })
+                                    ->orderBy('users_activity_tbl.created_at', 'DESC')
+                                    ->paginate(10);
+            $matched_result_txt = ' Matched Records';
+        }else{
+            $filter_user_logs_table = DB::table('users_activity_tbl')
+                                    ->join('users', 'users_activity_tbl.act_respo_user_id', '=', 'users.id')
+                                    ->select('users_activity_tbl.*', 'users.id', 'users.user_role', 'users.user_status', 'users.user_role_status', 'users.user_type', 'users.user_sdca_id', 'users.user_image', 'users.user_gender')
+                                    ->where(function($query) use ($logs_userTypes, $logs_userRoles, $logs_users, $logs_category, $logs_rangefrom, $logs_rangeTo){
+                                        if($logs_userTypes != 0 OR !empty($logs_userTypes)){
+                                            $query->where('users.user_type', '=', $logs_userTypes);
+                                        }
+                                        if($logs_userRoles != 0 OR !empty($logs_userRoles)){
+                                            $query->where('users.user_role', '=', $logs_userRoles);
+                                        }
+                                        if($logs_users != 0 OR !empty($logs_users)){
+                                            $query->where('users.id', '=', $logs_users);
+                                        }
+                                        if($logs_category != 0 OR !empty($logs_category)){
+                                            $query->where('users_activity_tbl.act_type', '=', $logs_category);
+                                        }
+                                        if($logs_rangefrom != 0 OR !empty($logs_rangefrom) AND $logs_rangeTo != 0 OR !empty($logs_rangeTo)){
+                                            $query->whereBetween('users_activity_tbl.created_at', [$logs_rangefrom, $logs_rangeTo]);
+                                        }
+                                    })
+                                    ->orderBy('users_activity_tbl.created_at', 'DESC')
+                                    ->paginate(10);
+            $matched_result_txt = ' Record';
+        }
+        // total filtered date
+        $count_filtered_result = count($filter_user_logs_table);
+        $total_filtered_result = $filter_user_logs_table->total();
+        // plural text
+        if($total_filtered_result > 0){
+            if($total_filtered_result > 1){
+                $s = 's';
+            }else{
+                $s = '';
+            }
+            $total_matched_results = $filter_user_logs_table->firstItem() . ' - ' . $filter_user_logs_table->lastItem() . ' of ' . $total_filtered_result . ' ' . $matched_result_txt.''.$s;
+        }else{
+            $s = '';
+            $total_matched_results = 'No Records Found';
+        }
+
+        $act_logs_to_pdf = '';
+        $act_logs_to_pdf .= '
+            <table class="table table-hover cust_table shadow">
+                <thead class="thead_svms_blue">
+                    <tr>
+                        <th class="pl12">~ Users</th>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody class="tbody_svms_white">
+                    ';
+                    if($count_filtered_result > 0){
+                        foreach($filter_user_logs_table as $users_logs){
+                            // custom values
+                            if($users_logs->user_type === 'employee'){
+                                $img_border = 'rslts_emp';
+                            }elseif($users_logs->user_type === 'student'){
+                                $img_border = 'rslts_stud';
+                            }else{
+                                $img_border = 'rslts_unknown';
+                            }
+                            $act_logs_to_pdf .= '
+                            <tr>
+                                <td class="pl12 d-flex justify-content-start align-items-center">
+                                    <img class="rslts_userImgs ' . $img_border.'" src="'.asset('storage/svms/user_images/'.$users_logs->user_image.'').'" alt="user image">
+                                    <div class="cust_td_info">
+                                        <span class="actLogs_tdTitle font-weight-bold">'.$users_logs->act_respo_users_fname . ' ' . $users_logs->act_respo_users_lname . '</span>
+                                        <span class="actLogs_tdSubTitle"><span class="sub1">'.$users_logs->user_sdca_id . ' </span> <span class="subDiv"> / </span> <span class="sub1"> ' . ucwords($users_logs->user_role).'</span></span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-inline">
+                                        <span class="actLogs_content">'.date('F d, Y', strtotime($users_logs->created_at)) . '</span>
+                                        <span class="actLogs_tdSubTitle sub2">'.date('D', strtotime($users_logs->created_at))  . ' '. date('g:i A', strtotime($users_logs->created_at)) . '</span>
+                                    </div>
+                                </td>
+                                <td><span class="actLogs_content">'.$users_logs->act_type . '</span></td>
+                                <td><span class="actLogs_content">'.$users_logs->act_details . '</span></td>
+                            </tr>
+                        ';
+                        }
+                    }else{
+                        $act_logs_to_pdf .='
+                            <tr class="no_data_row">
+                                <td align="center" colspan="7">
+                                    <div class="no_data_div d-flex justify-content-center align-items-center text-center flex-column">
+                                        <img class="illustration_svg" src="'. asset('storage/svms/illustrations/no_matching_users_found.svg') .'" alt="no matching users found">
+                                        <span class="font-italic">No Records Found!
+                                    </div>
+                                </td>
+                            </tr>
+                        ';
+                    }
+                    $act_logs_to_pdf .= '
+                </tbody>
+            </table>
+        ';
+
+        
+        $pdf = \App::make('dompdf.wrapper');
+        $pdf->loadHTML($act_logs_to_pdf);
+        return $pdf->stream();
     }
 }
