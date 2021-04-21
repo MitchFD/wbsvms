@@ -2601,7 +2601,7 @@ class UserManagementController extends Controller
             </form>
         </div>
         ';
-
+        // <button type="submit" class="btn btn-round btn_svms_red btn_show_icon m-0">Deactivate this Account <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
         return $output;
     }
     // process user account deactivation
@@ -3173,7 +3173,7 @@ class UserManagementController extends Controller
                     <span class="lightBlue_cardBody_notice"><i class="fa fa-list-ul text-success mr-1" aria-hidden="true"></i> ' . $results_found . '</span>
                 </div>
             </div>
-            <form action="'.route('user_management.process_generate_act_logs_report').'" method="POST" enctype="multipart/form-data" onsubmit="process_ActLogsReport_btn.disabled = true; return true;">
+            <form action="'.route('user_management.users_logs_report_pdf').'" method="POST" enctype="multipart/form-data" onsubmit="process_ActLogsReport_btn.disabled = true; return true;">
                 <div class="modal-footer border-0">
                     <input type="hidden" name="_token" value="'.csrf_token().'">
                     <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
@@ -3197,7 +3197,7 @@ class UserManagementController extends Controller
         echo $output;
     }
     // process PDF export of activity logs
-    public function process_generate_act_logs_report(Request $request){
+    public function users_logs_report_pdf(Request $request){
         // get all request
         $logs_search    = $request->get('logs_search');
         $logs_userTypes = $request->get('logs_userTypes');
@@ -3247,8 +3247,7 @@ class UserManagementController extends Controller
                                         }
                                     })
                                     ->orderBy('users_activity_tbl.created_at', 'DESC')
-                                    ->paginate(10);
-            $matched_result_txt = ' Matched Records';
+                                    ->get();
         }else{
             $filter_user_logs_table = DB::table('users_activity_tbl')
                                     ->join('users', 'users_activity_tbl.act_respo_user_id', '=', 'users.id')
@@ -3271,88 +3270,14 @@ class UserManagementController extends Controller
                                         }
                                     })
                                     ->orderBy('users_activity_tbl.created_at', 'DESC')
-                                    ->paginate(10);
-            $matched_result_txt = ' Record';
+                                    ->get();
         }
-        // total filtered date
-        $count_filtered_result = count($filter_user_logs_table);
-        $total_filtered_result = $filter_user_logs_table->total();
-        // plural text
-        if($total_filtered_result > 0){
-            if($total_filtered_result > 1){
-                $s = 's';
-            }else{
-                $s = '';
-            }
-            $total_matched_results = $filter_user_logs_table->firstItem() . ' - ' . $filter_user_logs_table->lastItem() . ' of ' . $total_filtered_result . ' ' . $matched_result_txt.''.$s;
-        }else{
-            $s = '';
-            $total_matched_results = 'No Records Found';
-        }
-
-        $act_logs_to_pdf = '';
-        $act_logs_to_pdf .= '
-            <table class="table table-hover cust_table shadow">
-                <thead class="thead_svms_blue">
-                    <tr>
-                        <th class="pl12">~ Users</th>
-                        <th>Date</th>
-                        <th>Category</th>
-                        <th>Details</th>
-                    </tr>
-                </thead>
-                <tbody class="tbody_svms_white">
-                    ';
-                    if($count_filtered_result > 0){
-                        foreach($filter_user_logs_table as $users_logs){
-                            // custom values
-                            if($users_logs->user_type === 'employee'){
-                                $img_border = 'rslts_emp';
-                            }elseif($users_logs->user_type === 'student'){
-                                $img_border = 'rslts_stud';
-                            }else{
-                                $img_border = 'rslts_unknown';
-                            }
-                            $act_logs_to_pdf .= '
-                            <tr>
-                                <td class="pl12 d-flex justify-content-start align-items-center">
-                                    <img class="rslts_userImgs ' . $img_border.'" src="'.asset('storage/svms/user_images/'.$users_logs->user_image.'').'" alt="user image">
-                                    <div class="cust_td_info">
-                                        <span class="actLogs_tdTitle font-weight-bold">'.$users_logs->act_respo_users_fname . ' ' . $users_logs->act_respo_users_lname . '</span>
-                                        <span class="actLogs_tdSubTitle"><span class="sub1">'.$users_logs->user_sdca_id . ' </span> <span class="subDiv"> / </span> <span class="sub1"> ' . ucwords($users_logs->user_role).'</span></span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-inline">
-                                        <span class="actLogs_content">'.date('F d, Y', strtotime($users_logs->created_at)) . '</span>
-                                        <span class="actLogs_tdSubTitle sub2">'.date('D', strtotime($users_logs->created_at))  . ' '. date('g:i A', strtotime($users_logs->created_at)) . '</span>
-                                    </div>
-                                </td>
-                                <td><span class="actLogs_content">'.$users_logs->act_type . '</span></td>
-                                <td><span class="actLogs_content">'.$users_logs->act_details . '</span></td>
-                            </tr>
-                        ';
-                        }
-                    }else{
-                        $act_logs_to_pdf .='
-                            <tr class="no_data_row">
-                                <td align="center" colspan="7">
-                                    <div class="no_data_div d-flex justify-content-center align-items-center text-center flex-column">
-                                        <img class="illustration_svg" src="'. asset('storage/svms/illustrations/no_matching_users_found.svg') .'" alt="no matching users found">
-                                        <span class="font-italic">No Records Found!
-                                    </div>
-                                </td>
-                            </tr>
-                        ';
-                    }
-                    $act_logs_to_pdf .= '
-                </tbody>
-            </table>
-        ';
 
         
-        $pdf = \App::make('dompdf.wrapper');
-        $pdf->loadHTML($act_logs_to_pdf);
-        return $pdf->stream();
+        // $pdf = \App::make('dompdf.wrapper');
+        // $pdf->loadHTML($act_logs_to_pdf);
+        // return back()->withSuccessStatus('Report has been generated successfully.');
+        $pdf = PDF::loadView('user_management.report_viewer', compact('filter_user_logs_table'));
+        return $pdf->stream('Activity-Logs.pdf');
     }
 }

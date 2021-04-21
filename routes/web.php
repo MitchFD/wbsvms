@@ -109,7 +109,9 @@ Route::group(['middleware' => 'auth'], function () {
 	// generate users activity logs confiration modal
 	Route::get('user_management/generate_act_logs_confirmation_modal', 'App\Http\Controllers\UserManagementController@generate_act_logs_confirmation_modal')->name('user_management.generate_act_logs_confirmation_modal'); 
 	// process export of activity logs = PDF
-	Route::post('user_management/process_generate_act_logs_report', 'App\Http\Controllers\UserManagementController@process_generate_act_logs_report')->name('user_management.process_generate_act_logs_report');
+	Route::post('user_management/users_logs_report_pdf', 'App\Http\Controllers\UserManagementController@users_logs_report_pdf')->name('user_management.users_logs_report_pdf');
+	// PDF viewer
+	Route::post('user_management/report_viewer', 'App\Http\Controllers\UserManagementController@report_viewer')->name('user_management.report_viewer');
 });
 
 // violation entry
