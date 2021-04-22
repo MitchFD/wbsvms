@@ -13,19 +13,19 @@ class CreateStudentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('registered_students_tbl', function (Blueprint $table) {
-            $table->id('stud_num');
-            $table->string('stud_lname');    
-            $table->string('stud_fname');    
-            $table->string('stud_image');
-            $table->string('stud_course');
-            $table->string('stud_yearlvl');
-            $table->string('stud_section');
-            $table->string('stud_school');
-            $table->string('stud_age');
-            $table->string('stud_sex');
-            $table->string('stud_email');
-            $table->string('stud_phnum')->nullable();
+        Schema::create('students_tbl', function (Blueprint $table) {
+            $table->id('Student_Number');
+            $table->string('First_Name')->nullable();    
+            $table->string('Middle_Name')->nullable();    
+            $table->string('Last_Name')->nullable();
+            $table->string('Gender')->nullable();
+            $table->string('Age')->nullable();
+            $table->string('Email')->nullable();
+            $table->string('School_Name')->nullable();
+            $table->string('Course')->nullable();
+            $table->string('YearLevel')->nullable();
+            $table->string('Student_Image')->nullable();
+            $table->tinyInteger('Status')->default(1);
             $table->timestamp('created_at')->format('Y-m-d H:i:s')->nullable();
         });
     }
@@ -37,6 +37,6 @@ class CreateStudentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('registered_students_tbl');
+        Schema::dropIfExists('students_tbl');
     }
 }

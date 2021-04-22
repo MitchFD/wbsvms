@@ -15,20 +15,20 @@ class Students extends Model
      *
      * @var array
      */
-    protected $table = 'registered_students_tbl';
+    protected $table = 'students_tbl';
     protected $fillable = [
-        'stud_lname',
-        'stud_fname',
-        'stud_image',
-        'stud_course',
-        'stud_yearlvl',
-        'stud_section',
-        'stud_school',
-        'stud_age',
-        'stud_sex',
-        'stud_email',
-        'stud_phnum',
+        'First_Name',
+        'Middle_Name',
+        'Last_Name',
+        'Gender',
+        'Age',
+        'Email',
+        'School_Name',
+        'Course',
+        'YearLevel',
+        'Student_Image',
+        'Status',
     ];
-    public $primaryKey = 'stud_num';
+    public $primaryKey = 'Student_Number';
     public $timestamps = false;
 }

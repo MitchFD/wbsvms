@@ -342,7 +342,7 @@
             });
             // pill to append before input field
             pill_tag_html = '<div class="cust_tagInput_pill" id="'+violatorID+'"> \
-                                <img class="cust_tagInput_img" src="{{asset("storage/svms/user_images")}}/'+student_info_image+'" alt="students image"> \
+                                <img class="cust_tagInput_img" src="{{asset("storage/svms/sdca_images/registered_students_imgs/")}}/'+student_info_image+'" alt="students image"> \
                                 <span class="cust_tagInput_name"> ' + student_info_fname + ' ' + student_info_lname + ' </span> \
                                 <button class="btn btn_svms_red cust_tagInput_removeBtn"><i class="fa fa-times"></i></button> \
                             </div>';
@@ -353,7 +353,7 @@
             // console.log(existing_violators_ids);
             // check if id already exist
             if(existing_violators_ids.indexOf(violatorID) !== -1){
-                alert('Student is already on the list');
+                alert(student_info_fname + ' ' + student_info_lname + ' is already on the list');
                 search_violators_input.value = "";
                 search_violators_input.focus();
             }else{

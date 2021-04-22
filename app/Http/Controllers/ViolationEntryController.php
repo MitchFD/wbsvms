@@ -7,6 +7,9 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use App\Models\Students;
 use App\Models\Users;
+use App\Models\Useractivites;
+use App\Models\Violations;
+use Illuminate\Mail\Mailable;
 
 class ViolationEntryController extends Controller
 {
@@ -20,31 +23,51 @@ class ViolationEntryController extends Controller
             $output = '';
             $violators_query = $request->get('violators_query');
             if($violators_query != ''){
-                $data = Users::select('id', 'user_sdca_id', 'user_image', 'user_lname', 'user_fname', 'user_gender')
-                            ->orWhere('user_sdca_id', 'like', '%'.$violators_query.'%')
-                            ->orWhere('user_lname', 'like', '%'.$violators_query.'%')
-                            ->orWhere('user_fname', 'like', '%'.$violators_query.'%')
-                            ->orderBy('id', 'asc')
+                $data = Students::select('Student_Number', 'First_Name', 'Middle_Name', 'Last_Name', 'Gender', 'School_Name', 'Course', 'YearLevel', 'Student_Image', 'Status')
+                            ->orWhere('Student_Number', 'like', '%'.$violators_query.'%')
+                            ->orWhere('First_Name', 'like', '%'.$violators_query.'%')
+                            ->orWhere('Middle_Name', 'like', '%'.$violators_query.'%')
+                            ->orWhere('Last_Name', 'like', '%'.$violators_query.'%')
+                            ->where('Status', '=', 1)
+                            ->orderBy('Student_Number', 'asc')
+                            ->limit(5)
                             ->get();
-                $total_row = $data->count();
                 $sq = "'";
-                if($total_row > 0){
+                if(count($data) > 0){
                     $output .= '<div class="list-group mt-3 shadow cust_list_group_ve" id="displaySearchViolators_results">';
                     foreach($data as $result){
+                        // year level
+                        if($result->YearLevel === '1'){
+                            $yearLevel_txt = '1st Year';
+                        }else if($result->YearLevel === '2'){
+                            $yearLevel_txt = '2nd Year';
+                        }else if($result->YearLevel === '3'){
+                            $yearLevel_txt = '3rd Year';
+                        }else if($result->YearLevel === '4'){
+                            $yearLevel_txt = '4th Year';
+                        }else if($result->YearLevel === '5'){
+                            $yearLevel_txt = '5th Year';
+                        }else{
+                            $yearLevel_txt = $result->YearLevel . ' Year';
+                        }
                         // check student's image (use default image if student has no image from database)
-                        if(!is_null($result->user_image) OR !empty($result->user_image)){
-                            $display_violator_image = $result->user_image;
+                        if(!is_null($result->Student_Image) OR !empty($result->Student_Image)){
+                            $display_violator_image = $result->Student_Image;
                         }else{
                             $display_violator_image = 'default_student_img.jpg';
                         }
                         $output .= '
-                            <a href="#" id="'.$result->id.'" onclick="addViolator(this.id)" class="list-group-item list-group-item-action cust_lg_item_ve">
+                            <a href="#" id="'.$result->Student_Number.'" onclick="addViolator(this.id)" class="list-group-item list-group-item-action cust_lg_item_ve">
                                 <div class="display_user_image_div text-center">
-                                    <img class="display_violator_image shadow-sm" src="'.asset('storage/svms/user_images/'.$display_violator_image.'').'" alt="violator'.$sq.'s image">
+                                    <img class="display_violator_image shadow-sm" src="'.asset('storage/svms/sdca_images/registered_students_imgs/'.$display_violator_image.'').'" alt="violator'.$sq.'s image">
                                 </div>
                                 <div class="information_div">
-                                    <span class="li_info_title">'.preg_replace('/('.$violators_query.')/i','<span class="red_highlight">$1</span>', $result->user_fname) . ' ' . preg_replace('/('.$violators_query.')/i','<span class="red_highlight">$1</span>', $result->user_lname).'</span>
-                                    <span class="li_info_subtitle"><span class="text_svms_blue">'.preg_replace('/('.$violators_query.')/i','<span class="red_highlight">$1</span>', $result->user_sdca_id) . ' </span> | SBCS - BSIT 4A | Male</span>
+                                    <span class="li_info_title">
+                                        '.preg_replace('/('.$violators_query.')/i','<span class="red_highlight">$1</span>', $result->First_Name) . ' 
+                                        ' . preg_replace('/('.$violators_query.')/i','<span class="red_highlight">$1</span>', $result->Middle_Name) . ' 
+                                        ' . preg_replace('/('.$violators_query.')/i','<span class="red_highlight">$1</span>', $result->Last_Name) . '
+                                    </span>
+                                    <span class="li_info_subtitle"><span class="text_svms_blue">'.preg_replace('/('.$violators_query.')/i','<span class="red_highlight">$1</span>', $result->Student_Number) . ' </span> | ' . $result->School_Name . ' - ' . $result->Course . ' - ' . $yearLevel_txt . ' | ' . $result->Gender.'</span>
                                 </div>
                             </a>
                         ';
@@ -71,12 +94,12 @@ class ViolationEntryController extends Controller
             // get student's ID
             $sel_student_id = $request->get('violatorID');
             // get student's information
-            $get_selected_student_info = Users::select('id', 'user_lname', 'user_fname', 'user_image')->where('id', $sel_student_id)->first();
-            $get_student_image         = $get_selected_student_info->user_image;
-            $get_student_fname         = $get_selected_student_info->user_fname;
-            $get_student_lname         = $get_selected_student_info->user_lname;
+            $get_selected_student_info = Students::select('Student_Number', 'First_Name', 'Middle_Name', 'Last_Name', 'Gender', 'School_Name', 'Course', 'YearLevel', 'Student_Image', 'Status')->where('Student_Number', $sel_student_id)->first();
+            $get_student_image         = $get_selected_student_info->Student_Image;
+            $get_student_fname         = $get_selected_student_info->First_Name;
+            $get_student_lname         = $get_selected_student_info->Last_Name;
             // check student's image (use default image if student has no image from database)
-            if(!is_null($get_selected_student_info->user_image) OR !empty($get_selected_student_info->user_image)){
+            if(!is_null($get_selected_student_info->Student_Image) OR !empty($get_selected_student_info->Student_Image)){
                 $display_student_image = $get_student_image;
             }else{
                 $display_student_image = 'default_student_img.jpg';
@@ -136,27 +159,45 @@ class ViolationEntryController extends Controller
                                     if($count_sel_v > 0){
                                         foreach(json_decode($get_all_violators, true) as $violator){
                                             // get student's information
-                                            $stud_info = Users::select('id', 'user_lname', 'user_fname', 'user_sdca_id', 'user_image', 'user_gender')->where('id', $violator)->first();
-                                            $stud_id = $stud_info->id;
-                                            $stud_lname = $stud_info->user_lname;
-                                            $stud_fname = $stud_info->user_fname;
-                                            $stud_image = $stud_info->user_image;
-                                            $stud_gender = $stud_info->user_gender;
+                                            $stud_info   = Students::select('Student_Number', 'First_Name', 'Middle_Name', 'Last_Name', 'Gender', 'School_Name', 'Course', 'YearLevel', 'Student_Image', 'Status')->where('Student_Number', $violator)->first();
+                                            $stud_id     = $stud_info->Student_Number;
+                                            $stud_lname  = $stud_info->Last_Name;
+                                            $stud_mname  = $stud_info->Middle_Name;
+                                            $stud_fname  = $stud_info->First_Name;
+                                            $stud_image  = $stud_info->Student_Image;
+                                            $stud_gender = $stud_info->Gender;
+                                            $stud_school = $stud_info->School_Name;
+                                            $stud_course = $stud_info->Course;
+                                            $stud_yrLvl  = $stud_info->YearLevel;
                                             // check student's image (use default image if student has no image from database)
                                             if(!is_null($stud_image) OR !empty($stud_image)){
                                                 $display_student_image = $stud_image;
                                             }else{
                                                 $display_student_image = 'default_student_img.jpg';
                                             }
+                                            // year level
+                                            if($stud_yrLvl === '1'){
+                                                $yearLevel_txt = '1st Year';
+                                            }else if($stud_yrLvl === '2'){
+                                                $yearLevel_txt = '2nd Year';
+                                            }else if($stud_yrLvl === '3'){
+                                                $yearLevel_txt = '3rd Year';
+                                            }else if($stud_yrLvl === '4'){
+                                                $yearLevel_txt = '4th Year';
+                                            }else if($stud_yrLvl === '5'){
+                                                $yearLevel_txt = '5th Year';
+                                            }else{
+                                                $yearLevel_txt = $stud_yrLvl . ' Year';
+                                            }
                                             $output .= '
                                             <div class="col-lg-6 col-md-6 col-sm-12 m-0">
                                                 <div class="violators_cards_div mb-2 d-flex justify-content-start align-items-center">
                                                     <div class="display_user_image_div text-center">
-                                                        <img class="display_violator_image2 shadow-sm" src="'.asset('storage/svms/user_images/'.$display_student_image).'" alt="student'.$sq.'s image">
+                                                        <img class="display_violator_image2 shadow-sm" src="'.asset('storage/svms/sdca_images/registered_students_imgs/'.$display_student_image).'" alt="student'.$sq.'s image">
                                                     </div>
                                                     <div class="information_div">
-                                                        <span class="li_info_title">'.$stud_fname . ' ' . $stud_lname.'</span>
-                                                        <span class="li_info_subtitle2"><span class="font-weight-bold">'.$stud_id.' </span> | SBCS - BSIT 4A | ' . ucwords($stud_gender).'</span>
+                                                        <span class="li_info_title">'.$stud_fname . ' ' . $stud_mname . ' ' . $stud_lname.'</span>
+                                                        <span class="li_info_subtitle2"><span class="font-weight-bold">'.$stud_id.' </span> | ' . $stud_school . ' - ' . $stud_course . ' - ' . $yearLevel_txt . ' | ' . ucwords($stud_gender).'</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -306,21 +347,150 @@ class ViolationEntryController extends Controller
         $get_less_serious_offenses = json_decode(json_encode($request->get('less_serious_offenses')));
         $get_other_offenses        = json_decode(json_encode($request->get('other_offenses')));
 
-        echo json_encode($get_selected_students);
-        echo '<br/>';
-        echo $get_violation_timestamp;
-        echo '<br/>';
-        echo $get_respo_user_id;
-        echo '<br/>';
-        echo $get_respo_user_lname;
-        echo '<br/>';
-        echo $get_respo_user_fname;
-        echo '<br/>';
-        echo json_encode($get_minor_offenses);
-        echo '<br/>';
-        echo json_encode($get_less_serious_offenses);
-        echo '<br/>';
-        echo json_encode($get_other_offenses);
-        echo '<br/>';
+        // count each offenses
+        if(!is_null($get_minor_offenses) OR !empty($get_minor_offenses)){
+            $total_mo_count = count($get_minor_offenses);
+        }else{
+            $total_mo_count = 0;
+        }
+        if(!is_null($get_less_serious_offenses) OR !empty($get_less_serious_offenses)){
+            $total_lso_count = count($get_less_serious_offenses);
+        }else{
+            $total_lso_count = 0;
+        }
+        if(!is_null($get_other_offenses) OR !empty($get_other_offenses)){
+            if(in_array(null, $get_other_offenses)){
+                $total_oo_count = 0;
+            }else{
+                $total_oo_count = count($get_other_offenses);   
+            }
+        }else{
+            $total_oo_count = 0;
+        }
+        // total count of all offenses
+        $total_offenses_count = $total_mo_count + $total_lso_count + $total_oo_count;
+        // pluras s
+        if($total_offenses_count > 1){
+            $s = 's';
+        }else{
+            $s = '';
+        }
+
+        foreach($get_selected_students as $this_violator){
+            // get student's info
+            $get_sel_students_info = Students::select('Student_Number', 'First_Name', 'Middle_Name', 'Last_Name', 'Gender', 'School_Name', 'Course', 'YearLevel', 'Email')->where('Student_Number', $this_violator)->first();
+            $get_sel_stud_id       = $get_sel_students_info->Student_Number;
+            $get_sel_stud_fname    = $get_sel_students_info->First_Name;
+            $get_sel_stud_mname    = $get_sel_students_info->Middle_Name;
+            $get_sel_stud_lname    = $get_sel_students_info->Last_Name;
+            $get_sel_stud_gender   = $get_sel_students_info->Gender;
+            $get_sel_stud_school   = $get_sel_students_info->School_Name;
+            $get_sel_stud_course   = $get_sel_students_info->Course;
+            $get_sel_stud_yrlvl    = $get_sel_students_info->YearLevel;
+            $get_sel_stud_email    = $get_sel_students_info->Email;
+            // year level
+            if($get_sel_stud_yrlvl === '1'){
+                $yearLevel_txt = '1st Year';
+            }else if($get_sel_stud_yrlvl === '2'){
+                $yearLevel_txt = '2nd Year';
+            }else if($get_sel_stud_yrlvl === '3'){
+                $yearLevel_txt = '3rd Year';
+            }else if($get_sel_stud_yrlvl === '4'){
+                $yearLevel_txt = '4th Year';
+            }else if($get_sel_stud_yrlvl === '5'){
+                $yearLevel_txt = '5th Year';
+            }else{
+                $yearLevel_txt = $get_sel_stud_yrlvl . ' Year';
+            }
+            // Mr./Mrs format
+            $old_user_gender = Str::lower($get_sel_stud_gender);
+            if($old_user_gender == 'male'){
+                $user_his_her = 'his';
+                $user_mr_ms   = 'Mr.';
+            }elseif($old_user_gender == 'female'){
+                $user_his_her = 'her';
+                $user_mr_ms   = 'Ms.';
+            }else{
+                $user_his_her = 'his/her';
+                $user_mr_ms   = 'Mr./Ms.';
+            }
+            // record offenses to violations_tbl
+            $record_offenses = new Violations;
+            $record_offenses->created_at       = $get_violation_timestamp;
+            $record_offenses->offense_count    = $total_offenses_count;
+            $record_offenses->minor_off        = $get_minor_offenses;
+            $record_offenses->less_serious_off = $get_less_serious_offenses;
+            $record_offenses->other_off        = $get_other_offenses;
+            $record_offenses->stud_num         = $this_violator;
+            $record_offenses->respo_user_id    = $get_respo_user_id;
+            $record_offenses->save();
+            // send email
+            $details = [
+                'svms_logo'           => "storage/svms/logos/svms_logo_text.png",
+                'title'               => 'Student Violation',
+                'recipient'           => $user_mr_ms . ' ' .$get_sel_stud_fname . ' ' . $get_sel_stud_mname . ' ' . $get_sel_stud_lname,
+                'date_recorded'       => $get_violation_timestamp,
+                'offense_count'       => $total_offenses_count,
+                'minor_off'           => $get_minor_offenses,
+                'less_serious_off'    => $get_less_serious_offenses,
+                'other_off'           => $get_other_offenses,
+                's'                   => $s
+            ];
+            // if record was a success
+            if($record_offenses){
+                // get this violation id from violations_tbl
+                $get_new_viola_id = Violations::select('viola_id')->where('stud_num', $this_violator)->latest('created_at')->first();
+                $new_viola_id     = $get_new_viola_id->viola_id;
+                // record activity
+                $record_act = new Useractivites;
+                $record_act->created_at            = $get_violation_timestamp;
+                $record_act->act_respo_user_id     = $get_respo_user_id;
+                $record_act->act_respo_users_lname = $get_respo_user_lname;
+                $record_act->act_respo_users_fname = $get_respo_user_fname;
+                $record_act->act_type              = 'violation entry';
+                $record_act->act_details           = 'Record ' . $total_offenses_count . ' Offense'.$s . ' made by ' . $yearLevel_txt . ' ' . $get_sel_stud_course . ' student: ' . $get_sel_stud_fname . ' ' . $get_sel_stud_mname . ' ' . $get_sel_stud_lname;
+                $record_act->act_affected_id       = $new_viola_id;
+                $record_act->save();
+
+                // send email per student
+                if(!empty($get_sel_stud_email) OR !is_null($get_sel_stud_email)){
+                    \Mail::to('mfodesierto2@gmail.com')->send(new \App\Mail\ViolationRecordedSendMail($details));
+                }
+            }else{
+                return back()->withFailedStatus('Recording Offenses has failed! Try Again later.');
+            }
+        }
+
+        if($record_act){
+            return back()->withSuccessStatus('Offenses was recorded successfully!');
+        }else{
+            return back()->withFailedStatus('Recording User Activity has failed!');
+        }
+        // echo json_encode('students count: ' . count($get_selected_students));
+        // echo '<br/>';
+        // echo 'Minor Offenses Count: ' . $total_mo_count;
+        // echo '<br/>';
+        // echo 'Less Serious Offenses count: ' . $total_lso_count;
+        // echo '<br/>';
+        // echo 'Other Offenses count: ' . $total_oo_count;
+        // echo '<br/>';
+        // echo 'Total Offenses count: ' . $total_offenses_count;
+        // echo '<br/>';
+        // echo json_encode($get_selected_students);
+        // echo '<br/>';
+        // echo $get_violation_timestamp;
+        // echo '<br/>';
+        // echo $get_respo_user_id;
+        // echo '<br/>';
+        // echo $get_respo_user_lname;
+        // echo '<br/>';
+        // echo $get_respo_user_fname;
+        // echo '<br/>';
+        // echo json_encode($get_minor_offenses);
+        // echo '<br/>';
+        // echo json_encode($get_less_serious_offenses);
+        // echo '<br/>';
+        // echo json_encode($get_other_offenses);
+        // echo '<br/>';
     }
 }

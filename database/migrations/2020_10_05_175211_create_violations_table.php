@@ -16,14 +16,14 @@ class CreateViolationsTable extends Migration
         Schema::create('violations_tbl', function (Blueprint $table) {
             $table->id('viola_id');
             $table->timestamp('created_at')->format('Y-m-d H:i:s')->nullable();
-            $table->string('violation_status');    
+            $table->string('violation_status')->default('not cleared');    
             $table->tinyInteger('offense_count');    
             $table->json('minor_off')->nullable();
             $table->json('less_serious_off')->nullable();
             $table->json('other_off')->nullable();
             $table->unsignedBigInteger('stud_num');
                 // $table->foreign('stud_num')->references('stud_num')->on('registered_students_tbl')->onDelete('cascade');
-            $table->unsignedBigInteger('from_sanct_id');
+            $table->unsignedBigInteger('from_sanct_id')->nullable();
                 // $table->foreign('from_sanct_id')->references('sanct_id')->on('sanctions_tbl')->onDelete('cascade');
             $table->unsignedBigInteger('respo_user_id');
                 // $table->foreign('respo_user_id')->references('id')->on('users')->onDelete('cascade');
