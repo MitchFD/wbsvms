@@ -67,7 +67,7 @@ class ViolationEntryController extends Controller
                                         ' . preg_replace('/('.$violators_query.')/i','<span class="red_highlight">$1</span>', $result->Middle_Name) . ' 
                                         ' . preg_replace('/('.$violators_query.')/i','<span class="red_highlight">$1</span>', $result->Last_Name) . '
                                     </span>
-                                    <span class="li_info_subtitle"><span class="text_svms_blue">'.preg_replace('/('.$violators_query.')/i','<span class="red_highlight">$1</span>', $result->Student_Number) . ' </span> | ' . $result->School_Name . ' - ' . $result->Course . ' - ' . $yearLevel_txt . ' | ' . $result->Gender.'</span>
+                                    <span class="li_info_subtitle"><span class="text_svms_blue">'.preg_replace('/('.$violators_query.')/i','<span class="red_highlight">$1</span>', $result->Student_Number) . ' </span> | ' . $result->Course . ' - ' . $yearLevel_txt . ' | ' . $result->Gender.'</span>
                                 </div>
                             </a>
                         ';
@@ -189,6 +189,24 @@ class ViolationEntryController extends Controller
                                             }else{
                                                 $yearLevel_txt = $stud_yrLvl . ' Year';
                                             }
+                                            // course text limit
+                                            if($stud_course === 'BS Education'){
+                                                $lim_stud_course = 'BS Educ';
+                                            }else if($stud_course === 'BA Communication'){
+                                                $lim_stud_course = 'BA Comm';
+                                            }else if($stud_course === 'BS Biology'){
+                                                $lim_stud_course = 'BS Bio';
+                                            }else if($stud_course === 'BS Pharmacy'){
+                                                $lim_stud_course = 'BS Pharma';
+                                            }else if($stud_course === 'BS Radiologic Technology'){
+                                                $lim_stud_course = 'BS Rad Tech';
+                                            }else if($stud_course === 'BS Physical Therapy'){
+                                                $lim_stud_course = 'BS Ph Th';
+                                            }else if($stud_course === 'BS Medical Technology'){
+                                                $lim_stud_course = 'BS Med Tech';
+                                            }else{
+                                                $lim_stud_course = $stud_course;
+                                            }
                                             $output .= '
                                             <div class="col-lg-6 col-md-6 col-sm-12 m-0">
                                                 <div class="violators_cards_div mb-2 d-flex justify-content-start align-items-center">
@@ -197,7 +215,7 @@ class ViolationEntryController extends Controller
                                                     </div>
                                                     <div class="information_div">
                                                         <span class="li_info_title">'.$stud_fname . ' ' . $stud_mname . ' ' . $stud_lname.'</span>
-                                                        <span class="li_info_subtitle2"><span class="font-weight-bold">'.$stud_id.' </span> | ' . $stud_school . ' - ' . $stud_course . ' - ' . $yearLevel_txt . ' | ' . ucwords($stud_gender).'</span>
+                                                        <span class="li_info_subtitle2"><span class="font-weight-bold">'.$stud_id.' </span> | ' . $lim_stud_course . ' - ' . $yearLevel_txt . ' | ' . ucwords($stud_gender).'</span>
                                                     </div>
                                                 </div>
                                             </div>

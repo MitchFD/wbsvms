@@ -14,5 +14,5 @@ class ViolationRecordsController extends Controller
     public function index(){
         return view('violation_records.index');
     }
-    
+     
 }
