@@ -281,7 +281,7 @@
         $(document).ready(function(){ 
             loadActLogsTable();
 
-            // funciton for date range picker
+            // funciton for loading activity logs table
             function loadActLogsTable(){
                 var logs_search = document.getElementById('actLogsFiltr_liveSearch').value;
                 var logs_userTypes = document.getElementById("actLogsFiltr_selectUserTypes").value;

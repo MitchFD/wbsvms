@@ -1021,6 +1021,13 @@ a.text_svms_gray:hover {
   margin-top: 10px !important;
   color: var(--svms_light_blue) !important;
 }
+.custom_label_sub{
+  display: inline-block;
+  font-weight: normal !important;
+  font-size: 14px !important;
+  margin-top: 10px !important;
+  color: var(--svms_light_blue) !important;
+}
 
 /* inputs customizations */
 .input-group-prepend .is_invalid{
@@ -1097,7 +1104,7 @@ a.text_svms_gray:hover {
 
 /* custom status title */
 .cust_status_title{
-  display: block;
+  display: inline-block;
   font-size: 13px;
   font-weight: bold !important;
   text-decoration: none !important;
@@ -2422,6 +2429,9 @@ select.drpdwn_arrow2:focus {
 .red_highlight{
   background-color: #E5A2A3 !important;
 }
+.red_highlight2{
+  background-color: #F2D0D1 !important;
+}
 
 .form label{
   font-weight: bold;
@@ -2716,37 +2726,29 @@ fieldset[disabled] .applyBtn.active {
   box-shadow: none;
 }
 
-/* custom range sliders */
-.slidecontainer {
-  width: 100%;
+/* custom badges */
+/* .badge {
+  display: inline-block;
+  padding: 0.25em 0.4em;
+  font-size: 75%;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.25rem;
+} */
+.cust_badge1 {
+  color: #fff;
+  background-color: #BD171B;
+  font-size: 13px;
+  font-weight: normal;
+  border: none;
+  border-radius: 5px;
 }
-.slider {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 7px;
-  background: #d3d3d3;
-  border-radius: 15px;
-  outline: none;
-  opacity: 0.7;
-  -webkit-transition: .2s;
-  transition: opacity .2s;
-  cursor: pointer !important;
-}
-.slider:hover {
-  opacity: 1;
-}
-.slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 17px;
-  height: 17px;
-  border-radius: 50%;
-  background: var(--svms_blue);
-}
-.slider::-moz-range-thumb {
-  width: 17px;
-  height: 17px;
-  border-radius: 50%;
-  background: var(--svms_blue);
+.cust_badge1[href]:focus,
+.cust_badge1[href]:hover {
+  color: #fff;
+  text-decoration: none;
+  background-color: #BD171B;
 }

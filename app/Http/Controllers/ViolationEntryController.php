@@ -192,6 +192,8 @@ class ViolationEntryController extends Controller
                                             // course text limit
                                             if($stud_course === 'BS Education'){
                                                 $lim_stud_course = 'BS Educ';
+                                            }else if($stud_course === 'BS Psychology'){
+                                                $lim_stud_course = 'BS Psych';
                                             }else if($stud_course === 'BA Communication'){
                                                 $lim_stud_course = 'BA Comm';
                                             }else if($stud_course === 'BS Biology'){
@@ -471,9 +473,9 @@ class ViolationEntryController extends Controller
                 $record_act->save();
 
                 // send email per student
-                if(!empty($get_sel_stud_email) OR !is_null($get_sel_stud_email)){
-                    \Mail::to('mfodesierto2@gmail.com')->send(new \App\Mail\ViolationRecordedSendMail($details));
-                }
+                // if(!empty($get_sel_stud_email) OR !is_null($get_sel_stud_email)){
+                //     \Mail::to('mfodesierto2@gmail.com')->send(new \App\Mail\ViolationRecordedSendMail($details));
+                // }
             }else{
                 return back()->withFailedStatus('Recording Offenses has failed! Try Again later.');
             }

@@ -170,24 +170,24 @@
                                         <div class="form-group">
                                             <select id="violationRecFltr_programs" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
                                                 <option value="0" data-default-program="all_programs" selected>All Programs</option>
-                                                <option value="BS Psychology" data-sase-programs="sase_programs">BS Psychology</option>
-                                                <option value="BS Education" data-sase-programs="sase_programs">BS Education</option>
-                                                <option value="BA Communication" data-sase-programs="sase_programs">BA Communication</option>
+                                                <option value="BS Psychology" data-programs="SASE">BS Psychology</option>
+                                                <option value="BS Education" data-programs="SASE">BS Education</option>
+                                                <option value="BA Communication" data-programs="SASE">BA Communication</option>
 
-                                                <option value="BSBA" data-sbcs-programs="sbcs_programs">BSBA</option>
-                                                <option value="BSA" data-sbcs-programs="sbcs_programs">BSA</option>
-                                                <option value="BSIT" data-sbcs-programs="sbcs_programs">BSIT</option>
-                                                <option value="BMA" data-sbcs-programs="sbcs_programs">BMA</option>
+                                                <option value="BSBA" data-programs="SBCS">BSBA</option>
+                                                <option value="BSA" data-programs="SBCS">BSA</option>
+                                                <option value="BSIT" data-programs="SBCS">BSIT</option>
+                                                <option value="BMA" data-programs="SBCS">BMA</option>
 
-                                                <option value="BSHM" data-sihtm-programs="sihtm_programs">BSHM</option>
-                                                <option value="BSTM" data-sihtm-programs="sihtm_programs">BSTM</option>
+                                                <option value="BSHM" data-programs="SIHTM">BSHM</option>
+                                                <option value="BSTM" data-programs="SIHTM">BSTM</option>
 
-                                                <option value="BS Biology" data-shsp-programs="shsp_programs">BS Biology</option>
-                                                <option value="BS Pharmacy" data-shsp-programs="shsp_programs">BS Pharmacy</option>
-                                                <option value="BS Radiologic Technology" data-shsp-programs="shsp_programs">BS Radiologic Technology</option>
-                                                <option value="BS Physical Therapy" data-shsp-programs="shsp_programs">BS Physical Therapy</option>
-                                                <option value="BS Medical Technology" data-shsp-programs="shsp_programs">BS Medical Technology</option>
-                                                <option value="BS Nursing" data-shsp-programs="shsp_programs">BS Nursing</option>
+                                                <option value="BS Biology" data-programs="SHSP">BS Biology</option>
+                                                <option value="BS Pharmacy" data-programs="SHSP">BS Pharmacy</option>
+                                                <option value="BS Radiologic Technology" data-programs="SHSP">BS Radiologic Technology</option>
+                                                <option value="BS Physical Therapy" data-programs="SHSP">BS Physical Therapy</option>
+                                                <option value="BS Medical Technology" data-programs="SHSP">BS Medical Technology</option>
+                                                <option value="BS Nursing" data-programs="SHSP">BS Nursing</option>
                                             </select>
                                         </div>
                                     </div>
@@ -197,11 +197,11 @@
                                         <div class="form-group">
                                             <select id="violationRecFltr_yearLvls" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
                                                 <option value="0" data-default-yearlvl="all_year_levels" selected>All Year Levels</option>
-                                                <option value="1" data-yearlvls="first_yearlvls">FIRST YEAR</option>
-                                                <option value="2" data-yearlvls="second_yearlvls">SECOND YEARS</option>
-                                                <option value="3" data-yearlvls="third_yearlvls">THIRD YEARS</option>
-                                                <option value="4" data-yearlvls="fourth_yearlvls">FOURTH YEARS</option>
-                                                <option value="5" data-yearlvls="fifth_yearlvls">FIFTH YEARS</option>
+                                                <option value="1" data-yearlvls="1">FIRST YEAR</option>
+                                                <option value="2" data-yearlvls="2">SECOND YEARS</option>
+                                                <option value="3" data-yearlvls="3">THIRD YEARS</option>
+                                                <option value="4" data-yearlvls="4">FOURTH YEARS</option>
+                                                <option value="5" data-yearlvls="5">FIFTH YEARS</option>
                                             </select>
                                         </div>
                                     </div>
@@ -210,23 +210,49 @@
                                     <div class="col-lg-12 col-md-12 col-sm-12">
                                         <div class="form-group">
                                             <select id="violationRecFltr_genders" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
-                                                <option value="0" data-default-gender="all_genders" selected>All Genders</option>
+                                                <option value="0" selected>All Genders</option>
                                                 <option value="Male">Male</option>
                                                 <option value="Female">Female</option>
                                             </select>
                                         </div>
                                     </div>
                                 </div>
+                                @php
+                                    $max_age = App\Models\Students::select('Age')->max('Age');
+                                    $min_age = App\Models\Students::select('Age')->min('Age');
+                                    $all_age = App\Models\Students::select('Age')->groupBy('Age')->get();
+                                @endphp
+                                <input type="hidden" name="hidden_maxAgeRange" id="hidden_maxAgeRange" value="{{$max_age}}">
+                                <input type="hidden" name="hidden_minAgeRange" id="hidden_minAgeRange" value="{{$min_age}}">
+                                <span class="cust_status_title mt-2 mb-2">Age Range: </span> <span class="custom_label_sub" id="filter_ageRange_label"> {{$min_age}} to {{$max_age}} Year Olds</span></label>
                                 <div class="row">
                                     <div class="col-lg-12 col-md-12 col-sm-12">
-                                        <label class="custom_label" for="create_stud_email">Age Range: </label> <span> 19 to 28 Year Olds</span>
-                                        <div class="form-group">
-                                            @php
-                                                $max_age = App\Models\Students::select('Age')->max('Age');
-                                                $min_age = App\Models\Students::select('Age')->min('Age');
-                                            @endphp
-                                            <div class="slidecontainer">
-                                                <input type="range" min="{{$min_age}}" max="{{$max_age}}" value="{{$max_age}}" class="slider" id="violationRecFltr_agesRange">
+                                        <div class="row">
+                                            <div class="col-lg-6 col-md-6 col-sm-6 pr-1">
+                                                <div class="form-group">
+                                                    <select id="violationRecFltr_minAge" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
+                                                        @foreach($all_age as $this_age)
+                                                            @if($this_age->Age == $min_age)
+                                                                <option value="{{$this_age->Age}}" selected>{{$this_age->Age}}</option>
+                                                            @else
+                                                                <option value="{{$this_age->Age}}">{{$this_age->Age}}</option>
+                                                            @endif
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 col-md-6 col-sm-6 pl-1">
+                                                <div class="form-group">
+                                                    <select id="violationRecFltr_maxAge" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
+                                                        @foreach($all_age->sortByDesc('Age') as $this_age)
+                                                            @if($this_age->Age == $max_age)
+                                                                <option value="{{$this_age->Age}}" selected>{{$this_age->Age}}</option>
+                                                            @else
+                                                                <option value="{{$this_age->Age}}">{{$this_age->Age}}</option>
+                                                            @endif
+                                                        @endforeach
+                                                    </select>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -236,7 +262,7 @@
                                     <div class="col-lg-12 col-md-12 col-sm-12">
                                         <div class="form-group">
                                             <select id="violationRecFltr_violationStat" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
-                                                <option value="0" data-default-year-level="all_violation_status" selected>All Violation Status</option>
+                                                <option value="0" selected>All Violation Status</option>
                                                 <option value="not cleared">Not Cleared</option>
                                                 <option value="cleared">Cleared</option>
                                             </select>
@@ -256,8 +282,8 @@
                                 </div>
                                 <div class="row mt-3">
                                     <div class="col-lg-12 col-md-12 col-sm-12 text-right">
-                                        <button type="button" id="generateActLogs_btn" onclick="generateActLogs_modal()" class="btn btn-success cust_bt_links shadow"><i class="nc-icon nc-single-copy-04 mr-1" aria-hidden="true"></i> Generate Report</button>
-                                        <button type="button" id="resetActLogsFilter_btn" class="btn btn_svms_blue cust_bt_links shadow" disabled><i class="fa fa-refresh mr-1" aria-hidden="true"></i> Reset</button>
+                                        <button type="button" id="generateViolationRecs_btn" class="btn btn-success cust_bt_links shadow"><i class="nc-icon nc-single-copy-04 mr-1" aria-hidden="true"></i> Generate Report</button>
+                                        <button type="button" id="resetViolationRecsFilter_btn" class="btn btn_svms_blue cust_bt_links shadow" disabled><i class="fa fa-refresh mr-1" aria-hidden="true"></i> Reset</button>
                                     </div>
                                 </div>
                             </form>
@@ -270,7 +296,7 @@
                     <div class="row d-flex justify-content-start">
                         <div class="col-lg-5 col-md-8 col-sm-12">
                             <div class="input-group cust_srchInpt_div">
-                                <input id="actLogsFiltr_liveSearch" name="actLogsFiltr_liveSearch" type="text" class="form-control cust_srchUsersInpt_box" placeholder="Search Something..." />
+                                <input id="violationRecsFiltr_liveSearch" name="violationRecsFiltr_liveSearch" type="text" class="form-control cust_srchUsersInpt_box" placeholder="Search Something..." />
                                 <i class="nc-icon nc-zoom-split" aria-hidden="true"></i>    
                             </div>
                         </div>
@@ -285,19 +311,19 @@
                             </div>
                         </div> --}}
                     </div>
-                    <div class="row mt-3">
+                    {{-- <div class="row mt-3">
                         <div class="col-lg-12 col-sm-12">
                             <span class="cust_table_filters_title"> Filters: </span>
                             <span id="filter_schools_txt" class="cust_table_filters_texts"> All Schools </span> <span class="cust_table_filters_texts_divider"> / </span>
                             <span id="filter_programs_txt" class="cust_table_filters_texts"> All Programs </span> <span class="cust_table_filters_texts_divider"> / </span>
                             <span id="filter_yearLvls_txt" class="cust_table_filters_texts"> All Year Levels </span> <span class="cust_table_filters_texts_divider"> / </span>
                             <span id="filter_genders_txt" class="cust_table_filters_texts"> All Genders </span> <span class="cust_table_filters_texts_divider"> / </span>
-                            <span id="filter_agesRange_txt" class="cust_table_filters_texts"> Ages 19 to 20 </span> <span class="cust_table_filters_texts_divider"> / </span>
+                            <span id="filter_agesRange_txt" class="cust_table_filters_texts"> {{$min_age}} to {{$max_age}} Year Olds </span> <span class="cust_table_filters_texts_divider"> / </span>
                             <span id="filter_violationStat_txt" class="cust_table_filters_texts"> All Violation Status </span> <span class="cust_table_filters_texts_divider"> / </span>
                             <span id="filter_datepickerRange_txt" class="cust_table_filters_texts"> From Previous Days up to this day </span> <span class="cust_table_filters_texts_divider"> / </span>
                             <span id="filter_liveSearch_txt" class="cust_table_filters_texts"> ...</span>
                         </div>
-                    </div>
+                    </div> --}}
                     <div class="row mt-3">
                         <div class="col-lg-12 col-md-12 col-sm-12">
                             <table class="table table-hover cust_table shadow">
@@ -308,9 +334,9 @@
                                         <th>Offenses</th>
                                     </tr>
                                 </thead>
-                                <tbody class="tbody_svms_white" id="usersActLogs_tbody">
+                                <tbody class="tbody_svms_white" id="violationRecords_tbody">
                                     {{-- ajax data table --}}
-                                    <tr>
+                                    {{-- <tr>
                                         <td class="pl12 d-flex justify-content-start align-items-center">
                                             <img class="display_violator_image2 shadow-sm" src="{{asset('storage/svms/sdca_images/registered_students_imgs/default_student_img.jpg')}}" alt="student's image">
                                             <div class="cust_td_info">
@@ -330,7 +356,7 @@
                                                 <span class="actLogs_tdSubTitle sub2">Not Wearing ID, Cheating during Exam, Not Wearing Prescribed Uniform ... </span>
                                             </div>
                                         </td>
-                                    </tr>
+                                    </tr> --}}
                                 </tbody>
                             </table>
                         </div>
@@ -342,7 +368,7 @@
                         <div class="col-lg-8 col-md-8 col-sm-12 d-flex justify-content-end">
                             @csrf
                             <input type="hidden" name="hidden_page" id="hidden_page" value="1" />
-                            <div id="usersActLogs_pagination">
+                            <div id="violationRecords_pagination">
 
                             </div>
                             {{-- <a href="#" class="btn btn-success cust_bt_links shadow" role="button"><i class="fa fa-print mr-1" aria-hidden="true"></i> Generate Report</a> --}}
@@ -359,5 +385,384 @@
 @endsection
 
 @push('scripts')
+    <script>
+        // function for ajax table pagination
+        function getData(page){
+            $.ajax(
+            {
+                url: '?page=' + page,
+                type: "get",
+                datatype: "html"
+            }).done(function(data){
+                location.hash = page;
+            }).fail(function(jqXHR, ajaxOptions, thrownError){
+                alert('No response from server');
+            });
+        }
+        $(window).on('hashchange', function() {
+            if (window.location.hash) {
+                var page = window.location.hash.replace('#', '');
+                if (page == Number.NaN || page <= 0) {
+                    return false;
+                }else{
+                    getData(page);
+                }
+            }
+        });
+        // function for ajax table pagination end
 
+        $(document).ready(function(){
+            loadViolationRecTable();
+
+            // funciton for loading vilation records table
+            function loadViolationRecTable(){
+                // get all filtered values
+                // live search
+                var vr_search = document.getElementById('violationRecsFiltr_liveSearch').value;
+                // schools
+                var vr_schools = document.getElementById('violationRecFltr_schools').value;
+                // programs
+                var vr_programs = document.getElementById('violationRecFltr_programs').value;
+                // year levels
+                var vr_yearlvls = document.getElementById('violationRecFltr_yearLvls').value;
+                // genders
+                var vr_genders = document.getElementById('violationRecFltr_genders').value;
+                // age range
+                var vr_minAgeRange = document.getElementById('violationRecFltr_minAge').value;
+                var vr_maxAgeRange = document.getElementById('violationRecFltr_maxAge').value;
+                var df_minAgeRange = document.getElementById('hidden_minAgeRange').value;
+                var df_maxAgeRange = document.getElementById('hidden_maxAgeRange').value;
+                // violation status
+                var vr_status = document.getElementById('violationRecFltr_violationStat').value;
+                // date range
+                var vr_rangefrom = document.getElementById("hidden_dateRangeFrom").value;
+                var vr_rangeTo = document.getElementById("hidden_dateRangeTo").value;
+                // page
+                var page = document.getElementById("hidden_page").value;
+                
+                // update age range label
+                if(vr_minAgeRange == vr_maxAgeRange){
+                    $('#filter_ageRange_label').html('All ' + vr_minAgeRange + ' Year Olds');
+                }else{
+                    $('#filter_ageRange_label').html(vr_minAgeRange + ' to ' + vr_maxAgeRange + ' Year Olds');
+                }
+
+                console.log(vr_search);
+                console.log(vr_schools);
+                console.log(vr_programs);
+                console.log(vr_yearlvls);
+                console.log(vr_genders);
+                console.log(vr_minAgeRange);
+                console.log(vr_maxAgeRange);
+                console.log(vr_status);
+                console.log(vr_rangefrom);
+                console.log(vr_rangeTo);
+                console.log(page);
+
+                $.ajax({
+                    url:"{{ route('violation_records.index') }}",
+                    method:"GET",
+                    data:{
+                        vr_search:vr_search, 
+                        vr_schools:vr_schools, 
+                        vr_programs:vr_programs, 
+                        vr_yearlvls:vr_yearlvls,
+                        vr_genders:vr_genders,
+                        vr_minAgeRange:vr_minAgeRange,
+                        vr_maxAgeRange:vr_maxAgeRange,
+                        df_minAgeRange:df_minAgeRange,
+                        df_maxAgeRange:df_maxAgeRange,
+                        vr_status:vr_status,
+                        vr_rangefrom:vr_rangefrom,
+                        vr_rangeTo:vr_rangeTo
+                        },
+                    dataType:'json',
+                    success:function(data){
+                        $('#violationRecords_tbody').html(data.violation_records_table);
+                        $('#violationRecords_pagination').html(data.paginate);
+                        $('#total_data_count').html(data.total_rows);
+                        $('#hidden_totalDataFound').val(data.total_data_found);
+
+                        // for disabling/ enabling generate report button
+                        var violationRecs_totalData = document.getElementById("hidden_totalDataFound").value;
+                        console.log(violationRecs_totalData);
+                        if(violationRecs_totalData > 0){
+                            $('#generateViolationRecs_btn').prop('disabled', false);
+                        }else{
+                            $('#generateViolationRecs_btn').prop('disabled', true);
+                        }
+                    }
+                });
+
+                // for disabling/ enabling reset filter button
+                if(vr_schools != 0 || vr_programs != 0 || vr_yearlvls != 0 || vr_genders != 0 || vr_minAgeRange != df_minAgeRange || vr_maxAgeRange != df_maxAgeRange || vr_status != 0 || vr_rangefrom != '' || vr_rangeTo != ''){
+                    $('#resetViolationRecsFilter_btn').prop('disabled', false);
+                }else{
+                    $('#resetViolationRecsFilter_btn').prop('disabled', true);
+                }
+
+            }
+
+            // function for capitalizing first letter of a word
+            function capitalizeFirstLetter(string) {
+                return string.charAt(0).toUpperCase() + string.slice(1);
+            }
+
+            // daterange picker
+            $('#violationRecFltr_datepickerRange').daterangepicker({
+                timePicker: true,
+                showDropdowns: true,
+                minYear: 2020,
+                maxYear: parseInt(moment().format('YYYY'),10),
+                drops: 'up',
+                opens: 'right',
+                autoUpdateInput: false,
+                locale: {
+                    format: 'MMMM DD, YYYY - hh:mm A',
+                    cancelLabel: 'Clear'
+                    }
+            });
+            $('#violationRecFltr_datepickerRange').on('cancel.daterangepicker', function(ev, picker) {
+                document.getElementById("hidden_dateRangeFrom").value = '';
+                document.getElementById("hidden_dateRangeTo").value = '';
+                $(this).val('');
+                $(this).removeClass('cust_input_hasvalue');
+                // table paginatin set to 1
+                $('#hidden_page').val(1);
+                loadViolationRecTable();
+            });
+            $('#violationRecFltr_datepickerRange').on('apply.daterangepicker', function(ev, picker) {
+                // for hidden data range inputs
+                var start_range = picker.startDate.format('YYYY-MM-DD HH:MM:SS');
+                var end_range = picker.endDate.format('YYYY-MM-DD HH:MM:SS');
+                document.getElementById("hidden_dateRangeFrom").value = start_range;
+                document.getElementById("hidden_dateRangeTo").value = end_range;
+                // display Date range and add style to $this input 
+                $(this).val(picker.startDate.format('MMMM DD, YYYY') + ' - ' + picker.endDate.format('MMMM DD, YYYY'));
+                $(this).addClass('cust_input_hasvalue');
+                // table paginatin set to 1
+                $('#hidden_page').val(1);
+                loadViolationRecTable();
+            });
+
+            // live search filter
+            $('#violationRecsFiltr_liveSearch').on('keyup', function(){
+                // var liveSearchValue = $(this).val();
+                // table paginatin set to 1
+                $('#hidden_page').val(1);
+                loadViolationRecTable();
+            });
+
+            // filter schools
+            $('#violationRecFltr_schools').on('change paste keyup', function(){
+                var selectedSchool = $(this).val();
+                var toUC_selectedSchool = selectedSchool.toUpperCase();
+                // schools values
+                var all_programs = 'all_programs';
+                var SASE = 'SASE';
+                var SBCS = 'SBCS';
+                var SIHTM = 'SIHTM';
+                var SHSP = 'SHSP';
+                // show/hide options for #violationRecFltr_programs based on selected school
+                if(toUC_selectedSchool === SASE){
+                    // hide/show programs
+                    $('#violationRecFltr_programs option[data-programs="' + toUC_selectedSchool + '"]').show();
+                    $('#violationRecFltr_programs option[data-programs="' + SBCS + '"]').hide();
+                    $('#violationRecFltr_programs option[data-programs="' + SIHTM + '"]').hide();
+                    $('#violationRecFltr_programs option[data-programs="' + SHSP + '"]').hide();
+                    $('#violationRecFltr_programs option[data-default-program="' + all_programs + '"]').html('All SASE Programs');
+                    document.getElementById("violationRecFltr_programs").classList.remove("cust_input_hasvalue");
+                    document.getElementById("violationRecFltr_yearLvls").classList.remove("cust_input_hasvalue");
+                    $('#violationRecFltr_programs').val(0);
+                    $('#violationRecFltr_yearLvls').val(0);
+                    $(this).addClass('cust_input_hasvalue');
+                }else if(toUC_selectedSchool === SBCS){
+                    // hide/show programs
+                    $('#violationRecFltr_programs option[data-programs="' + toUC_selectedSchool + '"]').show();
+                    $('#violationRecFltr_programs option[data-programs="' + SASE + '"]').hide();
+                    $('#violationRecFltr_programs option[data-programs="' + SIHTM + '"]').hide();
+                    $('#violationRecFltr_programs option[data-programs="' + SHSP + '"]').hide();
+                    $('#violationRecFltr_programs option[data-default-program="' + all_programs + '"]').html('All SBCS Programs');
+                    document.getElementById("violationRecFltr_programs").classList.remove("cust_input_hasvalue");
+                    document.getElementById("violationRecFltr_yearLvls").classList.remove("cust_input_hasvalue");
+                    $('#violationRecFltr_programs').val(0);
+                    $('#violationRecFltr_yearLvls').val(0);
+                    $(this).addClass('cust_input_hasvalue');
+                }else if(toUC_selectedSchool === SIHTM){
+                    // hide/show programs
+                    $('#violationRecFltr_programs option[data-programs="' + toUC_selectedSchool + '"]').show();
+                    $('#violationRecFltr_programs option[data-programs="' + SASE + '"]').hide();
+                    $('#violationRecFltr_programs option[data-programs="' + SBCS + '"]').hide();
+                    $('#violationRecFltr_programs option[data-programs="' + SHSP + '"]').hide();
+                    $('#violationRecFltr_programs option[data-default-program="' + all_programs + '"]').html('All SIHTM Programs');
+                    document.getElementById("violationRecFltr_programs").classList.remove("cust_input_hasvalue");
+                    document.getElementById("violationRecFltr_yearLvls").classList.remove("cust_input_hasvalue");
+                    $('#violationRecFltr_programs').val(0);
+                    $('#violationRecFltr_yearLvls').val(0);
+                    $(this).addClass('cust_input_hasvalue');
+                }else if(toUC_selectedSchool === SHSP){
+                    // hide/show programs
+                    $('#violationRecFltr_programs option[data-programs="' + toUC_selectedSchool + '"]').show();
+                    $('#violationRecFltr_programs option[data-programs="' + SASE + '"]').hide();
+                    $('#violationRecFltr_programs option[data-programs="' + SIHTM + '"]').hide();
+                    $('#violationRecFltr_programs option[data-programs="' + SBCS + '"]').hide();
+                    $('#violationRecFltr_programs option[data-default-program="' + all_programs + '"]').html('All SHSP Programs');
+                    document.getElementById("violationRecFltr_programs").classList.remove("cust_input_hasvalue");
+                    document.getElementById("violationRecFltr_yearLvls").classList.remove("cust_input_hasvalue");
+                    $('#violationRecFltr_programs').val(0);
+                    $('#violationRecFltr_yearLvls').val(0);
+                    $(this).addClass('cust_input_hasvalue');
+                }else{
+                    // show all programs
+                    $('#violationRecFltr_programs option[data-programs="' + SASE + '"]').show();
+                    $('#violationRecFltr_programs option[data-programs="' + SBCS + '"]').show();
+                    $('#violationRecFltr_programs option[data-programs="' + SIHTM + '"]').show();
+                    $('#violationRecFltr_programs option[data-programs="' + SBCS + '"]').show();
+                    $('#violationRecFltr_programs option[data-default-program="' + all_programs + '"]').html('All Programs');
+                    document.getElementById("violationRecFltr_programs").classList.remove("cust_input_hasvalue");
+                    document.getElementById("violationRecFltr_yearLvls").classList.remove("cust_input_hasvalue");
+                    $('#violationRecFltr_programs').val(0);
+                    $('#violationRecFltr_yearLvls').val(0);
+                    $(this).removeClass('cust_input_hasvalue');
+                }
+                // table paginatin set to 1
+                $('#hidden_page').val(1);
+                loadViolationRecTable();
+            });
+
+            // filter programs
+            $('#violationRecFltr_programs').on('change paste keyup', function(){
+                var selectedProgram = $(this).val();
+                if(selectedProgram != 0){
+                    if(selectedProgram == 'BSA' || selectedProgram == 'BS Physical Therapy'){
+                        // show all year levels
+                        $('#violationRecFltr_yearLvls option[data-yearlvls="' + 1 + '"]').show();
+                        $('#violationRecFltr_yearLvls option[data-yearlvls="' + 2 + '"]').show();
+                        $('#violationRecFltr_yearLvls option[data-yearlvls="' + 3 + '"]').show();
+                        $('#violationRecFltr_yearLvls option[data-yearlvls="' + 4 + '"]').show();
+                        $('#violationRecFltr_yearLvls option[data-yearlvls="' + 5 + '"]').show();
+                    }else{
+                        // show all year levels except 5th year
+                        $('#violationRecFltr_yearLvls option[data-yearlvls="' + 1 + '"]').show();
+                        $('#violationRecFltr_yearLvls option[data-yearlvls="' + 2 + '"]').show();
+                        $('#violationRecFltr_yearLvls option[data-yearlvls="' + 3 + '"]').show();
+                        $('#violationRecFltr_yearLvls option[data-yearlvls="' + 4 + '"]').show();
+                        $('#violationRecFltr_yearLvls option[data-yearlvls="' + 5 + '"]').hide();
+                    }
+                    document.getElementById("violationRecFltr_yearLvls").classList.remove("cust_input_hasvalue");
+                    $('#violationRecFltr_yearLvls').val(0);
+                    $(this).addClass('cust_input_hasvalue');
+                }else{
+                    document.getElementById("violationRecFltr_yearLvls").classList.remove("cust_input_hasvalue");
+                    $('#violationRecFltr_yearLvls').val(0);
+                    $(this).removeClass('cust_input_hasvalue');
+                }
+                // table paginatin set to 1
+                $('#hidden_page').val(1);
+                loadViolationRecTable();
+            });
+
+            // filter year levels
+            $('#violationRecFltr_yearLvls').on('change paste keyup', function(){
+                var selectedYearLvl = $(this).val();
+                if(selectedYearLvl != 0){
+                    $(this).addClass('cust_input_hasvalue');
+                }else{
+                    $(this).removeClass('cust_input_hasvalue');
+                }
+                // table paginatin set to 1
+                $('#hidden_page').val(1);
+                loadViolationRecTable();
+            });
+
+            // filter genders
+            $('#violationRecFltr_genders').on('change paste keyup', function(){
+                var selectedGender = $(this).val();
+                if(selectedGender != 0){
+                    $(this).addClass('cust_input_hasvalue');
+                }else{
+                    $(this).removeClass('cust_input_hasvalue');
+                }
+                // table paginatin set to 1
+                $('#hidden_page').val(1);
+                loadViolationRecTable();
+            });
+
+            // filter age range
+            // min age
+            $('#violationRecFltr_minAge').on('change paste keyup', function(){
+                // get new min age range
+                var newMinAge = $(this).val();
+                // get default min & max age range
+                var df_minAgeRange = document.getElementById('hidden_minAgeRange').value;
+                var df_maxAgeRange = document.getElementById('hidden_maxAgeRange').value;
+                // add style to #violationRecFltr_minAge
+                if(newMinAge != df_minAgeRange){
+                    document.getElementById("violationRecFltr_minAge").classList.add("cust_input_hasvalue");
+                }else{
+                    document.getElementById("violationRecFltr_minAge").classList.remove("cust_input_hasvalue");
+                }
+                // update #violationRecFltr_maxAge input value
+                var sel_maxAgeRange_input = document.getElementById('violationRecFltr_maxAge').value;
+                if(sel_maxAgeRange_input < newMinAge){
+                    $('#violationRecFltr_maxAge').val(df_maxAgeRange);
+                    document.getElementById("violationRecFltr_maxAge").classList.remove("cust_input_hasvalue");
+                }
+                // hide/show options for #violationRecFltr_maxAge based on new min age range
+                $('#violationRecFltr_maxAge option').filter(function(){
+                    return (parseInt(this.value,10) < newMinAge );
+                }).hide();
+                $('#violationRecFltr_maxAge option').filter(function(){
+                    return (parseInt(this.value,10) >= newMinAge );
+                }).show();
+                loadViolationRecTable();
+            });
+            // max age
+            $('#violationRecFltr_maxAge').on('change paste keyup', function(){
+                // get new min age range
+                var newMaxAge = $(this).val();
+                // get default max age range
+                var df_maxAgeRange = document.getElementById('hidden_maxAgeRange').value;
+                // add style to #violationRecFltr_maxAge
+                if(newMaxAge != df_maxAgeRange){
+                    document.getElementById("violationRecFltr_maxAge").classList.add("cust_input_hasvalue");
+                }else{
+                    document.getElementById("violationRecFltr_maxAge").classList.remove("cust_input_hasvalue");
+                }
+                loadViolationRecTable();
+            });
+
+            // filter violation status
+            $('#violationRecFltr_violationStat').on('change paste keyup', function(){
+                var selectedViolatinStat = $(this).val();
+                if(selectedViolatinStat != 0){
+                    $(this).addClass('cust_input_hasvalue');
+                }else{
+                    $(this).removeClass('cust_input_hasvalue');
+                }
+                // table paginatin set to 1
+                $('#hidden_page').val(1);
+                loadViolationRecTable();
+            });
+
+            // hanle page link
+            $(document).on('click', '.pagination a', function(event){
+                event.preventDefault();
+                
+                var page = $(this).attr('href').split('page=')[1];
+                $('#hidden_page').val(page);
+                console.log($(this).val());
+
+                loadViolationRecTable();
+                getData(page);
+                $('li').removeClass('active');
+                $(this).parent('li').addClass('active');
+            });
+
+            // reset filter
+            $('#resetViolationRecsFilter_btn').on('click', function(){
+               
+            });
+        });
+    </script>
 @endpush
