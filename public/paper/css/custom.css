@@ -1098,6 +1098,11 @@ a.text_svms_gray:hover {
   color: var(--svms_blue);
 }
 
+/* tr pointer */
+.tr_pointer{
+  cursor: pointer !important;
+}
+
 /* .tbody_svms_white tr{
   cursor: pointer !important;
 } */
@@ -1519,6 +1524,19 @@ a.text_svms_gray:hover {
   background-repeat: no-repeat !important;
   background-color: var(--svms_red);
   border: 2px solid var(--svms_red);
+}
+.display_violator_image3{
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  border-radius: 50%;
+  position: relative;
+  object-fit: cover !important;
+  background-size: cover !important;
+  background-position: 50% 50% !important;
+  background-repeat: no-repeat !important;
+  background-color: #6bd098 !important;
+  border: 2px solid #6bd098 !important;
 }
 .display_user_image{
   width: 60px;
@@ -2738,7 +2756,8 @@ fieldset[disabled] .applyBtn.active {
   vertical-align: baseline;
   border-radius: 0.25rem;
 } */
-.cust_badge1 {
+/* svms red */
+.cust_badge_red {
   color: #fff;
   background-color: #BD171B;
   font-size: 13px;
@@ -2746,9 +2765,24 @@ fieldset[disabled] .applyBtn.active {
   border: none;
   border-radius: 5px;
 }
-.cust_badge1[href]:focus,
-.cust_badge1[href]:hover {
+.cust_badge_red[href]:focus,
+.cust_badge_red[href]:hover {
   color: #fff;
   text-decoration: none;
   background-color: #BD171B;
+}
+/* svms green */
+.cust_badge_grn {
+  color: #fff;
+  background-color: #6bd098;
+  font-size: 13px;
+  font-weight: normal;
+  border: none;
+  border-radius: 5px;
+}
+.cust_badge_grn[href]:focus,
+.cust_badge_grn[href]:hover {
+  color: #fff;
+  text-decoration: none;
+  background-color: #6bd098;
 }

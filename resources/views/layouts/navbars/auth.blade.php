@@ -1,11 +1,11 @@
 <div class="sidebar" data-color="svms_data_color" data-active-color="svms_data_active_color">
     <div class="logo">
-        <a href="http://www.creative-tim.com" class="simple-text logo-mini">
+        <a href="#" class="simple-text logo-mini">
             <div class="logo-image-small">
                 <img src="{{ asset('storage/svms/logos/svms_logo.png') }}">
             </div>
         </a>
-        <a href="http://www.creative-tim.com" class="simple-text logo-normal">
+        <a href="#" class="simple-text logo-normal">
             @if(auth()->user()->user_role == 'pending')
                 {{auth()->user()->user_type }} User
             @else

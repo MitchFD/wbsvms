@@ -671,8 +671,8 @@
 
                 loadActLogsTable();
                 getData(page);
-                $('li').removeClass('active');
-                $(this).parent('li').addClass('active');
+                $('li.page-item').removeClass('active');
+                $(this).parent('li.page-item').addClass('active');
             });
         });
     </script>

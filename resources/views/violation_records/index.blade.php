@@ -222,8 +222,8 @@
                                     $min_age = App\Models\Students::select('Age')->min('Age');
                                     $all_age = App\Models\Students::select('Age')->groupBy('Age')->get();
                                 @endphp
-                                <input type="hidden" name="hidden_maxAgeRange" id="hidden_maxAgeRange" value="{{$max_age}}">
-                                <input type="hidden" name="hidden_minAgeRange" id="hidden_minAgeRange" value="{{$min_age}}">
+                                <input type="hidden" name="violationRecFltr_hidden_maxAgeRange" id="violationRecFltr_hidden_maxAgeRange" value="{{$max_age}}">
+                                <input type="hidden" name="violationRecFltr_hidden_minAgeRange" id="violationRecFltr_hidden_minAgeRange" value="{{$min_age}}">
                                 <span class="cust_status_title mt-2 mb-2">Age Range: </span> <span class="custom_label_sub" id="filter_ageRange_label"> {{$min_age}} to {{$max_age}} Year Olds</span></label>
                                 <div class="row">
                                     <div class="col-lg-12 col-md-12 col-sm-12">
@@ -272,12 +272,12 @@
                                 <div class="row">
                                     <div class="col-lg-12 col-md-12 col-sm-12">
                                         <input id="violationRecFltr_datepickerRange" name="violationRecFltr_datepickerRange" type="text" class="form-control cust_input" placeholder="Select Date Range" />
-                                        <input type="hidden" name="hidden_dateRangeFrom" id="hidden_dateRangeFrom">
-                                        <input type="hidden" name="hidden_dateRangeTo" id="hidden_dateRangeTo">
+                                        <input type="hidden" name="violationRecFltr_hidden_dateRangeFrom" id="violationRecFltr_hidden_dateRangeFrom">
+                                        <input type="hidden" name="violationRecFltr_hidden_dateRangeTo" id="violationRecFltr_hidden_dateRangeTo">
                                         {{-- @php
                                             $count_actLogs = App\Models\Useractivites::all()->count();
                                         @endphp --}}
-                                        <input type="hidden" name="hidden_totalDataFound" id="hidden_totalDataFound">
+                                        <input type="hidden" name="vr_hiddenTotalData_found" id="vr_hiddenTotalData_found">
                                     </div>
                                 </div>
                                 <div class="row mt-3">
@@ -334,7 +334,7 @@
                                         <th>Offenses</th>
                                     </tr>
                                 </thead>
-                                <tbody class="tbody_svms_white" id="violationRecords_tbody">
+                                <tbody class="tbody_svms_white" id="vr_tableTbody">
                                     {{-- ajax data table --}}
                                     {{-- <tr>
                                         <td class="pl12 d-flex justify-content-start align-items-center">
@@ -363,12 +363,12 @@
                     </div>
                     <div class="row d-flex justify-content-center align-items-center">
                         <div class="col-lg-4 col-md-4 col-sm-12 text-left">
-                            <span>Total Data: <span class="font-weight-bold" id="total_data_count"> </span> </span>
+                            <span>Total Data: <span class="font-weight-bold" id="vr_tableTotalData_count"> </span> </span>
                         </div>
                         <div class="col-lg-8 col-md-8 col-sm-12 d-flex justify-content-end">
                             @csrf
-                            <input type="hidden" name="hidden_page" id="hidden_page" value="1" />
-                            <div id="violationRecords_pagination">
+                            <input type="hidden" name="vr_hidden_page" id="vr_hidden_page" value="1" />
+                            <div id="vr_tablePagination">
 
                             </div>
                             {{-- <a href="#" class="btn btn-success cust_bt_links shadow" role="button"><i class="fa fa-print mr-1" aria-hidden="true"></i> Generate Report</a> --}}
@@ -386,31 +386,12 @@
 
 @push('scripts')
     <script>
-        // function for ajax table pagination
-        function getData(page){
-            $.ajax(
-            {
-                url: '?page=' + page,
-                type: "get",
-                datatype: "html"
-            }).done(function(data){
-                location.hash = page;
-            }).fail(function(jqXHR, ajaxOptions, thrownError){
-                alert('No response from server');
-            });
+        function viewStudentOffenses(violator_id){
+            var sel_violator_id = violator_id;
+            console.log(sel_violator_id);
         }
-        $(window).on('hashchange', function() {
-            if (window.location.hash) {
-                var page = window.location.hash.replace('#', '');
-                if (page == Number.NaN || page <= 0) {
-                    return false;
-                }else{
-                    getData(page);
-                }
-            }
-        });
-        // function for ajax table pagination end
-
+    </script>
+    <script>
         $(document).ready(function(){
             loadViolationRecTable();
 
@@ -430,15 +411,15 @@
                 // age range
                 var vr_minAgeRange = document.getElementById('violationRecFltr_minAge').value;
                 var vr_maxAgeRange = document.getElementById('violationRecFltr_maxAge').value;
-                var df_minAgeRange = document.getElementById('hidden_minAgeRange').value;
-                var df_maxAgeRange = document.getElementById('hidden_maxAgeRange').value;
+                var df_minAgeRange = document.getElementById('violationRecFltr_hidden_minAgeRange').value;
+                var df_maxAgeRange = document.getElementById('violationRecFltr_hidden_maxAgeRange').value;
                 // violation status
                 var vr_status = document.getElementById('violationRecFltr_violationStat').value;
                 // date range
-                var vr_rangefrom = document.getElementById("hidden_dateRangeFrom").value;
-                var vr_rangeTo = document.getElementById("hidden_dateRangeTo").value;
+                var vr_rangefrom = document.getElementById("violationRecFltr_hidden_dateRangeFrom").value;
+                var vr_rangeTo = document.getElementById("violationRecFltr_hidden_dateRangeTo").value;
                 // page
-                var page = document.getElementById("hidden_page").value;
+                var page = document.getElementById("vr_hidden_page").value;
                 
                 // update age range label
                 if(vr_minAgeRange == vr_maxAgeRange){
@@ -460,7 +441,7 @@
                 console.log(page);
 
                 $.ajax({
-                    url:"{{ route('violation_records.index') }}",
+                    url:"{{ route('violation_records.vr_table_filter') }}",
                     method:"GET",
                     data:{
                         vr_search:vr_search, 
@@ -477,15 +458,15 @@
                         vr_rangeTo:vr_rangeTo
                         },
                     dataType:'json',
-                    success:function(data){
-                        $('#violationRecords_tbody').html(data.violation_records_table);
-                        $('#violationRecords_pagination').html(data.paginate);
-                        $('#total_data_count').html(data.total_rows);
-                        $('#hidden_totalDataFound').val(data.total_data_found);
+                    success:function(vr_data){
+                        $('#vr_tableTbody').html(vr_data.vr_table);
+                        $('#vr_tablePagination').html(vr_data.vr_table_paginate);
+                        $('#vr_tableTotalData_count').html(vr_data.vr_total_rows);
+                        $('#vr_hiddenTotalData_found').val(vr_data.vr_total_data_found);
 
                         // for disabling/ enabling generate report button
-                        var violationRecs_totalData = document.getElementById("hidden_totalDataFound").value;
-                        console.log(violationRecs_totalData);
+                        var violationRecs_totalData = document.getElementById("vr_hiddenTotalData_found").value;
+                        // console.log(violationRecs_totalData);
                         if(violationRecs_totalData > 0){
                             $('#generateViolationRecs_btn').prop('disabled', false);
                         }else{
@@ -523,25 +504,25 @@
                     }
             });
             $('#violationRecFltr_datepickerRange').on('cancel.daterangepicker', function(ev, picker) {
-                document.getElementById("hidden_dateRangeFrom").value = '';
-                document.getElementById("hidden_dateRangeTo").value = '';
+                document.getElementById("violationRecFltr_hidden_dateRangeFrom").value = '';
+                document.getElementById("violationRecFltr_hidden_dateRangeTo").value = '';
                 $(this).val('');
                 $(this).removeClass('cust_input_hasvalue');
                 // table paginatin set to 1
-                $('#hidden_page').val(1);
+                $('#vr_hidden_page').val(1);
                 loadViolationRecTable();
             });
             $('#violationRecFltr_datepickerRange').on('apply.daterangepicker', function(ev, picker) {
                 // for hidden data range inputs
                 var start_range = picker.startDate.format('YYYY-MM-DD HH:MM:SS');
                 var end_range = picker.endDate.format('YYYY-MM-DD HH:MM:SS');
-                document.getElementById("hidden_dateRangeFrom").value = start_range;
-                document.getElementById("hidden_dateRangeTo").value = end_range;
+                document.getElementById("violationRecFltr_hidden_dateRangeFrom").value = start_range;
+                document.getElementById("violationRecFltr_hidden_dateRangeTo").value = end_range;
                 // display Date range and add style to $this input 
                 $(this).val(picker.startDate.format('MMMM DD, YYYY') + ' - ' + picker.endDate.format('MMMM DD, YYYY'));
                 $(this).addClass('cust_input_hasvalue');
                 // table paginatin set to 1
-                $('#hidden_page').val(1);
+                $('#vr_hidden_page').val(1);
                 loadViolationRecTable();
             });
 
@@ -549,7 +530,7 @@
             $('#violationRecsFiltr_liveSearch').on('keyup', function(){
                 // var liveSearchValue = $(this).val();
                 // table paginatin set to 1
-                $('#hidden_page').val(1);
+                $('#vr_hidden_page').val(1);
                 loadViolationRecTable();
             });
 
@@ -626,7 +607,7 @@
                     $(this).removeClass('cust_input_hasvalue');
                 }
                 // table paginatin set to 1
-                $('#hidden_page').val(1);
+                $('#vr_hidden_page').val(1);
                 loadViolationRecTable();
             });
 
@@ -658,7 +639,7 @@
                     $(this).removeClass('cust_input_hasvalue');
                 }
                 // table paginatin set to 1
-                $('#hidden_page').val(1);
+                $('#vr_hidden_page').val(1);
                 loadViolationRecTable();
             });
 
@@ -671,7 +652,7 @@
                     $(this).removeClass('cust_input_hasvalue');
                 }
                 // table paginatin set to 1
-                $('#hidden_page').val(1);
+                $('#vr_hidden_page').val(1);
                 loadViolationRecTable();
             });
 
@@ -684,7 +665,7 @@
                     $(this).removeClass('cust_input_hasvalue');
                 }
                 // table paginatin set to 1
-                $('#hidden_page').val(1);
+                $('#vr_hidden_page').val(1);
                 loadViolationRecTable();
             });
 
@@ -694,8 +675,8 @@
                 // get new min age range
                 var newMinAge = $(this).val();
                 // get default min & max age range
-                var df_minAgeRange = document.getElementById('hidden_minAgeRange').value;
-                var df_maxAgeRange = document.getElementById('hidden_maxAgeRange').value;
+                var df_minAgeRange = document.getElementById('violationRecFltr_hidden_minAgeRange').value;
+                var df_maxAgeRange = document.getElementById('violationRecFltr_hidden_maxAgeRange').value;
                 // add style to #violationRecFltr_minAge
                 if(newMinAge != df_minAgeRange){
                     document.getElementById("violationRecFltr_minAge").classList.add("cust_input_hasvalue");
@@ -722,7 +703,7 @@
                 // get new min age range
                 var newMaxAge = $(this).val();
                 // get default max age range
-                var df_maxAgeRange = document.getElementById('hidden_maxAgeRange').value;
+                var df_maxAgeRange = document.getElementById('violationRecFltr_hidden_maxAgeRange').value;
                 // add style to #violationRecFltr_maxAge
                 if(newMaxAge != df_maxAgeRange){
                     document.getElementById("violationRecFltr_maxAge").classList.add("cust_input_hasvalue");
@@ -741,28 +722,106 @@
                     $(this).removeClass('cust_input_hasvalue');
                 }
                 // table paginatin set to 1
-                $('#hidden_page').val(1);
+                $('#vr_hidden_page').val(1);
                 loadViolationRecTable();
-            });
-
-            // hanle page link
-            $(document).on('click', '.pagination a', function(event){
-                event.preventDefault();
-                
-                var page = $(this).attr('href').split('page=')[1];
-                $('#hidden_page').val(page);
-                console.log($(this).val());
-
-                loadViolationRecTable();
-                getData(page);
-                $('li').removeClass('active');
-                $(this).parent('li').addClass('active');
             });
 
             // reset filter
             $('#resetViolationRecsFilter_btn').on('click', function(){
-               
+            // get default values of min & max age range
+            var df_minAgeRange = document.getElementById('violationRecFltr_hidden_minAgeRange').value;
+            var df_maxAgeRange = document.getElementById('violationRecFltr_hidden_maxAgeRange').value;
+            // custom values
+            var all_programs = 'all_programs';
+            var SASE = 'SASE';
+            var SBCS = 'SBCS';
+            var SIHTM = 'SIHTM';
+            var SHSP = 'SHSP';
+            var all_year_levels = 'all_year_levels';
+            // schools
+            document.getElementById("violationRecFltr_schools").classList.remove("cust_input_hasvalue");
+            $('#violationRecFltr_schools').val(0);
+            // programs
+            document.getElementById("violationRecFltr_programs").classList.remove("cust_input_hasvalue");
+            $('#violationRecFltr_programs').val(0);
+            $('#violationRecFltr_programs option[data-programs="' + SASE + '"]').show();
+            $('#violationRecFltr_programs option[data-programs="' + SBCS + '"]').show();
+            $('#violationRecFltr_programs option[data-programs="' + SIHTM + '"]').show();
+            $('#violationRecFltr_programs option[data-programs="' + SBCS + '"]').show();
+            $('#violationRecFltr_programs option[data-default-program="' + all_programs + '"]').html('All Programs');
+            // year levels
+            document.getElementById("violationRecFltr_yearLvls").classList.remove("cust_input_hasvalue");
+            $('#violationRecFltr_yearLvls').val(0);
+            $('#violationRecFltr_yearLvls option[data-yearlvls="' + 1 + '"]').show();
+            $('#violationRecFltr_yearLvls option[data-yearlvls="' + 2 + '"]').show();
+            $('#violationRecFltr_yearLvls option[data-yearlvls="' + 3 + '"]').show();
+            $('#violationRecFltr_yearLvls option[data-yearlvls="' + 4 + '"]').show();
+            $('#violationRecFltr_yearLvls option[data-yearlvls="' + 5 + '"]').show();
+            $('#violationRecFltr_yearLvls option[data-default-yearlvl="' + all_year_levels + '"]').html('All Year Levels');
+            // genders
+            document.getElementById("violationRecFltr_genders").classList.remove("cust_input_hasvalue");
+            $('#violationRecFltr_genders').val(0);
+            // age range
+            document.getElementById("violationRecFltr_minAge").classList.remove("cust_input_hasvalue");
+            $('#violationRecFltr_minAge').val(df_minAgeRange);
+            document.getElementById("violationRecFltr_maxAge").classList.remove("cust_input_hasvalue");
+            $('#violationRecFltr_maxAge').val(df_maxAgeRange);
+            // violation status
+            document.getElementById("violationRecFltr_violationStat").classList.remove("cust_input_hasvalue");
+            $('#violationRecFltr_violationStat').val(0);
+            // date range
+            document.getElementById("violationRecFltr_datepickerRange").classList.remove("cust_input_hasvalue");
+            document.getElementById("violationRecFltr_datepickerRange").value = '';
+            document.getElementById("violationRecFltr_hidden_dateRangeFrom").value = '';
+            document.getElementById("violationRecFltr_hidden_dateRangeTo").value = '';
+            // table paginatin set to 1
+            $('#vr_hidden_page').val(1);
+            loadViolationRecTable();
             });
+
+            // function for ajax table pagination
+            $(window).on('hashchange', function() {
+                if (window.location.hash) {
+                    var page = window.location.hash.replace('#', '');
+                    if (page == Number.NaN || page <= 0) {
+                        return false;
+                    }else{
+                        vr_getData(page);
+                    }
+                }
+            });
+            $(document).ready(function(){
+                $('#vr_tablePagination').on('click', '.pagination a', function(event){
+                    event.preventDefault();
+
+                    $('li.page-item').removeClass('active');
+                    $(this).parent('li.page-item').addClass('active');
+                    
+                    var myurl = $(this).attr('href');
+                    var page = $(this).attr('href').split('page=')[1];
+
+                    $('#vr_hidden_page').val(page);
+                    console.log($(this).val());
+
+                    loadViolationRecTable();
+                    vr_getData(page);
+                    
+                });
+            });
+            function vr_getData(page){
+                $.ajax(
+                {
+                    url: '?page=' + page,
+                    type: "get",
+                    datatype: "html"
+                }).done(function(data){
+                    // $("#vr_tableTbody").empty().html(data.html);
+                    location.hash = page;
+                }).fail(function(jqXHR, ajaxOptions, thrownError){
+                    alert('No response from server');
+                });
+            }
+            // function for ajax table pagination end
         });
     </script>
 @endpush
