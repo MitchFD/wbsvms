@@ -24,16 +24,16 @@ class ViolationRecordsController extends Controller
             $vr_total_matched_results = '';
             $vr_total_filtered_result = '';
             // get all request
-            $vr_search = $request->get('vr_search');
-            $vr_schools = $request->get('vr_schools');
-            $vr_programs = $request->get('vr_programs');
-            $vr_yearlvls = $request->get('vr_yearlvls');
-            $vr_genders = $request->get('vr_genders');
+            $vr_search      = $request->get('vr_search');
+            $vr_schools     = $request->get('vr_schools');
+            $vr_programs    = $request->get('vr_programs');
+            $vr_yearlvls    = $request->get('vr_yearlvls');
+            $vr_genders     = $request->get('vr_genders');
             $vr_minAgeRange = $request->get('vr_minAgeRange');
             $vr_maxAgeRange = $request->get('vr_maxAgeRange');
-            $vr_status = $request->get('vr_status');
-            $vr_rangefrom = $request->get('vr_rangefrom');
-            $vr_rangeTo = $request->get('vr_rangeTo');
+            $vr_status      = $request->get('vr_status');
+            $vr_rangefrom   = $request->get('vr_rangefrom');
+            $vr_rangeTo     = $request->get('vr_rangeTo');
             $df_minAgeRange = $request->get('df_minAgeRange');
             $df_maxAgeRange = $request->get('df_maxAgeRange');
             // customized requests
@@ -43,7 +43,7 @@ class ViolationRecordsController extends Controller
             if($vr_search != ''){
                 $fltr_VR_tbl = DB::table('violations_tbl')
                                         ->join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
-                                        ->select('violations_tbl.*', 'students_tbl.Student_Number', 'students_tbl.First_Name', 'students_tbl.Middle_Name', 'students_tbl.Last_Name', 'students_tbl.Gender', 'students_tbl.Age', 'students_tbl.School_Name', 'students_tbl.Course', 'students_tbl.YearLevel', 'students_tbl.Student_Image')
+                                        ->select('violations_tbl.*', 'students_tbl.*')
                                         ->where(function($vrQuery) use ($vr_search) {
                                             return $vrQuery->orWhere('students_tbl.Student_Number', 'like', '%'.$vr_search.'%')
                                                         ->orWhere('students_tbl.First_Name', 'like', '%'.$vr_search.'%')
@@ -63,7 +63,7 @@ class ViolationRecordsController extends Controller
                                                 return $vrQuery->where('students_tbl.Course', 'like', '%'.$vr_programs.'%');
                                             }
                                             if($vr_yearlvls != 0 OR !empty($vr_yearlvls)){
-                                                return $vrQuery->where('students_tbl.YearLevel', 'like', '%'.$vr_yearlvls.'%');
+                                                return $vrQuery->where('students_tbl.YearLevel', '=', $vr_yearlvls);
                                             }
                                             if($vr_genders != 0 OR !empty($vr_genders)){
                                                 return $vrQuery->where('students_tbl.Gender', '=', $lower_vr_gender);
@@ -75,25 +75,25 @@ class ViolationRecordsController extends Controller
                                                 return $vrQuery->where('violations_tbl.violation_status', '=', $lower_vr_status);
                                             }
                                             if($vr_rangefrom != 0 OR !empty($vr_rangefrom) AND $vr_rangeTo != 0 OR !empty($vr_rangeTo)){
-                                                return $vrQuery->whereBetween('violations_tbl.created_at', [$vr_rangefrom, $vr_rangeTo]);
+                                                return $vrQuery->whereBetween('violations_tbl.recorded_at', [$vr_rangefrom, $vr_rangeTo]);
                                             }
                                         })
-                                        ->orderBy('violations_tbl.created_at', 'DESC')
+                                        ->orderBy('violations_tbl.recorded_at', 'DESC')
                                         ->paginate(10);
                 $matched_result_txt = ' Matched Records';
             }else{
                 $fltr_VR_tbl = DB::table('violations_tbl')
                                         ->join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
-                                        ->select('violations_tbl.*', 'students_tbl.Student_Number', 'students_tbl.First_Name', 'students_tbl.Middle_Name', 'students_tbl.Last_Name', 'students_tbl.Gender', 'students_tbl.Age', 'students_tbl.School_Name', 'students_tbl.Course', 'students_tbl.YearLevel', 'students_tbl.Student_Image')
+                                        ->select('violations_tbl.*', 'students_tbl.*')
                                         ->where(function($vrQuery) use ($vr_schools, $vr_programs, $vr_yearlvls, $vr_genders, $lower_vr_gender, $vr_minAgeRange, $vr_maxAgeRange, $df_minAgeRange, $df_maxAgeRange, $vr_status, $lower_vr_status, $vr_rangefrom, $vr_rangeTo){
                                             if($vr_schools != 0 OR !empty($vr_schools)){
-                                                return $vrQuery->where('students_tbl.School_Name', 'like', '%'.$vr_schools.'%');
+                                                return $vrQuery->where('students_tbl.School_Name', '=', $vr_schools);
                                             }
                                             if($vr_programs != 0 OR !empty($vr_programs)){
-                                                return $vrQuery->where('students_tbl.Course', 'like', '%'.$vr_programs.'%');
+                                                return $vrQuery->where('students_tbl.Course', '=', $vr_programs);
                                             }
                                             if($vr_yearlvls != 0 OR !empty($vr_yearlvls)){
-                                                return $vrQuery->where('students_tbl.YearLevel', 'like', '%'.$vr_yearlvls.'%');
+                                                return $vrQuery->where('students_tbl.YearLevel', '=', $vr_yearlvls);
                                             }
                                             if($vr_genders != 0 OR !empty($vr_genders)){
                                                 return $vrQuery->where('students_tbl.Gender', '=', $lower_vr_gender);
@@ -105,10 +105,10 @@ class ViolationRecordsController extends Controller
                                                 return $vrQuery->where('violations_tbl.violation_status', '=', $lower_vr_status);
                                             }
                                             if($vr_rangefrom != 0 OR !empty($vr_rangefrom) AND $vr_rangeTo != 0 OR !empty($vr_rangeTo)){
-                                                return $vrQuery->whereBetween('violations_tbl.created_at', [$vr_rangefrom, $vr_rangeTo]);
+                                                return $vrQuery->whereBetween('violations_tbl.recorded_at', [$vr_rangefrom, $vr_rangeTo]);
                                             }
                                         })
-                                        ->orderBy('violations_tbl.created_at', 'DESC')
+                                        ->orderBy('violations_tbl.recorded_at', 'DESC')
                                         ->paginate(10);
                 $matched_result_txt = ' Record';
             }
@@ -203,8 +203,8 @@ class ViolationRecordsController extends Controller
                         </td>
                         <td>
                             <div class="d-inline">
-                                <span class="actLogs_content">'.preg_replace('/('.$vr_search.')/i','<span class="red_highlight2">$1</span>', date('F d, Y', strtotime($this_violator->created_at))) . '</span>
-                                <span class="actLogs_tdSubTitle sub2">'.preg_replace('/('.$vr_search.')/i','<span class="red_highlight2">$1</span>', date('D', strtotime($this_violator->created_at))) . ' - '.preg_replace('/('.$vr_search.')/i','<span class="red_highlight2">$1</span>', date('g:i A', strtotime($this_violator->created_at))) . '</span>
+                                <span class="actLogs_content">'.preg_replace('/('.$vr_search.')/i','<span class="red_highlight2">$1</span>', date('F d, Y', strtotime($this_violator->recorded_at))) . '</span>
+                                <span class="actLogs_tdSubTitle sub2">'.preg_replace('/('.$vr_search.')/i','<span class="red_highlight2">$1</span>', date('D', strtotime($this_violator->recorded_at))) . ' - '.preg_replace('/('.$vr_search.')/i','<span class="red_highlight2">$1</span>', date('g:i A', strtotime($this_violator->recorded_at))) . '</span>
                             </div>
                         </td>
                         <td>

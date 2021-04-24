@@ -15,7 +15,7 @@ class CreateViolationsTable extends Migration
     {
         Schema::create('violations_tbl', function (Blueprint $table) {
             $table->id('viola_id');
-            $table->timestamp('created_at')->format('Y-m-d H:i:s')->nullable();
+            $table->timestamp('recorded_at')->format('Y-m-d H:i:s')->nullable();
             $table->string('violation_status')->default('not cleared');    
             $table->tinyInteger('offense_count');    
             $table->json('minor_off')->nullable();

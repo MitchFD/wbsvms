@@ -51,22 +51,38 @@
                     </div>
                 </li> --}}
                 <li class="nav-item btn-rotate dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink2"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="nc-icon nc-settings-gear-65"></i>
-                        <p>
+                    <a class="nav-link dropdown-toggle py-0" href="#" id="navbarDropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{-- <i class="nc-icon nc-settings-gear-65"></i> --}}
+                        {{-- <p>
                             <span class="d-lg-none d-md-block">{{ __('Account') }}</span>
-                        </p>
+                        </p> --}}
+                        @php
+                            if(auth()->user()->user_type == 'student'){
+                                $nav_imgFltr = 'nav_userImg_stud';
+                            }elseif(auth()->user()->user_type == 'employee'){
+                                $nav_imgFltr = 'nav_userImg_emp';
+                            }else{
+                                $nav_imgFltr = 'nav_userImg_unknown';
+                            }
+                        @endphp
+                        @if(!is_null(auth()->user()->user_image) OR !empty(auth()->user()->user_image))
+                            <img class="nav_userImg {{ $nav_imgFltr }} mr-2" src="{{ asset('storage/svms/user_images/'.auth()->user()->user_image.'') }}" alt="your profile image">
+                        @else
+                            <img class="nav_userImg {{ $nav_imgFltr }} mr-2" src="{{ asset('storage/svms/user_images/student_user_image.jpg') }}" alt="your profile image">
+                        @endif
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink2">
                         <form class="dropdown-item" action="{{ route('logout') }}" id="formLogOut" method="POST" style="display: none;">
                             @csrf
                         </form>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                            <a class="dropdown-item" onclick="document.getElementById('formLogOut').submit();">{{ __('Log out') }}</a>
+                        <a class="dropdown-item" onclick="document.getElementById('formLogOut').submit();">{{ __('Log out') }}</a>
+                        <a class="dropdown-item">{{ __('My Profile') }}</a>
+                        {{-- <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink"> --}}
+                            {{-- <a class="dropdown-item" onclick="document.getElementById('formLogOut').submit();">{{ __('Log out') }}</a>
+                            <a class="dropdown-item">{{ __('My Profile') }}</a> --}}
                             {{-- <a href="{{url('/log_me_out')}}" class="dropdown-item" >{{ __('Log out') }}</a> --}}
                             {{-- <a class="dropdown-item" href="{{ route('profile.edit') }}">{{ __('My profile') }}</a> --}}
-                        </div>
+                        {{-- </div> --}}
                     </div>
                 </li>
             </ul>

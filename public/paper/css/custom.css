@@ -2292,6 +2292,33 @@ select.drpdwn_arrow2:focus {
   font-size: 14px;
 }
 
+/* user circle image on top nav */
+.nav_userImg{
+  /* display: block; */
+  width: 35px;
+  height: 35px;
+  overflow: hidden;
+  border-radius: 50%;
+  position: relative;
+  object-fit: cover !important;
+  background-size: cover !important;
+  background-position: 50% 50% !important;
+  background-repeat: no-repeat !important;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+.nav_userImg_emp{
+  background-color: var(--svms_blue) !important;
+  border: 2px solid var(--svms_blue) !important;
+}
+.nav_userImg_stud{
+  background-color: var(--svms_green) !important;
+  border: 2px solid var(--svms_green) !important;
+}
+.nav_userImg_unknown{
+  background-color: var(--svms_text_gray) !important;
+  border: 2px solid var(--svms_text_gray) !important;
+}
+
 /* user circle images on system users table */
 .rslts_userImgs{
   width: 40px;

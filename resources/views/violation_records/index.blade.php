@@ -149,7 +149,7 @@
                             </button>
                         </div>
                         <div id="ViolatinRecFiltrOptionsCollapseDiv" class="collapse show cb_t0b15x25" aria-labelledby="ViolatinRecFiltrOptionsCollapseHeading" data-parent="#ViolatinRecFiltrOptionsCollapseParent">
-                            <form id="form_filterUserLogsTable" class="form" method="POST" action="#" enctype="multipart/form-data">
+                            <form id="form_filterViolationRecTable" class="form" method="POST" action="#" enctype="multipart/form-data">
                                 @csrf
                                 <span class="cust_status_title mb-2">Students Filter Options <i class="fa fa-info-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Filter options for specific students."></i></span>
                                 <div class="row">
@@ -392,6 +392,31 @@
         }
     </script>
     <script>
+        // function for ajax table pagination
+        function vr_getData(page){
+            $.ajax(
+            {
+                url: '?page=' + page,
+                type: "get",
+                datatype: "html"
+            }).done(function(data){
+                location.hash = page;
+            }).fail(function(jqXHR, ajaxOptions, thrownError){
+                alert('No response from server');
+            });
+        }
+        $(window).on('hashchange', function() {
+            if (window.location.hash) {
+                var page = window.location.hash.replace('#', '');
+                if (page == Number.NaN || page <= 0) {
+                    return false;
+                }else{
+                    vr_getData(page);
+                }
+            }
+        });
+        // function for ajax table pagination end
+
         $(document).ready(function(){
             loadViolationRecTable();
 
@@ -488,6 +513,22 @@
             function capitalizeFirstLetter(string) {
                 return string.charAt(0).toUpperCase() + string.slice(1);
             }
+
+            // function for ajax table pagination
+            $(document).on('click', '.pagination a', function(event){
+                event.preventDefault();
+                
+                // var myurl = $(this).attr('href');
+                var page = $(this).attr('href').split('page=')[1];
+                $('#vr_hidden_page').val(page);
+                console.log($(this).val());
+
+                loadViolationRecTable();
+                vr_getData(page);
+                $('li.page-item').removeClass('active');
+                $(this).parent('li.page-item').addClass('active');
+            });
+            // function for ajax table pagination end
 
             // daterange picker
             $('#violationRecFltr_datepickerRange').daterangepicker({
@@ -628,7 +669,7 @@
                         $('#violationRecFltr_yearLvls option[data-yearlvls="' + 2 + '"]').show();
                         $('#violationRecFltr_yearLvls option[data-yearlvls="' + 3 + '"]').show();
                         $('#violationRecFltr_yearLvls option[data-yearlvls="' + 4 + '"]').show();
-                        $('#violationRecFltr_yearLvls option[data-yearlvls="' + 5 + '"]').hide();
+                        $('#violationRecFltr_yearLvls option[data-yearlvls="' + 5 + '"]').show();
                     }
                     document.getElementById("violationRecFltr_yearLvls").classList.remove("cust_input_hasvalue");
                     $('#violationRecFltr_yearLvls').val(0);
@@ -778,50 +819,6 @@
             $('#vr_hidden_page').val(1);
             loadViolationRecTable();
             });
-
-            // function for ajax table pagination
-            $(window).on('hashchange', function() {
-                if (window.location.hash) {
-                    var page = window.location.hash.replace('#', '');
-                    if (page == Number.NaN || page <= 0) {
-                        return false;
-                    }else{
-                        vr_getData(page);
-                    }
-                }
-            });
-            $(document).ready(function(){
-                $('#vr_tablePagination').on('click', '.pagination a', function(event){
-                    event.preventDefault();
-
-                    $('li.page-item').removeClass('active');
-                    $(this).parent('li.page-item').addClass('active');
-                    
-                    var myurl = $(this).attr('href');
-                    var page = $(this).attr('href').split('page=')[1];
-
-                    $('#vr_hidden_page').val(page);
-                    console.log($(this).val());
-
-                    loadViolationRecTable();
-                    vr_getData(page);
-                    
-                });
-            });
-            function vr_getData(page){
-                $.ajax(
-                {
-                    url: '?page=' + page,
-                    type: "get",
-                    datatype: "html"
-                }).done(function(data){
-                    // $("#vr_tableTbody").empty().html(data.html);
-                    location.hash = page;
-                }).fail(function(jqXHR, ajaxOptions, thrownError){
-                    alert('No response from server');
-                });
-            }
-            // function for ajax table pagination end
         });
     </script>
 @endpush

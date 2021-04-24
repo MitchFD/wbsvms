@@ -436,7 +436,7 @@ class ViolationEntryController extends Controller
             }
             // record offenses to violations_tbl
             $record_offenses = new Violations;
-            $record_offenses->created_at       = $get_violation_timestamp;
+            $record_offenses->recorded_at       = $get_violation_timestamp;
             $record_offenses->offense_count    = $total_offenses_count;
             $record_offenses->minor_off        = $get_minor_offenses;
             $record_offenses->less_serious_off = $get_less_serious_offenses;
@@ -459,7 +459,7 @@ class ViolationEntryController extends Controller
             // if record was a success
             if($record_offenses){
                 // get this violation id from violations_tbl
-                $get_new_viola_id = Violations::select('viola_id')->where('stud_num', $this_violator)->latest('created_at')->first();
+                $get_new_viola_id = Violations::select('viola_id')->where('stud_num', $this_violator)->latest('recorded_at')->first();
                 $new_viola_id     = $get_new_viola_id->viola_id;
                 // record activity
                 $record_act = new Useractivites;
