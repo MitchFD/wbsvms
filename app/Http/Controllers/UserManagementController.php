@@ -278,7 +278,7 @@ class UserManagementController extends Controller
                                         ->join('users', 'users_activity_tbl.act_respo_user_id', '=', 'users.id')
                                         ->select('users_activity_tbl.*', 'users.id', 'users.user_role', 'users.user_status', 'users.user_role_status', 'users.user_type', 'users.user_sdca_id', 'users.user_image', 'users.user_gender')
                                         ->where(function($query) use ($logs_search) {
-                                            return $query->orWhere('users.user_sdca_id', 'like', '%'.$logs_search.'%')
+                                            $query->orWhere('users.user_sdca_id', 'like', '%'.$logs_search.'%')
                                                         ->orWhere('users.user_role', 'like', '%'.$logs_search.'%')
                                                         ->orWhere('users.user_type', 'like', '%'.$logs_search.'%')
                                                         ->orWhere('users.user_gender', 'like', '%'.$logs_search.'%')
@@ -289,19 +289,19 @@ class UserManagementController extends Controller
                                         })
                                         ->where(function($query) use ($logs_userTypes, $logs_userRoles, $logs_users, $logs_category, $logs_rangefrom, $logs_rangeTo){
                                             if($logs_userTypes != 0 OR !empty($logs_userTypes)){
-                                                return $query->where('users.user_type', '=', $logs_userTypes);
+                                                $query->where('users.user_type', '=', $logs_userTypes);
                                             }
                                             if($logs_userRoles != 0 OR !empty($logs_userRoles)){
-                                                return $query->where('users.user_role', '=', $logs_userRoles);
+                                                $query->where('users.user_role', '=', $logs_userRoles);
                                             }
                                             if($logs_users != 0 OR !empty($logs_users)){
-                                                return $query->where('users.id', '=', $logs_users);
+                                                $query->where('users.id', '=', $logs_users);
                                             }
                                             if($logs_category != 0 OR !empty($logs_category)){
-                                                return $query->where('users_activity_tbl.act_type', '=', $logs_category);
+                                                $query->where('users_activity_tbl.act_type', '=', $logs_category);
                                             }
                                             if($logs_rangefrom != 0 OR !empty($logs_rangefrom) AND $logs_rangeTo != 0 OR !empty($logs_rangeTo)){
-                                                return $query->whereBetween('users_activity_tbl.created_at', [$logs_rangefrom, $logs_rangeTo]);
+                                                $query->whereBetween('users_activity_tbl.created_at', [$logs_rangefrom, $logs_rangeTo]);
                                             }
                                         })
                                         ->orderBy('users_activity_tbl.created_at', 'DESC')

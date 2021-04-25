@@ -54,87 +54,7 @@
                 </div>
             </div>
         </div>
-
-        {{-- violators counts per school - dashboard --}}
-        {{-- <div class="row">
-            <div class="col-lg-12 col-md-12 col-sm-12">
-                <div class="accordion" id="violatorsCountDashboardCollapseParent">
-                    <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray">
-                        <div class="card-header p-0" id="violatorsCountDashboardCollapseHeading">
-                            <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#violatorsCountDashboardCollapseDiv" aria-expanded="true" aria-controls="violatorsCountDashboardCollapseDiv">
-                                <div>
-                                    <span class="card_body_title">Violators count per School</span>
-                                    <span class="card_body_subtitle">View statistical graph of violators per schools.</span>
-                                </div>
-                                <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
-                            </button>
-                        </div>
-                        <div id="violatorsCountDashboardCollapseDiv" class="collapse show cb_t0b15x25" aria-labelledby="violatorsCountDashboardCollapseHeading" data-parent="#violatorsCountDashboardCollapseParent">
-                            <div class="row">
-                                <div class="col-lg-3 col-md-3 col-sm-6">
-                                    <div class="card card_gbr card_ofh shadow">
-                                        <div class="card-body d-flex justify-content-between align-items-center">
-                                            <img class="dash_cards_img" src="{{asset('storage/svms/sdca_images/schools_logos/sbcs.jpg')}}" alt="SBCS Logo">
-                                            <div class="dash_cards_text_div">
-                                                <span class="dash_card_title">SBCS</span>
-                                                <span class="dash_card_count">20</span>
-                                            </div>
-                                        </div>
-                                        <div class="card-footer dash_card_footer align-items-center">
-                                            <i class="fa fa-user mr-1"></i> 20 violators found
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-md-3 col-sm-6">
-                                    <div class="card card_gbr card_ofh shadow">
-                                        <div class="card-body d-flex justify-content-between align-items-center">
-                                            <img class="dash_cards_img" src="{{asset('storage/svms/sdca_images/schools_logos/shsp.jpg')}}" alt="SHSP Logo">
-                                            <div class="dash_cards_text_div">
-                                                <span class="dash_card_title">SHSP</span>
-                                                <span class="dash_card_count">32</span>
-                                            </div>
-                                        </div>
-                                        <div class="card-footer dash_card_footer align-items-center">
-                                            <i class="fa fa-user mr-1"></i> 31 violators found
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-md-3 col-sm-6">
-                                    <div class="card card_gbr card_ofh shadow">
-                                        <div class="card-body d-flex justify-content-between align-items-center">
-                                            <img class="dash_cards_img" src="{{asset('storage/svms/sdca_images/schools_logos/sihtm.jpg')}}" alt="SIHTM Logo">
-                                            <div class="dash_cards_text_div">
-                                                <span class="dash_card_title">SIHTM</span>
-                                                <span class="dash_card_count">15</span>
-                                            </div>
-                                        </div>
-                                        <div class="card-footer dash_card_footer align-items-center">
-                                            <i class="fa fa-user mr-1"></i> 15 violators found
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-md-3 col-sm-6">
-                                    <div class="card card_gbr card_ofh shadow">
-                                        <div class="card-body d-flex justify-content-between align-items-center">
-                                            <img class="dash_cards_img" src="{{asset('storage/svms/sdca_images/schools_logos/sase.jpg')}}" alt="SASE Logo">
-                                            <div class="dash_cards_text_div">
-                                                <span class="dash_card_title">SASE</span>
-                                                <span class="dash_card_count">8</span>
-                                            </div>
-                                        </div>
-                                        <div class="card-footer dash_card_footer align-items-center">
-                                            <i class="fa fa-user mr-1"></i> 8 violators found
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> --}}
-
-        {{-- table data --}}
+        {{-- filter options --}}
         <div class="row">
             <div class="col-lg-3 col-md-4 col-sm-12">
                 <div class="accordion" id="ViolatinRecFiltrOptionsCollapseParent">
@@ -311,19 +231,6 @@
                             </div>
                         </div> --}}
                     </div>
-                    {{-- <div class="row mt-3">
-                        <div class="col-lg-12 col-sm-12">
-                            <span class="cust_table_filters_title"> Filters: </span>
-                            <span id="filter_schools_txt" class="cust_table_filters_texts"> All Schools </span> <span class="cust_table_filters_texts_divider"> / </span>
-                            <span id="filter_programs_txt" class="cust_table_filters_texts"> All Programs </span> <span class="cust_table_filters_texts_divider"> / </span>
-                            <span id="filter_yearLvls_txt" class="cust_table_filters_texts"> All Year Levels </span> <span class="cust_table_filters_texts_divider"> / </span>
-                            <span id="filter_genders_txt" class="cust_table_filters_texts"> All Genders </span> <span class="cust_table_filters_texts_divider"> / </span>
-                            <span id="filter_agesRange_txt" class="cust_table_filters_texts"> {{$min_age}} to {{$max_age}} Year Olds </span> <span class="cust_table_filters_texts_divider"> / </span>
-                            <span id="filter_violationStat_txt" class="cust_table_filters_texts"> All Violation Status </span> <span class="cust_table_filters_texts_divider"> / </span>
-                            <span id="filter_datepickerRange_txt" class="cust_table_filters_texts"> From Previous Days up to this day </span> <span class="cust_table_filters_texts_divider"> / </span>
-                            <span id="filter_liveSearch_txt" class="cust_table_filters_texts"> ...</span>
-                        </div>
-                    </div> --}}
                     <div class="row mt-3">
                         <div class="col-lg-12 col-md-12 col-sm-12">
                             <table class="table table-hover cust_table shadow">
@@ -336,27 +243,6 @@
                                 </thead>
                                 <tbody class="tbody_svms_white" id="vr_tableTbody">
                                     {{-- ajax data table --}}
-                                    {{-- <tr>
-                                        <td class="pl12 d-flex justify-content-start align-items-center">
-                                            <img class="display_violator_image2 shadow-sm" src="{{asset('storage/svms/sdca_images/registered_students_imgs/default_student_img.jpg')}}" alt="student's image">
-                                            <div class="cust_td_info">
-                                                <span class="actLogs_tdTitle font-weight-bold">Mitch Frankein Ovalo Desierto</span>
-                                                <span class="actLogs_tdSubTitle"><span class="sub1">20150348 <span class="subDiv"> | </span> <span class="sub1"> SBCS - BSIT - 4th Year </span> <span class="subDiv"> | </span> <span class="sub1"> Male </span> </span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="d-inline">
-                                                <span class="actLogs_content">April 1, 2021</span>
-                                                <span class="actLogs_tdSubTitle sub2">Fri - 12:00 PM</span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="d-inline">
-                                                <span class="actLogs_content">4 Offenses</span>
-                                                <span class="actLogs_tdSubTitle sub2">Not Wearing ID, Cheating during Exam, Not Wearing Prescribed Uniform ... </span>
-                                            </div>
-                                        </td>
-                                    </tr> --}}
                                 </tbody>
                             </table>
                         </div>
@@ -385,65 +271,33 @@
 @endsection
 
 @push('scripts')
+    {{-- view student's offenses --}}
     <script>
         function viewStudentOffenses(violator_id){
             var sel_violator_id = violator_id;
             console.log(sel_violator_id);
         }
     </script>
+    {{-- view student's offenses end --}}
     <script>
-        // function for ajax table pagination
-        function vr_getData(page){
-            $.ajax(
-            {
-                url: '?page=' + page,
-                type: "get",
-                datatype: "html"
-            }).done(function(data){
-                location.hash = page;
-            }).fail(function(jqXHR, ajaxOptions, thrownError){
-                alert('No response from server');
-            });
-        }
-        $(window).on('hashchange', function() {
-            if (window.location.hash) {
-                var page = window.location.hash.replace('#', '');
-                if (page == Number.NaN || page <= 0) {
-                    return false;
-                }else{
-                    vr_getData(page);
-                }
-            }
-        });
-        // function for ajax table pagination end
-
         $(document).ready(function(){
-            loadViolationRecTable();
+            load_violationRec_table();
 
             // funciton for loading vilation records table
-            function loadViolationRecTable(){
+            function load_violationRec_table(){
                 // get all filtered values
-                // live search
                 var vr_search = document.getElementById('violationRecsFiltr_liveSearch').value;
-                // schools
                 var vr_schools = document.getElementById('violationRecFltr_schools').value;
-                // programs
                 var vr_programs = document.getElementById('violationRecFltr_programs').value;
-                // year levels
                 var vr_yearlvls = document.getElementById('violationRecFltr_yearLvls').value;
-                // genders
                 var vr_genders = document.getElementById('violationRecFltr_genders').value;
-                // age range
                 var vr_minAgeRange = document.getElementById('violationRecFltr_minAge').value;
                 var vr_maxAgeRange = document.getElementById('violationRecFltr_maxAge').value;
                 var df_minAgeRange = document.getElementById('violationRecFltr_hidden_minAgeRange').value;
                 var df_maxAgeRange = document.getElementById('violationRecFltr_hidden_maxAgeRange').value;
-                // violation status
                 var vr_status = document.getElementById('violationRecFltr_violationStat').value;
-                // date range
                 var vr_rangefrom = document.getElementById("violationRecFltr_hidden_dateRangeFrom").value;
                 var vr_rangeTo = document.getElementById("violationRecFltr_hidden_dateRangeTo").value;
-                // page
                 var page = document.getElementById("vr_hidden_page").value;
                 
                 // update age range label
@@ -453,20 +307,22 @@
                     $('#filter_ageRange_label').html(vr_minAgeRange + ' to ' + vr_maxAgeRange + ' Year Olds');
                 }
 
-                console.log(vr_search);
-                console.log(vr_schools);
-                console.log(vr_programs);
-                console.log(vr_yearlvls);
-                console.log(vr_genders);
-                console.log(vr_minAgeRange);
-                console.log(vr_maxAgeRange);
-                console.log(vr_status);
-                console.log(vr_rangefrom);
-                console.log(vr_rangeTo);
-                console.log(page);
+                console.log('');
+                console.log('search_filter: ' + vr_search);
+                console.log('school_filter: ' + vr_schools);
+                console.log('course_filter: ' + vr_programs);
+                console.log('year_level_filter: ' + vr_yearlvls);
+                console.log('gender_filter: ' + vr_genders);
+                console.log('min_Age_filter: ' + vr_minAgeRange);
+                console.log('max_Age_filter: ' + vr_maxAgeRange);
+                console.log('violation_status_filter: ' + vr_status);
+                console.log('date_from_filter: ' + vr_rangefrom);
+                console.log('date_filter: ' + vr_rangeTo);
+                console.log('current_page: ' + page);
+                console.log('');
 
                 $.ajax({
-                    url:"{{ route('violation_records.vr_table_filter') }}",
+                    url:"{{ route('violation_records.index') }}",
                     method:"GET",
                     data:{
                         vr_search:vr_search, 
@@ -506,28 +362,41 @@
                 }else{
                     $('#resetViolationRecsFilter_btn').prop('disabled', true);
                 }
-
             }
-
-            // function for capitalizing first letter of a word
-            function capitalizeFirstLetter(string) {
-                return string.charAt(0).toUpperCase() + string.slice(1);
-            }
-
             // function for ajax table pagination
+            $(window).on('hashchange', function() {
+                if (window.location.hash) {
+                    var vr_page = window.location.hash.replace('#', '');
+                    if (vr_page == Number.NaN || vr_page <= 0) {
+                        return false;
+                    }else{
+                        vr_getData(vr_page);
+                    }
+                }
+            });
             $(document).on('click', '.pagination a', function(event){
                 event.preventDefault();
-                
-                // var myurl = $(this).attr('href');
-                var page = $(this).attr('href').split('page=')[1];
-                $('#vr_hidden_page').val(page);
+
+                var vr_page = $(this).attr('href').split('page=')[1];
+                $('#vr_hidden_page').val(vr_page);
                 console.log($(this).val());
 
-                loadViolationRecTable();
-                vr_getData(page);
+                load_violationRec_table();
+                vr_getData(vr_page);
                 $('li.page-item').removeClass('active');
                 $(this).parent('li.page-item').addClass('active');
             });
+            function vr_getData(vr_page){
+                $.ajax({
+                    url: '?page=' + vr_page,
+                    type: "get",
+                    datatype: "html"
+                }).done(function(data){
+                    location.hash = vr_page;
+                }).fail(function(jqXHR, ajaxOptions, thrownError){
+                    alert('No response from server');
+                });
+            }
             // function for ajax table pagination end
 
             // daterange picker
@@ -551,7 +420,7 @@
                 $(this).removeClass('cust_input_hasvalue');
                 // table paginatin set to 1
                 $('#vr_hidden_page').val(1);
-                loadViolationRecTable();
+                load_violationRec_table();
             });
             $('#violationRecFltr_datepickerRange').on('apply.daterangepicker', function(ev, picker) {
                 // for hidden data range inputs
@@ -564,7 +433,7 @@
                 $(this).addClass('cust_input_hasvalue');
                 // table paginatin set to 1
                 $('#vr_hidden_page').val(1);
-                loadViolationRecTable();
+                load_violationRec_table();
             });
 
             // live search filter
@@ -572,7 +441,7 @@
                 // var liveSearchValue = $(this).val();
                 // table paginatin set to 1
                 $('#vr_hidden_page').val(1);
-                loadViolationRecTable();
+                load_violationRec_table();
             });
 
             // filter schools
@@ -639,7 +508,7 @@
                     $('#violationRecFltr_programs option[data-programs="' + SASE + '"]').show();
                     $('#violationRecFltr_programs option[data-programs="' + SBCS + '"]').show();
                     $('#violationRecFltr_programs option[data-programs="' + SIHTM + '"]').show();
-                    $('#violationRecFltr_programs option[data-programs="' + SBCS + '"]').show();
+                    $('#violationRecFltr_programs option[data-programs="' + SHSP + '"]').show();
                     $('#violationRecFltr_programs option[data-default-program="' + all_programs + '"]').html('All Programs');
                     document.getElementById("violationRecFltr_programs").classList.remove("cust_input_hasvalue");
                     document.getElementById("violationRecFltr_yearLvls").classList.remove("cust_input_hasvalue");
@@ -649,7 +518,7 @@
                 }
                 // table paginatin set to 1
                 $('#vr_hidden_page').val(1);
-                loadViolationRecTable();
+                load_violationRec_table();
             });
 
             // filter programs
@@ -669,19 +538,25 @@
                         $('#violationRecFltr_yearLvls option[data-yearlvls="' + 2 + '"]').show();
                         $('#violationRecFltr_yearLvls option[data-yearlvls="' + 3 + '"]').show();
                         $('#violationRecFltr_yearLvls option[data-yearlvls="' + 4 + '"]').show();
-                        $('#violationRecFltr_yearLvls option[data-yearlvls="' + 5 + '"]').show();
+                        $('#violationRecFltr_yearLvls option[data-yearlvls="' + 5 + '"]').hide();
                     }
                     document.getElementById("violationRecFltr_yearLvls").classList.remove("cust_input_hasvalue");
                     $('#violationRecFltr_yearLvls').val(0);
                     $(this).addClass('cust_input_hasvalue');
                 }else{
+                    // show all year levels except 5th year
+                    $('#violationRecFltr_yearLvls option[data-yearlvls="' + 1 + '"]').show();
+                    $('#violationRecFltr_yearLvls option[data-yearlvls="' + 2 + '"]').show();
+                    $('#violationRecFltr_yearLvls option[data-yearlvls="' + 3 + '"]').show();
+                    $('#violationRecFltr_yearLvls option[data-yearlvls="' + 4 + '"]').show();
+                    $('#violationRecFltr_yearLvls option[data-yearlvls="' + 5 + '"]').show();
                     document.getElementById("violationRecFltr_yearLvls").classList.remove("cust_input_hasvalue");
                     $('#violationRecFltr_yearLvls').val(0);
                     $(this).removeClass('cust_input_hasvalue');
                 }
                 // table paginatin set to 1
                 $('#vr_hidden_page').val(1);
-                loadViolationRecTable();
+                load_violationRec_table();
             });
 
             // filter year levels
@@ -694,7 +569,7 @@
                 }
                 // table paginatin set to 1
                 $('#vr_hidden_page').val(1);
-                loadViolationRecTable();
+                load_violationRec_table();
             });
 
             // filter genders
@@ -707,7 +582,7 @@
                 }
                 // table paginatin set to 1
                 $('#vr_hidden_page').val(1);
-                loadViolationRecTable();
+                load_violationRec_table();
             });
 
             // filter age range
@@ -737,7 +612,9 @@
                 $('#violationRecFltr_maxAge option').filter(function(){
                     return (parseInt(this.value,10) >= newMinAge );
                 }).show();
-                loadViolationRecTable();
+                // table paginatin set to 1
+                $('#vr_hidden_page').val(1);
+                load_violationRec_table();
             });
             // max age
             $('#violationRecFltr_maxAge').on('change paste keyup', function(){
@@ -751,7 +628,9 @@
                 }else{
                     document.getElementById("violationRecFltr_maxAge").classList.remove("cust_input_hasvalue");
                 }
-                loadViolationRecTable();
+                // table paginatin set to 1
+                $('#vr_hidden_page').val(1);
+                load_violationRec_table();
             });
 
             // filter violation status
@@ -764,60 +643,62 @@
                 }
                 // table paginatin set to 1
                 $('#vr_hidden_page').val(1);
-                loadViolationRecTable();
+                load_violationRec_table();
             });
 
             // reset filter
             $('#resetViolationRecsFilter_btn').on('click', function(){
-            // get default values of min & max age range
-            var df_minAgeRange = document.getElementById('violationRecFltr_hidden_minAgeRange').value;
-            var df_maxAgeRange = document.getElementById('violationRecFltr_hidden_maxAgeRange').value;
-            // custom values
-            var all_programs = 'all_programs';
-            var SASE = 'SASE';
-            var SBCS = 'SBCS';
-            var SIHTM = 'SIHTM';
-            var SHSP = 'SHSP';
-            var all_year_levels = 'all_year_levels';
-            // schools
-            document.getElementById("violationRecFltr_schools").classList.remove("cust_input_hasvalue");
-            $('#violationRecFltr_schools').val(0);
-            // programs
-            document.getElementById("violationRecFltr_programs").classList.remove("cust_input_hasvalue");
-            $('#violationRecFltr_programs').val(0);
-            $('#violationRecFltr_programs option[data-programs="' + SASE + '"]').show();
-            $('#violationRecFltr_programs option[data-programs="' + SBCS + '"]').show();
-            $('#violationRecFltr_programs option[data-programs="' + SIHTM + '"]').show();
-            $('#violationRecFltr_programs option[data-programs="' + SBCS + '"]').show();
-            $('#violationRecFltr_programs option[data-default-program="' + all_programs + '"]').html('All Programs');
-            // year levels
-            document.getElementById("violationRecFltr_yearLvls").classList.remove("cust_input_hasvalue");
-            $('#violationRecFltr_yearLvls').val(0);
-            $('#violationRecFltr_yearLvls option[data-yearlvls="' + 1 + '"]').show();
-            $('#violationRecFltr_yearLvls option[data-yearlvls="' + 2 + '"]').show();
-            $('#violationRecFltr_yearLvls option[data-yearlvls="' + 3 + '"]').show();
-            $('#violationRecFltr_yearLvls option[data-yearlvls="' + 4 + '"]').show();
-            $('#violationRecFltr_yearLvls option[data-yearlvls="' + 5 + '"]').show();
-            $('#violationRecFltr_yearLvls option[data-default-yearlvl="' + all_year_levels + '"]').html('All Year Levels');
-            // genders
-            document.getElementById("violationRecFltr_genders").classList.remove("cust_input_hasvalue");
-            $('#violationRecFltr_genders').val(0);
-            // age range
-            document.getElementById("violationRecFltr_minAge").classList.remove("cust_input_hasvalue");
-            $('#violationRecFltr_minAge').val(df_minAgeRange);
-            document.getElementById("violationRecFltr_maxAge").classList.remove("cust_input_hasvalue");
-            $('#violationRecFltr_maxAge').val(df_maxAgeRange);
-            // violation status
-            document.getElementById("violationRecFltr_violationStat").classList.remove("cust_input_hasvalue");
-            $('#violationRecFltr_violationStat').val(0);
-            // date range
-            document.getElementById("violationRecFltr_datepickerRange").classList.remove("cust_input_hasvalue");
-            document.getElementById("violationRecFltr_datepickerRange").value = '';
-            document.getElementById("violationRecFltr_hidden_dateRangeFrom").value = '';
-            document.getElementById("violationRecFltr_hidden_dateRangeTo").value = '';
-            // table paginatin set to 1
-            $('#vr_hidden_page').val(1);
-            loadViolationRecTable();
+                // disable reset button
+                $(this).prop('disabled', true);
+                // get default values of min & max age range
+                var df_minAgeRange = document.getElementById('violationRecFltr_hidden_minAgeRange').value;
+                var df_maxAgeRange = document.getElementById('violationRecFltr_hidden_maxAgeRange').value;
+                // custom values
+                var all_programs = 'all_programs';
+                var SASE = 'SASE';
+                var SBCS = 'SBCS';
+                var SIHTM = 'SIHTM';
+                var SHSP = 'SHSP';
+                var all_year_levels = 'all_year_levels';
+                // schools
+                document.getElementById("violationRecFltr_schools").classList.remove("cust_input_hasvalue");
+                $('#violationRecFltr_schools').val(0);
+                // programs
+                document.getElementById("violationRecFltr_programs").classList.remove("cust_input_hasvalue");
+                $('#violationRecFltr_programs option[data-programs="' + SASE + '"]').show();
+                $('#violationRecFltr_programs option[data-programs="' + SBCS + '"]').show();
+                $('#violationRecFltr_programs option[data-programs="' + SIHTM + '"]').show();
+                $('#violationRecFltr_programs option[data-programs="' + SHSP + '"]').show();
+                $('#violationRecFltr_programs').val(0);
+                $('#violationRecFltr_programs option[data-default-program="' + all_programs + '"]').html('All Programs');
+                // year levels
+                document.getElementById("violationRecFltr_yearLvls").classList.remove("cust_input_hasvalue");
+                $('#violationRecFltr_yearLvls option[data-yearlvls="' + 1 + '"]').show();
+                $('#violationRecFltr_yearLvls option[data-yearlvls="' + 2 + '"]').show();
+                $('#violationRecFltr_yearLvls option[data-yearlvls="' + 3 + '"]').show();
+                $('#violationRecFltr_yearLvls option[data-yearlvls="' + 4 + '"]').show();
+                $('#violationRecFltr_yearLvls option[data-yearlvls="' + 5 + '"]').show();
+                $('#violationRecFltr_yearLvls').val(0);
+                $('#violationRecFltr_yearLvls option[data-default-yearlvl="' + all_year_levels + '"]').html('All Year Levels');
+                // genders
+                document.getElementById("violationRecFltr_genders").classList.remove("cust_input_hasvalue");
+                $('#violationRecFltr_genders').val(0);
+                // age range
+                document.getElementById("violationRecFltr_minAge").classList.remove("cust_input_hasvalue");
+                $('#violationRecFltr_minAge').val(df_minAgeRange);
+                document.getElementById("violationRecFltr_maxAge").classList.remove("cust_input_hasvalue");
+                $('#violationRecFltr_maxAge').val(df_maxAgeRange);
+                // violation status
+                document.getElementById("violationRecFltr_violationStat").classList.remove("cust_input_hasvalue");
+                $('#violationRecFltr_violationStat').val(0);
+                // date range
+                document.getElementById("violationRecFltr_datepickerRange").classList.remove("cust_input_hasvalue");
+                document.getElementById("violationRecFltr_datepickerRange").value = '';
+                document.getElementById("violationRecFltr_hidden_dateRangeFrom").value = '';
+                document.getElementById("violationRecFltr_hidden_dateRangeTo").value = '';
+                // table paginatin set to 1
+                $('#vr_hidden_page').val(1);
+                load_violationRec_table();
             });
         });
     </script>
