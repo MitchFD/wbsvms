@@ -177,7 +177,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <span class="cust_status_title mt-2 mb-2">Violations Filter Options <i class="fa fa-info-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Filter options for specific students."></i></span>
+                                <span class="cust_status_title mt-2 mb-2">Violations Filter Options <i class="fa fa-info-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Filter options for specific Violations."></i></span>
                                 <div class="row">
                                     <div class="col-lg-12 col-md-12 col-sm-12">
                                         <div class="form-group">
@@ -257,7 +257,6 @@
                             <div id="vr_tablePagination">
 
                             </div>
-                            {{-- <a href="#" class="btn btn-success cust_bt_links shadow" role="button"><i class="fa fa-print mr-1" aria-hidden="true"></i> Generate Report</a> --}}
                         </div>
                     </div>
                 </div>
@@ -347,7 +346,6 @@
 
                         // for disabling/ enabling generate report button
                         var violationRecs_totalData = document.getElementById("vr_hiddenTotalData_found").value;
-                        // console.log(violationRecs_totalData);
                         if(violationRecs_totalData > 0){
                             $('#generateViolationRecs_btn').prop('disabled', false);
                         }else{
@@ -363,7 +361,20 @@
                     $('#resetViolationRecsFilter_btn').prop('disabled', true);
                 }
             }
+
             // function for ajax table pagination
+            function vr_getData(vr_page){
+                $.ajax({
+                    url: '?page=' + vr_page,
+                    type: "get",
+                    datatype: "html"
+                }).done(function(data){
+                    location.hash = vr_page;
+                    // console.log(data);
+                }).fail(function(jqXHR, ajaxOptions, thrownError){
+                    alert('No response from server');
+                });
+            }
             $(window).on('hashchange', function() {
                 if (window.location.hash) {
                     var vr_page = window.location.hash.replace('#', '');
@@ -379,24 +390,12 @@
 
                 var vr_page = $(this).attr('href').split('page=')[1];
                 $('#vr_hidden_page').val(vr_page);
-                console.log($(this).val());
 
                 load_violationRec_table();
                 vr_getData(vr_page);
                 $('li.page-item').removeClass('active');
                 $(this).parent('li.page-item').addClass('active');
             });
-            function vr_getData(vr_page){
-                $.ajax({
-                    url: '?page=' + vr_page,
-                    type: "get",
-                    datatype: "html"
-                }).done(function(data){
-                    location.hash = vr_page;
-                }).fail(function(jqXHR, ajaxOptions, thrownError){
-                    alert('No response from server');
-                });
-            }
             // function for ajax table pagination end
 
             // daterange picker

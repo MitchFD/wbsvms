@@ -392,8 +392,8 @@ class UserManagementController extends Controller
             $paginate .= $filter_user_logs_table->links('pagination::bootstrap-4');
             $data = array(
                 'users_logs_table' => $output,
-                'paginate' => $paginate,
-                'total_rows' => $total_matched_results,
+                'paginate'         => $paginate,
+                'total_rows'       => $total_matched_results,
                 'total_data_found' => $total_filtered_result
                );
          

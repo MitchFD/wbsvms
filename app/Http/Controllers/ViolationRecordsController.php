@@ -120,7 +120,7 @@ class ViolationRecordsController extends Controller
                 $s = '';
                 $vr_total_matched_results = 'No Records Found';
             }
-            if($vr_total_filtered_result > 0){
+            if($vr_count_filtered_result > 0){
                 // custom values
                 $sq = "'";
                 foreach($fltr_VR_tbl as $this_violator){
@@ -196,8 +196,8 @@ class ViolationRecordsController extends Controller
                         </td>
                         <td>
                             <div class="d-inline">
-                                <span class="actLogs_content">'.preg_replace('/('.$vr_search.')/i','<span class="red_highlight2">$1</span>', date('F d, Y', strtotime($this_violator->recorded_at))) . '</span>
-                                <span class="actLogs_tdSubTitle sub2">'.preg_replace('/('.$vr_search.')/i','<span class="red_highlight2">$1</span>', date('D', strtotime($this_violator->recorded_at))) . ' - '.preg_replace('/('.$vr_search.')/i','<span class="red_highlight2">$1</span>', date('g:i A', strtotime($this_violator->recorded_at))) . '</span>
+                                <span class="actLogs_content">'.date('F d, Y', strtotime($this_violator->recorded_at)) . '</span>
+                                <span class="actLogs_tdSubTitle sub2">'.date('D', strtotime($this_violator->recorded_at)) . ' - '. date('g:i A', strtotime($this_violator->recorded_at)) . '</span>
                             </div>
                         </td>
                         <td>

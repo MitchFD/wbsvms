@@ -221,7 +221,6 @@
                             <div id="usersActLogs_pagination">
 
                             </div>
-                            {{-- <a href="#" class="btn btn-success cust_bt_links shadow" role="button"><i class="fa fa-print mr-1" aria-hidden="true"></i> Generate Report</a> --}}
                         </div>
                     </div>
                 </div>
@@ -253,31 +252,6 @@
 @push('scripts')
 {{-- Activity Logs Filter --}}
     <script>
-        // function for ajax table pagination
-        function getData(page){
-            $.ajax(
-            {
-                url: '?page=' + page,
-                type: "get",
-                datatype: "html"
-            }).done(function(data){
-                location.hash = page;
-            }).fail(function(jqXHR, ajaxOptions, thrownError){
-                alert('No response from server');
-            });
-        }
-        $(window).on('hashchange', function() {
-            if (window.location.hash) {
-                var page = window.location.hash.replace('#', '');
-                if (page == Number.NaN || page <= 0) {
-                    return false;
-                }else{
-                    getData(page);
-                }
-            }
-        });
-        // function for ajax table pagination end
-        
         $(document).ready(function(){ 
             loadActLogsTable();
 
@@ -340,6 +314,42 @@
                     $('#resetActLogsFilter_btn').prop('disabled', true);
                 }
             }
+
+            // function for ajax table pagination
+            $(window).on('hashchange', function() {
+                if (window.location.hash) {
+                    var page = window.location.hash.replace('#', '');
+                    if (page == Number.NaN || page <= 0) {
+                        return false;
+                    }else{
+                        getData(page);
+                    }
+                }
+            });
+            $(document).on('click', '.pagination a', function(event){
+                event.preventDefault();
+                
+                var page = $(this).attr('href').split('page=')[1];
+                $('#hidden_page').val(page);
+
+                loadActLogsTable();
+                getData(page);
+                $('li.page-item').removeClass('active');
+                $(this).parent('li.page-item').addClass('active');
+            });
+            function getData(page){
+                $.ajax(
+                {
+                    url: '?page=' + page,
+                    type: "get",
+                    datatype: "html"
+                }).done(function(data){
+                    location.hash = page;
+                }).fail(function(jqXHR, ajaxOptions, thrownError){
+                    alert('No response from server');
+                });
+            }
+            // function for ajax table pagination end
 
             // function for capitalizing first letter of a word
             function capitalizeFirstLetter(string) {
@@ -659,20 +669,6 @@
                 document.getElementById("filter_date_txt").classList.remove("font-weight-bold");
                 $(this).prop('disabled', true);
                 loadActLogsTable();
-            });
-
-            // hanle page link
-            $(document).on('click', '.pagination a', function(event){
-                event.preventDefault();
-                
-                var page = $(this).attr('href').split('page=')[1];
-                $('#hidden_page').val(page);
-                console.log($(this).val());
-
-                loadActLogsTable();
-                getData(page);
-                $('li.page-item').removeClass('active');
-                $(this).parent('li.page-item').addClass('active');
             });
         });
     </script>
