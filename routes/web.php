@@ -130,6 +130,8 @@ Route::group(['middleware' => 'auth'], function () {
 // violation records
 Route::group(['middleware' => 'auth'], function () {
 	Route::get('violation_records/index', ['as' => 'violation_records.index', 'uses' => 'App\Http\Controllers\ViolationRecordsController@index']);
+	// violator's profile
+	Route::get('violation_records/violator/{violator_id}', ['as' => 'violation_records.violator', 'uses' => 'App\Http\Controllers\ViolationRecordsController@violator']);
 });
 
 // student handbook

@@ -273,8 +273,9 @@
     {{-- view student's offenses --}}
     <script>
         function viewStudentOffenses(violator_id){
-            var sel_violator_id = violator_id;
-            console.log(sel_violator_id);
+            var violator_id = violator_id;
+            // console.log(violator_id);
+            window.location = "violator/"+violator_id;
         }
     </script>
     {{-- view student's offenses end --}}
@@ -282,423 +283,432 @@
         $(document).ready(function(){
             load_violationRec_table();
 
-            // funciton for loading vilation records table
-            function load_violationRec_table(){
-                // get all filtered values
-                var vr_search = document.getElementById('violationRecsFiltr_liveSearch').value;
-                var vr_schools = document.getElementById('violationRecFltr_schools').value;
-                var vr_programs = document.getElementById('violationRecFltr_programs').value;
-                var vr_yearlvls = document.getElementById('violationRecFltr_yearLvls').value;
-                var vr_genders = document.getElementById('violationRecFltr_genders').value;
-                var vr_minAgeRange = document.getElementById('violationRecFltr_minAge').value;
-                var vr_maxAgeRange = document.getElementById('violationRecFltr_maxAge').value;
-                var df_minAgeRange = document.getElementById('violationRecFltr_hidden_minAgeRange').value;
-                var df_maxAgeRange = document.getElementById('violationRecFltr_hidden_maxAgeRange').value;
-                var vr_status = document.getElementById('violationRecFltr_violationStat').value;
-                var vr_rangefrom = document.getElementById("violationRecFltr_hidden_dateRangeFrom").value;
-                var vr_rangeTo = document.getElementById("violationRecFltr_hidden_dateRangeTo").value;
-                var page = document.getElementById("vr_hidden_page").value;
-                
-                // update age range label
-                if(vr_minAgeRange == vr_maxAgeRange){
-                    $('#filter_ageRange_label').html('All ' + vr_minAgeRange + ' Year Olds');
-                }else{
-                    $('#filter_ageRange_label').html(vr_minAgeRange + ' to ' + vr_maxAgeRange + ' Year Olds');
+            // load_violationRec_table()
+                function load_violationRec_table(){
+                    // get all filtered values
+                    var vr_search = document.getElementById('violationRecsFiltr_liveSearch').value;
+                    var vr_schools = document.getElementById('violationRecFltr_schools').value;
+                    var vr_programs = document.getElementById('violationRecFltr_programs').value;
+                    var vr_yearlvls = document.getElementById('violationRecFltr_yearLvls').value;
+                    var vr_genders = document.getElementById('violationRecFltr_genders').value;
+                    var vr_minAgeRange = document.getElementById('violationRecFltr_minAge').value;
+                    var vr_maxAgeRange = document.getElementById('violationRecFltr_maxAge').value;
+                    var df_minAgeRange = document.getElementById('violationRecFltr_hidden_minAgeRange').value;
+                    var df_maxAgeRange = document.getElementById('violationRecFltr_hidden_maxAgeRange').value;
+                    var vr_status = document.getElementById('violationRecFltr_violationStat').value;
+                    var vr_rangefrom = document.getElementById("violationRecFltr_hidden_dateRangeFrom").value;
+                    var vr_rangeTo = document.getElementById("violationRecFltr_hidden_dateRangeTo").value;
+                    var page = document.getElementById("vr_hidden_page").value;
+                    
+                    // update age range label
+                    if(vr_minAgeRange == vr_maxAgeRange){
+                        $('#filter_ageRange_label').html('All ' + vr_minAgeRange + ' Year Olds');
+                    }else{
+                        $('#filter_ageRange_label').html(vr_minAgeRange + ' to ' + vr_maxAgeRange + ' Year Olds');
+                    }
+
+                    console.log('');
+                    console.log('search_filter: ' + vr_search);
+                    console.log('school_filter: ' + vr_schools);
+                    console.log('course_filter: ' + vr_programs);
+                    console.log('year_level_filter: ' + vr_yearlvls);
+                    console.log('gender_filter: ' + vr_genders);
+                    console.log('min_Age_filter: ' + vr_minAgeRange);
+                    console.log('max_Age_filter: ' + vr_maxAgeRange);
+                    console.log('violation_status_filter: ' + vr_status);
+                    console.log('date_from_filter: ' + vr_rangefrom);
+                    console.log('date_filter: ' + vr_rangeTo);
+                    console.log('current_page: ' + page);
+                    console.log('');
+
+                    $.ajax({
+                        url:"{{ route('violation_records.index') }}",
+                        method:"GET",
+                        data:{
+                            vr_search:vr_search, 
+                            vr_schools:vr_schools, 
+                            vr_programs:vr_programs, 
+                            vr_yearlvls:vr_yearlvls,
+                            vr_genders:vr_genders,
+                            vr_minAgeRange:vr_minAgeRange,
+                            vr_maxAgeRange:vr_maxAgeRange,
+                            df_minAgeRange:df_minAgeRange,
+                            df_maxAgeRange:df_maxAgeRange,
+                            vr_status:vr_status,
+                            vr_rangefrom:vr_rangefrom,
+                            vr_rangeTo:vr_rangeTo
+                            },
+                        dataType:'json',
+                        success:function(vr_data){
+                            $('#vr_tableTbody').html(vr_data.vr_table);
+                            $('#vr_tablePagination').html(vr_data.vr_table_paginate);
+                            $('#vr_tableTotalData_count').html(vr_data.vr_total_rows);
+                            $('#vr_hiddenTotalData_found').val(vr_data.vr_total_data_found);
+
+                            // for disabling/ enabling generate report button
+                            var violationRecs_totalData = document.getElementById("vr_hiddenTotalData_found").value;
+                            if(violationRecs_totalData > 0){
+                                $('#generateViolationRecs_btn').prop('disabled', false);
+                            }else{
+                                $('#generateViolationRecs_btn').prop('disabled', true);
+                            }
+                        }
+                    });
+
+                    // for disabling/ enabling reset filter button
+                    if(vr_schools != 0 || vr_programs != 0 || vr_yearlvls != 0 || vr_genders != 0 || vr_minAgeRange != df_minAgeRange || vr_maxAgeRange != df_maxAgeRange || vr_status != 0 || vr_rangefrom != '' || vr_rangeTo != ''){
+                        $('#resetViolationRecsFilter_btn').prop('disabled', false);
+                    }else{
+                        $('#resetViolationRecsFilter_btn').prop('disabled', true);
+                    }
                 }
+            // load_violationRec_table() end 
 
-                console.log('');
-                console.log('search_filter: ' + vr_search);
-                console.log('school_filter: ' + vr_schools);
-                console.log('course_filter: ' + vr_programs);
-                console.log('year_level_filter: ' + vr_yearlvls);
-                console.log('gender_filter: ' + vr_genders);
-                console.log('min_Age_filter: ' + vr_minAgeRange);
-                console.log('max_Age_filter: ' + vr_maxAgeRange);
-                console.log('violation_status_filter: ' + vr_status);
-                console.log('date_from_filter: ' + vr_rangefrom);
-                console.log('date_filter: ' + vr_rangeTo);
-                console.log('current_page: ' + page);
-                console.log('');
-
-                $.ajax({
-                    url:"{{ route('violation_records.index') }}",
-                    method:"GET",
-                    data:{
-                        vr_search:vr_search, 
-                        vr_schools:vr_schools, 
-                        vr_programs:vr_programs, 
-                        vr_yearlvls:vr_yearlvls,
-                        vr_genders:vr_genders,
-                        vr_minAgeRange:vr_minAgeRange,
-                        vr_maxAgeRange:vr_maxAgeRange,
-                        df_minAgeRange:df_minAgeRange,
-                        df_maxAgeRange:df_maxAgeRange,
-                        vr_status:vr_status,
-                        vr_rangefrom:vr_rangefrom,
-                        vr_rangeTo:vr_rangeTo
-                        },
-                    dataType:'json',
-                    success:function(vr_data){
-                        $('#vr_tableTbody').html(vr_data.vr_table);
-                        $('#vr_tablePagination').html(vr_data.vr_table_paginate);
-                        $('#vr_tableTotalData_count').html(vr_data.vr_total_rows);
-                        $('#vr_hiddenTotalData_found').val(vr_data.vr_total_data_found);
-
-                        // for disabling/ enabling generate report button
-                        var violationRecs_totalData = document.getElementById("vr_hiddenTotalData_found").value;
-                        if(violationRecs_totalData > 0){
-                            $('#generateViolationRecs_btn').prop('disabled', false);
+            // function for ajax table pagination
+                function vr_getData(vr_page){
+                    $.ajax({
+                        url: '?page=' + vr_page,
+                        type: "get",
+                        datatype: "html"
+                    }).done(function(data){
+                        location.hash = vr_page;
+                    }).fail(function(jqXHR, ajaxOptions, thrownError){
+                        alert('No response from server');
+                    });
+                }
+                $(window).on('hashchange', function() {
+                    if (window.location.hash) {
+                        var vr_page = window.location.hash.replace('#', '');
+                        if (vr_page == Number.NaN || vr_page <= 0) {
+                            return false;
                         }else{
-                            $('#generateViolationRecs_btn').prop('disabled', true);
+                            vr_getData(vr_page);
                         }
                     }
                 });
+                $('#vr_tablePagination').on('click', '.pagination a', function(event){
+                    event.preventDefault();
 
-                // for disabling/ enabling reset filter button
-                if(vr_schools != 0 || vr_programs != 0 || vr_yearlvls != 0 || vr_genders != 0 || vr_minAgeRange != df_minAgeRange || vr_maxAgeRange != df_maxAgeRange || vr_status != 0 || vr_rangefrom != '' || vr_rangeTo != ''){
-                    $('#resetViolationRecsFilter_btn').prop('disabled', false);
-                }else{
-                    $('#resetViolationRecsFilter_btn').prop('disabled', true);
-                }
-            }
+                    var vr_page = $(this).attr('href').split('page=')[1];
+                    $('#vr_hidden_page').val(vr_page);
 
-            // function for ajax table pagination
-            function vr_getData(vr_page){
-                $.ajax({
-                    url: '?page=' + vr_page,
-                    type: "get",
-                    datatype: "html"
-                }).done(function(data){
-                    location.hash = vr_page;
-                    // console.log(data);
-                }).fail(function(jqXHR, ajaxOptions, thrownError){
-                    alert('No response from server');
+                    load_violationRec_table();
+                    vr_getData(vr_page);
+                    $('li.page-item').removeClass('active');
+                    $(this).parent('li.page-item').addClass('active');
                 });
-            }
-            $(window).on('hashchange', function() {
-                if (window.location.hash) {
-                    var vr_page = window.location.hash.replace('#', '');
-                    if (vr_page == Number.NaN || vr_page <= 0) {
-                        return false;
-                    }else{
-                        vr_getData(vr_page);
-                    }
-                }
-            });
-            $(document).on('click', '.pagination a', function(event){
-                event.preventDefault();
-
-                var vr_page = $(this).attr('href').split('page=')[1];
-                $('#vr_hidden_page').val(vr_page);
-
-                load_violationRec_table();
-                vr_getData(vr_page);
-                $('li.page-item').removeClass('active');
-                $(this).parent('li.page-item').addClass('active');
-            });
             // function for ajax table pagination end
 
             // daterange picker
-            $('#violationRecFltr_datepickerRange').daterangepicker({
-                timePicker: true,
-                showDropdowns: true,
-                minYear: 2020,
-                maxYear: parseInt(moment().format('YYYY'),10),
-                drops: 'up',
-                opens: 'right',
-                autoUpdateInput: false,
-                locale: {
-                    format: 'MMMM DD, YYYY - hh:mm A',
-                    cancelLabel: 'Clear'
-                    }
-            });
-            $('#violationRecFltr_datepickerRange').on('cancel.daterangepicker', function(ev, picker) {
-                document.getElementById("violationRecFltr_hidden_dateRangeFrom").value = '';
-                document.getElementById("violationRecFltr_hidden_dateRangeTo").value = '';
-                $(this).val('');
-                $(this).removeClass('cust_input_hasvalue');
-                // table paginatin set to 1
-                $('#vr_hidden_page').val(1);
-                load_violationRec_table();
-            });
-            $('#violationRecFltr_datepickerRange').on('apply.daterangepicker', function(ev, picker) {
-                // for hidden data range inputs
-                var start_range = picker.startDate.format('YYYY-MM-DD HH:MM:SS');
-                var end_range = picker.endDate.format('YYYY-MM-DD HH:MM:SS');
-                document.getElementById("violationRecFltr_hidden_dateRangeFrom").value = start_range;
-                document.getElementById("violationRecFltr_hidden_dateRangeTo").value = end_range;
-                // display Date range and add style to $this input 
-                $(this).val(picker.startDate.format('MMMM DD, YYYY') + ' - ' + picker.endDate.format('MMMM DD, YYYY'));
-                $(this).addClass('cust_input_hasvalue');
-                // table paginatin set to 1
-                $('#vr_hidden_page').val(1);
-                load_violationRec_table();
-            });
+                $('#violationRecFltr_datepickerRange').daterangepicker({
+                    timePicker: true,
+                    showDropdowns: true,
+                    minYear: 2020,
+                    maxYear: parseInt(moment().format('YYYY'),10),
+                    drops: 'up',
+                    opens: 'right',
+                    autoUpdateInput: false,
+                    locale: {
+                        format: 'MMMM DD, YYYY - hh:mm A',
+                        cancelLabel: 'Clear'
+                        }
+                });
+                $('#violationRecFltr_datepickerRange').on('cancel.daterangepicker', function(ev, picker) {
+                    document.getElementById("violationRecFltr_hidden_dateRangeFrom").value = '';
+                    document.getElementById("violationRecFltr_hidden_dateRangeTo").value = '';
+                    $(this).val('');
+                    $(this).removeClass('cust_input_hasvalue');
+                    // table paginatin set to 1
+                    $('#vr_hidden_page').val(1);
+                    load_violationRec_table();
+                });
+                $('#violationRecFltr_datepickerRange').on('apply.daterangepicker', function(ev, picker) {
+                    // for hidden data range inputs
+                    var start_range = picker.startDate.format('YYYY-MM-DD HH:MM:SS');
+                    var end_range = picker.endDate.format('YYYY-MM-DD HH:MM:SS');
+                    document.getElementById("violationRecFltr_hidden_dateRangeFrom").value = start_range;
+                    document.getElementById("violationRecFltr_hidden_dateRangeTo").value = end_range;
+                    // display Date range and add style to $this input 
+                    $(this).val(picker.startDate.format('MMMM DD, YYYY') + ' - ' + picker.endDate.format('MMMM DD, YYYY'));
+                    $(this).addClass('cust_input_hasvalue');
+                    // table paginatin set to 1
+                    $('#vr_hidden_page').val(1);
+                    load_violationRec_table();
+                });
+            // daterange picker end
 
             // live search filter
-            $('#violationRecsFiltr_liveSearch').on('keyup', function(){
-                // var liveSearchValue = $(this).val();
-                // table paginatin set to 1
-                $('#vr_hidden_page').val(1);
-                load_violationRec_table();
-            });
+                $('#violationRecsFiltr_liveSearch').on('keyup', function(){
+                    // var liveSearchValue = $(this).val();
+                    // table paginatin set to 1
+                    $('#vr_hidden_page').val(1);
+                    load_violationRec_table();
+                });
+            // live search filter end
 
             // filter schools
-            $('#violationRecFltr_schools').on('change paste keyup', function(){
-                var selectedSchool = $(this).val();
-                var toUC_selectedSchool = selectedSchool.toUpperCase();
-                // schools values
-                var all_programs = 'all_programs';
-                var SASE = 'SASE';
-                var SBCS = 'SBCS';
-                var SIHTM = 'SIHTM';
-                var SHSP = 'SHSP';
-                // show/hide options for #violationRecFltr_programs based on selected school
-                if(toUC_selectedSchool === SASE){
-                    // hide/show programs
-                    $('#violationRecFltr_programs option[data-programs="' + toUC_selectedSchool + '"]').show();
-                    $('#violationRecFltr_programs option[data-programs="' + SBCS + '"]').hide();
-                    $('#violationRecFltr_programs option[data-programs="' + SIHTM + '"]').hide();
-                    $('#violationRecFltr_programs option[data-programs="' + SHSP + '"]').hide();
-                    $('#violationRecFltr_programs option[data-default-program="' + all_programs + '"]').html('All SASE Programs');
-                    document.getElementById("violationRecFltr_programs").classList.remove("cust_input_hasvalue");
-                    document.getElementById("violationRecFltr_yearLvls").classList.remove("cust_input_hasvalue");
-                    $('#violationRecFltr_programs').val(0);
-                    $('#violationRecFltr_yearLvls').val(0);
-                    $(this).addClass('cust_input_hasvalue');
-                }else if(toUC_selectedSchool === SBCS){
-                    // hide/show programs
-                    $('#violationRecFltr_programs option[data-programs="' + toUC_selectedSchool + '"]').show();
-                    $('#violationRecFltr_programs option[data-programs="' + SASE + '"]').hide();
-                    $('#violationRecFltr_programs option[data-programs="' + SIHTM + '"]').hide();
-                    $('#violationRecFltr_programs option[data-programs="' + SHSP + '"]').hide();
-                    $('#violationRecFltr_programs option[data-default-program="' + all_programs + '"]').html('All SBCS Programs');
-                    document.getElementById("violationRecFltr_programs").classList.remove("cust_input_hasvalue");
-                    document.getElementById("violationRecFltr_yearLvls").classList.remove("cust_input_hasvalue");
-                    $('#violationRecFltr_programs').val(0);
-                    $('#violationRecFltr_yearLvls').val(0);
-                    $(this).addClass('cust_input_hasvalue');
-                }else if(toUC_selectedSchool === SIHTM){
-                    // hide/show programs
-                    $('#violationRecFltr_programs option[data-programs="' + toUC_selectedSchool + '"]').show();
-                    $('#violationRecFltr_programs option[data-programs="' + SASE + '"]').hide();
-                    $('#violationRecFltr_programs option[data-programs="' + SBCS + '"]').hide();
-                    $('#violationRecFltr_programs option[data-programs="' + SHSP + '"]').hide();
-                    $('#violationRecFltr_programs option[data-default-program="' + all_programs + '"]').html('All SIHTM Programs');
-                    document.getElementById("violationRecFltr_programs").classList.remove("cust_input_hasvalue");
-                    document.getElementById("violationRecFltr_yearLvls").classList.remove("cust_input_hasvalue");
-                    $('#violationRecFltr_programs').val(0);
-                    $('#violationRecFltr_yearLvls').val(0);
-                    $(this).addClass('cust_input_hasvalue');
-                }else if(toUC_selectedSchool === SHSP){
-                    // hide/show programs
-                    $('#violationRecFltr_programs option[data-programs="' + toUC_selectedSchool + '"]').show();
-                    $('#violationRecFltr_programs option[data-programs="' + SASE + '"]').hide();
-                    $('#violationRecFltr_programs option[data-programs="' + SIHTM + '"]').hide();
-                    $('#violationRecFltr_programs option[data-programs="' + SBCS + '"]').hide();
-                    $('#violationRecFltr_programs option[data-default-program="' + all_programs + '"]').html('All SHSP Programs');
-                    document.getElementById("violationRecFltr_programs").classList.remove("cust_input_hasvalue");
-                    document.getElementById("violationRecFltr_yearLvls").classList.remove("cust_input_hasvalue");
-                    $('#violationRecFltr_programs').val(0);
-                    $('#violationRecFltr_yearLvls').val(0);
-                    $(this).addClass('cust_input_hasvalue');
-                }else{
-                    // show all programs
-                    $('#violationRecFltr_programs option[data-programs="' + SASE + '"]').show();
-                    $('#violationRecFltr_programs option[data-programs="' + SBCS + '"]').show();
-                    $('#violationRecFltr_programs option[data-programs="' + SIHTM + '"]').show();
-                    $('#violationRecFltr_programs option[data-programs="' + SHSP + '"]').show();
-                    $('#violationRecFltr_programs option[data-default-program="' + all_programs + '"]').html('All Programs');
-                    document.getElementById("violationRecFltr_programs").classList.remove("cust_input_hasvalue");
-                    document.getElementById("violationRecFltr_yearLvls").classList.remove("cust_input_hasvalue");
-                    $('#violationRecFltr_programs').val(0);
-                    $('#violationRecFltr_yearLvls').val(0);
-                    $(this).removeClass('cust_input_hasvalue');
-                }
-                // table paginatin set to 1
-                $('#vr_hidden_page').val(1);
-                load_violationRec_table();
-            });
+                $('#violationRecFltr_schools').on('change paste keyup', function(){
+                    var selectedSchool = $(this).val();
+                    var toUC_selectedSchool = selectedSchool.toUpperCase();
+                    // schools values
+                    var all_programs = 'all_programs';
+                    var SASE = 'SASE';
+                    var SBCS = 'SBCS';
+                    var SIHTM = 'SIHTM';
+                    var SHSP = 'SHSP';
+                    // show/hide options for #violationRecFltr_programs based on selected school
+                    if(toUC_selectedSchool === SASE){
+                        // hide/show programs
+                        $('#violationRecFltr_programs option[data-programs="' + toUC_selectedSchool + '"]').show();
+                        $('#violationRecFltr_programs option[data-programs="' + SBCS + '"]').hide();
+                        $('#violationRecFltr_programs option[data-programs="' + SIHTM + '"]').hide();
+                        $('#violationRecFltr_programs option[data-programs="' + SHSP + '"]').hide();
+                        $('#violationRecFltr_programs option[data-default-program="' + all_programs + '"]').html('All SASE Programs');
+                        document.getElementById("violationRecFltr_programs").classList.remove("cust_input_hasvalue");
+                        document.getElementById("violationRecFltr_yearLvls").classList.remove("cust_input_hasvalue");
+                        $('#violationRecFltr_programs').val(0);
+                        $('#violationRecFltr_yearLvls').val(0);
+                        $(this).addClass('cust_input_hasvalue');
+                    }else if(toUC_selectedSchool === SBCS){
+                        // hide/show programs
+                        $('#violationRecFltr_programs option[data-programs="' + toUC_selectedSchool + '"]').show();
+                        $('#violationRecFltr_programs option[data-programs="' + SASE + '"]').hide();
+                        $('#violationRecFltr_programs option[data-programs="' + SIHTM + '"]').hide();
+                        $('#violationRecFltr_programs option[data-programs="' + SHSP + '"]').hide();
+                        $('#violationRecFltr_programs option[data-default-program="' + all_programs + '"]').html('All SBCS Programs');
+                        document.getElementById("violationRecFltr_programs").classList.remove("cust_input_hasvalue");
+                        document.getElementById("violationRecFltr_yearLvls").classList.remove("cust_input_hasvalue");
+                        $('#violationRecFltr_programs').val(0);
+                        $('#violationRecFltr_yearLvls').val(0);
+                        $(this).addClass('cust_input_hasvalue');
+                    }else if(toUC_selectedSchool === SIHTM){
+                        // hide/show programs
+                        $('#violationRecFltr_programs option[data-programs="' + toUC_selectedSchool + '"]').show();
+                        $('#violationRecFltr_programs option[data-programs="' + SASE + '"]').hide();
+                        $('#violationRecFltr_programs option[data-programs="' + SBCS + '"]').hide();
+                        $('#violationRecFltr_programs option[data-programs="' + SHSP + '"]').hide();
+                        $('#violationRecFltr_programs option[data-default-program="' + all_programs + '"]').html('All SIHTM Programs');
+                        document.getElementById("violationRecFltr_programs").classList.remove("cust_input_hasvalue");
+                        document.getElementById("violationRecFltr_yearLvls").classList.remove("cust_input_hasvalue");
+                        $('#violationRecFltr_programs').val(0);
+                        $('#violationRecFltr_yearLvls').val(0);
+                        $(this).addClass('cust_input_hasvalue');
+                    }else if(toUC_selectedSchool === SHSP){
+                        // hide/show programs
+                        $('#violationRecFltr_programs option[data-programs="' + toUC_selectedSchool + '"]').show();
+                        $('#violationRecFltr_programs option[data-programs="' + SASE + '"]').hide();
+                        $('#violationRecFltr_programs option[data-programs="' + SIHTM + '"]').hide();
+                        $('#violationRecFltr_programs option[data-programs="' + SBCS + '"]').hide();
+                        $('#violationRecFltr_programs option[data-default-program="' + all_programs + '"]').html('All SHSP Programs');
+                        document.getElementById("violationRecFltr_programs").classList.remove("cust_input_hasvalue");
+                        document.getElementById("violationRecFltr_yearLvls").classList.remove("cust_input_hasvalue");
+                        $('#violationRecFltr_programs').val(0);
+                        $('#violationRecFltr_yearLvls').val(0);
+                        $(this).addClass('cust_input_hasvalue');
+                    }else{
+                        // show all programs
+                        $('#violationRecFltr_programs option[data-programs="' + SASE + '"]').show();
+                        $('#violationRecFltr_programs option[data-programs="' + SBCS + '"]').show();
+                        $('#violationRecFltr_programs option[data-programs="' + SIHTM + '"]').show();
+                        $('#violationRecFltr_programs option[data-programs="' + SHSP + '"]').show();
+                        $('#violationRecFltr_programs option[data-default-program="' + all_programs + '"]').html('All Programs');
+                        document.getElementById("violationRecFltr_programs").classList.remove("cust_input_hasvalue");
+                        document.getElementById("violationRecFltr_yearLvls").classList.remove("cust_input_hasvalue");
+                        $('#violationRecFltr_programs').val(0);
+                        $('#violationRecFltr_yearLvls').val(0);
+                        $(this).removeClass('cust_input_hasvalue');
+                    }
+                    // table paginatin set to 1
+                    $('#vr_hidden_page').val(1);
+                    load_violationRec_table();
+                });
+            // filter schools end 
 
             // filter programs
-            $('#violationRecFltr_programs').on('change paste keyup', function(){
-                var selectedProgram = $(this).val();
-                if(selectedProgram != 0){
-                    if(selectedProgram == 'BSA' || selectedProgram == 'BS Physical Therapy'){
-                        // show all year levels
-                        $('#violationRecFltr_yearLvls option[data-yearlvls="' + 1 + '"]').show();
-                        $('#violationRecFltr_yearLvls option[data-yearlvls="' + 2 + '"]').show();
-                        $('#violationRecFltr_yearLvls option[data-yearlvls="' + 3 + '"]').show();
-                        $('#violationRecFltr_yearLvls option[data-yearlvls="' + 4 + '"]').show();
-                        $('#violationRecFltr_yearLvls option[data-yearlvls="' + 5 + '"]').show();
+                $('#violationRecFltr_programs').on('change paste keyup', function(){
+                    var selectedProgram = $(this).val();
+                    if(selectedProgram != 0){
+                        if(selectedProgram == 'BSA' || selectedProgram == 'BS Physical Therapy'){
+                            // show all year levels
+                            $('#violationRecFltr_yearLvls option[data-yearlvls="' + 1 + '"]').show();
+                            $('#violationRecFltr_yearLvls option[data-yearlvls="' + 2 + '"]').show();
+                            $('#violationRecFltr_yearLvls option[data-yearlvls="' + 3 + '"]').show();
+                            $('#violationRecFltr_yearLvls option[data-yearlvls="' + 4 + '"]').show();
+                            $('#violationRecFltr_yearLvls option[data-yearlvls="' + 5 + '"]').show();
+                        }else{
+                            // show all year levels except 5th year
+                            $('#violationRecFltr_yearLvls option[data-yearlvls="' + 1 + '"]').show();
+                            $('#violationRecFltr_yearLvls option[data-yearlvls="' + 2 + '"]').show();
+                            $('#violationRecFltr_yearLvls option[data-yearlvls="' + 3 + '"]').show();
+                            $('#violationRecFltr_yearLvls option[data-yearlvls="' + 4 + '"]').show();
+                            $('#violationRecFltr_yearLvls option[data-yearlvls="' + 5 + '"]').hide();
+                        }
+                        document.getElementById("violationRecFltr_yearLvls").classList.remove("cust_input_hasvalue");
+                        $('#violationRecFltr_yearLvls').val(0);
+                        $(this).addClass('cust_input_hasvalue');
                     }else{
                         // show all year levels except 5th year
                         $('#violationRecFltr_yearLvls option[data-yearlvls="' + 1 + '"]').show();
                         $('#violationRecFltr_yearLvls option[data-yearlvls="' + 2 + '"]').show();
                         $('#violationRecFltr_yearLvls option[data-yearlvls="' + 3 + '"]').show();
                         $('#violationRecFltr_yearLvls option[data-yearlvls="' + 4 + '"]').show();
-                        $('#violationRecFltr_yearLvls option[data-yearlvls="' + 5 + '"]').hide();
+                        $('#violationRecFltr_yearLvls option[data-yearlvls="' + 5 + '"]').show();
+                        document.getElementById("violationRecFltr_yearLvls").classList.remove("cust_input_hasvalue");
+                        $('#violationRecFltr_yearLvls').val(0);
+                        $(this).removeClass('cust_input_hasvalue');
                     }
+                    // table paginatin set to 1
+                    $('#vr_hidden_page').val(1);
+                    load_violationRec_table();
+                });
+            // filter programs end 
+
+            // filter year levels
+                $('#violationRecFltr_yearLvls').on('change paste keyup', function(){
+                    var selectedYearLvl = $(this).val();
+                    if(selectedYearLvl != 0){
+                        $(this).addClass('cust_input_hasvalue');
+                    }else{
+                        $(this).removeClass('cust_input_hasvalue');
+                    }
+                    // table paginatin set to 1
+                    $('#vr_hidden_page').val(1);
+                    load_violationRec_table();
+                });
+            // filter year levels end 
+
+            // filter genders
+                $('#violationRecFltr_genders').on('change paste keyup', function(){
+                    var selectedGender = $(this).val();
+                    if(selectedGender != 0){
+                        $(this).addClass('cust_input_hasvalue');
+                    }else{
+                        $(this).removeClass('cust_input_hasvalue');
+                    }
+                    // table paginatin set to 1
+                    $('#vr_hidden_page').val(1);
+                    load_violationRec_table();
+                });
+            // filter genders end
+
+            // filter age range
+                // min age
+                $('#violationRecFltr_minAge').on('change paste keyup', function(){
+                    // get new min age range
+                    var newMinAge = $(this).val();
+                    // get default min & max age range
+                    var df_minAgeRange = document.getElementById('violationRecFltr_hidden_minAgeRange').value;
+                    var df_maxAgeRange = document.getElementById('violationRecFltr_hidden_maxAgeRange').value;
+                    // add style to #violationRecFltr_minAge
+                    if(newMinAge != df_minAgeRange){
+                        document.getElementById("violationRecFltr_minAge").classList.add("cust_input_hasvalue");
+                    }else{
+                        document.getElementById("violationRecFltr_minAge").classList.remove("cust_input_hasvalue");
+                    }
+                    // update #violationRecFltr_maxAge input value
+                    var sel_maxAgeRange_input = document.getElementById('violationRecFltr_maxAge').value;
+                    if(sel_maxAgeRange_input < newMinAge){
+                        $('#violationRecFltr_maxAge').val(df_maxAgeRange);
+                        document.getElementById("violationRecFltr_maxAge").classList.remove("cust_input_hasvalue");
+                    }
+                    // hide/show options for #violationRecFltr_maxAge based on new min age range
+                    $('#violationRecFltr_maxAge option').filter(function(){
+                        return (parseInt(this.value,10) < newMinAge );
+                    }).hide();
+                    $('#violationRecFltr_maxAge option').filter(function(){
+                        return (parseInt(this.value,10) >= newMinAge );
+                    }).show();
+                    // table paginatin set to 1
+                    $('#vr_hidden_page').val(1);
+                    load_violationRec_table();
+                });
+                // max age
+                $('#violationRecFltr_maxAge').on('change paste keyup', function(){
+                    // get new min age range
+                    var newMaxAge = $(this).val();
+                    // get default max age range
+                    var df_maxAgeRange = document.getElementById('violationRecFltr_hidden_maxAgeRange').value;
+                    // add style to #violationRecFltr_maxAge
+                    if(newMaxAge != df_maxAgeRange){
+                        document.getElementById("violationRecFltr_maxAge").classList.add("cust_input_hasvalue");
+                    }else{
+                        document.getElementById("violationRecFltr_maxAge").classList.remove("cust_input_hasvalue");
+                    }
+                    // table paginatin set to 1
+                    $('#vr_hidden_page').val(1);
+                    load_violationRec_table();
+                });
+            // filter age range end 
+
+            // filter violation status
+                $('#violationRecFltr_violationStat').on('change paste keyup', function(){
+                    var selectedViolatinStat = $(this).val();
+                    if(selectedViolatinStat != 0){
+                        $(this).addClass('cust_input_hasvalue');
+                    }else{
+                        $(this).removeClass('cust_input_hasvalue');
+                    }
+                    // table paginatin set to 1
+                    $('#vr_hidden_page').val(1);
+                    load_violationRec_table();
+                });
+            // filter violation status end 
+
+            // reset filter
+                $('#resetViolationRecsFilter_btn').on('click', function(){
+                    // disable reset button
+                    $(this).prop('disabled', true);
+                    // get default values of min & max age range
+                    var df_minAgeRange = document.getElementById('violationRecFltr_hidden_minAgeRange').value;
+                    var df_maxAgeRange = document.getElementById('violationRecFltr_hidden_maxAgeRange').value;
+                    // custom values
+                    var all_programs = 'all_programs';
+                    var SASE = 'SASE';
+                    var SBCS = 'SBCS';
+                    var SIHTM = 'SIHTM';
+                    var SHSP = 'SHSP';
+                    var all_year_levels = 'all_year_levels';
+                    // schools
+                    document.getElementById("violationRecFltr_schools").classList.remove("cust_input_hasvalue");
+                    $('#violationRecFltr_schools').val(0);
+                    // programs
+                    document.getElementById("violationRecFltr_programs").classList.remove("cust_input_hasvalue");
+                    $('#violationRecFltr_programs option[data-programs="' + SASE + '"]').show();
+                    $('#violationRecFltr_programs option[data-programs="' + SBCS + '"]').show();
+                    $('#violationRecFltr_programs option[data-programs="' + SIHTM + '"]').show();
+                    $('#violationRecFltr_programs option[data-programs="' + SHSP + '"]').show();
+                    $('#violationRecFltr_programs').val(0);
+                    $('#violationRecFltr_programs option[data-default-program="' + all_programs + '"]').html('All Programs');
+                    // year levels
                     document.getElementById("violationRecFltr_yearLvls").classList.remove("cust_input_hasvalue");
-                    $('#violationRecFltr_yearLvls').val(0);
-                    $(this).addClass('cust_input_hasvalue');
-                }else{
-                    // show all year levels except 5th year
                     $('#violationRecFltr_yearLvls option[data-yearlvls="' + 1 + '"]').show();
                     $('#violationRecFltr_yearLvls option[data-yearlvls="' + 2 + '"]').show();
                     $('#violationRecFltr_yearLvls option[data-yearlvls="' + 3 + '"]').show();
                     $('#violationRecFltr_yearLvls option[data-yearlvls="' + 4 + '"]').show();
                     $('#violationRecFltr_yearLvls option[data-yearlvls="' + 5 + '"]').show();
-                    document.getElementById("violationRecFltr_yearLvls").classList.remove("cust_input_hasvalue");
                     $('#violationRecFltr_yearLvls').val(0);
-                    $(this).removeClass('cust_input_hasvalue');
-                }
-                // table paginatin set to 1
-                $('#vr_hidden_page').val(1);
-                load_violationRec_table();
-            });
-
-            // filter year levels
-            $('#violationRecFltr_yearLvls').on('change paste keyup', function(){
-                var selectedYearLvl = $(this).val();
-                if(selectedYearLvl != 0){
-                    $(this).addClass('cust_input_hasvalue');
-                }else{
-                    $(this).removeClass('cust_input_hasvalue');
-                }
-                // table paginatin set to 1
-                $('#vr_hidden_page').val(1);
-                load_violationRec_table();
-            });
-
-            // filter genders
-            $('#violationRecFltr_genders').on('change paste keyup', function(){
-                var selectedGender = $(this).val();
-                if(selectedGender != 0){
-                    $(this).addClass('cust_input_hasvalue');
-                }else{
-                    $(this).removeClass('cust_input_hasvalue');
-                }
-                // table paginatin set to 1
-                $('#vr_hidden_page').val(1);
-                load_violationRec_table();
-            });
-
-            // filter age range
-            // min age
-            $('#violationRecFltr_minAge').on('change paste keyup', function(){
-                // get new min age range
-                var newMinAge = $(this).val();
-                // get default min & max age range
-                var df_minAgeRange = document.getElementById('violationRecFltr_hidden_minAgeRange').value;
-                var df_maxAgeRange = document.getElementById('violationRecFltr_hidden_maxAgeRange').value;
-                // add style to #violationRecFltr_minAge
-                if(newMinAge != df_minAgeRange){
-                    document.getElementById("violationRecFltr_minAge").classList.add("cust_input_hasvalue");
-                }else{
+                    $('#violationRecFltr_yearLvls option[data-default-yearlvl="' + all_year_levels + '"]').html('All Year Levels');
+                    // genders
+                    document.getElementById("violationRecFltr_genders").classList.remove("cust_input_hasvalue");
+                    $('#violationRecFltr_genders').val(0);
+                    // age range
                     document.getElementById("violationRecFltr_minAge").classList.remove("cust_input_hasvalue");
-                }
-                // update #violationRecFltr_maxAge input value
-                var sel_maxAgeRange_input = document.getElementById('violationRecFltr_maxAge').value;
-                if(sel_maxAgeRange_input < newMinAge){
+                    $('#violationRecFltr_minAge').val(df_minAgeRange);
+                    document.getElementById("violationRecFltr_maxAge").classList.remove("cust_input_hasvalue");
                     $('#violationRecFltr_maxAge').val(df_maxAgeRange);
-                    document.getElementById("violationRecFltr_maxAge").classList.remove("cust_input_hasvalue");
-                }
-                // hide/show options for #violationRecFltr_maxAge based on new min age range
-                $('#violationRecFltr_maxAge option').filter(function(){
-                    return (parseInt(this.value,10) < newMinAge );
-                }).hide();
-                $('#violationRecFltr_maxAge option').filter(function(){
-                    return (parseInt(this.value,10) >= newMinAge );
-                }).show();
-                // table paginatin set to 1
-                $('#vr_hidden_page').val(1);
-                load_violationRec_table();
-            });
-            // max age
-            $('#violationRecFltr_maxAge').on('change paste keyup', function(){
-                // get new min age range
-                var newMaxAge = $(this).val();
-                // get default max age range
-                var df_maxAgeRange = document.getElementById('violationRecFltr_hidden_maxAgeRange').value;
-                // add style to #violationRecFltr_maxAge
-                if(newMaxAge != df_maxAgeRange){
-                    document.getElementById("violationRecFltr_maxAge").classList.add("cust_input_hasvalue");
-                }else{
-                    document.getElementById("violationRecFltr_maxAge").classList.remove("cust_input_hasvalue");
-                }
-                // table paginatin set to 1
-                $('#vr_hidden_page').val(1);
-                load_violationRec_table();
-            });
-
-            // filter violation status
-            $('#violationRecFltr_violationStat').on('change paste keyup', function(){
-                var selectedViolatinStat = $(this).val();
-                if(selectedViolatinStat != 0){
-                    $(this).addClass('cust_input_hasvalue');
-                }else{
-                    $(this).removeClass('cust_input_hasvalue');
-                }
-                // table paginatin set to 1
-                $('#vr_hidden_page').val(1);
-                load_violationRec_table();
-            });
-
-            // reset filter
-            $('#resetViolationRecsFilter_btn').on('click', function(){
-                // disable reset button
-                $(this).prop('disabled', true);
-                // get default values of min & max age range
-                var df_minAgeRange = document.getElementById('violationRecFltr_hidden_minAgeRange').value;
-                var df_maxAgeRange = document.getElementById('violationRecFltr_hidden_maxAgeRange').value;
-                // custom values
-                var all_programs = 'all_programs';
-                var SASE = 'SASE';
-                var SBCS = 'SBCS';
-                var SIHTM = 'SIHTM';
-                var SHSP = 'SHSP';
-                var all_year_levels = 'all_year_levels';
-                // schools
-                document.getElementById("violationRecFltr_schools").classList.remove("cust_input_hasvalue");
-                $('#violationRecFltr_schools').val(0);
-                // programs
-                document.getElementById("violationRecFltr_programs").classList.remove("cust_input_hasvalue");
-                $('#violationRecFltr_programs option[data-programs="' + SASE + '"]').show();
-                $('#violationRecFltr_programs option[data-programs="' + SBCS + '"]').show();
-                $('#violationRecFltr_programs option[data-programs="' + SIHTM + '"]').show();
-                $('#violationRecFltr_programs option[data-programs="' + SHSP + '"]').show();
-                $('#violationRecFltr_programs').val(0);
-                $('#violationRecFltr_programs option[data-default-program="' + all_programs + '"]').html('All Programs');
-                // year levels
-                document.getElementById("violationRecFltr_yearLvls").classList.remove("cust_input_hasvalue");
-                $('#violationRecFltr_yearLvls option[data-yearlvls="' + 1 + '"]').show();
-                $('#violationRecFltr_yearLvls option[data-yearlvls="' + 2 + '"]').show();
-                $('#violationRecFltr_yearLvls option[data-yearlvls="' + 3 + '"]').show();
-                $('#violationRecFltr_yearLvls option[data-yearlvls="' + 4 + '"]').show();
-                $('#violationRecFltr_yearLvls option[data-yearlvls="' + 5 + '"]').show();
-                $('#violationRecFltr_yearLvls').val(0);
-                $('#violationRecFltr_yearLvls option[data-default-yearlvl="' + all_year_levels + '"]').html('All Year Levels');
-                // genders
-                document.getElementById("violationRecFltr_genders").classList.remove("cust_input_hasvalue");
-                $('#violationRecFltr_genders').val(0);
-                // age range
-                document.getElementById("violationRecFltr_minAge").classList.remove("cust_input_hasvalue");
-                $('#violationRecFltr_minAge').val(df_minAgeRange);
-                document.getElementById("violationRecFltr_maxAge").classList.remove("cust_input_hasvalue");
-                $('#violationRecFltr_maxAge').val(df_maxAgeRange);
-                // violation status
-                document.getElementById("violationRecFltr_violationStat").classList.remove("cust_input_hasvalue");
-                $('#violationRecFltr_violationStat').val(0);
-                // date range
-                document.getElementById("violationRecFltr_datepickerRange").classList.remove("cust_input_hasvalue");
-                document.getElementById("violationRecFltr_datepickerRange").value = '';
-                document.getElementById("violationRecFltr_hidden_dateRangeFrom").value = '';
-                document.getElementById("violationRecFltr_hidden_dateRangeTo").value = '';
-                // table paginatin set to 1
-                $('#vr_hidden_page').val(1);
-                load_violationRec_table();
-            });
+                    // violation status
+                    document.getElementById("violationRecFltr_violationStat").classList.remove("cust_input_hasvalue");
+                    $('#violationRecFltr_violationStat').val(0);
+                    // date range
+                    document.getElementById("violationRecFltr_datepickerRange").classList.remove("cust_input_hasvalue");
+                    document.getElementById("violationRecFltr_datepickerRange").value = '';
+                    document.getElementById("violationRecFltr_hidden_dateRangeFrom").value = '';
+                    document.getElementById("violationRecFltr_hidden_dateRangeTo").value = '';
+                    // table paginatin set to 1
+                    $('#vr_hidden_page').val(1);
+                    load_violationRec_table();
+                });
+            // reset filter end
         });
     </script>
 @endpush

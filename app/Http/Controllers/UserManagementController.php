@@ -264,14 +264,14 @@ class UserManagementController extends Controller
             $paginate = '';
             $total_matched_results = '';
             // get all request
-            $logs_search = $request->get('logs_search');
+            $logs_search    = $request->get('logs_search');
             $logs_userTypes = $request->get('logs_userTypes');
             $logs_userRoles = $request->get('logs_userRoles');
-            $logs_users = $request->get('logs_users');
-            $logs_category = $request->get('logs_category');
+            $logs_users     = $request->get('logs_users');
+            $logs_category  = $request->get('logs_category');
             $logs_rangefrom = $request->get('logs_rangefrom');
-            $logs_rangeTo = $request->get('logs_rangeTo');
-            $logs_page = $request->get('page');
+            $logs_rangeTo   = $request->get('logs_rangeTo');
+            $logs_page      = $request->get('page');
 
             if($logs_search != ''){
                 $filter_user_logs_table = DB::table('users_activity_tbl')

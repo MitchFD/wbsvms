@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use App\Models\Students;
+use App\Models\Violations;
 
 class ViolationRecordsController extends Controller
 {
@@ -31,46 +33,46 @@ class ViolationRecordsController extends Controller
 
             if($vr_search != ''){
                 $fltr_VR_tbl = DB::table('violations_tbl')
-                                        ->join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
-                                        ->select('violations_tbl.*', 'students_tbl.*')
-                                        ->where(function($vrQuery) use ($vr_search) {
-                                            return $vrQuery->orWhere('students_tbl.Student_Number', 'like', '%'.$vr_search.'%')
-                                                        ->orWhere('students_tbl.First_Name', 'like', '%'.$vr_search.'%')
-                                                        ->orWhere('students_tbl.Middle_Name', 'like', '%'.$vr_search.'%')
-                                                        ->orWhere('students_tbl.Last_Name', 'like', '%'.$vr_search.'%')
-                                                        ->orWhere('violations_tbl.stud_num', 'like', '%'.$vr_search.'%')
-                                                        ->orWhere('students_tbl.Gender', 'like', '%'.$vr_search.'%')
-                                                        ->orWhere('students_tbl.School_Name', 'like', '%'.$vr_search.'%')
-                                                        ->orWhere('students_tbl.YearLevel', 'like', '%'.$vr_search.'%')
-                                                        ->orWhere('students_tbl.Course', 'like', '%'.$vr_search.'%');
-                                        })
-                                        ->where(function($vrQuery) use ($vr_schools, $vr_programs, $vr_yearlvls, $vr_genders, $vr_minAgeRange, $vr_maxAgeRange, $df_minAgeRange, $df_maxAgeRange, $vr_status, $vr_rangefrom, $vr_rangeTo){
-                                            if($vr_schools != 0 OR !empty($vr_schools)){
-                                                $vrQuery->where('students_tbl.School_Name', '=', $vr_schools);
-                                            }
-                                            if($vr_programs != 0 OR !empty($vr_programs)){
-                                                $vrQuery->where('students_tbl.Course', '=', $vr_programs);
-                                            }
-                                            if($vr_yearlvls != 0 OR !empty($vr_yearlvls)){
-                                                $vrQuery->where('students_tbl.YearLevel', '=', $vr_yearlvls);
-                                            }
-                                            if($vr_genders != 0 OR !empty($vr_genders)){
-                                                $lower_vr_gender = Str::lower($vr_genders);
-                                                $vrQuery->where('students_tbl.Gender', '=', $lower_vr_gender);
-                                            }
-                                            if($vr_minAgeRange != $df_minAgeRange OR $vr_maxAgeRange != $df_maxAgeRange){
-                                                $vrQuery->whereBetween('students_tbl.Age', [$vr_minAgeRange, $vr_maxAgeRange]);
-                                            }
-                                            if($vr_status != 0 OR !empty($vr_status)){
-                                                $lower_vr_status = Str::lower($vr_status);
-                                                $vrQuery->where('violations_tbl.violation_status', '=', $lower_vr_status);
-                                            }
-                                            if($vr_rangefrom != 0 OR !empty($vr_rangefrom) AND $vr_rangeTo != 0 OR !empty($vr_rangeTo)){
-                                                $vrQuery->whereBetween('violations_tbl.recorded_at', [$vr_rangefrom, $vr_rangeTo]);
-                                            }
-                                        })
-                                        ->orderBy('violations_tbl.recorded_at', 'DESC')
-                                        ->paginate(10);
+                                ->join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
+                                ->select('violations_tbl.*', 'students_tbl.*')
+                                ->where(function($vrQuery) use ($vr_search) {
+                                    $vrQuery->orWhere('students_tbl.Student_Number', 'like', '%'.$vr_search.'%')
+                                                ->orWhere('students_tbl.First_Name', 'like', '%'.$vr_search.'%')
+                                                ->orWhere('students_tbl.Middle_Name', 'like', '%'.$vr_search.'%')
+                                                ->orWhere('students_tbl.Last_Name', 'like', '%'.$vr_search.'%')
+                                                ->orWhere('students_tbl.Gender', 'like', '%'.$vr_search.'%')
+                                                ->orWhere('students_tbl.School_Name', 'like', '%'.$vr_search.'%')
+                                                ->orWhere('students_tbl.YearLevel', 'like', '%'.$vr_search.'%')
+                                                ->orWhere('students_tbl.Course', 'like', '%'.$vr_search.'%')
+                                                ->orWhere('violations_tbl.stud_num', 'like', '%'.$vr_search.'%');
+                                })
+                                ->where(function($vrQuery) use ($vr_schools, $vr_programs, $vr_yearlvls, $vr_genders, $vr_minAgeRange, $vr_maxAgeRange, $df_minAgeRange, $df_maxAgeRange, $vr_status, $vr_rangefrom, $vr_rangeTo){
+                                    if($vr_schools != 0 OR !empty($vr_schools)){
+                                        $vrQuery->where('students_tbl.School_Name', '=', $vr_schools);
+                                    }
+                                    if($vr_programs != 0 OR !empty($vr_programs)){
+                                        $vrQuery->where('students_tbl.Course', '=', $vr_programs);
+                                    }
+                                    if($vr_yearlvls != 0 OR !empty($vr_yearlvls)){
+                                        $vrQuery->where('students_tbl.YearLevel', '=', $vr_yearlvls);
+                                    }
+                                    if($vr_genders != 0 OR !empty($vr_genders)){
+                                        $lower_vr_gender = Str::lower($vr_genders);
+                                        $vrQuery->where('students_tbl.Gender', '=', $lower_vr_gender);
+                                    }
+                                    if($vr_minAgeRange != $df_minAgeRange OR $vr_maxAgeRange != $df_maxAgeRange){
+                                        $vrQuery->whereBetween('students_tbl.Age', [$vr_minAgeRange, $vr_maxAgeRange]);
+                                    }
+                                    if($vr_status != 0 OR !empty($vr_status)){
+                                        $lower_vr_status = Str::lower($vr_status);
+                                        $vrQuery->where('violations_tbl.violation_status', '=', $lower_vr_status);
+                                    }
+                                    if($vr_rangefrom != 0 OR !empty($vr_rangefrom) AND $vr_rangeTo != 0 OR !empty($vr_rangeTo)){
+                                        $vrQuery->whereBetween('violations_tbl.recorded_at', [$vr_rangefrom, $vr_rangeTo]);
+                                    }
+                                })
+                                ->orderBy('violations_tbl.recorded_at', 'DESC')
+                                ->paginate(10);
                 $matched_result_txt = ' Matched Records';
             }else{
                 $fltr_VR_tbl = DB::table('violations_tbl')
@@ -124,41 +126,6 @@ class ViolationRecordsController extends Controller
                 // custom values
                 $sq = "'";
                 foreach($fltr_VR_tbl as $this_violator){
-                    // year level
-                    // if($this_violator->YearLevel === '1'){
-                    //     $yearLevel_txt = '1st Year';
-                    // }else if($this_violator->YearLevel === '2'){
-                    //     $yearLevel_txt = '2nd Year';
-                    // }else if($this_violator->YearLevel === '3'){
-                    //     $yearLevel_txt = '3rd Year';
-                    // }else if($this_violator->YearLevel === '4'){
-                    //     $yearLevel_txt = '4th Year';
-                    // }else if($this_violator->YearLevel === '5'){
-                    //     $yearLevel_txt = '5th Year';
-                    // }else{
-                    //     $yearLevel_txt = $this_violator->YearLevel . ' Year';
-                    // }
-                    // course text limit
-                    // if($this_violator->Course === 'BS Education'){
-                    //     $lim_stud_course = 'BS Educ';
-                    // }else if($this_violator->Course === 'BS Psychology'){
-                    //     $lim_stud_course = 'BS Psych';
-                    // }else if($this_violator->Course === 'BA Communication'){
-                    //     $lim_stud_course = 'BA Comm';
-                    // }else if($this_violator->Course === 'BS Biology'){
-                    //     $lim_stud_course = 'BS Bio';
-                    // }else if($this_violator->Course === 'BS Pharmacy'){
-                    //     $lim_stud_course = 'BS Pharma';
-                    // }else if($this_violator->Course === 'BS Radiologic Technology'){
-                    //     $lim_stud_course = 'BS Rad Tech';
-                    // }else if($this_violator->Course === 'BS Physical Therapy'){
-                    //     $lim_stud_course = 'BS Ph Th';
-                    // }else if($this_violator->Course === 'BS Medical Technology'){
-                    //     $lim_stud_course = 'BS Med Tech';
-                    // }else{
-                    //     $lim_stud_course = $this_violator->Course;
-                    // }
-                    // offense count
                     if($this_violator->offense_count > 1){
                         $oc_s = 's';
                     }else{
@@ -258,9 +225,9 @@ class ViolationRecordsController extends Controller
                 $vr_output .='
                     <tr class="no_data_row">
                         <td align="center" colspan="7">
-                            <div class="no_data_div d-flex justify-content-center align-items-center text-center flex-column">
-                                <img class="illustration_svg" src="'. asset('storage/svms/illustrations/no_matching_users_found.svg') .'" alt="no matching users found">
-                                <span class="font-italic">No Records Found!
+                            <div class="no_data_div2 d-flex justify-content-center align-items-center text-center flex-column">
+                                <img class="no_data_svg" src="'. asset('storage/svms/illustrations/no_violations_found.svg').'" alt="no matching Data found">
+                                <span class="font-italic font-weight-bold">No Records Found!
                             </div>
                         </td>
                     </tr>
@@ -273,9 +240,17 @@ class ViolationRecordsController extends Controller
                 'vr_total_rows'       => $vr_total_matched_results,
                 'vr_total_data_found' => $vr_total_filtered_result
                );
+               
             echo json_encode($vr_data);
         }else{
             return view('violation_records.index');
         }
+    }
+
+    public function violator($violator_id){
+        // get violator's info from students_tbl and violations_tbl
+        $violator_info = Students::where('Student_Number', $violator_id)->first();
+        $offenses_count = Violations::where('stud_num', $violator_id)->count();
+        return view('violation_records.violator')->with(compact('violator_info', 'offenses_count'));
     }
 }

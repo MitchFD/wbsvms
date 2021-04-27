@@ -1078,6 +1078,18 @@ a.text_svms_gray:hover {
   margin: 0 auto 10px !important;
   display: block;
 }
+.no_data_div2{
+  width: 100%;
+  /* height: auto !important; */
+  background-color: #F5F5F5 !important;
+  border-radius: 15px;
+  padding: 20px;
+}
+.no_data_svg{
+  /* margin-top: -67px !important; */
+  height: 280px;
+  width: auto;
+}
 
 .cust_table_filters_title{
   display: inline-block;
