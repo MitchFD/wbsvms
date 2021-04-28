@@ -133,10 +133,12 @@ class ViolationRecordsController extends Controller
                     }
                     // violation status classes
                     if($this_violator->violation_status === 'cleared'){
+                        $violator_img = 'default_cleared_student_img.jpg';
                         $violation_statTxt = ' <span class="text-success font-italic"> ~ Cleared</span>';
                         $badge_stat = 'cust_badge_grn';
                         $img_class = 'display_violator_image3';
                     }else{
+                        $violator_img = 'default_student_img.jpg';
                         $violation_statTxt = ' <span class="text_svms_red font-italic"> ~ Not Cleared</span>';
                         $badge_stat = 'cust_badge_red';
                         $img_class = 'display_violator_image2';
@@ -144,7 +146,13 @@ class ViolationRecordsController extends Controller
                     $vr_output .= '
                     <tr id="'.$this_violator->Student_Number.'" onclick="viewStudentOffenses(this.id)" class="tr_pointer">
                         <td class="pl12 d-flex justify-content-start align-items-center">
-                            <img class="'.$img_class.' shadow-sm" src="'.asset('storage/svms/sdca_images/registered_students_imgs/'.$this_violator->Student_Image.'').'" alt="student'.$sq.'s image">
+                            ';
+                            if(!is_null($this_violator->Student_Image) OR !empty($this_violator->Student_Image)){
+                                $vr_output .= '<img class="'.$img_class.' shadow-sm" src="'.asset('storage/svms/sdca_images/registered_students_imgs/'.$this_violator->Student_Image.'').'" alt="student'.$sq.'s image">';
+                            }else{
+                                $vr_output .= '<img class="'.$img_class.' shadow-sm" src="'.asset('storage/svms/sdca_images/registered_students_imgs/'.$violator_img.'').'" alt="student'.$sq.'s image">';
+                            }
+                            $vr_output .= '
                             <div class="cust_td_info">
                                 <span class="actLogs_tdTitle font-weight-bold">
                                     '.preg_replace('/('.$vr_search.')/i','<span class="red_highlight2">$1</span>', $this_violator->First_Name) . ' 
