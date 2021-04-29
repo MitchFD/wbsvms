@@ -170,35 +170,171 @@
     {{-- violator's profile card end --}}
     {{-- offenses --}}
         @php
-            $yearly_offenses = App\Models\Violations::select('recorded_at')
+            $yearly_offenses = App\Models\Violations::selectRaw('year(recorded_at) year')
                                                     ->where('stud_num', $violator_info->Student_Number)
-                                                    ->orderBy('recorded_at', 'DESC')
-                                                    ->get()
-                                                    ->groupBy(function($date) {
-                                                        return Carbon\Carbon::parse($date->recorded_at)->format('Y');
-                                                    });
+                                                    ->groupBy('year')
+                                                    ->orderBy('year', 'desc')
+                                                    ->get();
         @endphp
         @if(count($yearly_offenses) > 0)
             <div class="col-lg-9 col-md-8 col-sm-12">
-            @foreach($yearly_offenses as $this_year_offenses)
-            {{$this_year_offenses}}
-                <div class="accordion" id="wowOffensesCollapseParent">
+            @foreach($yearly_offenses as $years)
+                @php
+                    $this_year = str_replace(array( '{', '}', '"', ':', 'year' ), '', $years);
+                    $this_year_offenses = App\Models\Violations::selectRaw('month(recorded_at) month')
+                                                    ->where('stud_num', $violator_info->Student_Number)
+                                                    ->whereYear('recorded_at', $this_year)
+                                                    ->groupBy('month')
+                                                    ->orderBy('month', 'desc')
+                                                    ->get();
+                @endphp
+                {{-- <div class="accordion" id="yearlyOffensesCollapseParent">
                     <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray">
-                        <div class="card-header p-0" id="wowOffensesCollapseHeading">
-                            <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#wowOffensesCollapseDiv" aria-expanded="true" aria-controls="wowOffensesCollapseDiv">
+                        <div class="card-header p-0" id="yearlyOffensesCollapseHeading">
+                            <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#yearlyOffensesCollapseDiv" aria-expanded="true" aria-controls="yearlyOffensesCollapseDiv">
                                 <div>
-                                    <span class="card_body_title">{{$this_year_offenses}} Offenses</span>
+                                    <span class="card_body_title">{{$this_year}} Offenses</span>
                                     <span class="card_body_subtitle">Offenses</span>
                                 </div>
                                 <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
                             </button>
                         </div>
-                        <div id="wowOffensesCollapseDiv" class="collapse show cb_t0b15x25" aria-labelledby="wowOffensesCollapseHeading" data-parent="#wowOffensesCollapseParent">
-                            
+                        <div id="yearlyOffensesCollapseDiv" class="collapse show cb_t0b15x25" aria-labelledby="yearlyOffensesCollapseHeading" data-parent="#yearlyOffensesCollapseParent">
+                            @foreach($this_year_offenses as $rec_offenses)
+                                {{$rec_offenses}}
+                            @endforeach
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <div class="accordion" id="monthlyOffensesCollapseParent">
+                                        <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray2">
+                                            <div class="card-header p-0" id="monthlyOffensesCollapseHeading">
+                                                <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse2 m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#monthlyOffensesCollapseDiv" aria-expanded="true" aria-controls="monthlyOffensesCollapseDiv">
+                                                    <div>
+                                                        <span class="sec_card_body_title">January 2021</span>
+                                                        <span class="sec_card_body_subtitle">4 Offenses</span>
+                                                    </div>
+                                                    <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
+                                                </button>
+                                            </div>
+                                            <div id="monthlyOffensesCollapseDiv" class="collapse show cb_t0b25x25" aria-labelledby="monthlyOffensesCollapseHeading" data-parent="#monthlyOffensesCollapseParent">
+                                                <div class="row">
+                                                    <div class="col-lg-4 col-md-5 col-sm-12">
+                                                        <div class="accordion shadow cust_accordion_div" id="changeUserRoleModalAccordion_Parent">
+                                                            <div class="card custom_accordion_card">
+                                                                <div class="card-header p-0" id="changeUserRoleCollapse_heading">
+                                                                    <h2 class="mb-0">
+                                                                        <button class="btn btn-block custom2_btn_collapse cb_x12y15 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#changeUserRoleCollapse_Div" aria-expanded="true" aria-controls="changeUserRoleCollapse_Div">
+                                                                            <div class="d-flex justify-content-start align-items-center">
+                                                                                <div class="information_div2">
+                                                                                    <span class="li_info_title">January 1, 2021</span>
+                                                                                    <span class="li_info_subtitle">Mon - 10:10 PM</span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <i class="nc-icon nc-minimal-up"></i>
+                                                                        </button>
+                                                                    </h2>
+                                                                </div>
+                                                                <div id="changeUserRoleCollapse_Div" class="collapse show cust_collapse_active cb_t0b12y15" aria-labelledby="changeUserRoleCollapse_heading" data-parent="#changeUserRoleModalAccordion_Parent">
+                                                                    <div class="card-body lightRed_cardBody mb-2">
+                                                                        <span class="lightRed_cardBody_redTitle mb-1">Minor Offenses:</span>
+                                                                        <span class="lightRed_cardBody_list"><span class="font-weight-bold">1. </span>   Littering</span>
+                                                                    </div>
+                                                                    <div class="card-body lightGreen_cardBody">
+                                                                        <span class="lightGreen_cardBody_greenTitle mb-1">Sanctions:</span>
+                                                                        <span class="lightGreen_cardBody_list"><i class="fa fa-check-square-o mr-1 font-weight-bold" aria-hidden="true"></i> 3-hours Community Service</span>
+                                                                        <span class="lightGreen_cardBody_list"><i class="fa fa-square-o mr-1 font-weight-bold" aria-hidden="true"></i> goods</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> --}}
+            @endforeach
+
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <ul class="nav nav-tabs cust_nav_tabs" id="myTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active d-flex align-items-center" id="yearlyNavTab" data-toggle="tab" href="#yearlyTabPanel" role="tab" aria-controls="yearlyTabPanel" aria-selected="true">2021 <span class="badge cust_badge_red2 ml-3" data-toggle="tooltip" data-placement="top" title="4 Recorded Offenses Found for the Year 2021.">4</span> </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link d-flex align-items-center" id="yearly2NavTab" data-toggle="tab" href="#yearly2TabPanel" role="tab" aria-controls="yearly2TabPanel" aria-selected="false">2020 <span class="badge cust_badge_red2 ml-3" data-toggle="tooltip" data-placement="top" title="4 Recorded Offenses Found for the Year 2021.">4</span></a>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane card_body_bg_gray card_bbr cb_t20b0x25 fade show active" id="yearlyTabPanel" role="tabpanel" aria-labelledby="yearlyNavTab">
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <ul class="nav nav-tabs cust_nav_tabs2" id="myTab" role="tablist">
+                                        <li class="nav-item">
+                                            <a class="nav-link d-flex align-items-center active" id="monthlyNavTab" data-toggle="tab" href="#monthlyTabPanel" role="tab" aria-controls="monthlyTabPanel" aria-selected="true">January <span class="badge cust_badge_red3 ml-3" data-toggle="tooltip" data-placement="top" title="4 Recorded Offenses Found for the January 2021.">4</span></a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link d-flex align-items-center" id="monthly2NavTab" data-toggle="tab" href="#monthly2TabPanel" role="tab" aria-controls="monthly2TabPanel" aria-selected="false">February <span class="badge cust_badge_red3 ml-3" data-toggle="tooltip" data-placement="top" title="4 Recorded Offenses Found for the February 2021.">4</span></a>
+                                        </li>
+                                    </ul>
+                                    <div class="tab-content" id="myTabContent">
+                                        <div class="tab-pane card_body_bg_gray2 card_bbr card_ofh cb_t20b25x25 fade show active" style="margin-bottom: -25px;" id="monthlyTabPanel" role="tabpanel" aria-labelledby="monthlyNavTab">
+                                            <div class="row">
+                                                <div class="col-lg-4 col-md-5 col-sm-12">
+                                                    <div class="accordion shadow cust_accordion_div" id="changeUserRoleModalAccordion_Parent">
+                                                        <div class="card custom_accordion_card">
+                                                            <div class="card-header p-0" id="changeUserRoleCollapse_heading">
+                                                                <h2 class="mb-0">
+                                                                    <button class="btn btn-block custom2_btn_collapse cb_x12y15 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#changeUserRoleCollapse_Div" aria-expanded="true" aria-controls="changeUserRoleCollapse_Div">
+                                                                        <div class="d-flex justify-content-start align-items-center">
+                                                                            <div class="information_div2">
+                                                                                <span class="li_info_title">January 1, 2021</span>
+                                                                                <span class="li_info_subtitle">Mon - 10:10 PM</span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <i class="nc-icon nc-minimal-up"></i>
+                                                                    </button>
+                                                                </h2>
+                                                            </div>
+                                                            <div id="changeUserRoleCollapse_Div" class="collapse show cust_collapse_active cb_t0b12y15" aria-labelledby="changeUserRoleCollapse_heading" data-parent="#changeUserRoleModalAccordion_Parent">
+                                                                <div class="card-body lightRed_cardBody mb-2">
+                                                                    <span class="lightRed_cardBody_redTitle mb-1">Minor Offenses:</span>
+                                                                    <span class="lightRed_cardBody_list"><span class="font-weight-bold">1. </span>   Littering</span>
+                                                                </div>
+                                                                <div class="card-body lightGreen_cardBody">
+                                                                    <span class="lightGreen_cardBody_greenTitle mb-1">Sanctions:</span>
+                                                                    <span class="lightGreen_cardBody_list"><i class="fa fa-check-square-o mr-1 font-weight-bold" aria-hidden="true"></i> 3-hours Community Service</span>
+                                                                    <span class="lightGreen_cardBody_list"><i class="fa fa-square-o mr-1 font-weight-bold" aria-hidden="true"></i> goods</span>
+                                                                </div>
+                                                                <div class="row mt-2">
+                                                                    <div class="col-lg-12 col-md-12 col-sm-12 d-flex align-items-center justify-content-between">
+                                                                        <span class="cust_info_txtwicon"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> Security Guard: Desierto</span>  
+                                                                        <button id="1" class="btn cust_btn_smcircle2" data-toggle="tooltip" data-placement="top" title="Delete recorded Offenses?"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane card_body_bg_gray2 card_bbr card_ofh cb_x15y25 fade" id="monthly2TabPanel" role="tabpanel" aria-labelledby="monthly2NavTab">
+                                            February
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane card_body_bg_gray card_bbr card_ofh cb_x15y25 fade" id="yearly2TabPanel" role="tabpanel" aria-labelledby="yearly2NavTab">
+                            2020
                         </div>
                     </div>
                 </div>
-            @endforeach
+            </div>
             </div>
         @endif
     {{-- offenses end --}}
