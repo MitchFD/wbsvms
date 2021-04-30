@@ -25,7 +25,7 @@ class CreateDeletedsanctionsTable extends Migration
                 // $table->foreign('del_stud_num')->references('stud_num')->on('registered_students_tbl')->onDelete('cascade');
             $table->string('del_sanct_status');
             $table->string('del_sanct_details');
-            $table->json('del_sel_viola_ids')->nullable();
+            $table->unsignedBigInteger('del_for_viola_id')->nullable();
             $table->unsignedBigInteger('del_respo_user_id');
             // $table->foreign('del_respo_user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamp('del_created_at')->format('Y-m-d H:i:s')->nullable();

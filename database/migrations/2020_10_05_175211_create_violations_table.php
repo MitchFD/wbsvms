@@ -23,8 +23,7 @@ class CreateViolationsTable extends Migration
             $table->json('other_off')->nullable();
             $table->unsignedBigInteger('stud_num');
                 // $table->foreign('stud_num')->references('stud_num')->on('registered_students_tbl')->onDelete('cascade');
-            $table->unsignedBigInteger('from_sanct_id')->nullable();
-                // $table->foreign('from_sanct_id')->references('sanct_id')->on('sanctions_tbl')->onDelete('cascade');
+            $table->tinyInteger('has_sanction')->default(0);
             $table->unsignedBigInteger('respo_user_id');
                 // $table->foreign('respo_user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamp('updated_at')->format('Y-m-d H:i:s')->nullable();

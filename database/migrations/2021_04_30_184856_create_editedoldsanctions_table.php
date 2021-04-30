@@ -20,7 +20,7 @@ class CreateEditedoldsanctionsTable extends Migration
             $table->unsignedBigInteger('edi_by_user_id');
                 // $table->foreign('edi_by_user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamp('edited_at')->format('Y-m-d H:i:s')->nullable();
-            $table->json('eOld_sel_violation_ids')->nullable();
+            $table->unsignedBigInteger('eOld_for_viola_id')->nullable();
             $table->string('eOld_sanct_status');
             $table->string('eOld_sanct_details');
             $table->timestamp('eOld_created_at')->format('Y-m-d H:i:s')->nullable();

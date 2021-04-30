@@ -17,8 +17,8 @@ class CreateSanctionsTable extends Migration
             $table->id('sanct_id');
             $table->unsignedBigInteger('stud_num');
                 // $table->foreign('stud_num')->references('stud_num')->on('registered_students_tbl')->onDelete('cascade');
-            $table->json('sel_violation_ids')->nullable();
-            $table->string('sanct_status');
+            $table->unsignedBigInteger('for_viola_id')->nullable();
+            $table->string('sanct_status')->default('not completed');
             $table->string('sanct_details');
             $table->unsignedBigInteger('respo_user_id');
                 // $table->foreign('respo_user_id')->references('id')->on('users')->onDelete('cascade');

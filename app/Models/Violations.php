@@ -23,7 +23,7 @@ class Violations extends Model
         'less_serious_off' => 'array',
         'other_off' => 'array',
         'stud_num',
-        'from_sanct_id',
+        'has_sanction',
         'respo_user_id',
     ];
     protected $casts = [

@@ -27,7 +27,7 @@ class RegisteredStudentsSeeder extends Seeder
                 'School_Name'    => 'SBCS',
                 'Course'         => 'BSIT',
                 'YearLevel'      => '4',
-                'Student_Image'  => 'default_student_img.jpg',
+                // 'Student_Image'  => 'default_student_img.jpg',
                 'Status'         => 1,
                 'created_at'     => now()
             ],
@@ -42,7 +42,7 @@ class RegisteredStudentsSeeder extends Seeder
                 'School_Name'    => 'SBCS',
                 'Course'         => 'BSIT',
                 'YearLevel'      => '3',
-                'Student_Image'  => 'default_student_img.jpg',
+                // 'Student_Image'  => 'default_student_img.jpg',
                 'Status'         => 1,
                 'created_at'     => now()
             ],
@@ -57,7 +57,7 @@ class RegisteredStudentsSeeder extends Seeder
                 'School_Name'    => 'SBCS',
                 'Course'         => 'BSIT',
                 'YearLevel'      => '2',
-                'Student_Image'  => 'default_student_img.jpg',
+                // 'Student_Image'  => 'default_student_img.jpg',
                 'Status'         => 1,
                 'created_at'     => now()
             ],
@@ -72,7 +72,7 @@ class RegisteredStudentsSeeder extends Seeder
                 'School_Name'    => 'SBCS',
                 'Course'         => 'BSBA',
                 'YearLevel'      => '2',
-                'Student_Image'  => 'default_student_img.jpg',
+                // 'Student_Image'  => 'default_student_img.jpg',
                 'Status'         => 1,
                 'created_at'     => now()
             ],
@@ -87,7 +87,7 @@ class RegisteredStudentsSeeder extends Seeder
                 'School_Name'    => 'SBCS',
                 'Course'         => 'BSA',
                 'YearLevel'      => '3',
-                'Student_Image'  => 'default_student_img.jpg',
+                // 'Student_Image'  => 'default_student_img.jpg',
                 'Status'         => 1,
                 'created_at'     => now()
             ],
@@ -102,7 +102,7 @@ class RegisteredStudentsSeeder extends Seeder
                 'School_Name'    => 'SBCS',
                 'Course'         => 'BMA',
                 'YearLevel'      => '4',
-                'Student_Image'  => 'default_student_img.jpg',
+                // 'Student_Image'  => 'default_student_img.jpg',
                 'Status'         => 1,
                 'created_at'     => now()
             ],
@@ -117,7 +117,7 @@ class RegisteredStudentsSeeder extends Seeder
                 'School_Name'    => 'SBCS',
                 'Course'         => 'BSA',
                 'YearLevel'      => '1',
-                'Student_Image'  => 'default_student_img.jpg',
+                // 'Student_Image'  => 'default_student_img.jpg',
                 'Status'         => 1,
                 'created_at'     => now()
             ],
@@ -132,7 +132,7 @@ class RegisteredStudentsSeeder extends Seeder
                 'School_Name'    => 'SIHTM',
                 'Course'         => 'BSHM',
                 'YearLevel'      => '3',
-                'Student_Image'  => 'default_student_img.jpg',
+                // 'Student_Image'  => 'default_student_img.jpg',
                 'Status'         => 1,
                 'created_at'     => now()
             ],
@@ -147,7 +147,7 @@ class RegisteredStudentsSeeder extends Seeder
                 'School_Name'    => 'SBCS',
                 'Course'         => 'BSTM',
                 'YearLevel'      => '4',
-                'Student_Image'  => 'default_student_img.jpg',
+                // 'Student_Image'  => 'default_student_img.jpg',
                 'Status'         => 1,
                 'created_at'     => now()
             ],
@@ -162,7 +162,7 @@ class RegisteredStudentsSeeder extends Seeder
                 'School_Name'    => 'SASE',
                 'Course'         => 'BS Psychology',
                 'YearLevel'      => '1',
-                'Student_Image'  => 'default_student_img.jpg',
+                // 'Student_Image'  => 'default_student_img.jpg',
                 'Status'         => 1,
                 'created_at'     => now()
             ],
@@ -177,7 +177,7 @@ class RegisteredStudentsSeeder extends Seeder
                 'School_Name'    => 'SASE',
                 'Course'         => 'BS Education',
                 'YearLevel'      => '2',
-                'Student_Image'  => 'default_student_img.jpg',
+                // 'Student_Image'  => 'default_student_img.jpg',
                 'Status'         => 1,
                 'created_at'     => now()
             ],
@@ -192,7 +192,7 @@ class RegisteredStudentsSeeder extends Seeder
                 'School_Name'    => 'SASE',
                 'Course'         => 'BA Communication',
                 'YearLevel'      => '4',
-                'Student_Image'  => 'default_student_img.jpg',
+                // 'Student_Image'  => 'default_student_img.jpg',
                 'Status'         => 1,
                 'created_at'     => now()
             ],
@@ -207,7 +207,7 @@ class RegisteredStudentsSeeder extends Seeder
                 'School_Name'    => 'SASE',
                 'Course'         => 'BA Communication',
                 'YearLevel'      => '2',
-                'Student_Image'  => 'default_student_img.jpg',
+                // 'Student_Image'  => 'default_student_img.jpg',
                 'Status'         => 1,
                 'created_at'     => now()
             ],
@@ -222,7 +222,7 @@ class RegisteredStudentsSeeder extends Seeder
                 'School_Name'    => 'SHSP',
                 'Course'         => 'BS Pharmacy',
                 'YearLevel'      => '1',
-                'Student_Image'  => 'default_student_img.jpg',
+                // 'Student_Image'  => 'default_student_img.jpg',
                 'Status'         => 1,
                 'created_at'     => now()
             ],
@@ -237,7 +237,7 @@ class RegisteredStudentsSeeder extends Seeder
                 'School_Name'    => 'SHSP',
                 'Course'         => 'BS Radiologic Technology',
                 'YearLevel'      => '1',
-                'Student_Image'  => 'default_student_img.jpg',
+                // 'Student_Image'  => 'default_student_img.jpg',
                 'Status'         => 1,
                 'created_at'     => now()
             ],
@@ -252,7 +252,7 @@ class RegisteredStudentsSeeder extends Seeder
                 'School_Name'    => 'SHSP',
                 'Course'         => 'BS Physical Therapy',
                 'YearLevel'      => '4',
-                'Student_Image'  => 'default_student_img.jpg',
+                // 'Student_Image'  => 'default_student_img.jpg',
                 'Status'         => 1,
                 'created_at'     => now()
             ],
@@ -267,7 +267,7 @@ class RegisteredStudentsSeeder extends Seeder
                 'School_Name'    => 'SHSP',
                 'Course'         => 'BS Medical Technology',
                 'YearLevel'      => '4',
-                'Student_Image'  => 'default_student_img.jpg',
+                // 'Student_Image'  => 'default_student_img.jpg',
                 'Status'         => 1,
                 'created_at'     => now()
             ],
@@ -282,7 +282,7 @@ class RegisteredStudentsSeeder extends Seeder
                 'School_Name'    => 'SHSP',
                 'Course'         => 'BS Nursing',
                 'YearLevel'      => '4',
-                'Student_Image'  => 'default_student_img.jpg',
+                // 'Student_Image'  => 'default_student_img.jpg',
                 'Status'         => 1,
                 'created_at'     => now()
             ]
@@ -298,7 +298,7 @@ class RegisteredStudentsSeeder extends Seeder
                 'School_Name'    => 'SHSP',
                 'Course'         => 'BS Nursing',
                 'YearLevel'      => '2',
-                'Student_Image'  => 'default_student_img.jpg',
+                // 'Student_Image'  => 'default_student_img.jpg',
                 'Status'         => 1,
                 'created_at'     => now()
             ]

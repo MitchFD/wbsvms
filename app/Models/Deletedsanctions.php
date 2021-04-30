@@ -23,11 +23,8 @@ class Deletedsanctions extends Model
         'del_stud_num',
         'del_sanct_status',
         'del_sanct_details',
-        'del_sel_viola_ids' => 'array',
+        'del_for_viola_id',
         'del_respo_user_id',
-    ];
-    protected $casts = [
-        'del_sel_viola_ids' => 'array'
     ];
     public $primaryKey = 'del_id';
     public $timestamps = false;

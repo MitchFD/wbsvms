@@ -19,12 +19,9 @@ class Editedoldsanctions extends Model
     protected $fillable = [
         'edi_from_sanct_id',
         'edi_by_user_id',
-        'eOld_sel_violation_ids' => 'array',
+        'eOld_for_viola_id',
         'eOld_sanct_status',
         'eOld_sanct_details',
-    ];
-    protected $casts = [
-        'eOld_sel_violation_ids' => 'array'
     ];
     public $primaryKey = 'eOld_id';
     public $timestamps = false;

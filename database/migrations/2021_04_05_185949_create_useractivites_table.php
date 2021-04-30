@@ -22,7 +22,7 @@ class CreateUseractivitesTable extends Migration
             $table->string('act_respo_users_fname');
             $table->string('act_type');
             $table->string('act_details');
-            $table->unsignedBigInteger('act_affected_id');
+            $table->unsignedBigInteger('act_affected_id')->nullable();
             $table->json('act_affected_sanct_ids')->nullable();
         });
     }

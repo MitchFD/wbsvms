@@ -18,13 +18,10 @@ class Sanctions extends Model
     protected $table = 'sanctions_tbl';
     protected $fillable = [
         'stud_num',
-        'sel_violation_ids' => 'array',
+        'for_viola_id',
         'sanct_status',
         'sanct_details',
         'respo_user_id',
-    ];
-    protected $casts = [
-        'sel_violation_ids' => 'array'
     ];
     public $primaryKey = 'sanct_id';
     public $timestamps = false;

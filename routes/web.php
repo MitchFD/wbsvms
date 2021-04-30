@@ -132,6 +132,10 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('violation_records/index', ['as' => 'violation_records.index', 'uses' => 'App\Http\Controllers\ViolationRecordsController@index']);
 	// violator's profile
 	Route::get('violation_records/violator/{violator_id}', ['as' => 'violation_records.violator', 'uses' => 'App\Http\Controllers\ViolationRecordsController@violator']);
+	// add sanctions form on modal
+	Route::get('violation_records/add_sanction_form', 'App\Http\Controllers\ViolationRecordsController@add_sanction_form')->name('violation_records.add_sanction_form');
+	// submit and process added sanctions form
+	Route::post('violation_records/submit_sanction_form', 'App\Http\Controllers\ViolationRecordsController@submit_sanction_form')->name('violation_records.submit_sanction_form');
 });
 
 // student handbook
