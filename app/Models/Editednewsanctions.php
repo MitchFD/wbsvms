@@ -18,7 +18,6 @@ class Editednewsanctions extends Model
     protected $table = 'edited_new_sanctions_tbl';
     protected $fillable = [
         'edi_from_eOld_id',
-        'eNew_for_viola_id',
         'eNew_sanct_status',
         'eNew_sanct_details',
     ];

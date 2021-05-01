@@ -18,7 +18,6 @@ class CreateEditednewsanctionsTable extends Migration
             $table->unsignedBigInteger('edi_from_eOld_id');
                 // $table->foreign('edi_from_eOld_id')->references('eOld_id')->on('edited_old_sanctions_tbl')->onDelete('cascade');
             $table->timestamp('edited_at')->format('Y-m-d H:i:s')->nullable();
-            $table->unsignedBigInteger('eNew_for_viola_id')->nullable();
             $table->string('eNew_sanct_status');
             $table->string('eNew_sanct_details');
         });

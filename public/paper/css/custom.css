@@ -137,6 +137,19 @@
     color: var(--white) !important;
     background-color: var(--svms_green) !important;
 }
+.custom_nav_link_greenv1{
+  color: var(--svms_green);
+  background-color: #F0FAF5;
+}
+.custom_nav_link_greenv1:hover{
+  color: var(--svms_green);
+  background-color: #F0FAF5;
+}
+.nav-pills .custom_nav_link_greenv1.active,
+.nav-pills .show > .custom_nav_link_greenv1 {
+    color: var(--white) !important;
+    background-color: var(--svms_green) !important;
+}
 /* registration page end */
 
 /* custom card-bodies */
@@ -526,6 +539,19 @@ fieldset[disabled] .btn_svms_blue.active {
   width: 15px;
   margin-top: 3px !important;
 }
+.cust_info_txtwicon4v1{
+  display: flex;
+  font-size: 13px !important;
+  font-weight: normal;
+  text-decoration: none !important;
+  text-transform: normal !important;
+  color: #2B8654 !important; 
+  /* align-items: center !important; */
+}
+.cust_info_txtwicon4v1 i{
+  width: 15px;
+  margin-top: 3px !important;
+}
 
 /* cursor customizations */
 .cursor_pointer{
@@ -899,6 +925,10 @@ fieldset[disabled] .btn_svms_blue.active {
   color: #195333 !important;
   font-weight: bold !important;
 }
+/* green checkbox */
+input[type=checkbox]:checked + .lightGreen_cardBody_chckboxLabel{
+  font-weight: bold !important;
+}
 .lightGreen_cardBody_notice{
   display: block;
   font-size: 13px !important;
@@ -969,6 +999,7 @@ fieldset[disabled] .btn_svms_blue.active {
 input[type=checkbox]:checked + .lightRed_cardBody_chckboxLabel{
   font-weight: bold !important;
 }
+
 
 /* directory link */
 .directory_divider{
@@ -1821,7 +1852,7 @@ a.text_svms_gray:hover {
   margin: 0;
   padding: 0;
   background-color: transparent;
-  color: #ACE4C6;
+  color: #6BD098;
 }
 .cust_btn_smcircle4:hover{
   background-color: #6BD098 !important;
@@ -1832,6 +1863,26 @@ a.text_svms_gray:hover {
 .cust_btn_smcircle4:active:focus {
   background-color: #6BD098 !important;
   color: #D2F1E0 !important;
+}
+.cust_btn_smcircle4v1{
+  height: 25px;
+  width: 25px;
+  border-radius: 50%;
+  font-size: 13px;
+  margin: 0;
+  padding: 0;
+  background-color: #D2F1E0;
+  color: #6BD098;
+}
+.cust_btn_smcircle4v1:hover{
+  background-color: #B4E7CB !important;
+  color: #2B8654 !important;
+}
+.cust_btn_smcircle4v1:focus,
+.cust_btn_smcircle4v1:active,
+.cust_btn_smcircle4v1:active:focus {
+  background-color: #B4E7CB !important;
+  color: #2B8654 !important;
 }
 
 .cust_btn_smcircle5{
@@ -3077,4 +3128,9 @@ fieldset[disabled] .applyBtn.active {
   margin-top: -1px;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
+}
+
+/* custom horizontal line */
+hr.hr_grn{
+  border-color: #cde7db !important;
 }

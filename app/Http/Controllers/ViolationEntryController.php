@@ -423,11 +423,11 @@ class ViolationEntryController extends Controller
                 $yearLevel_txt = $get_sel_stud_yrlvl . ' Year';
             }
             // Mr./Mrs format
-            $old_user_gender = Str::lower($get_sel_stud_gender);
-            if($old_user_gender == 'male'){
+            $student_gender = Str::lower($get_sel_stud_gender);
+            if($student_gender == 'male'){
                 $user_his_her = 'his';
                 $user_mr_ms   = 'Mr.';
-            }elseif($old_user_gender == 'female'){
+            }elseif($student_gender == 'female'){
                 $user_his_her = 'her';
                 $user_mr_ms   = 'Ms.';
             }else{

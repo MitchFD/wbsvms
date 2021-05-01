@@ -24,6 +24,7 @@ class Violations extends Model
         'other_off' => 'array',
         'stud_num',
         'has_sanction',
+        'has_sanct_count',
         'respo_user_id',
     ];
     protected $casts = [

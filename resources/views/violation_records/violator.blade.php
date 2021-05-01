@@ -287,6 +287,7 @@
                                                                 $this_month_offenses = App\Models\Violations::where('stud_num', $violator_info->Student_Number)
                                                                                 ->whereYear('recorded_at', $this_yearVal_tc)
                                                                                 ->whereMonth('recorded_at', $yearly_monthlyVal_tc)
+                                                                                ->orderBy('recorded_at', 'desc')
                                                                                 ->get();
                                                             @endphp
                                                             @foreach($this_month_offenses as $date_offense)
@@ -374,20 +375,45 @@
                                                                                         </div>
                                                                                     @endif
                                                                                 @endif
+                                                                                @csrf
+                                                                                <input type="hidden" name="vp_hidden_stud_num" id="vp_hidden_stud_num" value="{{$violator_info->Student_Number}}" />
                                                                                 @if($date_offense->has_sanction > 0)
+                                                                                    @php
+                                                                                        $get_all_sanctions = App\Models\Sanctions::select('sanct_status', 'sanct_details')
+                                                                                                                            ->where('stud_num', $violator_info->Student_Number)
+                                                                                                                            ->where('for_viola_id', $date_offense->viola_id)
+                                                                                                                            ->orderBy('created_at', 'desc')
+                                                                                                                            ->offset(0)
+                                                                                                                            ->limit($date_offense->has_sanct_count)
+                                                                                                                            ->get();
+                                                                                    @endphp
                                                                                     <div class="card-body lightGreen_cardBody mb-2">
                                                                                         <div class="d-flex justify-content-between">
                                                                                             <span class="lightGreen_cardBody_greenTitle mb-1">Sanctions:</span>
-                                                                                            <button id="1" class="btn cust_btn_smcircle4" data-toggle="tooltip" data-placement="top" title="Delete recorded Offenses?"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+                                                                                            <button id="{{$date_offense->viola_id}}" onclick="editSanction(this.id)" class="btn cust_btn_smcircle4v1" data-toggle="tooltip" data-placement="top" title="Edit Sanctions?"><i class="fa fa-pencil" aria-hidden="true"></i></button>
                                                                                         </div>
-                                                                                        <span class="lightGreen_cardBody_list"><i class="fa fa-check-square-o mr-1 font-weight-bold" aria-hidden="true"></i> 3-hours Community Service</span>
-                                                                                        <span class="lightGreen_cardBody_list"><i class="fa fa-square-o mr-1 font-weight-bold" aria-hidden="true"></i> goods</span>
+                                                                                        @foreach($get_all_sanctions as $this_vrSanction)
+                                                                                            {{-- custom values for sanctions --}}
+                                                                                            @php
+                                                                                                if($this_vrSanction->sanct_status === 'completed'){
+                                                                                                    $sanct_icon = 'fa fa-check-square-o';
+                                                                                                }else{
+                                                                                                    $sanct_icon = 'fa fa-square-o';
+                                                                                                }
+                                                                                            @endphp
+                                                                                            <span class="lightGreen_cardBody_list"><i class="{{$sanct_icon }} mr-1 font-weight-bold" aria-hidden="true"></i> {{ $this_vrSanction->sanct_details}}</span>
+                                                                                        @endforeach
+                                                                                        {{-- <hr class="hr_grn">
+                                                                                        <div class="row">
+                                                                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                                                                                <span class="cust_info_txtwicon4"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> Security Guard: Wick</span>  
+                                                                                                <span class="cust_info_txtwicon4"><i class="fa fa-calendar mr-1" aria-hidden="true"></i> April 1, 1998</span>  
+                                                                                            </div>
+                                                                                        </div> --}}
                                                                                     </div>
                                                                                 @else
                                                                                     <div class="row m-0">
                                                                                         <div class="col-lg-12 col-md-12 col-sm-12 p-0">
-                                                                                            @csrf
-                                                                                            <input type="hidden" name="vp_hidden_stud_num" id="vp_hidden_stud_num" value="{{$violator_info->Student_Number}}" />
                                                                                             <button id="{{$date_offense->viola_id}}" onclick="addSanction(this.id)" type="button" class="btn btn-success btn-block cust_bt_links shadow m-0"><i class="nc-icon nc-simple-add mr-1" aria-hidden="true"></i> Add Sanctions</button>
                                                                                         </div>
                                                                                     </div>
@@ -438,7 +464,7 @@
     </div>
 
     {{-- modals --}}
-    {{-- deactivate user account modal --}}
+    {{-- add sanctions on modal --}}
         <div class="modal fade" id="addSanctionsModal" tabindex="-1" role="dialog" aria-labelledby="addSanctionsModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content cust_modal">
@@ -454,7 +480,24 @@
                 </div>
             </div>
         </div>
-    {{-- deactivate user account modal end --}}
+    {{-- add sanctions on modal end --}}
+    {{-- edit sanctions on modal --}}
+        <div class="modal fade" id="editSanctionsModal" tabindex="-1" role="dialog" aria-labelledby="editSanctionsModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="editSanctionsModalLabel">Edit Sanction?</span>
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="editSanctionModalHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{-- edit sanctions on modal end --}}
 
 @endsection
 
@@ -490,6 +533,25 @@
         }
     </script>
 {{-- add sanctions on modal end --}}
+
+{{-- edit sanctions on modal --}}
+    <script>
+        function editSanction(sel_viola_id){
+            var sel_viola_id = sel_viola_id;
+            var sel_stud_num = document.getElementById("vp_hidden_stud_num").value;
+            var _token = $('input[name="_token"]').val();
+            $.ajax({
+                url:"{{ route('violation_records.edit_sanction_form') }}",
+                method:"GET",
+                data:{sel_viola_id:sel_viola_id, sel_stud_num:sel_stud_num, _token:_token},
+                success: function(data){
+                    $('#editSanctionModalHtmlData').html(data); 
+                    $('#editSanctionsModal').modal('show');
+                }
+            });
+        }
+    </script>
+{{-- edit sanctions on modal end --}}
 
 {{-- adding new input field for adding sanctions on modal --}}
     {{-- check if first input has value to enable add new field button --}}
@@ -544,4 +606,26 @@
         });
     </script>
 {{-- adding new input field for adding sanctions on modal end --}}
+
+{{-- edit sanctions on form modal --}}
+    {{-- initialize nav-pills --}}
+    <script>
+        $('#editSanctionsModal').on('show.bs.modal', function () {
+            $('#editSanctionPills_tabParent a').on('click', function (e) {
+                e.preventDefault();
+                $(this).tab('show');
+            })
+        });
+    </script>
+    {{-- disable/enable save button --}}
+    <script>
+        $('#editSanctionsModal').on('show.bs.modal', function () {
+            $('#form_editSanctions').each(function(){
+                $(this).data('serialized', $(this).serialize())
+            }).on('change input', function(){
+                $(this).find('#submit_editSanctionsBtn').prop('disabled', $(this).serialize() == $(this).data('serialized'));
+            }).find('#submit_editSanctionsBtn').prop('disabled', true);
+        });
+    </script>
+{{-- edit sanctions on form modal end --}}
 @endpush

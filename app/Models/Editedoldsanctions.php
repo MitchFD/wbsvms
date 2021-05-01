@@ -19,7 +19,6 @@ class Editedoldsanctions extends Model
     protected $fillable = [
         'edi_from_sanct_id',
         'edi_by_user_id',
-        'eOld_for_viola_id',
         'eOld_sanct_status',
         'eOld_sanct_details',
     ];

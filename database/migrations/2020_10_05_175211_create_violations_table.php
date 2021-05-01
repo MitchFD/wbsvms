@@ -24,6 +24,7 @@ class CreateViolationsTable extends Migration
             $table->unsignedBigInteger('stud_num');
                 // $table->foreign('stud_num')->references('stud_num')->on('registered_students_tbl')->onDelete('cascade');
             $table->tinyInteger('has_sanction')->default(0);
+            $table->tinyInteger('has_sanct_count')->default(0);
             $table->unsignedBigInteger('respo_user_id');
                 // $table->foreign('respo_user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamp('updated_at')->format('Y-m-d H:i:s')->nullable();
