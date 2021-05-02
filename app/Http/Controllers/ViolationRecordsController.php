@@ -680,32 +680,32 @@ class ViolationRecordsController extends Controller
                             </div>
                         </div>
                     </div>
-                    <form id="form_editSanctions" action="'.route('violation_records.update_sanction_form').'" class="form" enctype="multipart/form-data" method="POST" onsubmit="submit_editSanctionsBtn.disabled = true; return true;">
-                        ';
-                        $get_all_sanctions = Sanctions::select('sanct_id', 'sanct_status', 'sanct_details')
-                                                    ->where('stud_num', $sel_stud_num)
-                                                    ->where('for_viola_id', $sel_viola_id)
-                                                    ->orderBy('created_at', 'desc')
-                                                    ->offset(0)
-                                                    ->limit($get_viola_has_sanct_count)
-                                                    ->get();
-                        $count_all_sanctions = count($get_all_sanctions);
-                        $output .= '
-                        <div class="modal-body pb-0">
-                            <ul class="nav nav-pills custom_nav_pills mt-0 mb-3 d-flex justify-content-center" id="editSanctionPills_tabParent" role="tablist">
-                                <li class="nav-item mx-1">
-                                    <a class="nav-link custom_nav_link_greenv1 active" id="mark_sanctions_tab" data-toggle="pill" href="#mark_sanctions_tabContent" role="tab" aria-controls="mark_sanctions_tabContent" aria-selected="true"><i class="fa fa-check-square-o mr-1" aria-hidden="true"></i> Mark</a>
-                                </li>
-                                <li class="nav-item mx-1">
-                                    <a class="nav-link custom_nav_link_greenv1" id="add_sanctions_tab" data-toggle="pill" href="#add_sanctions_tabContent" role="tab" aria-controls="add_sanctions_tabContent" aria-selected="false"><i class="nc-icon nc-simple-add mr-1" aria-hidden="true"></i> Add</a>
-                                </li>
-                                <li class="nav-item mx-1">
-                                    <a class="nav-link custom_nav_link_greenv1" id="delete_sanctions_tab" data-toggle="pill" href="#delete_sanctions_tabContent" role="tab" aria-controls="delete_sanctions_tabContent" aria-selected="false"><i class="fa fa-trash mr-1" aria-hidden="true"></i> Delete</a>
-                                </li>
-                            </ul>
-                            <div class="tab-content" id="editSanctionPills_tabContent">
-                                <div class="tab-pane fade show active" id="mark_sanctions_tabContent" role="tabpanel" aria-labelledby="mark_sanctions_tab">
-                                    <div class="card-body lightGreen_cardBody mb-2">
+                    <div class="modal-body pb-0">
+                        <ul class="nav nav-pills custom_nav_pills mt-0 mb-3 d-flex justify-content-center" id="editSanctionPills_tabParent" role="tablist">
+                            <li class="nav-item mx-1">
+                                <a class="nav-link custom_nav_link_greenv1 active" id="mark_sanctions_tab" data-toggle="pill" href="#mark_sanctions_tabContent" role="tab" aria-controls="mark_sanctions_tabContent" aria-selected="true"><i class="fa fa-check-square-o mr-1" aria-hidden="true"></i> Mark</a>
+                            </li>
+                            <li class="nav-item mx-1">
+                                <a class="nav-link custom_nav_link_greenv1" id="add_sanctions_tab" data-toggle="pill" href="#add_sanctions_tabContent" role="tab" aria-controls="add_sanctions_tabContent" aria-selected="false"><i class="fa fa-plus mr-1" aria-hidden="true"></i> Add</a>
+                            </li>
+                            <li class="nav-item mx-1">
+                                <a class="nav-link custom_nav_link_greenv1" id="delete_sanctions_tab" data-toggle="pill" href="#delete_sanctions_tabContent" role="tab" aria-controls="delete_sanctions_tabContent" aria-selected="false"><i class="fa fa-trash mr-1" aria-hidden="true"></i> Delete</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="editSanctionPills_tabContent">
+                            ';
+                            $get_all_sanctions = Sanctions::select('sanct_id', 'sanct_status', 'sanct_details')
+                                                        ->where('stud_num', $sel_stud_num)
+                                                        ->where('for_viola_id', $sel_viola_id)
+                                                        ->orderBy('created_at', 'desc')
+                                                        ->offset(0)
+                                                        ->limit($get_viola_has_sanct_count)
+                                                        ->get();
+                            $count_all_sanctions = count($get_all_sanctions);
+                            $output .= '
+                            <div class="tab-pane fade show active" id="mark_sanctions_tabContent" role="tabpanel" aria-labelledby="mark_sanctions_tab">
+                                <form id="form_editSanctions" action="'.route('violation_records.update_sanction_form').'" class="form" enctype="multipart/form-data" method="POST" onsubmit="submit_editSanctionsBtn.disabled = true; return true;">
+                                    <div class="card-body lightGreen_cardBody">
                                         <span class="lightGreen_cardBody_greenTitle mb-1">Mark Sanctions:</span>
                                         ';
                                         foreach($get_all_sanctions as $this_editSanction){
@@ -720,7 +720,7 @@ class ViolationRecordsController extends Controller
                                         }
                                         $output .='
                                         <hr class="hr_grn">
-                                        <div class="row mb-1">
+                                        <div class="row">
                                             <div class="col-lg-12 col-md-12 col-sm-12">
                                             ';
                                             if($count_all_sanctions > 0){
@@ -736,43 +736,67 @@ class ViolationRecordsController extends Controller
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                    <div class="modal-footer pr-0 border-0">
+                                        <input type="hidden" name="_token" value="'.csrf_token().'">
+                                        ';
+                                        foreach($get_all_sanctions as $this_editSanction){
+                                            $output .= '
+                                            <input type="hidden" name="reg_sanctions[]" value="'.$this_editSanction->sanct_id.'">
+                                            ';
+                                        }
+                                        $output .= '
+                                        <input type="hidden" name="for_viola_id" value="'.$sel_viola_id.'">
+                                        <input type="hidden" name="sel_stud_num" value="'.$sel_stud_num.'">
+                                        <input type="hidden" name="total_sanct_count" id="total_sanct_count" value="'.$count_all_sanctions.'">
+                                        <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
+                                        <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
+                                        <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
+                                        <div class="btn-group" role="group" aria-label="Basic example">
+                                            <button type="button" class="btn btn-round btn_svms_red btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                                            <button id="submit_editSanctionsBtn" type="submit" class="btn btn-round btn-success btn_show_icon m-0" disabled>Save Changes <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
 
-                                <div class="tab-pane fade" id="add_sanctions_tabContent" role="tabpanel" aria-labelledby="add_sanctions_tab">
-                                    <div class="card-body lightGreen_cardBody mb-2">
-                                        <span class="lightGreen_cardBody_greenTitle mb-1">Add New Sanctions:</span>
+                            <div class="tab-pane fade" id="add_sanctions_tabContent" role="tabpanel" aria-labelledby="add_sanctions_tab">
+                                <div class="card-body lightGreen_cardBody mb-2">
+                                    <span class="lightGreen_cardBody_greenTitle mb-1">Add New Sanctions:</span>
+                                    ';
+                                    $txt_iptgrp_append_count = $count_all_sanctions + 1;
+                                    $add_x = 1;
+                                    foreach($get_all_sanctions as $this_addSanction){
+                                        $output .= '<span class="lightGreen_cardBody_list"><span class="font-weight-bold mr-1">'. $add_x++ .'.</span> '. $this_addSanction->sanct_details .'</span>';
+                                    }
+                                    $output .= '
+                                    <div class="input-group mt-1 mb-2">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text txt_iptgrp_append font-weight-bold">'.$txt_iptgrp_append_count.'. </span>
+                                        </div>
+                                        <input type="text" id="addNewSanction_input" name="new_sanctions[]" class="form-control input_grpInpt3v1" placeholder="Type New Sanction" aria-label="Type New Sanction" aria-describedby="add-new-sanctions-input">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-success btn_iptgrp_append m-0" id="btn_addNewSanct_input" type="button" disabled><i class="nc-icon nc-simple-add font-weight-bold" aria-hidden="true"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="addedSanctInputFields_div">
+
+                                    </div>
+                                    <div class="row mb-1">
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <span class="cust_info_txtwicon4v1"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i> You can only add 10 sanctions.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="delete_sanctions_tabContent" role="tabpanel" aria-labelledby="delete_sanctions_tab">
+                                <div class="card-body lightGreen_cardBody mb-2">
+                                    <span class="lightGreen_cardBody_greenTitle mb-1">Delete Sanctions:</span>
                                         
-                                    </div>
-                                </div>
-
-                                <div class="tab-pane fade" id="delete_sanctions_tabContent" role="tabpanel" aria-labelledby="delete_sanctions_tab">
-                                    <div class="card-body lightGreen_cardBody mb-2">
-                                        <span class="lightGreen_cardBody_greenTitle mb-1">Delete Sanctions:</span>
-                                            
-                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="modal-footer border-0">
-                            <input type="hidden" name="_token" value="'.csrf_token().'">
-                        ';
-                        foreach($get_all_sanctions as $this_editSanction){
-                            $output .= '
-                            <input type="hidden" name="reg_sanctions[]" value="'.$this_editSanction->sanct_id.'">
-                            ';
-                        }
-                        $output .= '
-                            <input type="hidden" name="for_viola_id" value="'.$sel_viola_id.'">
-                            <input type="hidden" name="sel_stud_num" value="'.$sel_stud_num.'">
-                            <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
-                            <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
-                            <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
-                            <div class="btn-group" role="group" aria-label="Basic example">
-                                <button type="button" class="btn btn-round btn_svms_red btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
-                                <button id="submit_editSanctionsBtn" type="submit" class="btn btn-round btn-success btn_show_icon m-0" disabled>Save Changes <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
-                            </div>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             ';
             echo $output;
@@ -807,7 +831,6 @@ class ViolationRecordsController extends Controller
         // custom values
             if(!is_null($get_reg_sanctions) OR !empty($get_reg_sanctions)){
                 $reg_sanct_count = count($get_reg_sanctions);
-
             }else{
                 $reg_sanct_count = 0;
             }
@@ -818,13 +841,19 @@ class ViolationRecordsController extends Controller
             }
 
         // try
-            echo 'regsitered sanctions count = ' . $reg_sanct_count . ' <br />';
-            echo 'completed sanctions count = ' . $completed_reg_sanct . ' <br />';
-            echo 'not completed sanctions count = ' . $not_completed_reg_sanct . ' <br /><br />';
-            echo 'marked sanctions count = ' . $marked_sanct_count . ' <br />';
+            // $x = 1;
+            // echo 'REGISTERED SANCTIONS: <br />';
+            // foreach($get_reg_sanctions as $display_reg_sanct){
+            //     echo ''.$x++.': ' . $display_reg_sanct . ' <br />';
+            // }
+            // echo 'regsitered sanctions count = ' . $reg_sanct_count . ' <br /> <br />';
+            // echo 'completed sanctions count = ' . $completed_reg_sanct . ' <br />';
+            // echo 'not completed sanctions count = ' . $not_completed_reg_sanct . ' <br /><br />';
+            // echo 'marked sanctions count = ' . $marked_sanct_count . ' <br />';
 
-            // if($marked_sanct_count > $completed_reg_sanct){
+            // logics for updating sanction's status
             // "completed" if there are marked sanctions
+            // if($marked_sanct_count > $completed_reg_sanct){
             //     foreach($get_marked_sanctions as $updated_sanction){
             //         $update_sanct_statuses = DB::table('sanctions_tbl')
             //         ->where('sanct_id', $updated_sanction)
@@ -834,36 +863,33 @@ class ViolationRecordsController extends Controller
             //             'updated_at'   => $now_timestamp
             //         ]);
             //     }
-            // }else{
-            // "not completed" if there are no marked sanctions
-
+            //     if($update_sanct_statuses){
+            //         return back()->withSuccessStatus('Sanctions Update was a success.');
+            //     }else{
+            //         return back()->withFailedStatus('Sanctions Update has Failed! try again later.');
+            //     }
             // }
-            
-
+            // "not completed" if there are no marked sanctions
+            // if($marked_sanct_count == 0){
+            //     if($completed_reg_sanct > 0){
+            //         foreach($get_reg_sanctions as $update_reg_sanction){
+            //             $update_sanct_statuses = DB::table('sanctions_tbl')
+            //             ->where('sanct_id', $update_reg_sanction)
+            //             ->update([
+            //                 'sanct_status' => $not_completed_txt,
+            //                 'completed_at' => $now_timestamp,
+            //                 'updated_at'   => $now_timestamp
+            //             ]);
+            //         }
+            //     }
+            //     if($update_sanct_statuses){
+            //         return back()->withSuccessStatus('Sanctions Update was a success.');
+            //     }else{
+            //         return back()->withFailedStatus('Sanctions Update has Failed! try again later.');
+            //     }
+            // }
             // "cleared" for selected violation if marked sanctions == registered sanctions
 
-
-
-
-
-
-        // mark
-        // if(!is_null($get_marked_sanctions) OR !empty($get_marked_sanctions)){
-        //     foreach($get_marked_sanctions as $updated_sanction){
-        //         $update_sanct_statuses = DB::table('sanctions_tbl')
-        //         ->where('sanct_id', $updated_sanction)
-        //         ->update([
-        //             'sanct_status' => 'completed',
-        //             'completed_at' => $now_timestamp,
-        //             'updated_at'   => $now_timestamp
-        //         ]);
-        //     }
-        //     if($update_sanct_statuses){
-        //         return back()->withSuccessStatus('Sanctions Update was a success.');
-        //     }else{
-        //         return back()->withFailedStatus('Sanctions Update has Failed! try again later.');
-        //     }
-        // }
     }
 
 }

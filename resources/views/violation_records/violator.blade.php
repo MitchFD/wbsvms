@@ -627,5 +627,57 @@
             }).find('#submit_editSanctionsBtn').prop('disabled', true);
         });
     </script>
+    {{-- adding new sanction input field append --}}
+    <script>
+        $('#editSanctionsModal').on('show.bs.modal', function () {
+            const addNewSanction_input  = document.querySelector("#addNewSanction_input");
+            const btn_addNewSanct_input = document.querySelector("#btn_addNewSanct_input");
+            $(addNewSanction_input).keyup(function(){
+                if(addNewSanction_input.value !== ""){
+                    btn_addNewSanct_input.disabled = false;
+                }else{
+                    btn_addNewSanct_input.disabled = true;
+                }
+            });
+        });
+    </script>
+    <script>
+        $('#editSanctionsModal').on('show.bs.modal', function () {
+            var btn_addNewSanct_input = document.querySelector("#btn_addNewSanct_input");
+            var total_sanct_count = document.getElementById("total_sanct_count").value;
+            var addedSanctInputFields_div = document.querySelector('.addedSanctInputFields_div');
+            var newSanct_maxField = 10 - total_sanct_count;
+            var x = 1;
+            var addedSanct_count = total_sanct_count + 2 - 10;
+            $(btn_addNewSanct_input).click(function(){
+                if(x < newSanct_maxField){
+                    x++;
+                    addedSanct_count++;
+                    var s_addedSanct_count = String(addedSanct_count);
+                    var newInputField = '<div class="input-group mt-1 mb-2"> ' +
+                                    '<div class="input-group-append"> ' +
+                                        '<span class="input-group-text txt_iptgrp_append font-weight-bold">'+ (s_addedSanct_count) +'. </span> ' +
+                                    '</div> ' +
+                                    '<input type="text" id="addNewSanction_input" name="new_sanctions[]" class="form-control input_grpInpt3v1" placeholder="Type New Sanction" aria-label="Type New Sanction" aria-describedby="add-new-sanctions-input"> ' +
+                                    '<div class="input-group-append"> ' +
+                                        '<button class="btn btn-success btn_iptgrp_append btn_deleteAddedNewSanct_input m-0" id="btn_addNewSanct_input" type="button"><i class="nc-icon nc-simple-remove font-weight-bold" aria-hidden="true"></i></button> ' +
+                                    '</div> ' +
+                                '</div>';
+                    $(addedSanctInputFields_div).append(newInputField);
+                    console.log(newSanct_maxField);
+                    console.log(addedSanct_count);
+                    console.log(s_addedSanct_count);
+                }
+            });
+            $(addedSanctInputFields_div).on('click', '.btn_deleteAddedNewSanct_input', function(e){
+                e.preventDefault();
+                $(this).closest('.input_grpInpt3v1').value = '';
+                $(this).closest('.input-group').last().remove();
+                x--;
+                addedSanct_count--;
+            });
+        });
+    </script>
 {{-- edit sanctions on form modal end --}}
+
 @endpush

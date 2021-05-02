@@ -2023,7 +2023,42 @@ a.text_svms_gray:hover {
 .input_grpInpt3:focus{
   border: 1px solid #2b8654;
   box-shadow: none !important;
-} 
+}
+
+.input_grpInpt3v1{
+  padding: 8px 10px !important; 
+  border: 1px solid #AEE5C7;
+  border-radius: 0 !important;;
+  box-shadow: none !important;
+  font-size: 14px !important;
+  color: #2b8654 !important;
+}
+.input_grpInpt3v1::placeholder{
+  color: #6bd098;
+  opacity: 1;
+}
+.input_grpInpt3v1:hover,
+.input_grpInpt3v1:focus{
+  border: 1px solid #2b8654;
+  box-shadow: none !important;
+}
+
+.txt_iptgrp_append{
+  padding: 8px 0 10px 8px !important;
+  border-top: 1px solid #AEE5C7 !important;
+  border-right: 0 !important;
+  border-bottom: 1px solid #AEE5C7 !important;
+  border-left: 1px solid #AEE5C7 !important;
+  box-shadow: none !important;
+  font-size: 14px !important;
+  color: #2b8654 !important;
+  background-color: #fff;
+  margin-left: -1px !important;
+}
+.btn_iptgrp_append{
+  padding: 8px 15px;
+}
+
 .input_grpIcon{
   position: absolute;
   color: var(--svms_red) !important;
