@@ -571,10 +571,20 @@
     {{-- adding new field button --}}
     <script>
         $('#addSanctionsModal').on('show.bs.modal', function () {
+            function arrangeIndex(){
+                i = 1;
+                $(".startNumField").each(function(){
+                    $(this).html(i+1 + '.');
+                    i++;
+                });
+            }
             var maxField = 10;
             var btn_addAnother_input = document.querySelector("#btn_addAnother_input");
             var addedInputFields_div = document.querySelector('.addedInputFields_div');
             var newInputField = '<div class="input-group mb-2">' +
+                                    '<div class="input-group-append"> ' +
+                                       '<span class="input-group-text txt_iptgrp_append startNumField font-weight-bold"></span> ' +
+                                    '</div>' +
                                     '<input type="text" name="sanctions[]" class="form-control input_grpInpt3" placeholder="Type Sanction" aria-label="Type Sanction" aria-describedby="add-sanctions-input"> ' +
                                     '<div class="input-group-append"> ' +
                                         '<button class="btn btn-success m-0 btn_deleteAddedSanction_input" type="button"><i class="nc-icon nc-simple-remove font-weight-bold" aria-hidden="true"></i></button> ' +
@@ -586,12 +596,14 @@
                     x++;
                     $(addedInputFields_div).append(newInputField);
                 }
+                arrangeIndex();
             });
             $(addedInputFields_div).on('click', '.btn_deleteAddedSanction_input', function(e){
                 e.preventDefault();
                 $(this).closest('.input_grpInpt3').value = '';
                 $(this).closest('.input-group').last().remove();
                 x--;
+                arrangeIndex();
             });
         });
     </script>
@@ -620,11 +632,18 @@
     {{-- disable/enable save button --}}
     <script>
         $('#editSanctionsModal').on('show.bs.modal', function () {
-            $('#form_editSanctions').each(function(){
+            $('#form_markSanctions').each(function(){
                 $(this).data('serialized', $(this).serialize())
             }).on('change input', function(){
-                $(this).find('#submit_editSanctionsBtn').prop('disabled', $(this).serialize() == $(this).data('serialized'));
-            }).find('#submit_editSanctionsBtn').prop('disabled', true);
+                $(this).find('#submit_markSanctionsBtn').prop('disabled', $(this).serialize() == $(this).data('serialized'));
+            }).find('#submit_markSanctionsBtn').prop('disabled', true);
+
+            // delete sanctions form
+            $('#form_deleteSanctions').each(function(){
+                $(this).data('serialized', $(this).serialize())
+            }).on('change input', function(){
+                $(this).find('#submit_deleteSanctionsBtn').prop('disabled', $(this).serialize() == $(this).data('serialized'));
+            }).find('#submit_deleteSanctionsBtn').prop('disabled', true);
         });
     </script>
     {{-- adding new sanction input field append --}}
@@ -679,5 +698,36 @@
         });
     </script>
 {{-- edit sanctions on form modal end --}}
+
+{{-- deleting sanctions --}}
+    <script>
+        $('#editSanctionsModal').on('show.bs.modal', function () {
+            $("#sanctCheckAll").change(function(){
+                if(this.checked){
+                $(".sanctCheckSingle").each(function(){
+                    this.checked=true;
+                })              
+                }else{
+                $(".sanctCheckSingle").each(function(){
+                    this.checked=false;
+                })              
+                }
+            });
+
+            $(".sanctCheckSingle").click(function () {
+                if ($(this).is(":checked")){
+                var isAllChecked = 0;
+                $(".sanctCheckSingle").each(function(){
+                    if(!this.checked)
+                    isAllChecked = 1;
+                })              
+                if(isAllChecked == 0){ $("#sanctCheckAll").prop("checked", true); }     
+                }else {
+                $("#sanctCheckAll").prop("checked", false);
+                }
+            });
+        });
+    </script>
+{{-- deleting sanctions end --}}
 
 @endpush

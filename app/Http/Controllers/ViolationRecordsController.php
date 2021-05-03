@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Students;
 use App\Models\Violations;
 use App\Models\Sanctions;
+use App\Models\Deletedsanctions;
 use App\Models\Users;
 use App\Models\Useractivites;
 use Illuminate\Mail\Mailable;
@@ -392,6 +393,9 @@ class ViolationRecordsController extends Controller
                             <div class="card-body lightGreen_cardBody mb-2">
                                 <span class="lightGreen_cardBody_greenTitle mb-1">Sanctions:</span>
                                 <div class="input-group mb-2">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text txt_iptgrp_append font-weight-bold">1. </span>
+                                    </div>
                                     <input type="text" id="addSanctions_input" name="sanctions[]" class="form-control input_grpInpt3" placeholder="Type Sanction" aria-label="Type Sanction" aria-describedby="add-sanctions-input">
                                     <div class="input-group-append">
                                         <button class="btn btn-success m-0" id="btn_addAnother_input" type="button" disabled><i class="nc-icon nc-simple-add font-weight-bold" aria-hidden="true"></i></button>
@@ -704,7 +708,7 @@ class ViolationRecordsController extends Controller
                             $count_all_sanctions = count($get_all_sanctions);
                             $output .= '
                             <div class="tab-pane fade show active" id="mark_sanctions_tabContent" role="tabpanel" aria-labelledby="mark_sanctions_tab">
-                                <form id="form_editSanctions" action="'.route('violation_records.update_sanction_form').'" class="form" enctype="multipart/form-data" method="POST" onsubmit="submit_editSanctionsBtn.disabled = true; return true;">
+                                <form id="form_markSanctions" action="'.route('violation_records.update_sanction_form').'" class="form" enctype="multipart/form-data" method="POST" onsubmit="submit_markSanctionsBtn.disabled = true; return true;">
                                     <div class="card-body lightGreen_cardBody">
                                         <span class="lightGreen_cardBody_greenTitle mb-1">Mark Sanctions:</span>
                                         ';
@@ -753,7 +757,7 @@ class ViolationRecordsController extends Controller
                                         <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
                                         <div class="btn-group" role="group" aria-label="Basic example">
                                             <button type="button" class="btn btn-round btn_svms_red btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
-                                            <button id="submit_editSanctionsBtn" type="submit" class="btn btn-round btn-success btn_show_icon m-0" disabled>Save Changes <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                                            <button id="submit_markSanctionsBtn" type="submit" class="btn btn-round btn-success btn_show_icon m-0" disabled>Save Changes <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
                                         </div>
                                     </div>
                                 </form>
@@ -790,10 +794,60 @@ class ViolationRecordsController extends Controller
                             </div>
 
                             <div class="tab-pane fade" id="delete_sanctions_tabContent" role="tabpanel" aria-labelledby="delete_sanctions_tab">
-                                <div class="card-body lightGreen_cardBody mb-2">
-                                    <span class="lightGreen_cardBody_greenTitle mb-1">Delete Sanctions:</span>
-                                        
-                                </div>
+                                <form id="form_deleteSanctions" action="'.route('violation_records.delete_sanction_form').'" class="form" enctype="multipart/form-data" method="POST" onsubmit="submit_deleteSanctionsBtn.disabled = true; return true;">
+                                    <div class="card-body lightGreen_cardBody">
+                                        <span class="lightGreen_cardBody_greenTitle mb-1">Delete Sanctions:</span>
+                                        ';
+                                        foreach($get_all_sanctions as $this_deleteSanction){
+                                            $output .= '
+                                            <div class="form-group mx-0 mt-0 mb-1">
+                                                <div class="custom-control custom-checkbox align-items-center">
+                                                    <input type="checkbox" name="delete_sanctions[]" value="'.$this_deleteSanction->sanct_id.'" class="custom-control-input cursor_pointer sanctCheckSingle" id="'.$this_deleteSanction->sanct_id.'_deleteThisSanct_id">
+                                                    <label class="custom-control-label lightGreen_cardBody_chckboxLabel" for="'.$this_deleteSanction->sanct_id.'_deleteThisSanct_id">'.$this_deleteSanction->sanct_details.'</label>
+                                                </div>
+                                            </div>
+                                            ';
+                                        }
+                                        $output .='
+                                        <hr class="hr_grn">
+                                        <div class="row">
+                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                            ';
+                                            if($count_all_sanctions > 0){
+                                                if($count_all_sanctions > 1){
+                                                    $cls_s = 's';
+                                                }else{
+                                                    $cls_s = '';
+                                                }
+                                                $output .= '
+                                                <div class="form-group mx-0 mt-0 mb-1">
+                                                    <div class="custom-control custom-checkbox align-items-center">
+                                                        <input type="checkbox" name="delete_all_sanctions" value="delete_all_sanctions" class="custom-control-input cursor_pointer" id="sanctCheckAll">
+                                                        <label class="custom-control-label lightGreen_cardBody_chckboxLabel" for="sanctCheckAll">Delete All ('.$count_all_sanctions.') Sanction'.$cls_s.'</label>
+                                                    </div>
+                                                </div>
+                                                <span class="cust_info_txtwicon4v1 font-weight-bold"><i class="fa fa-list-ul mr-1" aria-hidden="true"></i> ' . $count_all_sanctions . ' Sanction'.$cls_s . ' for the above offenses.</span>
+                                                ';
+                                            }
+                                            $output .='
+                                                <span class="cust_info_txtwicon4v1"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i> Mark sanctions you want to delete.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer pr-0 border-0">
+                                        <input type="hidden" name="_token" value="'.csrf_token().'">
+                                        <input type="hidden" name="for_viola_id" value="'.$sel_viola_id.'">
+                                        <input type="hidden" name="sel_stud_num" value="'.$sel_stud_num.'">
+                                        <input type="hidden" name="total_sanct_count" id="total_sanct_count" value="'.$count_all_sanctions.'">
+                                        <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
+                                        <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
+                                        <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
+                                        <div class="btn-group" role="group" aria-label="delete sanctions actions">
+                                            <button type="button" class="btn btn-round btn-success btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                                            <button id="submit_deleteSanctionsBtn" type="submit" class="btn btn-round btn_svms_red btn_show_icon m-0" disabled> Delete Selected <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -890,6 +944,156 @@ class ViolationRecordsController extends Controller
             // }
             // "cleared" for selected violation if marked sanctions == registered sanctions
 
+    }
+
+    // process deleting sanctions
+    public function delete_sanction_form(Request $request){
+        // custom values
+            $now_timestamp     = now();
+        // get all request
+            $get_for_viola_id      = $request->get('for_viola_id');
+            $get_sel_stud_num      = $request->get('sel_stud_num');
+            $get_respo_user_id     = $request->get('respo_user_id');
+            $get_respo_user_lname  = $request->get('respo_user_lname');
+            $get_respo_user_fname  = $request->get('respo_user_fname');   
+            $get_total_sanct_count = $request->get('total_sanct_count');   
+            $get_delete_all_sanct  = $request->get('delete_all_sanctions');   
+            $get_deleted_sanctions = json_decode(json_encode($request->get('delete_sanctions'))); 
+        // cusotms
+            $sq = "'";
+            $count_deleted_sanct = count($get_deleted_sanctions);
+            if($count_deleted_sanct > 0){
+                if($count_deleted_sanct > 1){
+                    $ds_s = 's';
+                }else{
+                    $ds_s = '';
+                }
+            }else{
+                $ds_s = '';
+            }
+        // get status of selected for_viola_id
+            $get_violation_info = Violations::select('violation_status', 'recorded_at', 'offense_count')
+                                        ->where('viola_id', $get_for_viola_id)
+                                        ->first();
+            $default_viola_status = $get_violation_info->violation_status;
+            $default_viola_date   = $get_violation_info->recorded_at;
+            $default_viola_count  = $get_violation_info->offense_count;
+            if($default_viola_count > 0){
+                if($default_viola_count > 1){
+                    $vc_s = 's';
+                }else{
+                    $vc_s = '';
+                }
+            }
+        // get selected student's info from students_tbl
+            $sel_stud_info = Students::select('Student_Number', 'First_Name', 'Middle_Name', 'Last_Name', 'Email', 'School_Name', 'Course', 'YearLevel')
+                                ->where('Student_Number', $get_sel_stud_num)
+                                ->first();
+            $sel_stud_Fname       = $sel_stud_info->First_Name;
+            $sel_stud_Mname       = $sel_stud_info->Middle_Name;
+            $sel_stud_Lname       = $sel_stud_info->Last_Name;
+            $sel_stud_Email       = $sel_stud_info->Email;
+            $sel_stud_School_Name = $sel_stud_info->School_Name;
+            $sel_stud_Course      = $sel_stud_info->Course;
+            $sel_stud_YearLevel   = $sel_stud_info->YearLevel;
+        // year level
+            if($sel_stud_YearLevel === '1'){
+                $yearLevel_txt = '1st Year';
+            }else if($sel_stud_YearLevel === '2'){
+                $yearLevel_txt = '2nd Year';
+            }else if($sel_stud_YearLevel === '3'){
+                $yearLevel_txt = '3rd Year';
+            }else if($sel_stud_YearLevel === '4'){
+                $yearLevel_txt = '4th Year';
+            }else if($sel_stud_YearLevel === '5'){
+                $yearLevel_txt = '5th Year';
+            }else{
+                $yearLevel_txt = $sel_stud_YearLevel . ' Year';
+            }
+        // deletion 
+            if($count_deleted_sanct > 0){
+                foreach($get_deleted_sanctions as $delete_this_sanct){
+                    // get each sanction's info
+                    $get_sel_sanctions_info = Sanctions::select('sanct_id', 'stud_num', 'for_viola_id', 'sanct_status', 'sanct_details', 'respo_user_id', 'created_at', 'completed_at')
+                                            ->where('sanct_id', $delete_this_sanct)
+                                            ->first();
+                    // save to deleted_sanctions_tbl
+                    $save_tobe_deleted = new Deletedsanctions;
+                    $save_tobe_deleted->del_from_sanct_id = $delete_this_sanct;
+                    $save_tobe_deleted->del_by_user_id    = $get_respo_user_id;
+                    $save_tobe_deleted->deleted_at        = $now_timestamp;
+                    $save_tobe_deleted->reason_deletion   = 'reason';
+                    $save_tobe_deleted->del_stud_num      = $get_sel_stud_num;
+                    $save_tobe_deleted->del_sanct_status  = $get_sel_sanctions_info->sanct_status;
+                    $save_tobe_deleted->del_sanct_details = $get_sel_sanctions_info->sanct_details;
+                    $save_tobe_deleted->del_for_viola_id  = $get_sel_sanctions_info->for_viola_id;
+                    $save_tobe_deleted->del_respo_user_id = $get_sel_sanctions_info->respo_user_id;
+                    $save_tobe_deleted->del_created_at    = $get_sel_sanctions_info->created_at;
+                    $save_tobe_deleted->del_completed_at  = $get_sel_sanctions_info->completed_at;
+                    $save_tobe_deleted->save();
+                    if($save_tobe_deleted){
+                        // delete selected
+                        $delete_from_sanctions_tbl = Sanctions::where('sanct_id', $delete_this_sanct)
+                                                    ->where('stud_num', $get_sel_stud_num)
+                                                    ->where('for_viola_id', $get_for_viola_id)
+                                                    ->delete();
+                    }
+                }
+                // update violation's status from violations_tbl
+                if($delete_from_sanctions_tbl){
+                    if($count_deleted_sanct >= $get_total_sanct_count){
+                        $violation_status    = 'not cleared';
+                        $new_has_sanction    = 0;
+                        $new_has_sanct_count = 0;
+                    }else{
+                        $violation_status    = $default_viola_status;
+                        $new_has_sanction    = 1;
+                        $new_has_sanct_count = $get_total_sanct_count - $count_deleted_sanct;
+                    }
+                    $update_sel_viol_tbl = DB::table('violations_tbl')
+                            ->where('viola_id', $get_for_viola_id)
+                            ->update([
+                                'violation_status' => $violation_status,
+                                'has_sanction'     => $new_has_sanction,
+                                'has_sanct_count'  => $new_has_sanct_count,
+                                'updated_at'       => $now_timestamp
+                                ]);
+                    if($update_sel_viol_tbl){
+                        // get del_id from deleted_sanctions_tbl
+                        $to_array_deleted_sanct_ids = array();
+                        $sel_all_deleted_sanct_info = Deletedsanctions::select('del_id')
+                                ->where('del_for_viola_id', $get_for_viola_id)
+                                ->where('del_stud_num', $get_sel_stud_num)
+                                ->offset(0)
+                                ->limit($count_deleted_sanct)
+                                ->get();
+                        if(count($sel_all_deleted_sanct_info) > 0){
+                            foreach($sel_all_deleted_sanct_info as $deleted_sanction_ids){
+                                array_push($to_array_deleted_sanct_ids, $deleted_sanction_ids);
+                            }
+                        }
+                        $to_Json_deleted_sanct_ids = json_encode($to_array_deleted_sanct_ids);
+                        $ext_jsonDeletedSanct_ids = str_replace(array( '{', '}', '"', ':', 'del_id' ), '', $to_Json_deleted_sanct_ids);
+                        // record activity
+                        $record_act = new Useractivites;
+                        $record_act->created_at             = $now_timestamp;
+                        $record_act->act_respo_user_id      = $get_respo_user_id;
+                        $record_act->act_respo_users_lname  = $get_respo_user_lname;
+                        $record_act->act_respo_users_fname  = $get_respo_user_fname;
+                        $record_act->act_type               = 'sanction deletion';
+                        $record_act->act_details            = 'Deleted ' . $count_deleted_sanct . ' Sanction'.$ds_s . ' for ' . $default_viola_count . ' Offense'.$vc_s . ' made by ' . $yearLevel_txt . ' ' . $sel_stud_Course . ' student: ' . $sel_stud_Fname . ' ' . $sel_stud_Mname . ' ' . $sel_stud_Lname . ' on ' . date('F d, Y', strtotime($default_viola_date)).'.';
+                        $record_act->act_affected_sanct_ids = $ext_jsonDeletedSanct_ids;
+                        $record_act->save();
+                        return back()->withSuccessStatus('Sanctions Update was a success.');
+                    }else{
+                        return back()->withFailedStatus('Updating Violation'.$sq.'s status has failed. Try Again later.');
+                    }
+                }else{
+                    return back()->withFailedStatus('Deleting Selected Sanctions has failed! Try again later.');
+                }
+            }else{
+                return back()->withFailedStatus('No Sanctions were selected for deletion. try again.');
+            }
     }
 
 }

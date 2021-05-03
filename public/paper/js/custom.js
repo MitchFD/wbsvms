@@ -7,6 +7,13 @@
             $('[data-toggle="tooltip"]').tooltip()
         });
 
+// disable content scroll on modal
+    $('.modal').on('show.bs.modal', function () {
+        $("html").removeClass("perfect-scrollbar-on");
+    }).on('hidden.bs.modal', function () {
+        $("html").addClass("perfect-scrollbar-on");
+    })
+
 // toggle icon class on button click
     $('.custom2_btn_collapse').click(function() {
         $("i", this).toggleClass("nc-minimal-up nc-minimal-down");
