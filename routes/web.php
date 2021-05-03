@@ -141,6 +141,8 @@ Route::group(['middleware' => 'auth'], function () {
 	// submit and process added sanctions form
 	Route::post('violation_records/update_sanction_form', 'App\Http\Controllers\ViolationRecordsController@update_sanction_form')->name('violation_records.update_sanction_form');
 
+	// add new sanctions form on modal
+	Route::post('violation_records/add_new_sanctions', 'App\Http\Controllers\ViolationRecordsController@add_new_sanctions')->name('violation_records.add_new_sanctions');
 	// delete sanctions form on modal
 	Route::post('violation_records/delete_sanction_form', 'App\Http\Controllers\ViolationRecordsController@delete_sanction_form')->name('violation_records.delete_sanction_form');
 });

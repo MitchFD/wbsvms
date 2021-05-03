@@ -382,7 +382,7 @@
                                                                                         $get_all_sanctions = App\Models\Sanctions::select('sanct_status', 'sanct_details')
                                                                                                                             ->where('stud_num', $violator_info->Student_Number)
                                                                                                                             ->where('for_viola_id', $date_offense->viola_id)
-                                                                                                                            ->orderBy('created_at', 'desc')
+                                                                                                                            ->orderBy('created_at', 'asc')
                                                                                                                             ->offset(0)
                                                                                                                             ->limit($date_offense->has_sanct_count)
                                                                                                                             ->get();
@@ -486,7 +486,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content cust_modal">
                     <div class="modal-header border-0">
-                        <span class="modal-title cust_modal_title" id="editSanctionsModalLabel">Edit Sanction?</span>
+                        <span class="modal-title cust_modal_title" id="editSanctionsModalLabel">Edit Sanctions?</span>
                         <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -571,9 +571,9 @@
     {{-- adding new field button --}}
     <script>
         $('#addSanctionsModal').on('show.bs.modal', function () {
-            function arrangeIndex(){
+            function addSanctIndexing(){
                 i = 1;
-                $(".startNumField").each(function(){
+                $(".addSanctIndex").each(function(){
                     $(this).html(i+1 + '.');
                     i++;
                 });
@@ -583,9 +583,9 @@
             var addedInputFields_div = document.querySelector('.addedInputFields_div');
             var newInputField = '<div class="input-group mb-2">' +
                                     '<div class="input-group-append"> ' +
-                                       '<span class="input-group-text txt_iptgrp_append startNumField font-weight-bold"></span> ' +
+                                       '<span class="input-group-text txt_iptgrp_append addSanctIndex font-weight-bold"></span> ' +
                                     '</div>' +
-                                    '<input type="text" name="sanctions[]" class="form-control input_grpInpt3" placeholder="Type Sanction" aria-label="Type Sanction" aria-describedby="add-sanctions-input"> ' +
+                                    '<input type="text" name="sanctions[]" class="form-control input_grpInpt3" placeholder="Type Sanction" aria-label="Type Sanction" aria-describedby="add-sanctions-input" required /> ' +
                                     '<div class="input-group-append"> ' +
                                         '<button class="btn btn-success m-0 btn_deleteAddedSanction_input" type="button"><i class="nc-icon nc-simple-remove font-weight-bold" aria-hidden="true"></i></button> ' +
                                     '</div> ' +
@@ -596,14 +596,14 @@
                     x++;
                     $(addedInputFields_div).append(newInputField);
                 }
-                arrangeIndex();
+                addSanctIndexing();
             });
             $(addedInputFields_div).on('click', '.btn_deleteAddedSanction_input', function(e){
                 e.preventDefault();
                 $(this).closest('.input_grpInpt3').value = '';
                 $(this).closest('.input-group').last().remove();
                 x--;
-                arrangeIndex();
+                addSanctIndexing();
             });
         });
     </script>
@@ -623,14 +623,85 @@
     {{-- initialize nav-pills --}}
     <script>
         $('#editSanctionsModal').on('show.bs.modal', function () {
-            $('#editSanctionPills_tabParent a').on('click', function (e) {
-                e.preventDefault();
-                $(this).tab('show');
-            })
+            // initialize nav-pills
+                $('#editSanctionPills_tabParent a').on('click', function (e) {
+                    e.preventDefault();
+                    $(this).tab('show');
+                });
+            // initialize nav-pills end
+
+            // disable/enable save buttons
+                // mark sanctions form serialized
+                $('#form_markSanctions').each(function(){
+                    $(this).data('serialized', $(this).serialize())
+                }).on('change input', function(){
+                    $(this).find('#submit_markSanctionsBtn').prop('disabled', $(this).serialize() == $(this).data('serialized'));
+                }).find('#submit_markSanctionsBtn').prop('disabled', true);
+
+                // delete sanctions form serialized
+                $('#form_deleteSanctions').each(function(){
+                    $(this).data('serialized', $(this).serialize())
+                }).on('change input', function(){
+                    $(this).find('#submit_deleteSanctionsBtn').prop('disabled', $(this).serialize() == $(this).data('serialized'));
+                }).find('#submit_deleteSanctionsBtn').prop('disabled', true);
+            // disable/enable save buttons end
+
+            // adding new input field for new sanctions
+                // check if first input is not empty to enable add button
+                var addNewSanction_input  = document.querySelector("#addNewSanction_input");
+                var addNewSanct_btn = document.querySelector("#btn_addNewSanct_input");
+                var submit_addNewSanct_btn = document.querySelector("#submit_addNewSanctionsBtn");
+                $(addNewSanction_input).keyup(function(){
+                    if(addNewSanction_input.value !== ""){
+                        addNewSanct_btn.disabled = false;
+                        submit_addNewSanct_btn.disabled = false;
+                    }else{
+                        addNewSanct_btn.disabled = true;
+                        submit_addNewSanct_btn.disabled = true;
+                    }
+                });
+                // initialize appending new input field
+                var append_new_index = document.getElementById("append_new_index").value;
+                var addedSanctInputFields_div = document.querySelector('.addedSanctInputFields_div');
+                var newSanct_maxField = 10 - append_new_index;
+                var newSanct_index = parseInt(append_new_index) + parseInt(1, 10);
+                var x = 1;
+                function addNewSanctIndexing(){
+                    var n_i = newSanct_index;
+                    $(".addNewSanctIndex").each(function(){
+                        $(this).html('' + n_i + '.');
+                        n_i++;
+                    });
+                }
+                $(addNewSanct_btn).click(function(){
+                    if(x <= newSanct_maxField){
+                        x++;
+                        var newInputField = '<div class="input-group mt-1 mb-2"> ' +
+                                        '<div class="input-group-append"> ' +
+                                            '<span class="input-group-text txt_iptgrp_append addNewSanctIndex font-weight-bold"></span> ' +
+                                        '</div> ' +
+                                        '<input type="text" name="new_sanctions[]" class="form-control input_grpInpt3v1" placeholder="Type New Sanction" aria-label="Type New Sanction" aria-describedby="added-new-sanctions-input" required /> ' +
+                                        '<div class="input-group-append"> ' +
+                                            '<button class="btn btn_svms_red btn_iptgrp_append btn_deleteAddedNewSanct_input m-0" id="btn_addNewSanct_input" type="button"><i class="nc-icon nc-simple-remove font-weight-bold" aria-hidden="true"></i></button> ' +
+                                        '</div> ' +
+                                    '</div>';
+                        $(addedSanctInputFields_div).append(newInputField);
+                    }
+                    addNewSanctIndexing();
+                });
+                $(addedSanctInputFields_div).on('click', '.btn_deleteAddedNewSanct_input', function(e){
+                    e.preventDefault();
+                    $(this).closest('.input_grpInpt3v1').value = '';
+                    $(this).closest('.input-group').last().remove();
+                    x--;
+                    addNewSanctIndexing();
+                });
+            // adding new input field for new sanctions end
         });
     </script>
+
     {{-- disable/enable save button --}}
-    <script>
+    {{-- <script>
         $('#editSanctionsModal').on('show.bs.modal', function () {
             $('#form_markSanctions').each(function(){
                 $(this).data('serialized', $(this).serialize())
@@ -645,9 +716,10 @@
                 $(this).find('#submit_deleteSanctionsBtn').prop('disabled', $(this).serialize() == $(this).data('serialized'));
             }).find('#submit_deleteSanctionsBtn').prop('disabled', true);
         });
-    </script>
+    </script> --}}
+
     {{-- adding new sanction input field append --}}
-    <script>
+    {{-- <script>
         $('#editSanctionsModal').on('show.bs.modal', function () {
             const addNewSanction_input  = document.querySelector("#addNewSanction_input");
             const btn_addNewSanct_input = document.querySelector("#btn_addNewSanct_input");
@@ -659,8 +731,8 @@
                 }
             });
         });
-    </script>
-    <script>
+    </script> --}}
+    {{-- <script>
         $('#editSanctionsModal').on('show.bs.modal', function () {
             var btn_addNewSanct_input = document.querySelector("#btn_addNewSanct_input");
             var total_sanct_count = document.getElementById("total_sanct_count").value;
@@ -696,34 +768,33 @@
                 addedSanct_count--;
             });
         });
-    </script>
+    </script> --}}
 {{-- edit sanctions on form modal end --}}
 
 {{-- deleting sanctions --}}
     <script>
         $('#editSanctionsModal').on('show.bs.modal', function () {
-            $("#sanctCheckAll").change(function(){
+            $("#sanctDeleteAll").change(function(){
                 if(this.checked){
-                $(".sanctCheckSingle").each(function(){
+                $(".sanctDeleteSingle").each(function(){
                     this.checked=true;
                 })              
                 }else{
-                $(".sanctCheckSingle").each(function(){
+                $(".sanctDeleteSingle").each(function(){
                     this.checked=false;
                 })              
                 }
             });
-
-            $(".sanctCheckSingle").click(function () {
+            $(".sanctDeleteSingle").click(function () {
                 if ($(this).is(":checked")){
-                var isAllChecked = 0;
-                $(".sanctCheckSingle").each(function(){
+                var isDeleteAllChecked = 0;
+                $(".sanctDeleteSingle").each(function(){
                     if(!this.checked)
-                    isAllChecked = 1;
+                    isDeleteAllChecked = 1;
                 })              
-                if(isAllChecked == 0){ $("#sanctCheckAll").prop("checked", true); }     
+                if(isDeleteAllChecked == 0){ $("#sanctDeleteAll").prop("checked", true); }     
                 }else {
-                $("#sanctCheckAll").prop("checked", false);
+                $("#sanctDeleteAll").prop("checked", false);
                 }
             });
         });
