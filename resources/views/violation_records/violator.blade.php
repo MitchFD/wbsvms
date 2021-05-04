@@ -533,7 +533,7 @@
                                                                                             @endif
                                                                                             <span class="cust_info_txtwicon"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> {{ $recBy }}</span>  
                                                                                         </div>
-                                                                                        <button class="btn cust_btn_smcircle2" data-toggle="tooltip" data-placement="top" title="Delete recorded Offenses?"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                                                        <button id="{{$date_offense->viola_id}}" onclick="deleteThisViolation(this.id)" class="btn cust_btn_smcircle2" data-toggle="tooltip" data-placement="top" title="Delete recorded Offenses?"><i class="fa fa-trash" aria-hidden="true"></i></button>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
@@ -601,6 +601,23 @@
                         </button>
                     </div>
                     <div id="editSanctionModalHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{-- edit sanctions on modal end --}}
+    {{-- edit sanctions on modal --}}
+        <div class="modal fade" id="deleteViolationModal" tabindex="-1" role="dialog" aria-labelledby="deleteViolationModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="deleteViolationModalLabel">Delete Violation?</span>
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="deleteViolationModalHtmlData">
                     
                     </div>
                 </div>
@@ -882,6 +899,24 @@
                 });
             // deleting sanctions form end
         });
+    </script>
+
+{{-- delete recorded violation --}}
+    <script>
+        function deleteThisViolation(sel_viola_id){
+            var sel_viola_id = sel_viola_id;
+            var sel_stud_num = document.getElementById("vp_hidden_stud_num").value;
+            var _token = $('input[name="_token"]').val();
+            $.ajax({
+                url:"{{ route('violation_records.delete_violation_form') }}",
+                method:"GET",
+                data:{sel_viola_id:sel_viola_id, sel_stud_num:sel_stud_num, _token:_token},
+                success: function(data){
+                    $('#deleteViolationModalHtmlData').html(data); 
+                    $('#deleteViolationModal').modal('show');
+                }
+            });
+        }
     </script>
 
 @endpush

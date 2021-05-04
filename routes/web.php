@@ -145,6 +145,9 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::post('violation_records/add_new_sanctions', 'App\Http\Controllers\ViolationRecordsController@add_new_sanctions')->name('violation_records.add_new_sanctions');
 	// delete sanctions form on modal
 	Route::post('violation_records/delete_sanction_form', 'App\Http\Controllers\ViolationRecordsController@delete_sanction_form')->name('violation_records.delete_sanction_form');
+
+	// delete violation confirmation on modal
+	Route::get('violation_records/delete_violation_form', 'App\Http\Controllers\ViolationRecordsController@delete_violation_form')->name('violation_records.delete_violation_form');
 });
 
 // student handbook
