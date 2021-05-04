@@ -233,7 +233,7 @@ class ViolationEntryController extends Controller
                         </div>
                     </div>
                 </div>
-                <form id="form_addViolation" action="'.route('violation_entry.submit_violation_form').'" enctype="multipart/form-data" method="POST" onsubmit="submit_violationForm_btn.disabled = true; return true;">
+                <form id="form_addViolation" action="'.route('violation_entry.submit_violation_form').'" enctype="multipart/form-data" method="POST">
                     <div class="row mt-3">
                         <div class="col-lg-6 col-md-6 col-sm-12 pr-0">
                             <div class="lightRed_cardBody h-100">
@@ -344,7 +344,7 @@ class ViolationEntryController extends Controller
                             <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
                             <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
                             <div class="btn-group" role="group" aria-label="Basic example">
-                                <button type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                                <button id="cancel_violationForm_btn" type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
                                 <button id="submit_violationForm_btn" type="submit" class="btn btn-round btn_svms_red btn_show_icon m-0" disabled>Save <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
                             </div>
                         </div>

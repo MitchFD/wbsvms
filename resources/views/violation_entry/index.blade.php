@@ -208,64 +208,56 @@
 @endsection
 
 @push('scripts')
-{{-- <script>
-    $(window).on('load', function(){
-        $('#violationEntryModal').modal('show');
-    });
-</script> --}}
-
 {{-- violation form --}}
-    {{-- check if others' input has text then enable add new input button --}}
     <script>
         $('#violationEntryModal').on('show.bs.modal', function () {
-            const otherOffenses_input  = document.querySelector("#addOtherOffenses_input");
-            const otherOffensesAdd_Btn = document.querySelector("#btn_addAnother_input");
-            $(otherOffenses_input).keyup(function(){
-                if(otherOffenses_input.value !== ""){
-                    otherOffensesAdd_Btn.disabled = false;
-                }else{
-                    otherOffensesAdd_Btn.disabled = true;
-                }
-            });
-            // function otherOffenses_InputHas_txt(){
-            //     if(otherOffenses_input.value !== ""){
-            //         otherOffensesAdd_Btn.disabled = false;
-            //     }else{
-            //         otherOffensesAdd_Btn.disabled = true;
-            //     }
-            // }
+            // adding new input for Other Offenses
+                // disable/enable add button
+                var otherOffenses_input  = document.querySelector("#addOtherOffenses_input");
+                var otherOffensesAdd_Btn = document.querySelector("#btn_addAnother_input");
+                $(otherOffenses_input).keyup(function(){
+                    if(otherOffenses_input.value !== ""){
+                        otherOffensesAdd_Btn.disabled = false;
+                    }else{
+                        otherOffensesAdd_Btn.disabled = true;
+                    }
+                });
+                // appending new input field
+                    var maxField = 10;
+                    var addedInputFields_div = document.querySelector('.addedInputFields_div');
+                    var newInputField = '<div class="input-group mb-2">' +
+                                            '<input type="text" name="other_offenses[]" class="form-control input_grpInpt2" placeholder="Type Other Offense" aria-label="Type Other Offense" aria-describedby="other-offenses-input"> ' +
+                                            '<div class="input-group-append"> ' +
+                                                '<button class="btn btn_svms_red m-0 btn_deleteAnother_input" type="button"><i class="nc-icon nc-simple-remove font-weight-bold" aria-hidden="true"></i></button> ' +
+                                            '</div> ' +
+                                        '</div>';
+                    var x = 1;
+                    $(otherOffensesAdd_Btn).click(function(){
+                        if(x < maxField){
+                            x++;
+                            $(addedInputFields_div).append(newInputField);
+                            // console.log(x);
+                        }
+                    });
+                    $(addedInputFields_div).on('click', '.btn_deleteAnother_input', function(e){
+                        e.preventDefault();
+                        $(this).closest('.input_grpInpt2').value = '';
+                        $(this).closest('.input-group').last().remove();
+                        x--;
+                        // console.log('click');
+                    });
+            // disable cancel and sibmit button on submit
+                var form_addViolation  = document.querySelector("#form_addViolation");
+                var submit_violationForm_btn = document.querySelector("#submit_violationForm_btn");
+                var cancel_violationForm_btn = document.querySelector("#cancel_violationForm_btn");
+                $(form_addViolation).submit(function(){
+                    cancel_violationForm_btn.disabled = true;
+                    submit_violationForm_btn.disabled = true;
+                    return true;
+                });
         });
     </script>
-    {{-- adding new input for other offenses --}}
-    <script>
-        $('#violationEntryModal').on('show.bs.modal', function () {
-            var maxField = 10;
-            var btn_addAnother_input = document.querySelector("#btn_addAnother_input");
-            var addedInputFields_div = document.querySelector('.addedInputFields_div');
-            var newInputField = '<div class="input-group mb-2">' +
-                                    '<input type="text" name="other_offenses[]" class="form-control input_grpInpt2" placeholder="Type Other Offense" aria-label="Type Other Offense" aria-describedby="other-offenses-input"> ' +
-                                    '<div class="input-group-append"> ' +
-                                        '<button class="btn btn_svms_red m-0 btn_deleteAnother_input" type="button"><i class="nc-icon nc-simple-remove font-weight-bold" aria-hidden="true"></i></button> ' +
-                                    '</div> ' +
-                                '</div>';
-            var x = 1;
-            $(btn_addAnother_input).click(function(){
-                if(x < maxField){
-                    x++;
-                    $(addedInputFields_div).append(newInputField);
-                    // console.log(x);
-                }
-            });
-            $(addedInputFields_div).on('click', '.btn_deleteAnother_input', function(e){
-                e.preventDefault();
-                $(this).closest('.input_grpInpt2').value = '';
-                $(this).closest('.input-group').last().remove();
-                x--;
-                // console.log('click');
-            });
-        });
-    </script>
-    {{-- enable submit button when violatin form has values --}}
+    {{-- disable/enable submit button --}}
     <script>
         $('#violationEntryModal').on('show.bs.modal', function () {
             $('#form_addViolation').each(function(){

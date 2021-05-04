@@ -74,6 +74,11 @@
                                             ->where('stud_num', $violator_info->Student_Number)
                                             ->where('violation_status', '=', 'cleared')
                                             ->sum('offense_count');
+                if($total_offenses > 1){
+                    $toc_s = 's';
+                }else{
+                    $toc_s = '';
+                }
                 if($total_cleared_off == $total_offenses){
                     $no_vr_imgFltr = 'up_stud_user_image';
                     $default_studImg = 'default_cleared_student_img.jpg';
@@ -155,11 +160,12 @@
                         </div>
                         <div class="row">
                             <div class="col-lg-12 col-md-12 col-sm-12">
+                                <span class="cust_info_txtwicon font-weight-bold"><i class="fa fa-list-ul mr-1" aria-hidden="true"></i> {{$total_offenses }} Total Offense{{$toc_s }} Found.</span>
                                 @if($total_cleared_off > 0)
                                     <span class="cust_info_txtwicon"><i class="fa fa-check-square-o mr-1" aria-hidden="true"></i> {{$total_cleared_off }} Cleared Offenses.</span>  
                                 @endif
                                 @if($total_notCleared_off > 0)
-                                    <span class="cust_info_txtwicon"><i class="fa fa-exclamation-circle mr-1" aria-hidden="true"></i> {{$total_notCleared_off }} Uncleared Offenses.</span>
+                                    <span class="cust_info_txtwicon"><i class="fa fa-square-o mr-1" aria-hidden="true"></i> {{$total_notCleared_off }} Uncleared Offenses.</span>
                                 @endif
                             </div>
                         </div>
@@ -189,11 +195,33 @@
                                     $yearly_totalOffenses = App\Models\Violations::where('stud_num', $violator_info->Student_Number)
                                             ->whereYear('recorded_at', $this_yearVal_t)
                                             ->sum('offense_count');
+                                    if($yearly_totalOffenses > 1){
+                                        $yOc_s = 's'; 
+                                    }else{
+                                        $yOc_s = '';
+                                    }
+                                    // count all violations per year
+                                    $yearly_totalViolaRec = App\Models\Violations::where('stud_num', $violator_info->Student_Number)
+                                            ->whereYear('recorded_at', $this_yearVal_t)
+                                            ->count();
+                                    // count all cleared violations per year
+                                    $yearly_totalClearedViolaRec = App\Models\Violations::where('stud_num', $violator_info->Student_Number)
+                                            ->whereYear('recorded_at', $this_yearVal_t)
+                                            ->where('violation_status', '=', 'cleared')
+                                            ->count();
+                                    // custom values
+                                    if($yearly_totalClearedViolaRec == $yearly_totalViolaRec){
+                                        $class_custBadge_Y = 'cust_badge_grn';
+                                        $toolTip_custBadge_Y = ''.$yearly_totalOffenses . ' Cleared Offense'.$yOc_s.' for the Year ' .$this_yearVal_t.'.';
+                                    }else{
+                                        $class_custBadge_Y = 'cust_badge_red2';
+                                        $toolTip_custBadge_Y = ''.$yearly_totalOffenses . ' Recorded Offense'.$yOc_s.' Found for the Year ' .$this_yearVal_t.'.';
+                                    }
                                 @endphp
                                 <li class="nav-item">
                                     <a class="nav-link d-flex align-items-center" id="{{$this_yearVal_t}}NavTab" data-toggle="tab" href="#{{$this_yearVal_t}}TabPanel" role="tab" aria-controls="{{$this_yearVal_t}}TabPanel" aria-selected="true">
                                         {{$this_yearVal_t }} 
-                                        <span class="badge cust_badge_red2 ml-3" data-toggle="tooltip" data-placement="top" title="{{$yearly_totalOffenses }} Recorded Offenses Found for the Year {{ $this_yearVal_t}}.">
+                                        <span class="badge {{ $class_custBadge_Y }} ml-3" data-toggle="tooltip" data-placement="top" title="{{$toolTip_custBadge_Y}}">
                                             {{$yearly_totalOffenses}}
                                         </span> 
                                     </a>
@@ -228,11 +256,35 @@
                                                                 ->whereYear('recorded_at', $this_yearVal_tc)
                                                                 ->whereMonth('recorded_at', $yearly_monthlyVal_t)
                                                                 ->sum('offense_count');
+                                                        if($monthly_totalOffenses > 1){
+                                                            $mOc_s = 's'; 
+                                                        }else{
+                                                            $mOc_s = '';
+                                                        }
+                                                        // count all violations per month
+                                                        $monthly_totalViolaRec = App\Models\Violations::where('stud_num', $violator_info->Student_Number)
+                                                                ->whereYear('recorded_at', $this_yearVal_tc)
+                                                                ->whereMonth('recorded_at', $yearly_monthlyVal_t)
+                                                                ->count();
+                                                        // count all cleared violations per month
+                                                        $monthly_totalClearedViolaRec = App\Models\Violations::where('stud_num', $violator_info->Student_Number)
+                                                                ->whereYear('recorded_at', $this_yearVal_tc)
+                                                                ->whereMonth('recorded_at', $yearly_monthlyVal_t)
+                                                                ->where('violation_status', '=', 'cleared')
+                                                                ->count();
+                                                        // custom values
+                                                        if($monthly_totalClearedViolaRec == $monthly_totalViolaRec){
+                                                            $class_custBadge_M = 'cust_badge_grn';
+                                                            $toolTip_custBadge_M = ''.$monthly_totalOffenses . ' Cleared Offense'.$mOc_s.' for Month of ' . ucwords($monthName).'.';
+                                                        }else{
+                                                            $class_custBadge_M = 'cust_badge_red2';
+                                                            $toolTip_custBadge_M = ''.$monthly_totalOffenses . ' Recorded Offense'.$mOc_s.' Found for Month of ' . ucwords($monthName).'.';
+                                                        }
                                                     @endphp 
                                                     <li class="nav-item">
                                                         <a class="nav-link d-flex align-items-center" id="{{$yearly_monthlyVal_t}}NavTab" data-toggle="tab" href="#{{$yearly_monthlyVal_t}}TabPanel" role="tab" aria-controls="{{$yearly_monthlyVal_t}}TabPanel" aria-selected="true">
                                                             {{ $monthName }} 
-                                                            <span class="badge cust_badge_red3 ml-3" data-toggle="tooltip" data-placement="top" title="{{$monthly_totalOffenses}} Recorded Offenses Found for month of {{ ucwords($monthName) }} year 2021.">
+                                                            <span class="badge {{$class_custBadge_M}} ml-3" data-toggle="tooltip" data-placement="top" title="{{$toolTip_custBadge_M}}">
                                                                 {{$monthly_totalOffenses}}
                                                             </span>
                                                         </a>
@@ -293,11 +345,16 @@
                                                             @foreach($this_month_offenses as $date_offense)
                                                                 {{-- custom values --}}
                                                                 @php
-                                                                    // plural offense count
+                                                                    // plural offense & sanctions count
                                                                     if($date_offense->offense_count > 1){
                                                                         $oC_s = 's';
                                                                     }else{
                                                                         $oC_s = '';
+                                                                    }
+                                                                    if($date_offense->has_sanct_count > 1){
+                                                                        $sC_s = 's';
+                                                                    }else{
+                                                                        $sC_s = '';
                                                                     }
                                                                     // responsible user
                                                                     if($date_offense->respo_user_id == auth()->user()->id){
@@ -308,6 +365,15 @@
                                                                                                 ->first();
                                                                         $recBy = ucwords($get_recBy_info->user_role).': ' . $get_recBy_info->user_lname;
                                                                     }
+                                                                    // count all sanctions for this violation
+                                                                    if($date_offense->has_sanction > 0){
+                                                                        $count_allCompletedSanctions = App\Models\Sanctions::where('stud_num', $violator_info->Student_Number)
+                                                                                                            ->where('for_viola_id', $date_offense->viola_id)
+                                                                                                            ->where('sanct_status', '=', 'completed')
+                                                                                                            ->count();
+                                                                    }else{
+                                                                        $count_allCompletedSanctions = 0;
+                                                                    }
                                                                     // cleared/uncleared classes
                                                                     if($date_offense->violation_status === 'cleared'){
                                                                         $light_cardBody       = 'lightGreen_cardBody';
@@ -315,12 +381,36 @@
                                                                         $light_cardBody_list  = 'lightGreen_cardBody_list';
                                                                         $info_textClass       = 'cust_info_txtwicon4';
                                                                         $info_iconClass       = 'fa fa-check-square-o';
+                                                                        $class_violationStat  = 'text-success font-italic';
+                                                                        $txt_violationStat    = '~ Cleared';
                                                                     }else{
-                                                                        $light_cardBody       = 'lightRed_cardBody';
-                                                                        $light_cardBody_title = 'lightRed_cardBody_redTitle';
-                                                                        $light_cardBody_list  = 'lightRed_cardBody_list';
-                                                                        $info_textClass       = 'cust_info_txtwicon3';
-                                                                        $info_iconClass       = 'fa fa-exclamation-circle';
+                                                                        if($date_offense->has_sanct_count > 0){
+                                                                            if($count_allCompletedSanctions == $date_offense->has_sanct_count){
+                                                                                $light_cardBody       = 'lightGreen_cardBody';
+                                                                                $light_cardBody_title = 'lightGreen_cardBody_greenTitle';
+                                                                                $light_cardBody_list  = 'lightGreen_cardBody_list';
+                                                                                $info_textClass       = 'cust_info_txtwicon4';
+                                                                                $info_iconClass       = 'fa fa-check-square-o';
+                                                                                $class_violationStat  = 'text-success font-italic';
+                                                                                $txt_violationStat    = '~ Cleared';
+                                                                            }else{
+                                                                                $light_cardBody       = 'lightRed_cardBody';
+                                                                                $light_cardBody_title = 'lightRed_cardBody_redTitle';
+                                                                                $light_cardBody_list  = 'lightRed_cardBody_list';
+                                                                                $info_textClass       = 'cust_info_txtwicon3';
+                                                                                $info_iconClass       = 'fa fa-exclamation-circle';
+                                                                                $class_violationStat  = 'text_svms_red font-italic';
+                                                                                $txt_violationStat    = '~ Not Cleared';
+                                                                            }
+                                                                        }else{
+                                                                            $light_cardBody       = 'lightRed_cardBody';
+                                                                            $light_cardBody_title = 'lightRed_cardBody_redTitle';
+                                                                            $light_cardBody_list  = 'lightRed_cardBody_list';
+                                                                            $info_textClass       = 'cust_info_txtwicon3';
+                                                                            $info_iconClass       = 'fa fa-exclamation-circle';
+                                                                            $class_violationStat  = 'text_svms_red font-italic';
+                                                                            $txt_violationStat    = '~ Not Cleared';
+                                                                        }
                                                                     }
                                                                 @endphp
                                                                 <div class="col-lg-4 col-md-5 col-sm-12 pt-4">
@@ -331,7 +421,7 @@
                                                                                     <button class="btn btn-block custom2_btn_collapse cb_x12y15 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#v{{$date_offense->viola_id}}Collapse_Div" aria-expanded="true" aria-controls="v{{$date_offense->viola_id}}Collapse_Div">
                                                                                         <div class="d-flex justify-content-start align-items-center">
                                                                                             <div class="information_div2">
-                                                                                                <span class="li_info_title">{{date('F j, Y', strtotime($date_offense->recorded_at))}}</span>
+                                                                                                <span class="li_info_title">{{date('F j, Y', strtotime($date_offense->recorded_at)) }} <span class="{{$class_violationStat}}"> {{ $txt_violationStat}}</span></span>
                                                                                                 <span class="li_info_subtitle">{{date('l - g:i A', strtotime($date_offense->recorded_at))}}</span>
                                                                                             </div>
                                                                                         </div>
@@ -386,6 +476,12 @@
                                                                                                                             ->offset(0)
                                                                                                                             ->limit($date_offense->has_sanct_count)
                                                                                                                             ->get();
+                                                                                        $count_completed_sanction = App\Models\Sanctions::where('stud_num', $violator_info->Student_Number)
+                                                                                                                            ->where('for_viola_id', $date_offense->viola_id)
+                                                                                                                            ->where('sanct_status', '=', 'completed')
+                                                                                                                            ->offset(0)
+                                                                                                                            ->limit($date_offense->has_sanct_count)
+                                                                                                                            ->count();
                                                                                     @endphp
                                                                                     <div class="card-body lightGreen_cardBody mb-2">
                                                                                         <div class="d-flex justify-content-between">
@@ -422,6 +518,19 @@
                                                                                     <div class="col-lg-12 col-md-12 col-sm-12 d-flex align-items-center justify-content-between">
                                                                                         <div>
                                                                                             <span class="{{$info_textClass }} font-weight-bold"><i class="{{$info_iconClass }} mr-1" aria-hidden="true"></i> {{$date_offense->offense_count}} Offense{{$oC_s}}</span>  
+                                                                                            @if($date_offense->has_sanction > 0)
+                                                                                                @php
+                                                                                                    if ($count_completed_sanction == count($get_all_sanctions)) {
+                                                                                                        $info_icon1Class = 'fa fa-check-square-o';
+                                                                                                    }else{
+                                                                                                        $info_icon1Class = 'fa fa-list-ul';
+                                                                                                    }
+                                                                                                @endphp
+                                                                                                <span class="cust_info_txtwicon4 font-weight-bold"><i class="{{$info_icon1Class }} mr-1" aria-hidden="true"></i> {{$date_offense->has_sanct_count}} Sanction{{$sC_s}}</span>  
+                                                                                                @if($date_offense->violation_status === 'cleared')
+                                                                                                    <span class="cust_info_txtwicon"><i class="fa fa-calendar-check-o mr-1" aria-hidden="true"></i> {{date('F d, Y', strtotime($date_offense->cleared_at)) }} - {{ date('l - g:i A', strtotime($date_offense->cleared_at))}}</span> 
+                                                                                                @endif
+                                                                                            @endif
                                                                                             <span class="cust_info_txtwicon"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> {{ $recBy }}</span>  
                                                                                         </div>
                                                                                         <button class="btn cust_btn_smcircle2" data-toggle="tooltip" data-placement="top" title="Delete recorded Offenses?"><i class="fa fa-trash" aria-hidden="true"></i></button>
@@ -436,12 +545,12 @@
                                                         <div class="row mt-3">
                                                             <div class="col-lg-12 col-md-12 col-sm-12 d-flex justify-content-between align-items-end">
                                                                 <div>
-                                                                    <span class="cust_info_txtwicon font-weight-bold"><i class="fa fa-exclamation-circle mr-1" aria-hidden="true"></i> {{ $monthly_totalOffenses }} Total Offense{{$tO_s}} for {{ $monthName }} 2021.</span>  
-                                                                    @if($monthly_totalUnclearOff > 0)
-                                                                        <span class="cust_info_txtwicon"><i class="fa fa-square-o mr-1" aria-hidden="true"></i> {{ $monthly_totalUnclearOff}} Uncleared Offense{{$tUO_s}}.</span> 
-                                                                    @endif
+                                                                    <span class="cust_info_txtwicon font-weight-bold"><i class="fa fa-list-ul mr-1" aria-hidden="true"></i> {{ $monthly_totalOffenses }} Total Offense{{$tO_s}} for {{ $monthName }} 2021.</span>  
                                                                     @if($monthly_totalClearedOff > 0)
                                                                         <span class="cust_info_txtwicon"><i class="fa fa-check-square-o mr-1" aria-hidden="true"></i> {{ $monthly_totalClearedOff }} Cleared Offense{{$tCO_s}}.</span> 
+                                                                    @endif
+                                                                    @if($monthly_totalUnclearOff > 0)
+                                                                        <span class="cust_info_txtwicon"><i class="fa fa-square-o mr-1" aria-hidden="true"></i> {{ $monthly_totalUnclearOff}} Uncleared Offense{{$tUO_s}}.</span> 
                                                                     @endif
                                                                 </div>
                                                                 <button class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Delete all recorded Offenses for the Month of {{ $monthName }} 2021?"><i class="fa fa-trash" aria-hidden="true"></i></button>
@@ -557,20 +666,28 @@
     {{-- check if first input has value to enable add new field button --}}
     <script>
         $('#addSanctionsModal').on('show.bs.modal', function () {
-            const addSanctions_input  = document.querySelector("#addSanctions_input");
-            const btn_addAnother_input = document.querySelector("#btn_addAnother_input");
+            var addSanctions_form  = document.querySelector("#form_addSanctions");
+            var addSanctions_input  = document.querySelector("#addSanctions_input");
+            var btn_addAnother_input = document.querySelector("#btn_addAnother_input");
+            var btn_submitAddSanction = document.querySelector("#submit_addSanctionsBtn");
+            var btn_cancelAddSanction = document.querySelector("#cancel_addSanctionsBtn");
+            // disable add another input field and submit button if first input is empty
             $(addSanctions_input).keyup(function(){
                 if(addSanctions_input.value !== ""){
                     btn_addAnother_input.disabled = false;
+                    btn_submitAddSanction.disabled = false;
                 }else{
                     btn_addAnother_input.disabled = true;
+                    btn_submitAddSanction.disabled = true;
                 }
             });
-        });
-    </script>
-    {{-- adding new field button --}}
-    <script>
-        $('#addSanctionsModal').on('show.bs.modal', function () {
+            // disable cancel and sibmit button on submit
+            $(addSanctions_form).submit(function(){
+                btn_cancelAddSanction.disabled = true;
+                btn_submitAddSanction.disabled = true;
+                return true;
+            });
+            // adding new input field
             function addSanctIndexing(){
                 i = 1;
                 $(".addSanctIndex").each(function(){
@@ -579,7 +696,6 @@
                 });
             }
             var maxField = 10;
-            var btn_addAnother_input = document.querySelector("#btn_addAnother_input");
             var addedInputFields_div = document.querySelector('.addedInputFields_div');
             var newInputField = '<div class="input-group mb-2">' +
                                     '<div class="input-group-append"> ' +
@@ -587,7 +703,7 @@
                                     '</div>' +
                                     '<input type="text" name="sanctions[]" class="form-control input_grpInpt3" placeholder="Type Sanction" aria-label="Type Sanction" aria-describedby="add-sanctions-input" required /> ' +
                                     '<div class="input-group-append"> ' +
-                                        '<button class="btn btn-success m-0 btn_deleteAddedSanction_input" type="button"><i class="nc-icon nc-simple-remove font-weight-bold" aria-hidden="true"></i></button> ' +
+                                        '<button class="btn btn_svms_red m-0 btn_deleteAddedSanction_input" type="button"><i class="nc-icon nc-simple-remove font-weight-bold" aria-hidden="true"></i></button> ' +
                                     '</div> ' +
                                 '</div>';
             var x = 1;
@@ -607,20 +723,8 @@
             });
         });
     </script>
-    {{-- disable/enable save button --}}
-    <script>
-        $('#addSanctionsModal').on('show.bs.modal', function () {
-            $('#form_addSanctions').each(function(){
-                $(this).data('serialized', $(this).serialize())
-            }).on('change input', function(){
-                $(this).find('#submit_addSanctionsBtn').prop('disabled', $(this).serialize() == $(this).data('serialized'));
-            }).find('#submit_addSanctionsBtn').prop('disabled', true);
-        });
-    </script>
-{{-- adding new input field for adding sanctions on modal end --}}
 
 {{-- edit sanctions on form modal --}}
-    {{-- initialize nav-pills --}}
     <script>
         $('#editSanctionsModal').on('show.bs.modal', function () {
             // initialize nav-pills
@@ -630,7 +734,7 @@
                 });
             // initialize nav-pills end
 
-            // disable/enable save buttons
+            // disable/enable save buttons when form has changed
                 // mark sanctions form serialized
                 $('#form_markSanctions').each(function(){
                     $(this).data('serialized', $(this).serialize())
@@ -644,21 +748,65 @@
                 }).on('change input', function(){
                     $(this).find('#submit_deleteSanctionsBtn').prop('disabled', $(this).serialize() == $(this).data('serialized'));
                 }).find('#submit_deleteSanctionsBtn').prop('disabled', true);
-            // disable/enable save buttons end
+            // disable/enable save buttons when form has changed end
 
-            // adding new input field for new sanctions
+            // marking sanctions as completed form
+                // selection of sanctions for marking as completed
+                $("#sanctMarkAll").change(function(){
+                    if(this.checked){
+                        $(".sanctMarkSingle").each(function(){
+                            this.checked=true;
+                        });              
+                    }else{
+                        $(".sanctMarkSingle").each(function(){
+                            this.checked=false;
+                        });             
+                    }
+                });
+                $(".sanctMarkSingle").click(function () {
+                    if ($(this).is(":checked")){
+                        var isMarkAllChecked = 0;
+                        $(".sanctMarkSingle").each(function(){
+                            if(!this.checked)
+                            isMarkAllChecked = 1;
+                        });              
+                        if(isMarkAllChecked == 0){ $("#sanctMarkAll").prop("checked", true); }     
+                    }else {
+                        $("#sanctMarkAll").prop("checked", false);
+                    }
+                });
+                var form_markSanctions  = document.querySelector("#form_markSanctions");
+                var submit_markSanctionsBtn = document.querySelector("#submit_markSanctionsBtn");
+                var cancel_markSanctionsBtn = document.querySelector("#cancel_markSanctionsBtn");
+                // disable cancel and sibmit button on submit
+                $(form_markSanctions).submit(function(){
+                    cancel_markSanctionsBtn.disabled = true;
+                    submit_markSanctionsBtn.disabled = true;
+                    return true;
+                });
+            // marking sanctions as completed form end
+
+            // adding new sanctions form
                 // check if first input is not empty to enable add button
+                var form_addNewSanctions  = document.querySelector("#form_addNewSanctions");
                 var addNewSanction_input  = document.querySelector("#addNewSanction_input");
-                var addNewSanct_btn = document.querySelector("#btn_addNewSanct_input");
-                var submit_addNewSanct_btn = document.querySelector("#submit_addNewSanctionsBtn");
+                var btn_addNewSanct_input = document.querySelector("#btn_addNewSanct_input");
+                var submit_addNewSanctionsBtn = document.querySelector("#submit_addNewSanctionsBtn");
+                var cancel_addNewSanctionsBtn = document.querySelector("#cancel_addNewSanctionsBtn");
                 $(addNewSanction_input).keyup(function(){
                     if(addNewSanction_input.value !== ""){
-                        addNewSanct_btn.disabled = false;
-                        submit_addNewSanct_btn.disabled = false;
+                        btn_addNewSanct_input.disabled = false;
+                        submit_addNewSanctionsBtn.disabled = false;
                     }else{
-                        addNewSanct_btn.disabled = true;
-                        submit_addNewSanct_btn.disabled = true;
+                        btn_addNewSanct_input.disabled = true;
+                        submit_addNewSanctionsBtn.disabled = true;
                     }
+                });
+                // disable cancel and sibmit button on submit
+                $(form_addNewSanctions).submit(function(){
+                    cancel_addNewSanctionsBtn.disabled = true;
+                    submit_addNewSanctionsBtn.disabled = true;
+                    return true;
                 });
                 // initialize appending new input field
                 var append_new_index = document.getElementById("append_new_index").value;
@@ -673,7 +821,7 @@
                         n_i++;
                     });
                 }
-                $(addNewSanct_btn).click(function(){
+                $(btn_addNewSanct_input).click(function(){
                     if(x <= newSanct_maxField){
                         x++;
                         var newInputField = '<div class="input-group mt-1 mb-2"> ' +
@@ -696,109 +844,44 @@
                     x--;
                     addNewSanctIndexing();
                 });
-            // adding new input field for new sanctions end
+            // adding new sanctions form end
+
+            // deleting sanctions form
+                // selection of sanctions for deletion
+                $("#sanctDeleteAll").change(function(){
+                    if(this.checked){
+                    $(".sanctDeleteSingle").each(function(){
+                        this.checked=true;
+                    })              
+                    }else{
+                    $(".sanctDeleteSingle").each(function(){
+                        this.checked=false;
+                    })              
+                    }
+                });
+                $(".sanctDeleteSingle").click(function () {
+                    if ($(this).is(":checked")){
+                    var isDeleteAllChecked = 0;
+                    $(".sanctDeleteSingle").each(function(){
+                        if(!this.checked)
+                        isDeleteAllChecked = 1;
+                    })              
+                    if(isDeleteAllChecked == 0){ $("#sanctDeleteAll").prop("checked", true); }     
+                    }else {
+                    $("#sanctDeleteAll").prop("checked", false);
+                    }
+                });
+                // disable cancel and sibmit button on submit
+                var form_deleteSanctions  = document.querySelector("#form_deleteSanctions");
+                var submit_deleteSanctionsBtn = document.querySelector("#submit_deleteSanctionsBtn");
+                var cancel_deleteSanctionsBtn = document.querySelector("#cancel_deleteSanctionsBtn");
+                $(form_deleteSanctions).submit(function(){
+                    cancel_deleteSanctionsBtn.disabled = true;
+                    submit_deleteSanctionsBtn.disabled = true;
+                    return true;
+                });
+            // deleting sanctions form end
         });
     </script>
-
-    {{-- disable/enable save button --}}
-    {{-- <script>
-        $('#editSanctionsModal').on('show.bs.modal', function () {
-            $('#form_markSanctions').each(function(){
-                $(this).data('serialized', $(this).serialize())
-            }).on('change input', function(){
-                $(this).find('#submit_markSanctionsBtn').prop('disabled', $(this).serialize() == $(this).data('serialized'));
-            }).find('#submit_markSanctionsBtn').prop('disabled', true);
-
-            // delete sanctions form
-            $('#form_deleteSanctions').each(function(){
-                $(this).data('serialized', $(this).serialize())
-            }).on('change input', function(){
-                $(this).find('#submit_deleteSanctionsBtn').prop('disabled', $(this).serialize() == $(this).data('serialized'));
-            }).find('#submit_deleteSanctionsBtn').prop('disabled', true);
-        });
-    </script> --}}
-
-    {{-- adding new sanction input field append --}}
-    {{-- <script>
-        $('#editSanctionsModal').on('show.bs.modal', function () {
-            const addNewSanction_input  = document.querySelector("#addNewSanction_input");
-            const btn_addNewSanct_input = document.querySelector("#btn_addNewSanct_input");
-            $(addNewSanction_input).keyup(function(){
-                if(addNewSanction_input.value !== ""){
-                    btn_addNewSanct_input.disabled = false;
-                }else{
-                    btn_addNewSanct_input.disabled = true;
-                }
-            });
-        });
-    </script> --}}
-    {{-- <script>
-        $('#editSanctionsModal').on('show.bs.modal', function () {
-            var btn_addNewSanct_input = document.querySelector("#btn_addNewSanct_input");
-            var total_sanct_count = document.getElementById("total_sanct_count").value;
-            var addedSanctInputFields_div = document.querySelector('.addedSanctInputFields_div');
-            var newSanct_maxField = 10 - total_sanct_count;
-            var x = 1;
-            var addedSanct_count = total_sanct_count + 2 - 10;
-            $(btn_addNewSanct_input).click(function(){
-                if(x < newSanct_maxField){
-                    x++;
-                    addedSanct_count++;
-                    var s_addedSanct_count = String(addedSanct_count);
-                    var newInputField = '<div class="input-group mt-1 mb-2"> ' +
-                                    '<div class="input-group-append"> ' +
-                                        '<span class="input-group-text txt_iptgrp_append font-weight-bold">'+ (s_addedSanct_count) +'. </span> ' +
-                                    '</div> ' +
-                                    '<input type="text" id="addNewSanction_input" name="new_sanctions[]" class="form-control input_grpInpt3v1" placeholder="Type New Sanction" aria-label="Type New Sanction" aria-describedby="add-new-sanctions-input"> ' +
-                                    '<div class="input-group-append"> ' +
-                                        '<button class="btn btn-success btn_iptgrp_append btn_deleteAddedNewSanct_input m-0" id="btn_addNewSanct_input" type="button"><i class="nc-icon nc-simple-remove font-weight-bold" aria-hidden="true"></i></button> ' +
-                                    '</div> ' +
-                                '</div>';
-                    $(addedSanctInputFields_div).append(newInputField);
-                    console.log(newSanct_maxField);
-                    console.log(addedSanct_count);
-                    console.log(s_addedSanct_count);
-                }
-            });
-            $(addedSanctInputFields_div).on('click', '.btn_deleteAddedNewSanct_input', function(e){
-                e.preventDefault();
-                $(this).closest('.input_grpInpt3v1').value = '';
-                $(this).closest('.input-group').last().remove();
-                x--;
-                addedSanct_count--;
-            });
-        });
-    </script> --}}
-{{-- edit sanctions on form modal end --}}
-
-{{-- deleting sanctions --}}
-    <script>
-        $('#editSanctionsModal').on('show.bs.modal', function () {
-            $("#sanctDeleteAll").change(function(){
-                if(this.checked){
-                $(".sanctDeleteSingle").each(function(){
-                    this.checked=true;
-                })              
-                }else{
-                $(".sanctDeleteSingle").each(function(){
-                    this.checked=false;
-                })              
-                }
-            });
-            $(".sanctDeleteSingle").click(function () {
-                if ($(this).is(":checked")){
-                var isDeleteAllChecked = 0;
-                $(".sanctDeleteSingle").each(function(){
-                    if(!this.checked)
-                    isDeleteAllChecked = 1;
-                })              
-                if(isDeleteAllChecked == 0){ $("#sanctDeleteAll").prop("checked", true); }     
-                }else {
-                $("#sanctDeleteAll").prop("checked", false);
-                }
-            });
-        });
-    </script>
-{{-- deleting sanctions end --}}
 
 @endpush

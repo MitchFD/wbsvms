@@ -388,7 +388,7 @@ class ViolationRecordsController extends Controller
                             </div>
                         </div>
                     </div>
-                    <form id="form_addSanctions" action="'.route('violation_records.submit_sanction_form').'" class="form" enctype="multipart/form-data" method="POST" onsubmit="submit_addSanctionsBtn.disabled = true; return true;">
+                    <form id="form_addSanctions" action="'.route('violation_records.submit_sanction_form').'" class="form" enctype="multipart/form-data" method="POST">
                         <div class="modal-body pb-0">
                             <div class="card-body lightGreen_cardBody mb-2">
                                 <span class="lightGreen_cardBody_greenTitle mb-1">Sanctions:</span>
@@ -419,7 +419,7 @@ class ViolationRecordsController extends Controller
                             <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
                             <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
                             <div class="btn-group" role="group" aria-label="Basic example">
-                                <button type="button" class="btn btn-round btn_svms_red btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                                <button id="cancel_addSanctionsBtn" type="button" class="btn btn-round btn_svms_red btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
                                 <button id="submit_addSanctionsBtn" type="submit" class="btn btn-round btn-success btn_show_icon m-0" disabled>Save <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
                             </div>
                         </div>
@@ -598,12 +598,16 @@ class ViolationRecordsController extends Controller
                 $light_cardBody_list  = 'lightGreen_cardBody_list';
                 $info_textClass       = 'cust_info_txtwicon4';
                 $info_iconClass       = 'fa fa-check-square-o';
+                $class_violationStat1 = 'text-success font-italic';
+                $txt_violationStat1   = '~ Cleared';
             }else{
                 $light_cardBody       = 'lightRed_cardBody';
                 $light_cardBody_title = 'lightRed_cardBody_redTitle';
                 $light_cardBody_list  = 'lightRed_cardBody_list';
                 $info_textClass       = 'cust_info_txtwicon3';
                 $info_iconClass       = 'fa fa-exclamation-circle';
+                $class_violationStat1 = 'text_svms_red font-italic';
+                $txt_violationStat1   = '~ Not Cleared';    
             }
         // output
             $output = '';
@@ -617,7 +621,7 @@ class ViolationRecordsController extends Controller
                                         <button class="btn btn-block custom2_btn_collapse cb_x12y15 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#sv'.$sel_viola_id.'Collapse_Div" aria-expanded="true" aria-controls="sv'.$sel_viola_id.'Collapse_Div">
                                             <div class="d-flex justify-content-start align-items-center">
                                                 <div class="information_div2">
-                                                    <span class="li_info_title">'.date('F d, Y', strtotime($get_viola_recorded_at)).'</span>
+                                                    <span class="li_info_title">'.date('F d, Y', strtotime($get_viola_recorded_at)).' <span class="'.$class_violationStat1.'"> ' . $txt_violationStat1.'</span></span>
                                                     <span class="li_info_subtitle">'.date('l - g:i A', strtotime($get_viola_recorded_at)).'</span>
                                                 </div>
                                             </div>
@@ -693,17 +697,43 @@ class ViolationRecordsController extends Controller
                         </ul>
                         <div class="tab-content" id="editSanctionPills_tabContent">
                             ';
+                            // get all sanctions
                             $get_all_sanctions = Sanctions::select('sanct_id', 'sanct_status', 'sanct_details')
                                                         ->where('stud_num', $sel_stud_num)
                                                         ->where('for_viola_id', $sel_viola_id)
-                                                        ->orderBy('created_at', 'desc')
+                                                        ->orderBy('created_at', 'asc')
                                                         ->offset(0)
                                                         ->limit($get_viola_has_sanct_count)
                                                         ->get();
+                            // count all sanctions
                             $count_all_sanctions = count($get_all_sanctions);
+                            // count all completed sanctions
+                            $count_completed_sanct = Sanctions::where('stud_num', $sel_stud_num)
+                                                        ->where('for_viola_id', $sel_viola_id)
+                                                        ->where('sanct_status', '=', 'completed')
+                                                        ->offset(0)
+                                                        ->limit($get_viola_has_sanct_count)
+                                                        ->count();
+                            // custom values
+                            if($count_all_sanctions > 1){
+                                $cas_s = 's';
+                            }else{
+                                $cas_s = '';
+                            }
+                            if($count_completed_sanct == $count_all_sanctions){
+                                $icon_infoClass1 = 'fa fa-check-square-o';
+                                $text_infoClass1 = 'All ('.$count_all_sanctions.') Sanction'.$cas_s . ' have been completed.';
+                                $icon_infoClass2 = 'fa fa-calendar-check-o';
+                                $text_infoClass2 = date('F d, Y', strtotime($get_viola_recorded_at)) . ' - ' . date('l - g:i A', strtotime($get_viola_recorded_at));
+                            }else{
+                                $icon_infoClass1 = 'fa fa-list-ul';
+                                $text_infoClass1 = ''.$count_all_sanctions.' Sanction'.$cas_s . ' for the above offenses.';
+                                $icon_infoClass2 = 'fa fa-info-circle';
+                                $text_infoClass2 = 'Mark Sanction/s that have been completed by ' . $violator_mr_ms . ' ' . $violator_Lname.'.';
+                            }
                             $output .= '
                             <div class="tab-pane fade show active" id="mark_sanctions_tabContent" role="tabpanel" aria-labelledby="mark_sanctions_tab">
-                                <form id="form_markSanctions" action="'.route('violation_records.update_sanction_form').'" class="form" enctype="multipart/form-data" method="POST" onsubmit="submit_markSanctionsBtn.disabled = true; return true;">
+                                <form id="form_markSanctions" action="'.route('violation_records.update_sanction_form').'" class="form" enctype="multipart/form-data" method="POST">
                                     <div class="card-body lightGreen_cardBody">
                                         <span class="lightGreen_cardBody_greenTitle mb-1">Mark Sanctions:</span>
                                         ';
@@ -711,29 +741,37 @@ class ViolationRecordsController extends Controller
                                             $output .= '
                                             <div class="form-group mx-0 mt-0 mb-1">
                                                 <div class="custom-control custom-checkbox align-items-center">
-                                                    <input type="checkbox" name="marked_sanctions[]" value="'.$this_editSanction->sanct_id.'" class="custom-control-input cursor_pointer" id="'.$this_editSanction->sanct_id.'_markThisSanct_id" '; if($this_editSanction->sanct_status === 'completed'){ $output .= 'checked'; } $output .='>
+                                                    <input type="checkbox" name="marked_sanctions[]" value="'.$this_editSanction->sanct_id.'" class="custom-control-input cursor_pointer sanctMarkSingle" id="'.$this_editSanction->sanct_id.'_markThisSanct_id" '; if($this_editSanction->sanct_status === 'completed'){ $output .= 'checked'; } $output .='>
                                                     <label class="custom-control-label lightGreen_cardBody_chckboxLabel" for="'.$this_editSanction->sanct_id.'_markThisSanct_id">'.$this_editSanction->sanct_details.'</label>
                                                 </div>
                                             </div>
                                             ';
                                         }
                                         $output .='
-                                        <hr class="hr_grn">
                                         <div class="row">
                                             <div class="col-lg-12 col-md-12 col-sm-12">
                                             ';
                                             if($count_all_sanctions > 0){
                                                 if($count_all_sanctions > 1){
                                                     $cls_s = 's';
+                                                    $output .= '
+                                                        <div class="form-group mx-0 mt-0 mb-1">
+                                                            <div class="custom-control custom-checkbox align-items-center">
+                                                                <input type="checkbox" name="mark_all_sanctions" value="mark_all_sanctions" class="custom-control-input cursor_pointer" id="sanctMarkAll" '; if($count_completed_sanct == $count_all_sanctions){ $output .= 'checked'; } $output .= '>
+                                                                <label class="custom-control-label lightGreen_cardBody_chckboxLabel" for="sanctMarkAll">Mark All ('.$count_all_sanctions.') Sanction'.$cls_s . ' as completed.</label>
+                                                            </div>
+                                                        </div>
+                                                        ';
                                                 }else{
                                                     $cls_s = '';
                                                 }
                                                 $output .= '
-                                                <span class="cust_info_txtwicon4v1 font-weight-bold"><i class="fa fa-list-ul mr-1" aria-hidden="true"></i> ' . $count_all_sanctions . ' Sanction'.$cls_s . ' for the above offenses.</span>
+                                                <hr class="hr_grn">
+                                                <span class="cust_info_txtwicon4v1 font-weight-bold"><i class="'.$icon_infoClass1 . ' mr-1" aria-hidden="true"></i> ' . $text_infoClass1.'</span>
                                                 ';
                                             }
                                             $output .='
-                                                <span class="cust_info_txtwicon4v1"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i> Mark sanctions that have been completed by ' . $violator_mr_ms . ' ' . $violator_Lname.'.</span>
+                                                <span class="cust_info_txtwicon4v1"><i class="'.$icon_infoClass2 . ' mr-1" aria-hidden="true"></i> ' . $text_infoClass2.'</span>
                                             </div>
                                         </div>
                                     </div>
@@ -753,7 +791,7 @@ class ViolationRecordsController extends Controller
                                         <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
                                         <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
                                         <div class="btn-group" role="group" aria-label="Basic example">
-                                            <button type="button" class="btn btn-round btn_svms_red btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                                            <button id="cancel_markSanctionsBtn" type="button" class="btn btn-round btn_svms_red btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
                                             <button id="submit_markSanctionsBtn" type="submit" class="btn btn-round btn-success btn_show_icon m-0" disabled>Save Changes <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
                                         </div>
                                     </div>
@@ -761,7 +799,7 @@ class ViolationRecordsController extends Controller
                             </div>
 
                             <div class="tab-pane fade" id="add_sanctions_tabContent" role="tabpanel" aria-labelledby="add_sanctions_tab">
-                                <form id="form_addNewSanctions" action="'.route('violation_records.add_new_sanctions').'" class="form" enctype="multipart/form-data" method="POST" onsubmit="submit_addNewSanctionsBtn.disabled = true; return true;">    
+                                <form id="form_addNewSanctions" action="'.route('violation_records.add_new_sanctions').'" class="form" enctype="multipart/form-data" method="POST">    
                                     <div class="card-body lightGreen_cardBody">
                                         <span class="lightGreen_cardBody_greenTitle mb-1">Add New Sanctions:</span>
                                         ';
@@ -807,7 +845,7 @@ class ViolationRecordsController extends Controller
                                         <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
                                         <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
                                         <div class="btn-group" role="group" aria-label="add new sanctions actions">
-                                            <button type="button" class="btn btn-round btn_svms_red btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                                            <button id="cancel_addNewSanctionsBtn" type="button" class="btn btn-round btn_svms_red btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
                                             <button id="submit_addNewSanctionsBtn" type="submit" class="btn btn-round btn-success btn_show_icon m-0" disabled> Add New Sanctions <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
                                         </div>
                                     </div>
@@ -815,7 +853,7 @@ class ViolationRecordsController extends Controller
                             </div>
 
                             <div class="tab-pane fade" id="delete_sanctions_tabContent" role="tabpanel" aria-labelledby="delete_sanctions_tab">
-                                <form id="form_deleteSanctions" action="'.route('violation_records.delete_sanction_form').'" class="form" enctype="multipart/form-data" method="POST" onsubmit="submit_deleteSanctionsBtn.disabled = true; return true;">
+                                <form id="form_deleteSanctions" action="'.route('violation_records.delete_sanction_form').'" class="form" enctype="multipart/form-data" method="POST">
                                     <div class="card-body lightGreen_cardBody">
                                         <span class="lightGreen_cardBody_greenTitle mb-1">Delete Sanctions:</span>
                                         ';
@@ -837,16 +875,18 @@ class ViolationRecordsController extends Controller
                                             if($count_all_sanctions > 0){
                                                 if($count_all_sanctions > 1){
                                                     $cls_s = 's';
+                                                    $output .= '
+                                                    <div class="form-group mx-0 mt-0 mb-1">
+                                                        <div class="custom-control custom-checkbox align-items-center">
+                                                            <input type="checkbox" name="delete_all_sanctions" value="delete_all_sanctions" class="custom-control-input cursor_pointer" id="sanctDeleteAll">
+                                                            <label class="custom-control-label lightGreen_cardBody_chckboxLabel" for="sanctDeleteAll">Delete All ('.$count_all_sanctions.') Sanction'.$cls_s.'</label>
+                                                        </div>
+                                                    </div>
+                                                    ';
                                                 }else{
                                                     $cls_s = '';
                                                 }
                                                 $output .= '
-                                                <div class="form-group mx-0 mt-0 mb-1">
-                                                    <div class="custom-control custom-checkbox align-items-center">
-                                                        <input type="checkbox" name="delete_all_sanctions" value="delete_all_sanctions" class="custom-control-input cursor_pointer" id="sanctDeleteAll">
-                                                        <label class="custom-control-label lightGreen_cardBody_chckboxLabel" for="sanctDeleteAll">Delete All ('.$count_all_sanctions.') Sanction'.$cls_s.'</label>
-                                                    </div>
-                                                </div>
                                                 <span class="cust_info_txtwicon4v1 font-weight-bold"><i class="fa fa-list-ul mr-1" aria-hidden="true"></i> ' . $count_all_sanctions . ' Sanction'.$cls_s . ' for the above offenses.</span>
                                                 ';
                                             }
@@ -864,7 +904,7 @@ class ViolationRecordsController extends Controller
                                         <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
                                         <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
                                         <div class="btn-group" role="group" aria-label="delete sanctions actions">
-                                            <button type="button" class="btn btn-round btn-success btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                                            <button id="cancel_deleteSanctionsBtn" type="button" class="btn btn-round btn-success btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
                                             <button id="submit_deleteSanctionsBtn" type="submit" class="btn btn-round btn_svms_red btn_show_icon m-0" disabled> Delete Selected <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
                                         </div>
                                     </div>
@@ -882,6 +922,8 @@ class ViolationRecordsController extends Controller
             $now_timestamp     = now();
             $completed_txt     = 'completed';
             $not_completed_txt = 'not completed';
+            $cleared_txt       = 'cleared';
+            $not_cleared_txt   = 'not cleared';
         // get all request
             $get_for_viola_id     = $request->get('for_viola_id');
             $get_sel_stud_num     = $request->get('sel_stud_num');
@@ -914,7 +956,6 @@ class ViolationRecordsController extends Controller
             }else{
                 $marked_sanct_count = 0;
             }
-
         // try
             // $x = 1;
             // echo 'REGISTERED SANCTIONS: <br />';
@@ -927,43 +968,124 @@ class ViolationRecordsController extends Controller
             // echo 'marked sanctions count = ' . $marked_sanct_count . ' <br />';
 
             // logics for updating sanction's status
-            // "completed" if there are marked sanctions
-            // if($marked_sanct_count > $completed_reg_sanct){
-            //     foreach($get_marked_sanctions as $updated_sanction){
-            //         $update_sanct_statuses = DB::table('sanctions_tbl')
-            //         ->where('sanct_id', $updated_sanction)
-            //         ->update([
-            //             'sanct_status' => $completed_txt,
-            //             'completed_at' => $now_timestamp,
-            //             'updated_at'   => $now_timestamp
-            //         ]);
-            //     }
-            //     if($update_sanct_statuses){
-            //         return back()->withSuccessStatus('Sanctions Update was a success.');
-            //     }else{
-            //         return back()->withFailedStatus('Sanctions Update has Failed! try again later.');
-            //     }
-            // }
-            // "not completed" if there are no marked sanctions
-            // if($marked_sanct_count == 0){
-            //     if($completed_reg_sanct > 0){
-            //         foreach($get_reg_sanctions as $update_reg_sanction){
-            //             $update_sanct_statuses = DB::table('sanctions_tbl')
-            //             ->where('sanct_id', $update_reg_sanction)
-            //             ->update([
-            //                 'sanct_status' => $not_completed_txt,
-            //                 'completed_at' => $now_timestamp,
-            //                 'updated_at'   => $now_timestamp
-            //             ]);
-            //         }
-            //     }
-            //     if($update_sanct_statuses){
-            //         return back()->withSuccessStatus('Sanctions Update was a success.');
-            //     }else{
-            //         return back()->withFailedStatus('Sanctions Update has Failed! try again later.');
-            //     }
-            // }
-            // "cleared" for selected violation if marked sanctions == registered sanctions
+            // all are marked
+            if($marked_sanct_count == $reg_sanct_count){
+                foreach($get_marked_sanctions as $updated_sanction){
+                    $update_sanct_statuses = DB::table('sanctions_tbl')
+                    ->where('sanct_id', $updated_sanction)
+                    ->update([
+                        'sanct_status' => $completed_txt,
+                        'completed_at' => $now_timestamp,
+                        'updated_at'   => $now_timestamp
+                    ]);
+                }
+                if($update_sanct_statuses){
+                    // update violation's status
+                    $update_violation_stat = DB::table('violations_tbl')
+                                ->where('viola_id', $get_for_viola_id)
+                                ->update([
+                                    'violation_status' => $cleared_txt,
+                                    'cleared_at'       => $now_timestamp,
+                                    'updated_at'       => $now_timestamp
+                                ]); 
+                    return back()->withSuccessStatus('All Sanctions was marked successfully.');
+                }else{
+                    return back()->withFailedStatus('Sanctions Update has Failed! try again later.');
+                }
+            }
+
+            // marked is < completed
+            if($marked_sanct_count < $completed_reg_sanct){
+                $to_array_marked_sanctions = array();
+                if($get_marked_sanctions > 0){
+                    foreach($get_marked_sanctions as $to_array_this){
+                        array_push($to_array_marked_sanctions, $to_array_this);
+                    }
+                }
+                $to_Json_marked_sanct_ids = json_encode($to_array_marked_sanctions);
+                $count_not_selected = DB::table('sanctions_tbl')->select('sanct_id', 'sanct_status', 'sanct_details')
+                                        ->where('for_viola_id', $get_for_viola_id)
+                                        ->where('stud_num', $get_sel_stud_num)
+                                        ->whereNotIn('sanct_id', $to_array_marked_sanctions)
+                                        ->offset(0)
+                                        ->limit($get_reg_sanctions)
+                                        ->count();
+                if($count_not_selected > 0){
+                    $get_all_not_selected = DB::table('sanctions_tbl')->select('sanct_id')
+                                            ->where('for_viola_id', $get_for_viola_id)
+                                            ->where('stud_num', $get_sel_stud_num)
+                                            ->whereNotIn('sanct_id', $to_array_marked_sanctions)
+                                            ->offset(0)
+                                            ->limit($count_not_selected)
+                                            ->get();
+                    foreach($get_all_not_selected as $not_slected_sanction){
+                        $update_sanct_statuses = DB::table('sanctions_tbl')
+                            ->where('sanct_id', $not_slected_sanction->sanct_id)
+                            ->update([
+                                'sanct_status' => $not_completed_txt,
+                                'completed_at' => $now_timestamp,
+                                'updated_at'   => $now_timestamp
+                            ]);
+                    }
+                }
+                if($update_sanct_statuses){
+                    // update violation's status
+                    if($marked_sanct_count == $reg_sanct_count){
+                        $update_violation_stat = DB::table('violations_tbl')
+                            ->where('viola_id', $get_for_viola_id)
+                            ->update([
+                                'violation_status' => $cleared_txt,
+                                'cleared_at'       => $now_timestamp,
+                                'updated_at'       => $now_timestamp
+                            ]); 
+                    }else{
+                        $update_violation_stat = DB::table('violations_tbl')
+                            ->where('viola_id', $get_for_viola_id)
+                            ->update([
+                                'violation_status' => $not_cleared_txt,
+                                'updated_at'       => $now_timestamp
+                            ]); 
+                    }
+                    return back()->withSuccessStatus('Sanctions Update was a success.');
+                }else{
+                    return back()->withFailedStatus('Sanctions Update has Failed! try again later.');
+                }
+            }
+
+            // mark is > completed
+            if($marked_sanct_count > $completed_reg_sanct){
+                foreach($get_marked_sanctions as $new_marked_sanction){
+                    $update_newMarksanct_statuses = DB::table('sanctions_tbl')
+                    ->where('sanct_id', $new_marked_sanction)
+                    ->update([
+                        'sanct_status' => $completed_txt,
+                        'completed_at' => $now_timestamp,
+                        'updated_at'   => $now_timestamp
+                    ]);
+                }
+                if($update_newMarksanct_statuses){
+                    // update violation's status
+                    if($marked_sanct_count == $reg_sanct_count){
+                        $update_violation_stat = DB::table('violations_tbl')
+                            ->where('viola_id', $get_for_viola_id)
+                            ->update([
+                                'violation_status' => $cleared_txt,
+                                'cleared_at'       => $now_timestamp,
+                                'updated_at'       => $now_timestamp
+                            ]); 
+                    }else{
+                        $update_violation_stat = DB::table('violations_tbl')
+                            ->where('viola_id', $get_for_viola_id)
+                            ->update([
+                                'violation_status' => $not_cleared_txt,
+                                'updated_at'       => $now_timestamp
+                            ]); 
+                    }
+                    return back()->withSuccessStatus('Sanctions Update was a success.');
+                }else{
+                    return back()->withFailedStatus('Sanctions Update has Failed! try again later.');
+                }
+            }
 
     }
 
@@ -1225,12 +1347,12 @@ class ViolationRecordsController extends Controller
                         $record_act->act_details            = 'Deleted ' . $count_deleted_sanct . ' Sanction'.$ds_s . ' for ' . $default_viola_count . ' Offense'.$vc_s . ' made by ' . $yearLevel_txt . ' ' . $sel_stud_Course . ' student: ' . $sel_stud_Fname . ' ' . $sel_stud_Mname . ' ' . $sel_stud_Lname . ' on ' . date('F d, Y', strtotime($default_viola_date)).'.';
                         $record_act->act_affected_sanct_ids = $ext_jsonDeletedSanct_ids;
                         $record_act->save();
-                        return back()->withSuccessStatus('Sanctions Update was a success.');
+                        return back()->withSuccessStatus($count_deleted_sanct . ' Sanction'.$ds_s.' was deleted successfully.');
                     }else{
                         return back()->withFailedStatus('Updating Violation'.$sq.'s status has failed. Try Again later.');
                     }
                 }else{
-                    return back()->withFailedStatus('Deleting Selected Sanctions has failed! Try again later.');
+                    return back()->withFailedStatus('Deleting ' . $count_deleted_sanct . ' Sanctions'.$ds_s.' has failed! Try again later.');
                 }
             }else{
                 return back()->withFailedStatus('No Sanctions were selected for deletion. try again.');
