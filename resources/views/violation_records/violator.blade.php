@@ -600,9 +600,20 @@
 
                 {{-- has deleted offenses --}}
                 @php
-                    $has_deleted_offenses = App\Models\Deletedviolations::where('del_stud_num', $violator_id)->count();
+                    $has_deleted_offenses = App\Models\Deletedviolations::where('del_stud_num', $violator_id)->where('del_status', 1)->count();
                 @endphp
                 @if($has_deleted_offenses > 0)
+                    @php
+                        // queries
+                        $count_deleted_violations = App\Models\Deletedviolations::where('del_stud_num', $violator_id)->where('del_status', 1)->count();
+                        $sum_deleted_offenses = App\Models\Deletedviolations::where('del_stud_num', $violator_id)->where('del_status', 1)->sum('del_offense_count');
+                        // custom values
+                        if($sum_deleted_offenses > 1){
+                            $doc_s = 's';
+                        }else{
+                            $doc_s = '';
+                        }
+                    @endphp
                     <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12">
                             <div class="accordion" id="deletedOffensesCollapseParent">
@@ -611,13 +622,203 @@
                                         <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#deletedOffensesCollapseDiv" aria-expanded="true" aria-controls="deletedOffensesCollapseDiv">
                                             <div>
                                                 <span class="card_body_title">deleted Offenses</span>
-                                                <span class="card_body_subtitle"> 3 Deleted Offenses</span>
+                                                <span class="card_body_subtitle"> {{$sum_deleted_offenses }} Deleted Offense{{$doc_s}}</span>
                                             </div>
                                             <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
                                         </button>
                                     </div>
                                     <div id="deletedOffensesCollapseDiv" class="collapse show cb_t0b15x25" aria-labelledby="deletedOffensesCollapseHeading" data-parent="#deletedOffensesCollapseParent">
-                                        has deleted violations
+                                        <div class="row">
+                                            @if($count_deleted_violations > 0)
+                                                @php
+                                                    $query_del_violations = App\Models\Deletedviolations::where('del_stud_num', $violator_id)->orderBy('deleted_at', 'desc')->get();
+                                                @endphp
+                                                @foreach($query_del_violations as $deleted_violation)
+                                                    @php
+                                                        // plural offense & sanctions count
+                                                        if($deleted_violation->del_offense_count > 1){
+                                                            $oC_s = 's';
+                                                        }else{
+                                                            $oC_s = '';
+                                                        }
+                                                        if($deleted_violation->del_has_sanct_count > 1){
+                                                            $sC_s = 's';
+                                                        }else{
+                                                            $sC_s = '';
+                                                        }
+                                                        // responsible user
+                                                        if($deleted_violation->del_respo_user_id == auth()->user()->id){
+                                                            $recBy = 'Recorded by you.';
+                                                        }else{
+                                                            $get_recBy_info = App\Models\Users::select('id', 'user_role', 'user_lname')
+                                                                                    ->where('id', $deleted_violation->del_respo_user_id)
+                                                                                    ->first();
+                                                            $recBy = ucwords($get_recBy_info->user_role).': ' . $get_recBy_info->user_lname;
+                                                        }
+                                                        // count all sanctions for this violation
+                                                        if($deleted_violation->del_has_sanction > 0){
+                                                            $count_allDelCompletedSanctions = App\Models\Deletedsanctions::where('del_stud_num', $violator_id)
+                                                                                                ->where('del_for_viola_id', $deleted_violation->viola_id)
+                                                                                                ->where('del_sanct_status', '=', 'completed')
+                                                                                                ->count();
+                                                        }else{
+                                                            $count_allDelCompletedSanctions = 0;
+                                                        }
+                                                        // cleared/uncleared classes
+                                                        if($deleted_violation->del_violation_status === 'cleared'){
+                                                            $light_cardBody       = 'lightGreen_cardBody';
+                                                            $light_cardBody_title = 'lightGreen_cardBody_greenTitle';
+                                                            $light_cardBody_list  = 'lightGreen_cardBody_list';
+                                                            $info_textClass       = 'cust_info_txtwicon4';
+                                                            $info_iconClass       = 'fa fa-check-square-o';
+                                                            $class_violationStat  = 'text-success font-italic';
+                                                            $txt_violationStat    = '~ Cleared';
+                                                        }else{
+                                                            if($deleted_violation->del_has_sanct_count > 0){
+                                                                if($count_allDelCompletedSanctions == $deleted_violation->has_sanct_count){
+                                                                    $light_cardBody       = 'lightGreen_cardBody';
+                                                                    $light_cardBody_title = 'lightGreen_cardBody_greenTitle';
+                                                                    $light_cardBody_list  = 'lightGreen_cardBody_list';
+                                                                    $info_textClass       = 'cust_info_txtwicon4';
+                                                                    $info_iconClass       = 'fa fa-check-square-o';
+                                                                    $class_violationStat  = 'text-success font-italic';
+                                                                    $txt_violationStat    = '~ Cleared';
+                                                                }else{
+                                                                    $light_cardBody       = 'lightRed_cardBody';
+                                                                    $light_cardBody_title = 'lightRed_cardBody_redTitle';
+                                                                    $light_cardBody_list  = 'lightRed_cardBody_list';
+                                                                    $info_textClass       = 'cust_info_txtwicon3';
+                                                                    $info_iconClass       = 'fa fa-exclamation-circle';
+                                                                    $class_violationStat  = 'text_svms_red font-italic';
+                                                                    $txt_violationStat    = '~ Not Cleared';
+                                                                }
+                                                            }else{
+                                                                $light_cardBody       = 'lightRed_cardBody';
+                                                                $light_cardBody_title = 'lightRed_cardBody_redTitle';
+                                                                $light_cardBody_list  = 'lightRed_cardBody_list';
+                                                                $info_textClass       = 'cust_info_txtwicon3';
+                                                                $info_iconClass       = 'fa fa-exclamation-circle';
+                                                                $class_violationStat  = 'text_svms_red font-italic';
+                                                                $txt_violationStat    = '~ Not Cleared';
+                                                            }
+                                                        }
+                                                    @endphp
+                                                    <div class="col-lg-4 col-md-5 col-sm-12">
+                                                        <div class="accordion shadow cust_accordion_div" id="v{{$deleted_violation->from_viola_id}}Accordion_Parent">
+                                                            <div class="card custom_accordion_card">
+                                                                <div class="card-header p-0" id="changeUserRoleCollapse_heading">
+                                                                    <h2 class="mb-0">
+                                                                        <button class="btn btn-block custom2_btn_collapse cb_x12y15 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#v{{$deleted_violation->from_viola_id}}Collapse_Div" aria-expanded="true" aria-controls="v{{$deleted_violation->from_viola_id}}Collapse_Div">
+                                                                            <div class="d-flex justify-content-start align-items-center">
+                                                                                <div class="information_div2">
+                                                                                    <span class="li_info_title">{{date('F j, Y', strtotime($deleted_violation->del_recorded_at)) }} <span class="{{$class_violationStat}}"> {{ $txt_violationStat}}</span></span>
+                                                                                    <span class="li_info_subtitle">{{date('l - g:i A', strtotime($deleted_violation->del_recorded_at))}}</span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <i class="nc-icon nc-minimal-up"></i>
+                                                                        </button>
+                                                                    </h2>
+                                                                </div>
+                                                                <div id="v{{$deleted_violation->from_viola_id}}Collapse_Div" class="collapse show cust_collapse_active cb_t0b12y15" aria-labelledby="v{{$deleted_violation->from_viola_id}}Collapse_heading" data-parent="#v{{$deleted_violation->from_viola_id}}Accordion_Parent">
+                                                                    @if(!is_null($deleted_violation->del_minor_off) OR !empty($deleted_violation->del_minor_off))
+                                                                        @php
+                                                                            $mo_x = 1;
+                                                                        @endphp
+                                                                        <div class="card-body {{ $light_cardBody }} mb-2">
+                                                                            <span class="{{$light_cardBody_title }} mb-1">Minor Offenses:</span>
+                                                                            @foreach(json_decode(json_encode($deleted_violation->del_minor_off), true) as $minor_offenses)
+                                                                            <span class="{{$light_cardBody_list }}"><span class="font-weight-bold mr-1">{{$mo_x++}}.</span> {{$minor_offenses}}</span>
+                                                                            @endforeach
+                                                                        </div>
+                                                                    @endif
+                                                                    @if(!is_null($deleted_violation->del_less_serious_off) OR !empty($deleted_violation->del_less_serious_off))
+                                                                        @php
+                                                                            $lso_x = 1;
+                                                                        @endphp
+                                                                        <div class="card-body {{ $light_cardBody }} mb-2">
+                                                                            <span class="{{$light_cardBody_title }} mb-1">Less Serious Offenses:</span>
+                                                                            @foreach(json_decode(json_encode($deleted_violation->del_less_serious_off), true) as $less_serious_offenses)
+                                                                            <span class="{{$light_cardBody_list }}"><span class="font-weight-bold mr-1">{{$lso_x++}}.</span> {{$less_serious_offenses}}</span>
+                                                                            @endforeach
+                                                                        </div>
+                                                                    @endif
+                                                                    @if(!is_null($deleted_violation->del_other_off) OR !empty($deleted_violation->del_other_off))
+                                                                        @if(!in_array(null, json_decode(json_encode($deleted_violation->del_other_off), true)))
+                                                                            @php
+                                                                                $oo_x = 1;
+                                                                            @endphp
+                                                                            <div class="card-body {{ $light_cardBody }} mb-2">
+                                                                                <span class="{{$light_cardBody_title }} mb-1">Other Offenses:</span>
+                                                                                @foreach(json_decode(json_encode($deleted_violation->del_other_off), true) as $other_offenses)
+                                                                                <span class="{{$light_cardBody_list }}"><span class="font-weight-bold mr-1">{{$oo_x++}}.</span> {{$other_offenses}}</span>
+                                                                                @endforeach
+                                                                            </div>
+                                                                        @endif
+                                                                    @endif
+                                                                    @csrf
+                                                                    <input type="hidden" name="vp_hidden_stud_num" id="vp_hidden_stud_num" value="{{$violator_id}}" />
+                                                                    @if($deleted_violation->del_has_sanction > 0)
+                                                                        @php
+                                                                            $get_all_sanctions = App\Models\Deletedsanctions::select('del_sanct_status', 'del_sanct_details')
+                                                                                                                ->where('del_stud_num', $violator_id)
+                                                                                                                ->where('del_for_viola_id', $deleted_violation->from_viola_id)
+                                                                                                                ->orderBy('del_created_at', 'asc')
+                                                                                                                ->offset(0)
+                                                                                                                ->limit($deleted_violation->del_has_sanct_count)
+                                                                                                                ->get();
+                                                                            $count_completed_sanction = App\Models\Deletedsanctions::where('del_stud_num', $violator_id)
+                                                                                                                ->where('del_for_viola_id', $deleted_violation->from_viola_id)
+                                                                                                                ->where('del_sanct_status', '=', 'completed')
+                                                                                                                ->offset(0)
+                                                                                                                ->limit($deleted_violation->del_has_sanct_count)
+                                                                                                                ->count();
+                                                                        @endphp
+                                                                        <div class="card-body lightGreen_cardBody mb-2">
+                                                                            <div class="d-flex justify-content-between">
+                                                                                <span class="lightGreen_cardBody_greenTitle mb-1">Sanctions:</span>
+                                                                            </div>
+                                                                            @foreach($get_all_sanctions as $this_vrSanction)
+                                                                                {{-- custom values for sanctions --}}
+                                                                                @php
+                                                                                    if($this_vrSanction->del_sanct_status === 'completed'){
+                                                                                        $sanct_icon = 'fa fa-check-square-o';
+                                                                                    }else{
+                                                                                        $sanct_icon = 'fa fa-square-o';
+                                                                                    }
+                                                                                @endphp
+                                                                                <span class="lightGreen_cardBody_list"><i class="{{$sanct_icon }} mr-1 font-weight-bold" aria-hidden="true"></i> {{ $this_vrSanction->del_sanct_details}}</span>
+                                                                            @endforeach
+                                                                        </div>
+                                                                    @endif
+                                                                    <div class="row mt-3">
+                                                                        <div class="col-lg-12 col-md-12 col-sm-12 d-flex align-items-center justify-content-between">
+                                                                            <div>
+                                                                                <span class="{{$info_textClass }} font-weight-bold"><i class="{{$info_iconClass }} mr-1" aria-hidden="true"></i> {{$deleted_violation->del_offense_count}} Offense{{$oC_s}}</span>  
+                                                                                @if($deleted_violation->del_has_sanction > 0)
+                                                                                    @php
+                                                                                        if ($count_completed_sanction == count($get_all_sanctions)) {
+                                                                                            $info_icon1Class = 'fa fa-check-square-o';
+                                                                                        }else{
+                                                                                            $info_icon1Class = 'fa fa-list-ul';
+                                                                                        }
+                                                                                    @endphp
+                                                                                    <span class="cust_info_txtwicon4 font-weight-bold"><i class="{{$info_icon1Class }} mr-1" aria-hidden="true"></i> {{$deleted_violation->del_has_sanct_count}} Sanction{{$sC_s}}</span>  
+                                                                                    @if($deleted_violation->del_violation_status === 'cleared')
+                                                                                        <span class="cust_info_txtwicon"><i class="fa fa-calendar-check-o mr-1" aria-hidden="true"></i> {{date('F d, Y', strtotime($deleted_violation->del_cleared_at)) }} - {{ date('l - g:i A', strtotime($deleted_violation->del_cleared_at))}}</span> 
+                                                                                    @endif
+                                                                                @endif
+                                                                                <span class="cust_info_txtwicon"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> {{ $recBy }}</span>  
+                                                                            </div>
+                                                                            <button id="{{$deleted_violation->from_viola_id}}" onclick="deleteThisViolation(this.id)" class="btn cust_btn_smcircle2" data-toggle="tooltip" data-placement="top" title="Delete recorded Offenses?"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                             </div>

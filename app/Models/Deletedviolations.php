@@ -17,6 +17,7 @@ class Deletedviolations extends Model
      */
     protected $table = 'deleted_violations_tbl';
     protected $fillable = [
+        'del_status',
         'from_viola_id',
         'del_violation_status',
         'del_offense_count',

@@ -15,6 +15,7 @@ class CreateDeletedviolationsTable extends Migration
     {
         Schema::create('deleted_violations_tbl', function (Blueprint $table) {
             $table->id('del_id');
+            $table->tinyInteger('del_status')->default(1);  
             $table->unsignedBigInteger('from_viola_id');
                 // $table->foreign('from_violation_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamp('del_recorded_at')->format('Y-m-d H:i:s')->nullable();
