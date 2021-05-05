@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use App\Models\Students;
 use App\Models\Violations;
+use App\Models\Deletedviolations;
 use App\Models\Sanctions;
 use App\Models\Deletedsanctions;
 use App\Models\Users;
@@ -240,7 +241,7 @@ class ViolationRecordsController extends Controller
                         <td align="center" colspan="7">
                             <div class="no_data_div2 d-flex justify-content-center align-items-center text-center flex-column">
                                 <img class="no_data_svg" src="'. asset('storage/svms/illustrations/no_violations_found.svg').'" alt="no matching Data found">
-                                <span class="font-italic font-weight-bold">No Records Found!
+                                <span class="font-italic font-weight-bold">No Records Found! </span>
                             </div>
                         </td>
                     </tr>
@@ -262,10 +263,16 @@ class ViolationRecordsController extends Controller
 
     // violator's profile module
     public function violator($violator_id){
-        // get violator's info from students_tbl and violations_tbl
-        $violator_info = Students::where('Student_Number', $violator_id)->first();
-        $offenses_count = Violations::where('stud_num', $violator_id)->count();
-        return view('violation_records.violator')->with(compact('violator_info', 'offenses_count'));
+        // check if $violator_id exists in students_tbl
+        $check_exist = Students::where('Student_Number', $violator_id)->count();
+        if($check_exist > 0){
+            // get violator's info from students_tbl and violations_tbl
+            $violator_info = Students::where('Student_Number', $violator_id)->first();
+            $offenses_count = Violations::where('stud_num', $violator_id)->count();
+            return view('violation_records.violator')->with(compact('violator_info', 'offenses_count', 'violator_id'));
+        }else{
+            return view('violation_records.unknown_violator')->with(compact('violator_id'));
+        }
     }
 
     // add sanctions ~ modal
@@ -1554,13 +1561,194 @@ class ViolationRecordsController extends Controller
                         </div>
                     </div>
                 </div>
-                <div class="modal-body pb-0">
-                
-                </div>
+                <form id="form_deleteViolationRec" action="'.route('violation_records.delete_violation').'" class="form" enctype="multipart/form-data" method="POST">
+                    <div class="modal-body pb-0">
+                    ';
+                    if($get_viola_has_sanction > 0){
+                        $output .= '
+                        <div class="card-body lightBlue_cardBody shadow-none mb-2">
+                            <span class="lightBlue_cardBody_notice"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i> Deleting this recorded violation will also delete its corresponding sanctions.</span>
+                        </div>
+                        ';
+                    }
+                    $output .= '
+                        <div class="card-body lightBlue_cardBody shadow-none">
+                            <span class="lightBlue_cardBody_blueTitle">Reason for Deleting Violation:</span>
+                            <div class="form-group">
+                                <textarea class="form-control" id="delete_violation_reason" name="delete_violation_reason" rows="3" placeholder="Type reason for Recorded Violations (required)" required></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <input type="hidden" name="_token" value="'.csrf_token().'">
+                        <input type="hidden" name="for_viola_id" value="'.$sel_viola_id.'">
+                        <input type="hidden" name="sel_stud_num" value="'.$sel_stud_num.'">
+                        <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
+                        <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
+                        <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
+                        <div class="btn-group" role="group" aria-label="delete sanctions actions">
+                            <button id="cancel_deleteViolationRecBtn" type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                            <button id="submit_deleteViolationRecBtn" type="submit" class="btn btn-round btn_svms_red btn_show_icon m-0" disabled> Delete Violation <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                </form>
             </div>
         ';
 
         echo $output;
+    }
+
+    // process deletion of violation
+    public function delete_violation(Request $request){
+        // custom values
+            $now_timestamp     = now();
+        // get all request
+            $sel_viola_id      = $request->get('for_viola_id');
+            $sel_stud_num      = $request->get('sel_stud_num');
+            $sel_respo_user_id     = $request->get('respo_user_id');
+            $sel_respo_user_lname  = $request->get('respo_user_lname');
+            $sel_respo_user_fname  = $request->get('respo_user_fname');  
+            $sel_del_viola_reason  = $request->get('delete_violation_reason');  
+        // try
+            // echo 'violatin ID: ' . $sel_for_viola_id . '<br/>';
+            // echo 'Student ID: ' . $sel_sel_stud_num . '<br/>';
+            // echo 'Responsible user ID: ' . $sel_respo_user_id . '<br/>';
+            // echo 'Responsible user name: ' . $sel_respo_user_lname . ' ' . $sel_respo_user_fname . '<br/>';
+            // echo 'Reason for deletion: ' . $sel_del_viola_reason . '<br/>';
+        // get selection violation original data from vilations_tbl
+            $get_org_viola_data = Violations::where('viola_id', $sel_viola_id)
+                                        ->where('stud_num', $sel_stud_num)
+                                        ->first();
+            $org_Vrecorded_at      = $get_org_viola_data->recorded_at;
+            $org_Vviolation_status = $get_org_viola_data->violation_status;
+            $org_Voffense_count    = $get_org_viola_data->offense_count;
+            $org_Vminor_off        = $get_org_viola_data->minor_off;
+            $org_Vless_serious_off = $get_org_viola_data->less_serious_off;
+            $org_Vother_off        = $get_org_viola_data->other_off;
+            $org_Vstud_num         = $get_org_viola_data->stud_num;
+            $org_Vhas_sanction     = $get_org_viola_data->has_sanction;
+            $org_Vhas_sanct_count  = $get_org_viola_data->has_sanct_count;
+            $org_Vrespo_user_id    = $get_org_viola_data->respo_user_id;
+            $org_Vcleared_at       = $get_org_viola_data->cleared_at;
+        // save original record to deleted_violations_tbl
+            $backup_violation = new Deletedviolations;
+            $backup_violation->from_viola_id        = $sel_viola_id;
+            $backup_violation->del_recorded_at      = $org_Vrecorded_at;
+            $backup_violation->del_violation_status = $org_Vviolation_status;
+            $backup_violation->del_offense_count    = $org_Voffense_count;
+            $backup_violation->del_minor_off        = $org_Vminor_off;
+            $backup_violation->del_less_serious_off = $org_Vless_serious_off;
+            $backup_violation->del_other_off        = $org_Vother_off;
+            $backup_violation->del_stud_num         = $org_Vstud_num;
+            $backup_violation->del_has_sanction     = $org_Vhas_sanction;
+            $backup_violation->del_has_sanct_count  = $org_Vhas_sanct_count;
+            $backup_violation->del_respo_user_id    = $org_Vrespo_user_id;
+            $backup_violation->del_cleared_at       = $org_Vcleared_at;
+            $backup_violation->reason_deletion      = $sel_del_viola_reason;
+            $backup_violation->respo_user_id        = $sel_respo_user_id;
+            $backup_violation->deleted_at           = $now_timestamp;
+            $backup_violation->save();
+        // delete violation from violations_tbl
+            if($backup_violation){
+                $delete_org_viola_data = Violations::where('viola_id', $sel_viola_id)
+                                        ->where('stud_num', $sel_stud_num)
+                                        ->delete();
+                // if deletion was a success
+                if($delete_org_viola_data){
+                    // get latest del if from deleted_violations_tbl
+                        $get_latest_del_id = Deletedviolations::select('del_id')
+                                                ->where('from_viola_id', $sel_viola_id)
+                                                ->latest('deleted_at')
+                                                ->first();
+                        $latest_del_id = $get_latest_del_id->del_id;
+                    // delete corresponding sanctions from sanctions_tbl
+                    if($org_Vhas_sanction > 0){
+                        // check if corresponding sanctions exist from sanctions_tbl
+                        $check_sanct_exist = Sanctions::where('for_viola_id', $sel_viola_id)
+                                                            ->where('stud_num', $sel_stud_num)
+                                                            ->offset(0)
+                                                            ->limit($org_Vhas_sanct_count)
+                                                            ->count();
+                        if($check_sanct_exist > 0){
+                            $get_org_corresponding_sancts = Sanctions::where('for_viola_id', $sel_viola_id)
+                                                            ->where('stud_num', $sel_stud_num)
+                                                            ->offset(0)
+                                                            ->limit($org_Vhas_sanct_count)
+                                                            ->get();
+                            // save original sanctions to deleted_sanctions_tbl
+                            foreach($get_org_corresponding_sancts as $save_org_sanction){
+                                $save_tobe_deleted = new Deletedsanctions;
+                                $save_tobe_deleted->del_from_sanct_id = $save_org_sanction->sanct_id;
+                                $save_tobe_deleted->del_by_user_id    = $sel_respo_user_id;
+                                $save_tobe_deleted->deleted_at        = $now_timestamp;
+                                $save_tobe_deleted->reason_deletion   = 'reason';
+                                $save_tobe_deleted->del_stud_num      = $save_org_sanction->stud_num;
+                                $save_tobe_deleted->del_sanct_status  = $save_org_sanction->sanct_status;
+                                $save_tobe_deleted->del_sanct_details = $save_org_sanction->sanct_details;
+                                $save_tobe_deleted->del_for_viola_id  = $save_org_sanction->for_viola_id;
+                                $save_tobe_deleted->del_respo_user_id = $save_org_sanction->respo_user_id;
+                                $save_tobe_deleted->del_created_at    = $save_org_sanction->created_at;
+                                $save_tobe_deleted->del_completed_at  = $save_org_sanction->completed_at;
+                                $save_tobe_deleted->save();
+                            }
+                            // delete each sanctions from sanctions_tbl
+                            if($save_tobe_deleted){
+                                foreach($get_org_corresponding_sancts as $delete_org_sanction){
+                                    $delete_from_sanctions_tbl = Sanctions::where('sanct_id', $delete_org_sanction->sanct_id)
+                                                            ->where('stud_num', $delete_org_sanction->stud_num)
+                                                            ->where('for_viola_id', $delete_org_sanction->for_viola_id)
+                                                            ->delete();
+                                }
+                            }
+                        }
+                    }
+                    // custom values
+                        if($org_Voffense_count > 1){
+                            $ovc_s = 's';
+                        }else{
+                            $ovc_s = '';
+                            }
+                    // get selected student's info from students_tbl
+                        $sel_stud_info = Students::select('Student_Number', 'First_Name', 'Middle_Name', 'Last_Name', 'Email', 'School_Name', 'Course', 'YearLevel')
+                                    ->where('Student_Number', $sel_stud_num)
+                                    ->first();
+                        $sel_stud_Fname       = $sel_stud_info->First_Name;
+                        $sel_stud_Mname       = $sel_stud_info->Middle_Name;
+                        $sel_stud_Lname       = $sel_stud_info->Last_Name;
+                        $sel_stud_Email       = $sel_stud_info->Email;
+                        $sel_stud_School_Name = $sel_stud_info->School_Name;
+                        $sel_stud_Course      = $sel_stud_info->Course;
+                        $sel_stud_YearLevel   = $sel_stud_info->YearLevel;
+                        // year level
+                        if($sel_stud_YearLevel === '1'){
+                            $yearLevel_txt = '1st Year';
+                        }else if($sel_stud_YearLevel === '2'){
+                            $yearLevel_txt = '2nd Year';
+                        }else if($sel_stud_YearLevel === '3'){
+                            $yearLevel_txt = '3rd Year';
+                        }else if($sel_stud_YearLevel === '4'){
+                            $yearLevel_txt = '4th Year';
+                        }else if($sel_stud_YearLevel === '5'){
+                            $yearLevel_txt = '5th Year';
+                        }else{
+                            $yearLevel_txt = $sel_stud_YearLevel . ' Year';
+                        }
+                    // record activity
+                        $record_act = new Useractivites;
+                        $record_act->created_at            = $now_timestamp;
+                        $record_act->act_respo_user_id     = $sel_respo_user_id;
+                        $record_act->act_respo_users_lname = $sel_respo_user_lname;
+                        $record_act->act_respo_users_fname = $sel_respo_user_fname;
+                        $record_act->act_type              = 'violation deletion';
+                        $record_act->act_details           = 'Deleted ' . $org_Voffense_count . ' Offense'.$ovc_s . ' made by ' . $yearLevel_txt . ' ' . $sel_stud_Course . ' student: ' . $sel_stud_Fname . ' ' . $sel_stud_Mname . ' ' . $sel_stud_Lname . ' on ' . date('F d, Y', strtotime($org_Vrecorded_at)).'.';
+                        $record_act->act_affected_id       = $latest_del_id;
+                        $record_act->save();
+
+                    return back()->withSuccessStatus('Recorded Violation with ' . $org_Voffense_count . ' Offense'.$ovc_s.' was deleted successfully.');
+                }else{
+                    return back()->withFailedStatus(' Deleting Recorded Violation has Failed! try again later.');
+                }
+            }
     }
 
 }
