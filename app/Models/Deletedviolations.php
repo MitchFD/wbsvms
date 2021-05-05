@@ -17,17 +17,17 @@ class Deletedviolations extends Model
      */
     protected $table = 'deleted_violations_tbl';
     protected $fillable = [
-        'from_violation_id',
+        'from_viola_id',
         'del_violation_status',
         'del_offense_count',
         'del_minor_off' => 'array',
         'del_less_serious_off' => 'array',
         'del_other_off' => 'array',
         'del_stud_num',
-        'del_from_sanct_id',
+        'del_has_sanction', 
+        'del_has_sanct_count',
         'del_respo_user_id',
         'reason_deletion',
-        'count_selected_off',
         'respo_user_id',
     ];
     protected $casts = [
