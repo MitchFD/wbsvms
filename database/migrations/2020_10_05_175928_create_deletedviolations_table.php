@@ -35,6 +35,7 @@ class CreateDeletedviolationsTable extends Migration
             $table->unsignedBigInteger('respo_user_id');
                 // $table->foreign('respo_user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamp('deleted_at')->format('Y-m-d H:i:s')->nullable();
+            $table->timestamp('perm_deleted_at')->format('Y-m-d H:i:s')->nullable();
         });
     }
 

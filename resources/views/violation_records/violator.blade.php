@@ -587,7 +587,7 @@
                 {{-- no offenses found --}}
                     <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12">
-                            <div class="card card_gbr card_ofh shadow-none cb_p25 card_body_bg_gray">
+                            <div class="card card_gbr card_ofh shadow-none cb_p25 card_body_bg_gray" style="margin-bottom: -25px;">
                                 <div class="no_data_div3 d-flex justify-content-center align-items-center text-center flex-column">
                                     <img class="no_data_svg" src="{{asset('storage/svms/illustrations/no_violations_found_2.svg')}}" alt="no offenses found">
                                     <span class="font-italic font-weight-bold">No Recorded Violation Found. </span>
@@ -614,7 +614,7 @@
                             $doc_s = '';
                         }
                     @endphp
-                    <div class="row">
+                    <div class="row mt-5">
                         <div class="col-lg-12 col-md-12 col-sm-12">
                             <div class="accordion" id="deletedOffensesCollapseParent">
                                 <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray">
@@ -622,7 +622,7 @@
                                         <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#deletedOffensesCollapseDiv" aria-expanded="true" aria-controls="deletedOffensesCollapseDiv">
                                             <div>
                                                 <span class="card_body_title">deleted Offenses</span>
-                                                <span class="card_body_subtitle"> {{$sum_deleted_offenses }} Deleted Offense{{$doc_s}}</span>
+                                                <span class="card_body_subtitle">{{$sum_deleted_offenses }} Deleted Offense{{$doc_s}}</span>
                                             </div>
                                             <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
                                         </button>
@@ -635,6 +635,8 @@
                                                 @endphp
                                                 @foreach($query_del_violations as $deleted_violation)
                                                     @php
+                                                        // date deleted
+                                                        $date_deleted = date('F d, Y ~ l - g:i A', strtotime($deleted_violation->deleted_at));
                                                         // plural offense & sanctions count
                                                         if($deleted_violation->del_offense_count > 1){
                                                             $oC_s = 's';
@@ -646,14 +648,25 @@
                                                         }else{
                                                             $sC_s = '';
                                                         }
-                                                        // responsible user
+                                                        // responsible user (recorded violations)
                                                         if($deleted_violation->del_respo_user_id == auth()->user()->id){
                                                             $recBy = 'Recorded by you.';
                                                         }else{
                                                             $get_recBy_info = App\Models\Users::select('id', 'user_role', 'user_lname')
-                                                                                    ->where('id', $deleted_violation->del_respo_user_id)
+                                                                                    ->where('id', $deleted_violation->respo_user_id)
                                                                                     ->first();
                                                             $recBy = ucwords($get_recBy_info->user_role).': ' . $get_recBy_info->user_lname;
+                                                        }
+                                                        // responsible user (deleted violations)
+                                                        if($deleted_violation->respo_user_id == auth()->user()->id){
+                                                            $delBy = 'Deleted by you.';
+                                                            $delByTooltip = 'This Violation was deleted by you on ' . $date_deleted.'.';
+                                                        }else{
+                                                            $get_delBy_info = App\Models\Users::select('id', 'user_role', 'user_lname', 'user_fname')
+                                                                                    ->where('id', $deleted_violation->respo_user_id)
+                                                                                    ->first();
+                                                            $delBy = ucwords($get_delBy_info->user_role).': ' . $get_delBy_info->user_lname;
+                                                            $delByTooltip = 'This Violation was deleted by ' . ucwords($get_delBy_info->user_role).': ' . $get_delBy_info->user_fname . ' ' . $get_delBy_info->user_lname . ' on ' . $date_deleted.'.';
                                                         }
                                                         // count all sanctions for this violation
                                                         if($deleted_violation->del_has_sanction > 0){
@@ -790,7 +803,7 @@
                                                                             @endforeach
                                                                         </div>
                                                                     @endif
-                                                                    <div class="row mt-3">
+                                                                    <div class="row">
                                                                         <div class="col-lg-12 col-md-12 col-sm-12 d-flex align-items-center justify-content-between">
                                                                             <div>
                                                                                 <span class="{{$info_textClass }} font-weight-bold"><i class="{{$info_iconClass }} mr-1" aria-hidden="true"></i> {{$deleted_violation->del_offense_count}} Offense{{$oC_s}}</span>  
@@ -804,12 +817,22 @@
                                                                                     @endphp
                                                                                     <span class="cust_info_txtwicon4 font-weight-bold"><i class="{{$info_icon1Class }} mr-1" aria-hidden="true"></i> {{$deleted_violation->del_has_sanct_count}} Sanction{{$sC_s}}</span>  
                                                                                     @if($deleted_violation->del_violation_status === 'cleared')
-                                                                                        <span class="cust_info_txtwicon"><i class="fa fa-calendar-check-o mr-1" aria-hidden="true"></i> {{date('F d, Y', strtotime($deleted_violation->del_cleared_at)) }} - {{ date('l - g:i A', strtotime($deleted_violation->del_cleared_at))}}</span> 
-                                                                                    @endif
+                                                                                        <span class="cust_info_txtwicon"><i class="fa fa-calendar-check-o mr-1" aria-hidden="true"></i> {{date('F d, Y ~ l - g:i A', strtotime($deleted_violation->del_cleared_at)) }}</span> 
+                                                                                    @endif 
                                                                                 @endif
-                                                                                <span class="cust_info_txtwicon"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> {{ $recBy }}</span>  
+                                                                                <span class="cust_info_txtwicon"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> {{ $recBy }}</span>
                                                                             </div>
-                                                                            <button id="{{$deleted_violation->from_viola_id}}" onclick="deleteThisViolation(this.id)" class="btn cust_btn_smcircle2" data-toggle="tooltip" data-placement="top" title="Delete recorded Offenses?"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                                            <button id="{{$deleted_violation->from_viola_id}}" onclick="recoverThisDeletedViolation(this.id)" class="btn cust_btn_smcircle2" data-toggle="tooltip" data-placement="top" title="Recover this recorded Violation?"><i class="fa fa-external-link" aria-hidden="true"></i></button>
+                                                                        </div>
+                                                                    </div>
+                                                                    <hr class="hr_gry">
+                                                                    <div class="row mt-3">
+                                                                        <div class="col-lg-12 col-md-12 col-sm-12 d-flex align-items-center justify-content-between">
+                                                                            <div class="cursor_pointer" data-toggle="tooltip" data-placement="top" title="{{ $delByTooltip }}">
+                                                                                <span class="cust_info_txtwicon"><i class="fa fa-calendar-minus-o mr-1" aria-hidden="true"></i> {{date('F d, Y ~ D - g:i A', strtotime($deleted_violation->deleted_at)) }}</span> 
+                                                                                <span class="cust_info_txtwicon"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> {{ $delBy }}</span>
+                                                                            </div>
+                                                                            <button id="{{$deleted_violation->from_viola_id}}" onclick="permanentDeleteThisViolation(this.id)" class="btn cust_btn_smcircle2" data-toggle="tooltip" data-placement="top" title="Permanently Delete recorded Offenses?"><i class="fa fa-trash" aria-hidden="true"></i></button>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -818,6 +841,11 @@
                                                     </div>
                                                 @endforeach
                                             @endif
+                                        </div>
+                                        <div class="row mt-3">
+                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                                <span class="cust_info_txtwicon font-weight-bold"><i class="fa fa-trash mr-1" aria-hidden="true"></i> {{$sum_deleted_offenses }} Deleted Offense{{$doc_s}} found.</span>  
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -867,7 +895,7 @@
             </div>
         </div>
     {{-- edit sanctions on modal end --}}
-    {{-- edit sanctions on modal --}}
+    {{-- temporary delete violation on modal --}}
         <div class="modal fade" id="deleteViolationModal" tabindex="-1" role="dialog" aria-labelledby="deleteViolationModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content cust_modal">
@@ -883,7 +911,25 @@
                 </div>
             </div>
         </div>
-    {{-- edit sanctions on modal end --}}
+    {{-- temporary delete violation on modal end --}}
+    {{-- permanently delete violation on modal --}}
+        <div class="modal fade" id="permanentDeleteViolationModal" tabindex="-1" role="dialog" aria-labelledby="permanentDeleteViolationModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="permanentDeleteViolationModalLabel">Permanently Delete Violation?</span>
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="permanentDeleteViolationModalHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{-- permanently delete violation on modal end --}}
+    
 
 @endsection
 
@@ -1161,7 +1207,9 @@
         });
     </script>
 
+
 {{-- delete recorded violation --}}
+    {{-- temporary deletion --}}
     <script>
         function deleteThisViolation(sel_viola_id){
             var sel_viola_id = sel_viola_id;
@@ -1200,5 +1248,29 @@
             });
         });
     </script>
+    {{-- recover deleted violation --}}
+    <script>
+        function recoverThisDeletedViolation(sel_viola_id){
+            alert('recover ' + sel_viola_id);
+        }
+    </script>
+    {{-- permanent deletion --}}
+    <script>
+        function permanentDeleteThisViolation(sel_viola_id){
+            var sel_viola_id = sel_viola_id;
+            var sel_stud_num = document.getElementById("vp_hidden_stud_num").value;
+            var _token = $('input[name="_token"]').val();
+            $.ajax({
+                url:"{{ route('violation_records.permanently_delete_violation_form') }}",
+                method:"GET",
+                data:{sel_viola_id:sel_viola_id, sel_stud_num:sel_stud_num, _token:_token},
+                success: function(data){
+                    $('#permanentDeleteViolationModalHtmlData').html(data);
+                    $('#permanentDeleteViolationModal').modal('show');
+                }
+            });
+        }
+    </script>
+{{-- delete recorded violation end --}}
 
 @endpush
