@@ -436,7 +436,7 @@ class ViolationEntryController extends Controller
             }
             // record offenses to violations_tbl
             $record_offenses = new Violations;
-            $record_offenses->recorded_at       = $get_violation_timestamp;
+            $record_offenses->recorded_at      = $get_violation_timestamp;
             $record_offenses->offense_count    = $total_offenses_count;
             $record_offenses->minor_off        = $get_minor_offenses;
             $record_offenses->less_serious_off = $get_less_serious_offenses;

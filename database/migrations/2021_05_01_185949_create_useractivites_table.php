@@ -26,6 +26,7 @@ class CreateUseractivitesTable extends Migration
             $table->json('act_affected_sanct_ids')->nullable();
             $table->json('act_deleted_viola_ids')->nullable();
             $table->json('act_perm_deleted_viola_ids')->nullable();
+            $table->json('act_recovered_viola_ids')->nullable();
         });
     }
 

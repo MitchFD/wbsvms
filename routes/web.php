@@ -136,6 +136,9 @@ Route::group(['middleware' => 'auth'], function () {
 	// deleted violation records page
 	Route::get('violation_records/deleted_violation_records', ['as' => 'violation_records.deleted_violation_records', 'uses' => 'App\Http\Controllers\ViolationRecordsController@deleted_violation_records']);
 
+	// open violation form
+	Route::get('violation_records/new_violation_form_modal', 'App\Http\Controllers\ViolationRecordsController@new_violation_form_modal')->name('violation_records.new_violation_form_modal');
+
 	// add sanctions form on modal
 	Route::get('violation_records/add_sanction_form', 'App\Http\Controllers\ViolationRecordsController@add_sanction_form')->name('violation_records.add_sanction_form');
 	// submit and process added sanctions form
@@ -158,6 +161,11 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('violation_records/permanently_delete_violation_form', 'App\Http\Controllers\ViolationRecordsController@permanently_delete_violation_form')->name('violation_records.permanently_delete_violation_form');
 	// process permanent delete violation
 	Route::post('violation_records/permanent_delete_violation', 'App\Http\Controllers\ViolationRecordsController@permanent_delete_violation')->name('violation_records.permanent_delete_violation');
+
+	// recover deleted violation confirmation on modal
+	Route::get('violation_records/recover_deleted_violation_form', 'App\Http\Controllers\ViolationRecordsController@recover_deleted_violation_form')->name('violation_records.recover_deleted_violation_form');
+	// process recover deleted violation
+	Route::post('violation_records/recover_deleted_violation', 'App\Http\Controllers\ViolationRecordsController@recover_deleted_violation')->name('violation_records.recover_deleted_violation');
 });
 
 // student handbook

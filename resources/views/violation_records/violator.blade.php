@@ -169,18 +169,21 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-lg-12 col-md-12 col-sm-12">
-                                @if($total_offenses > 0)
-                                    <span class="cust_info_txtwicon font-weight-bold"><i class="fa fa-list-ul mr-1" aria-hidden="true"></i> {{$total_offenses }} Total Offense{{$toc_s }} Found.</span>
-                                @else
-                                    <span class="cust_info_txtwicon font-weight-bold"><i class="nc-icon nc-check-2 mr-1" aria-hidden="true"></i> No Offenses Found.</span>
-                                @endif
-                                @if($total_cleared_off > 0)
-                                    <span class="cust_info_txtwicon"><i class="fa fa-check-square-o mr-1" aria-hidden="true"></i> {{$total_cleared_off }} Cleared Offenses.</span>  
-                                @endif
-                                @if($total_notCleared_off > 0)
-                                    <span class="cust_info_txtwicon"><i class="fa fa-square-o mr-1" aria-hidden="true"></i> {{$total_notCleared_off }} Uncleared Offenses.</span>
-                                @endif
+                                <div class="col-lg-12 col-md-12 col-sm-12 d-flex justify-content-between align-items-center">
+                                    <div>
+                                    @if($total_offenses > 0)
+                                        <span class="cust_info_txtwicon font-weight-bold"><i class="fa fa-list-ul mr-1" aria-hidden="true"></i> {{$total_offenses }} Total Offense{{$toc_s }} Found.</span>
+                                    @else
+                                        <span class="cust_info_txtwicon font-weight-bold"><i class="nc-icon nc-check-2 mr-1" aria-hidden="true"></i> No Offenses Found.</span>
+                                    @endif
+                                    @if($total_cleared_off > 0)
+                                        <span class="cust_info_txtwicon"><i class="fa fa-check-square-o mr-1" aria-hidden="true"></i> {{$total_cleared_off }} Cleared Offenses.</span>  
+                                    @endif
+                                    @if($total_notCleared_off > 0)
+                                        <span class="cust_info_txtwicon"><i class="fa fa-square-o mr-1" aria-hidden="true"></i> {{$total_notCleared_off }} Uncleared Offenses.</span>
+                                    @endif
+                                    </div>
+                                    <button id="{{$violator_info->Student_Number}}" onclick="addViolationToStudent(this.id)" class="btn cust_btn_smcircle5v1" data-toggle="tooltip" data-placement="top" title="Record new Offenses for {{ $violator_info->First_Name }}  {{ $violator_info->Middle_Name }} {{ $violator_info->Last_Name}}?"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -922,6 +925,24 @@
     {{-- violator's info end --}}
 
     {{-- modals --}}
+    {{-- new violation entry modal --}}
+        <div class="modal fade" id="newViolationEntryModal" tabindex="-1" role="dialog" aria-labelledby="newViolationEntryModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0 pb-0">
+                        {{-- <span class="modal-title cust_modal_title" id="newViolationEntryModalLabel">Violation Form</span> --}}
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="newViolationEntryModalHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{-- new violation entry modal end --}}
+
     {{-- add sanctions on modal --}}
         <div class="modal fade" id="addSanctionsModal" tabindex="-1" role="dialog" aria-labelledby="addSanctionsModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -990,6 +1011,23 @@
             </div>
         </div>
     {{-- permanently delete violation on modal end --}}
+    {{-- recover delete violation on modal --}}
+        <div class="modal fade" id="recoverDeletedViolationModal" tabindex="-1" role="dialog" aria-labelledby="recoverDeletedViolationModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="recoverDeletedViolationModalLabel">Recover Violation?</span>
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="recoverDeletedViolationModalHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{-- recover delete violation on modal end --}}
     
 
 @endsection
@@ -1007,6 +1045,92 @@
         });
     </script>
 {{-- activate nav-tabs & tab-contents first child end --}}
+
+{{-- recording new offenses for the student --}}
+    <script>
+        function addViolationToStudent(sel_Student_Number){
+            var violator_id = sel_Student_Number;
+            var _token = $('input[name="_token"]').val();
+            $.ajax({
+                url:"{{ route('violation_records.new_violation_form_modal') }}",
+                method:"GET",
+                data:{violator_id:violator_id, _token:_token},
+                success: function(data){
+                    $('#newViolationEntryModalHtmlData').html(data);
+                    $('#newViolationEntryModal').modal('show');
+                }
+            });
+        }
+    </script>
+    <script>
+        $('#newViolationEntryModal').on('show.bs.modal', function () {
+            var newViolationEntry_form  = document.querySelector("#form_addViolation");
+            var btn_submitNewViolationEntry = document.querySelector("#submit_violationForm_btn");
+            var btn_cancelNewViolationEntry = document.querySelector("#cancel_violationForm_btn");
+            var otherOffenses_input  = document.querySelector("#addOtherOffenses_input");
+            var otherOffensesAdd_Btn = document.querySelector("#btn_addAnother_input");
+            // disable cancel and submit button on form submit
+            $(newViolationEntry_form).submit(function(){
+                btn_cancelNewViolationEntry.disabled = true;
+                btn_submitNewViolationEntry.disabled = true;
+                return true;
+            });
+
+            // adding new input field
+            $(otherOffenses_input).keyup(function(){
+                if(otherOffenses_input.value !== ""){
+                    otherOffensesAdd_Btn.disabled = false;
+                }else{
+                    otherOffensesAdd_Btn.disabled = true;
+                }
+            });
+            // appending new input field
+            function addOtherOffIndexing(){
+                i = 1;
+                $(".addOtherOffIndex").each(function(){
+                    $(this).html(i+1 + '.');
+                    i++;
+                });
+            }
+
+            var maxField = 10;
+            var addedInputFields_div = document.querySelector('.addedInputFields_div');
+            var newInputField = '<div class="input-group mb-2"> ' +
+                                    '<div class="input-group-append"> ' +
+                                        '<span class="input-group-text txt_iptgrp_append2 addOtherOffIndex font-weight-bold">1. </span> ' +
+                                    '</div> ' +
+                                    '<input type="text" name="other_offenses[]" class="form-control input_grpInpt2" placeholder="Type Other Offense" aria-label="Type Other Offense" aria-describedby="other-offenses-input"> ' +
+                                    '<div class="input-group-append"> ' +
+                                        '<button class="btn btn_svms_red m-0 btn_deleteAnother_input" type="button"><i class="nc-icon nc-simple-remove font-weight-bold" aria-hidden="true"></i></button> ' +
+                                    '</div> ' +
+                                '</div>';
+            var x = 1;
+            $(otherOffensesAdd_Btn).click(function(){
+                if(x < maxField){
+                    x++;
+                    $(addedInputFields_div).append(newInputField);
+                    // console.log(x);
+                }
+                addOtherOffIndexing();
+            });
+            $(addedInputFields_div).on('click', '.btn_deleteAnother_input', function(e){
+                e.preventDefault();
+                $(this).closest('.input_grpInpt2').value = '';
+                $(this).closest('.input-group').last().remove();
+                x--;
+                // console.log('click');
+                addOtherOffIndexing();
+            });
+            
+            // serialized form
+            $('#form_addViolation').each(function(){
+                $(this).data('serialized', $(this).serialize())
+            }).on('change input', function(){
+                $(this).find('#submit_violationForm_btn').prop('disabled', $(this).serialize() == $(this).data('serialized'));
+            }).find('#submit_violationForm_btn').prop('disabled', true);
+        });
+    </script>
+{{-- recording new offenses for the student end --}}
 
 {{-- add sanctions on modal --}}
     <script>
@@ -1312,8 +1436,32 @@
     {{-- recover deleted violation --}}
     <script>
         function recoverThisDeletedViolation(sel_viola_id){
-            alert('recover ' + sel_viola_id);
+            var sel_viola_id = sel_viola_id;
+            var sel_stud_num = document.getElementById("vp_hidden_stud_num").value;
+            var _token = $('input[name="_token"]').val();
+            $.ajax({
+                url:"{{ route('violation_records.recover_deleted_violation_form') }}",
+                method:"GET",
+                data:{sel_viola_id:sel_viola_id, sel_stud_num:sel_stud_num, _token:_token},
+                success: function(data){
+                    $('#recoverDeletedViolationModalHtmlData').html(data);
+                    $('#recoverDeletedViolationModal').modal('show');
+                }
+            });
         }
+    </script>
+    <script>
+        $('#form_recoverDeletedViolationRec').on('show.bs.modal', function () {
+            var form_permDeleteViolationRec  = document.querySelector("#form_permDeleteViolationRec");
+            var btn_submitRecoverDeletedViolationRec = document.querySelector("#submit_recoverDeletedViolationRecBtn");
+            var btn_cancelRecoverDeletedViolationRec = document.querySelector("#cancel_recoverDeletedViolationRecBtn");
+            // disable cancel and sibmit button on submit
+            $(form_permDeleteViolationRec).submit(function(){
+                btn_cancelRecoverDeletedViolationRec.disabled = true;
+                btn_submitRecoverDeletedViolationRec.disabled = true;
+                return true;
+            });
+        });
     </script>
     {{-- permanent deletion --}}
     <script>
