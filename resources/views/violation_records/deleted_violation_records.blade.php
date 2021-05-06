@@ -48,7 +48,7 @@
                             <span class="page_intro_subtitle">This page shows you the list of all deleted violations. You will have the option to recover deleted violations or delete violations permanently. You can filter the table below to view desired outputs and generate report for print or digital copy purposes.</span>
                         </div>
                         <div class="page_illustration">
-                            <img class="illustration_svg" src="{{ asset('storage/svms/illustrations/violation_records_illustration.svg') }}" alt="...">
+                            <img class="illustration_svg" src="{{ asset('storage/svms/illustrations/deleted_violation_records_illustration.svg') }}" alt="...">
                         </div>
                     </div>
                 </div>

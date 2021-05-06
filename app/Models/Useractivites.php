@@ -24,11 +24,13 @@ class Useractivites extends Model
         'act_details',
         'act_affected_id',
         'act_affected_sanct_ids' => 'array',
-        'act_deleted_viola_ids' => 'array'
+        'act_deleted_viola_ids' => 'array',
+        'act_perm_deleted_viola_ids' => 'array'
     ];
     protected $casts = [
         'act_affected_sanct_ids' => 'array',
-        'act_deleted_viola_ids' => 'array'
+        'act_deleted_viola_ids' => 'array',
+        'act_perm_deleted_viola_ids' => 'array'
     ];
     public $primaryKey = 'act_id';
     public $timestamps = false;

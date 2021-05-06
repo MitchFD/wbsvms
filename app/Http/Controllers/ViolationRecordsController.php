@@ -912,7 +912,7 @@ class ViolationRecordsController extends Controller
                                         <input type="hidden" name="_token" value="'.csrf_token().'">
                                         <input type="hidden" name="for_viola_id" value="'.$sel_viola_id.'">
                                         <input type="hidden" name="sel_stud_num" value="'.$sel_stud_num.'">
-                                        <input type="hidden" name="total_sanct_count" id="total_sanct_count" value="'.$count_all_sanctions.'">
+                                        <input type="hidden" name="total_sanct_count_f3" id="total_sanct_count" value="'.$count_all_sanctions.'">
                                         <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
                                         <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
                                         <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
@@ -1234,7 +1234,7 @@ class ViolationRecordsController extends Controller
             $get_respo_user_id     = $request->get('respo_user_id');
             $get_respo_user_lname  = $request->get('respo_user_lname');
             $get_respo_user_fname  = $request->get('respo_user_fname');   
-            $get_total_sanct_count = $request->get('total_sanct_count');   
+            $get_total_sanct_count = $request->get('total_sanct_count_f3');   
             $get_delete_all_sanct  = $request->get('delete_all_sanctions');   
             $get_deleted_sanctions = json_decode(json_encode($request->get('delete_sanctions'))); 
         // cusotms
@@ -1250,12 +1250,14 @@ class ViolationRecordsController extends Controller
                 $ds_s = '';
             }
         // get status of selected for_viola_id
-            $get_violation_info = Violations::select('violation_status', 'recorded_at', 'offense_count')
+            $get_violation_info = Violations::select('violation_status', 'recorded_at', 'offense_count', 'has_sanction', 'has_sanct_count')
                                         ->where('viola_id', $get_for_viola_id)
                                         ->first();
-            $default_viola_status = $get_violation_info->violation_status;
-            $default_viola_date   = $get_violation_info->recorded_at;
-            $default_viola_count  = $get_violation_info->offense_count;
+            $default_viola_status    = $get_violation_info->violation_status;
+            $default_viola_date      = $get_violation_info->recorded_at;
+            $default_viola_count     = $get_violation_info->offense_count;
+            $default_has_sanction    = $get_violation_info->has_sanction;
+            $default_has_sanct_count = $get_violation_info->has_sanct_count;
             if($default_viola_count > 0){
                 if($default_viola_count > 1){
                     $vc_s = 's';
@@ -2056,7 +2058,7 @@ class ViolationRecordsController extends Controller
                     </div>
                     <div class="modal-footer border-0">
                         <input type="hidden" name="_token" value="'.csrf_token().'">
-                        <input type="hidden" name="for_viola_id" value="'.$sel_viola_id.'">
+                        <input type="hidden" name="for_viola_id[]" value="'.$sel_viola_id.'">
                         <input type="hidden" name="sel_stud_num" value="'.$sel_stud_num.'">
                         <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
                         <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
@@ -2074,11 +2076,56 @@ class ViolationRecordsController extends Controller
     }
     // process permanent deletion of violation
     public function permanent_delete_violation(Request $request){
+        // custom values
+            $now_timestamp     = now();
         // get all request
-            $sel_viola_id = $request->get('sel_viola_id');
-            $sel_stud_num = $request->get('sel_stud_num');
+            $sel_viola_ids         = json_decode(json_encode($request->get('for_viola_id'))); 
+            $sel_stud_num          = $request->get('sel_stud_num');
+            $sel_respo_user_id     = $request->get('respo_user_id');
+            $sel_respo_user_lname  = $request->get('respo_user_lname');
+            $sel_respo_user_fname  = $request->get('respo_user_fname');  
+        // cusotms
+            $sq = "'";
+            $count_sel_viola_ids = count($sel_viola_ids);
+            if($count_sel_viola_ids > 1){
+                $sv_s = 's';
+            }else{
+                $sv_s = '';
+            }
         // try
-            echo 'to be deleted: ' . $sel_viola_id;
+            // if($count_sel_viola_ids > 0){
+            //     echo 'count to be deleted: ' . $count_sel_viola_ids . '<br/>';
+            //     foreach($sel_viola_ids as $this_viola_id){
+            //         echo 'to be deleted: ' . $this_viola_id . '<br/>';
+            //     }
+            // }
+            // echo 'stud number: ' . $sel_stud_num . '<br/>';
+            // echo 'Responsible user: <br/>';
+            // echo '' .$sel_respo_user_id.': ' . $sel_respo_user_fname . ' ' . $sel_respo_user_lname . '<br/>';
+        if($count_sel_viola_ids > 0){
+            // custom values fro update
+            $zero = 0;
+            // update del_status from deleted_violations_tbl
+            foreach($sel_viola_ids as $this_sel_viola_id){
+                $perm_delete_status = DB::table('deleted_violations_tbl')
+                            ->where('from_viola_id', $this_sel_viola_id)
+                            ->where('del_stud_num', $sel_stud_num)
+                            ->update([
+                                'del_status'      => $zero,
+                                'perm_deleted_at' => $now_timestamp,
+                                'perm_deleted_by' => $sel_respo_user_id
+                            ]); 
+            }
+            if($perm_delete_status){
+                // get all latest del_id from deleted_violations_tbl as reference for user's activity
+                // record activity
+                return back()->withSuccessStatus('Violation has been deleted permanently.');
+            }else{
+                return back()->withFailedStatus('Permanent deletion of Vioaltion has Failed! try again later.');
+            }
+        }else{
+            return back()->withFailedStatus(' There are no selected Violations for deletion! please try again.');
+        }
     }
 
 

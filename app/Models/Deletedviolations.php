@@ -30,6 +30,7 @@ class Deletedviolations extends Model
         'del_respo_user_id',
         'reason_deletion',
         'respo_user_id',
+        'perm_deleted_by'
     ];
     protected $casts = [
         'del_minor_off' => 'array',
