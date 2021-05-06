@@ -24,6 +24,7 @@ class CreateUseractivitesTable extends Migration
             $table->string('act_details');
             $table->unsignedBigInteger('act_affected_id')->nullable();
             $table->json('act_affected_sanct_ids')->nullable();
+            $table->json('act_deleted_viola_ids')->nullable();
         });
     }
 

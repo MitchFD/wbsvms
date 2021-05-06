@@ -28,6 +28,7 @@ class CreateViolationsTable extends Migration
             $table->unsignedBigInteger('respo_user_id');
                 // $table->foreign('respo_user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamp('updated_at')->format('Y-m-d H:i:s')->nullable();
+            $table->timestamp('deleted_at')->format('Y-m-d H:i:s')->nullable();
             $table->timestamp('recovered_at')->format('Y-m-d H:i:s')->nullable();
             $table->timestamp('cleared_at')->format('Y-m-d H:i:s')->nullable();
         });

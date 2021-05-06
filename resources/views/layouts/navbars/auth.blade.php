@@ -96,12 +96,39 @@
                         </a>
                     </li>
                 @endif
-                @if(in_array('violation records', $get_uRole_access))
+                {{-- @if(in_array('violation records', $get_uRole_access))
                     <li class="{{ $elementActive == 'violation_records' ? 'active' : '' }}">
                         <a href="{{ route('violation_records.index', 'violation_records') }}">
                             <i class="nc-icon nc-box"></i>
                             <p>{{ __('Violation Records') }}</p>
                         </a>
+                    </li>
+                @endif --}}
+                @if(in_array('violation records', $get_uRole_access))
+                    <li class="{{ $elementActive == 'violation_records' || $elementActive == 'deleted_violation_records' ? 'active' : '' }}">
+                        <a data-toggle="collapse" aria-expanded="false" href="#violationRecordsCollapse">
+                            <i class="nc-icon nc-box"></i>
+                            <p>
+                                {{ __('VIOLATION RECORDS') }}
+                                <b class="caret"></b>
+                            </p>
+                        </a>
+                        <div class="collapse" id="violationRecordsCollapse">
+                            <ul class="nav">
+                                <li class="{{ $elementActive == 'violation_records' ? 'active' : '' }}">
+                                    <a style="padding-left: 25px !important;" href="{{ route('violation_records.index', 'violation_records') }}">
+                                        <i class="nc-icon nc-minimal-right sidebar-mini-icon"></i>
+                                        <span class="sidebar-normal">{{ __(' Violation Records ') }}</span>
+                                    </a>
+                                </li>
+                                <li class="{{ $elementActive == 'deleted_violation_records' ? 'active' : '' }}">
+                                    <a style="padding-left: 25px !important;" href="{{ route('violation_records.deleted_violation_records', 'deleted_violation_records') }}">
+                                        <i class="nc-icon nc-minimal-right sidebar-mini-icon"></i>
+                                        <span class="sidebar-normal">{{ __(' Deleted Violations ') }}</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </li>
                 @endif
                 @if(in_array('student handbook', $get_uRole_access))

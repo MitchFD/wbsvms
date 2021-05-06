@@ -446,6 +446,14 @@ fieldset[disabled] .btn_svms_blue.active {
 .btn_group_label{
   cursor: default !important;
 }
+
+.btn-group.cust_btn_group_block {
+  display: flex !important;
+}
+
+.cust_btn_group_block .btn {
+  flex: 1 !important;
+}
 /* btn-group end */
 
 .btn_normal_fontsz{

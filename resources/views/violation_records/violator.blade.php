@@ -158,7 +158,7 @@
                                         @endif
 
                                         <div class="row d-flex justify-content-center my-2">
-                                            <div class="col-lg-8 col-md-10 col-sm-11 p-0 d-flex justify-content-center">
+                                            <div class="col-lg-12 col-md-12 col-sm-11 p-0 d-flex justify-content-center">
                                                 <div class="btn-group cust_btn_group" role="group" aria-label="User's Account Status / Action">
                                                     <button type="button" class="btn {{ $btn_class }} btn_group_label m-0">{{ $btn_label }}</button>
                                                     <button type="button" class="btn {{ $btn_class }} btn_group_icon m-0" data-toggle="tooltip" data-placement="top" title="{{$btn_tooltip}}"><i class="{{ $btn_icon }}"></i></button>
@@ -360,6 +360,8 @@
                                                                     @foreach($this_month_offenses as $date_offense)
                                                                         {{-- custom values --}}
                                                                         @php
+                                                                            // date recorded
+                                                                            $date_recorded = date('F d, Y ~ l - g:i A', strtotime($date_offense->recorded_at));
                                                                             // plural offense & sanctions count
                                                                             if($date_offense->offense_count > 1){
                                                                                 $oC_s = 's';
@@ -371,14 +373,29 @@
                                                                             }else{
                                                                                 $sC_s = '';
                                                                             }
+                                                                            // violator's last name and Mr./Mrs
+                                                                            $query_violator_info = App\Models\Students::select('Last_Name', 'Gender')
+                                                                                                                ->where('Student_Number', $violator_info->Student_Number)
+                                                                                                                ->first();
+                                                                            $get_violator_lname = $query_violator_info->Last_Name;
+                                                                            $get_violator_gender = strtolower($query_violator_info->Gender);
+                                                                            if($get_violator_gender === 'male'){
+                                                                                $vmr_ms = 'Mr.';
+                                                                            }elseif($get_violator_gender === 'female'){
+                                                                                $vmr_ms = 'Ms.';
+                                                                            }else{
+                                                                                $vmr_ms = 'Mr./Ms.';
+                                                                            }
                                                                             // responsible user
                                                                             if($date_offense->respo_user_id == auth()->user()->id){
                                                                                 $recBy = 'Recorded by you.';
+                                                                                $recByTooltip = 'This Violation was recorded by you on ' . $date_recorded.'.';
                                                                             }else{
-                                                                                $get_recBy_info = App\Models\Users::select('id', 'user_role', 'user_lname')
+                                                                                $get_recBy_info = App\Models\Users::select('id', 'user_role', 'user_lname', 'user_fname')
                                                                                                         ->where('id', $date_offense->respo_user_id)
                                                                                                         ->first();
                                                                                 $recBy = ucwords($get_recBy_info->user_role).': ' . $get_recBy_info->user_lname;
+                                                                                $recByTooltip = 'This Violation was recorded by ' . ucwords($get_recBy_info->user_role).': ' . $get_recBy_info->user_fname . ' ' . $get_recBy_info->user_lname . ' on ' . $date_recorded.'.';
                                                                             }
                                                                             // count all sanctions for this violation
                                                                             if($date_offense->has_sanction > 0){
@@ -529,23 +546,32 @@
                                                                                                 </div>
                                                                                             </div>
                                                                                         @endif
+                                                                                        @if($date_offense->has_sanction > 0)
+                                                                                            @php
+                                                                                                // date completed
+                                                                                                $date_completed = date('F d, Y ~ l - g:i A', strtotime($date_offense->cleared_at));
+                                                                                                if ($count_completed_sanction == count($get_all_sanctions)) {
+                                                                                                    $info_icon1Class = 'fa fa-check-square-o';
+                                                                                                    $sancStatusTooltip = $date_offense->has_sanct_count . ' corresponding Sanction'.$sC_s . ' for this violation has been completed by ' . $vmr_ms . ' ' . $get_violator_lname . ' on ' . $date_completed.'.';
+                                                                                                }else{
+                                                                                                    $info_icon1Class = 'fa fa-list-ul';
+                                                                                                    $sancStatusTooltip = $date_offense->has_sanct_count . ' corresponding Sanction'.$sC_s . ' for ' . $date_offense->offense_count . ' Offense'.$oC_s.' committed by ' . $vmr_ms . ' ' . $get_violator_lname . ' on ' . $date_recorded.'.';
+                                                                                                }
+                                                                                            @endphp
+                                                                                            <div class="row mt-3 cursor_pointer" data-toggle="tooltip" data-placement="top" title="{{ $sancStatusTooltip }}">
+                                                                                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                                                                                    <span class="cust_info_txtwicon4 font-weight-bold"><i class="{{$info_icon1Class }} mr-1" aria-hidden="true"></i> {{$date_offense->has_sanct_count}} Sanction{{$sC_s}}</span>  
+                                                                                                    @if($date_offense->violation_status === 'cleared')
+                                                                                                        <span class="cust_info_txtwicon"><i class="fa fa-calendar-check-o mr-1" aria-hidden="true"></i> {{$date_completed}}</span> 
+                                                                                                    @endif
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <hr class="hr_gry">
+                                                                                        @endif
                                                                                         <div class="row mt-3">
                                                                                             <div class="col-lg-12 col-md-12 col-sm-12 d-flex align-items-center justify-content-between">
-                                                                                                <div>
-                                                                                                    <span class="{{$info_textClass }} font-weight-bold"><i class="{{$info_iconClass }} mr-1" aria-hidden="true"></i> {{$date_offense->offense_count}} Offense{{$oC_s}}</span>  
-                                                                                                    @if($date_offense->has_sanction > 0)
-                                                                                                        @php
-                                                                                                            if ($count_completed_sanction == count($get_all_sanctions)) {
-                                                                                                                $info_icon1Class = 'fa fa-check-square-o';
-                                                                                                            }else{
-                                                                                                                $info_icon1Class = 'fa fa-list-ul';
-                                                                                                            }
-                                                                                                        @endphp
-                                                                                                        <span class="cust_info_txtwicon4 font-weight-bold"><i class="{{$info_icon1Class }} mr-1" aria-hidden="true"></i> {{$date_offense->has_sanct_count}} Sanction{{$sC_s}}</span>  
-                                                                                                        @if($date_offense->violation_status === 'cleared')
-                                                                                                            <span class="cust_info_txtwicon"><i class="fa fa-calendar-check-o mr-1" aria-hidden="true"></i> {{date('F d, Y', strtotime($date_offense->cleared_at)) }} - {{ date('l - g:i A', strtotime($date_offense->cleared_at))}}</span> 
-                                                                                                        @endif
-                                                                                                    @endif
+                                                                                                <div class="cursor_pointer" data-toggle="tooltip" data-placement="top" title="{{ $recByTooltip }}">
+                                                                                                    <span class="{{$info_textClass }} font-weight-bold"><i class="{{$info_iconClass }} mr-1" aria-hidden="true"></i> {{$date_offense->offense_count}} Offense{{$oC_s}}</span> 
                                                                                                     <span class="cust_info_txtwicon"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> {{ $recBy }}</span>  
                                                                                                 </div>
                                                                                                 <button id="{{$date_offense->viola_id}}" onclick="deleteThisViolation(this.id)" class="btn cust_btn_smcircle2" data-toggle="tooltip" data-placement="top" title="Delete recorded Offenses?"><i class="fa fa-trash" aria-hidden="true"></i></button>
@@ -635,7 +661,8 @@
                                                 @endphp
                                                 @foreach($query_del_violations as $deleted_violation)
                                                     @php
-                                                        // date deleted
+                                                        // dates
+                                                        $date_recorded = date('F d, Y ~ l - g:i A', strtotime($deleted_violation->del_recorded_at));
                                                         $date_deleted = date('F d, Y ~ l - g:i A', strtotime($deleted_violation->deleted_at));
                                                         // plural offense & sanctions count
                                                         if($deleted_violation->del_offense_count > 1){
@@ -648,16 +675,31 @@
                                                         }else{
                                                             $sC_s = '';
                                                         }
+                                                        // violator's last name and Mr./Mrs
+                                                        $query_violator_info = App\Models\Students::select('Last_Name', 'Gender')
+                                                                                            ->where('Student_Number', $deleted_violation->del_stud_num)
+                                                                                            ->first();
+                                                        $get_violator_lname = $query_violator_info->Last_Name;
+                                                        $get_violator_gender = strtolower($query_violator_info->Gender);
+                                                        if($get_violator_gender === 'male'){
+                                                            $vmr_ms = 'Mr.';
+                                                        }elseif($get_violator_gender === 'female'){
+                                                            $vmr_ms = 'Ms.';
+                                                        }else{
+                                                            $vmr_ms = 'Mr./Ms.';
+                                                        }
                                                         // responsible user (recorded violations)
                                                         if($deleted_violation->del_respo_user_id == auth()->user()->id){
                                                             $recBy = 'Recorded by you.';
+                                                            $recByTooltip = 'This Violation was recorded by you on ' . $date_recorded.'.';
                                                         }else{
-                                                            $get_recBy_info = App\Models\Users::select('id', 'user_role', 'user_lname')
-                                                                                    ->where('id', $deleted_violation->respo_user_id)
+                                                            $get_recBy_info = App\Models\Users::select('id', 'user_role', 'user_lname', 'user_fname')
+                                                                                    ->where('id', $deleted_violation->del_respo_user_id)
                                                                                     ->first();
                                                             $recBy = ucwords($get_recBy_info->user_role).': ' . $get_recBy_info->user_lname;
+                                                            $recByTooltip = 'This Violation was recorded by ' . ucwords($get_recBy_info->user_role).': ' . $get_recBy_info->user_fname . ' ' . $get_recBy_info->user_lname . ' on ' . $date_recorded.'.';
                                                         }
-                                                        // responsible user (deleted violations)
+                                                        // responsible user (deleting violation)
                                                         if($deleted_violation->respo_user_id == auth()->user()->id){
                                                             $delBy = 'Deleted by you.';
                                                             $delByTooltip = 'This Violation was deleted by you on ' . $date_deleted.'.';
@@ -688,7 +730,7 @@
                                                             $txt_violationStat    = '~ Cleared';
                                                         }else{
                                                             if($deleted_violation->del_has_sanct_count > 0){
-                                                                if($count_allDelCompletedSanctions == $deleted_violation->has_sanct_count){
+                                                                if($count_allDelCompletedSanctions == $deleted_violation->del_has_sanct_count){
                                                                     $light_cardBody       = 'lightGreen_cardBody';
                                                                     $light_cardBody_title = 'lightGreen_cardBody_greenTitle';
                                                                     $light_cardBody_list  = 'lightGreen_cardBody_list';
@@ -772,6 +814,7 @@
                                                                     <input type="hidden" name="vp_hidden_stud_num" id="vp_hidden_stud_num" value="{{$violator_id}}" />
                                                                     @if($deleted_violation->del_has_sanction > 0)
                                                                         @php
+                                                                            $completed_txt = 'completed';
                                                                             $get_all_sanctions = App\Models\Deletedsanctions::select('del_sanct_status', 'del_sanct_details')
                                                                                                                 ->where('del_stud_num', $violator_id)
                                                                                                                 ->where('del_for_viola_id', $deleted_violation->from_viola_id)
@@ -781,7 +824,7 @@
                                                                                                                 ->get();
                                                                             $count_completed_sanction = App\Models\Deletedsanctions::where('del_stud_num', $violator_id)
                                                                                                                 ->where('del_for_viola_id', $deleted_violation->from_viola_id)
-                                                                                                                ->where('del_sanct_status', '=', 'completed')
+                                                                                                                ->where('del_sanct_status', '=', $completed_txt)
                                                                                                                 ->offset(0)
                                                                                                                 ->limit($deleted_violation->del_has_sanct_count)
                                                                                                                 ->count();
@@ -791,9 +834,8 @@
                                                                                 <span class="lightGreen_cardBody_greenTitle mb-1">Sanctions:</span>
                                                                             </div>
                                                                             @foreach($get_all_sanctions as $this_vrSanction)
-                                                                                {{-- custom values for sanctions --}}
                                                                                 @php
-                                                                                    if($this_vrSanction->del_sanct_status === 'completed'){
+                                                                                    if($this_vrSanction->del_sanct_status === $completed_txt){
                                                                                         $sanct_icon = 'fa fa-check-square-o';
                                                                                     }else{
                                                                                         $sanct_icon = 'fa fa-square-o';
@@ -803,29 +845,48 @@
                                                                             @endforeach
                                                                         </div>
                                                                     @endif
-                                                                    <div class="row">
+                                                                    @if($deleted_violation->del_has_sanction > 0)
+                                                                        @php
+                                                                            // date completed
+                                                                            $date_completed = date('F d, Y ~ l - g:i A', strtotime($deleted_violation->del_cleared_at));
+                                                                            if ($count_completed_sanction == count($get_all_sanctions)) {
+                                                                                $info_icon1Class = 'fa fa-check-square-o';
+                                                                                $sancStatusTooltip = $deleted_violation->del_has_sanct_count . ' corresponding Sanction'.$sC_s . ' for this violation has been completed by ' . $vmr_ms . ' ' . $get_violator_lname . ' on ' . $date_completed.'.';
+                                                                            }else{
+                                                                                $info_icon1Class = 'fa fa-list-ul';
+                                                                                $sancStatusTooltip = $deleted_violation->del_has_sanct_count . ' corresponding Sanction'.$sC_s . ' for ' . $deleted_violation->del_offense_count . ' Offense'.$oC_s.' committed by ' . $vmr_ms . ' ' . $get_violator_lname . ' on ' . $date_recorded.'.';
+                                                                            }
+                                                                        @endphp
+                                                                        <div class="row mt-3 cursor_pointer" data-toggle="tooltip" data-placement="top" title="{{ $sancStatusTooltip }}">
+                                                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                                                                <span class="cust_info_txtwicon4 font-weight-bold"><i class="{{$info_icon1Class }} mr-1" aria-hidden="true"></i> {{$deleted_violation->del_has_sanct_count}} Sanction{{$sC_s}}</span>  
+                                                                                @if($deleted_violation->del_violation_status === 'cleared')
+                                                                                    <span class="cust_info_txtwicon"><i class="fa fa-calendar-check-o mr-1" aria-hidden="true"></i> {{date('F d, Y ~ D - g:i A', strtotime($deleted_violation->del_cleared_at)) }}</span> 
+                                                                                @endif 
+                                                                            </div>
+                                                                        </div>
+                                                                        <hr class="hr_gry">
+                                                                    @endif
+                                                                    <div class="row mt-3">
                                                                         <div class="col-lg-12 col-md-12 col-sm-12 d-flex align-items-center justify-content-between">
-                                                                            <div>
-                                                                                <span class="{{$info_textClass }} font-weight-bold"><i class="{{$info_iconClass }} mr-1" aria-hidden="true"></i> {{$deleted_violation->del_offense_count}} Offense{{$oC_s}}</span>  
-                                                                                @if($deleted_violation->del_has_sanction > 0)
-                                                                                    @php
-                                                                                        if ($count_completed_sanction == count($get_all_sanctions)) {
-                                                                                            $info_icon1Class = 'fa fa-check-square-o';
-                                                                                        }else{
-                                                                                            $info_icon1Class = 'fa fa-list-ul';
-                                                                                        }
-                                                                                    @endphp
-                                                                                    <span class="cust_info_txtwicon4 font-weight-bold"><i class="{{$info_icon1Class }} mr-1" aria-hidden="true"></i> {{$deleted_violation->del_has_sanct_count}} Sanction{{$sC_s}}</span>  
-                                                                                    @if($deleted_violation->del_violation_status === 'cleared')
-                                                                                        <span class="cust_info_txtwicon"><i class="fa fa-calendar-check-o mr-1" aria-hidden="true"></i> {{date('F d, Y ~ l - g:i A', strtotime($deleted_violation->del_cleared_at)) }}</span> 
-                                                                                    @endif 
-                                                                                @endif
+                                                                            <div class="cursor_pointer" data-toggle="tooltip" data-placement="top" title="{{ $recByTooltip }}"> 
+                                                                                <span class="{{$info_textClass }} font-weight-bold"><i class="{{$info_iconClass }} mr-1" aria-hidden="true"></i> {{$deleted_violation->del_offense_count}} Offense{{$oC_s}}</span>
                                                                                 <span class="cust_info_txtwicon"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> {{ $recBy }}</span>
                                                                             </div>
                                                                             <button id="{{$deleted_violation->from_viola_id}}" onclick="recoverThisDeletedViolation(this.id)" class="btn cust_btn_smcircle2" data-toggle="tooltip" data-placement="top" title="Recover this recorded Violation?"><i class="fa fa-external-link" aria-hidden="true"></i></button>
                                                                         </div>
                                                                     </div>
-                                                                    <hr class="hr_gry">
+                                                                    {{-- <hr class="hr_gry"> --}}
+                                                                    @if(!is_null($deleted_violation->reason_deletion) OR !empty($deleted_violation->reason_deletion))
+                                                                        <div class="row mt-3">
+                                                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                                                                <div class="card-body lightBlue_cardBody shadow-none">
+                                                                                    <span class="lightBlue_cardBody_blueTitle">Reason for Deleting Violation:</span>
+                                                                                    <span class="lightBlue_cardBody_list">{{$deleted_violation->reason_deletion}}</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    @endif
                                                                     <div class="row mt-3">
                                                                         <div class="col-lg-12 col-md-12 col-sm-12 d-flex align-items-center justify-content-between">
                                                                             <div class="cursor_pointer" data-toggle="tooltip" data-placement="top" title="{{ $delByTooltip }}">
@@ -1270,6 +1331,19 @@
                 }
             });
         }
+    </script>
+    <script>
+        $('#permanentDeleteViolationModal').on('show.bs.modal', function () {
+            var form_permDeleteViolationRec  = document.querySelector("#form_permDeleteViolationRec");
+            var btn_submitPermDeleteViolationRec = document.querySelector("#submit_permDeleteViolationRecBtn");
+            var btn_cancelPermDeleteViolationRec = document.querySelector("#cancel_permDeleteViolationRecBtn");
+            // disable cancel and sibmit button on submit
+            $(form_permDeleteViolationRec).submit(function(){
+                btn_cancelPermDeleteViolationRec.disabled = true;
+                btn_submitPermDeleteViolationRec.disabled = true;
+                return true;
+            });
+        });
     </script>
 {{-- delete recorded violation end --}}
 

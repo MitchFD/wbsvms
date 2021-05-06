@@ -129,9 +129,13 @@ Route::group(['middleware' => 'auth'], function () {
 
 // violation records
 Route::group(['middleware' => 'auth'], function () {
+	// pages
 	Route::get('violation_records/index', ['as' => 'violation_records.index', 'uses' => 'App\Http\Controllers\ViolationRecordsController@index']);
 	// violator's profile
 	Route::get('violation_records/violator/{violator_id}', ['as' => 'violation_records.violator', 'uses' => 'App\Http\Controllers\ViolationRecordsController@violator']);
+	// deleted violation records page
+	Route::get('violation_records/deleted_violation_records', ['as' => 'violation_records.deleted_violation_records', 'uses' => 'App\Http\Controllers\ViolationRecordsController@deleted_violation_records']);
+
 	// add sanctions form on modal
 	Route::get('violation_records/add_sanction_form', 'App\Http\Controllers\ViolationRecordsController@add_sanction_form')->name('violation_records.add_sanction_form');
 	// submit and process added sanctions form

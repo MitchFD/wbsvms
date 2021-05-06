@@ -16,6 +16,7 @@ use Illuminate\Mail\Mailable;
 
 class ViolationRecordsController extends Controller
 {
+    // main page
     public function index(Request $request){
         if($request->ajax()){
             // custom var
@@ -273,6 +274,11 @@ class ViolationRecordsController extends Controller
         }else{
             return view('violation_records.unknown_violator')->with(compact('violator_id'));
         }
+    }
+
+    // deleted violations module
+    public function deleted_violation_records(){
+        return view('violation_records.deleted_violation_records');
     }
 
     // add sanctions ~ modal
@@ -1400,20 +1406,37 @@ class ViolationRecordsController extends Controller
                 $violator_mr_ms   = 'Mr./Ms.';
             }
         // custom values
-        // plural offense count
+            // plural offense count
             if($get_viola_offense_count > 1){
                 $oC_s = 's';
             }else{
                 $oC_s = '';
             }
+            // dates
+            $date_recorded = date('F d, Y ~ l - g:i A', strtotime($get_viola_recorded_at));
+            // violator's last name and Mr./Mrs
+            $query_violator_info = Students::select('Last_Name', 'Gender')
+                                            ->where('Student_Number', $sel_stud_num)
+                                            ->first();
+            $get_violator_lname = $query_violator_info->Last_Name;
+            $get_violator_gender = strtolower($query_violator_info->Gender);
+            if($get_violator_gender === 'male'){
+                $vmr_ms = 'Mr.';
+            }elseif($get_violator_gender === 'female'){
+                $vmr_ms = 'Ms.';
+            }else{
+                $vmr_ms = 'Mr./Ms.';
+            }
             // responsible user
             if($get_viola_respo_user_id == auth()->user()->id){
                 $recBy = 'Recorded by you.';
+                $recByTooltip = 'This Violation was recorded by you on ' . $date_recorded.'.';
             }else{
-                $get_recBy_info = Users::select('id', 'user_role', 'user_lname')
+                $get_recBy_info = Users::select('id', 'user_role', 'user_lname', 'user_fname')
                                         ->where('id', $get_viola_respo_user_id)
                                         ->first();
                 $recBy = ucwords($get_recBy_info->user_role).': ' . $get_recBy_info->user_lname;
+                $recByTooltip = 'This Violation was recorded by ' . ucwords($get_recBy_info->user_role).': ' . $get_recBy_info->user_fname . ' ' . $get_recBy_info->user_lname . ' on ' . $date_recorded.'.';
             }
             // cleared/uncleared classes
             if($get_viola_status === 'cleared'){
@@ -1521,8 +1544,8 @@ class ViolationRecordsController extends Controller
                                     <div class="card-body lightGreen_cardBody mb-2">
                                         <div class="d-flex justify-content-between">
                                             <span class="lightGreen_cardBody_greenTitle mb-1">Sanctions:</span>
-                                        </div>';
-
+                                        </div>
+                                        ';
                                         foreach($get_all_sanctions as $this_vrSanction){
                                             if($this_vrSanction->sanct_status === 'completed'){
                                                 $sanct_icon = 'fa fa-check-square-o';
@@ -1535,25 +1558,36 @@ class ViolationRecordsController extends Controller
                                     </div>
                                     ';
                                 }
-                                $output .='
-                                <div class="row mt-3">
-                                    <div class="col-lg-12 col-md-12 col-sm-12">
-                                        <span class="' .$info_textClass . ' font-weight-bold"><i class="' .$info_iconClass . ' mr-1" aria-hidden="true"></i> ' .$get_viola_offense_count. ' Offense' .$oC_s. '</span>  
+                                if($get_viola_has_sanction > 0){
+                                    // date completed
+                                    $date_completed = date('F d, Y ~ l - g:i A', strtotime($get_viola_cleared_at));
+                                    if ($count_completed_sanction == count($get_all_sanctions)) {
+                                        $info_icon1Class = 'fa fa-check-square-o';
+                                        $sancStatusTooltip = $count_all_sanctions . ' corresponding Sanction'.$sc_s . ' for this violation has been completed by ' . $vmr_ms . ' ' . $get_violator_lname . ' on ' . $date_completed.'.';
+                                    }else{
+                                        $info_icon1Class = 'fa fa-list-ul';
+                                        $sancStatusTooltip = $count_all_sanctions . ' corresponding Sanction'.$sc_s . ' for ' . $get_viola_offense_count . ' Offense'.$oC_s.' committed by ' . $vmr_ms . ' ' . $get_violator_lname . ' on ' . $date_recorded.'.';
+                                    }
+                                    $output .= '
+                                    <div class="row mt-3 cursor_pointer" data-toggle="tooltip" data-placement="top" title="' . $sancStatusTooltip . '">
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
                                         ';
-                                        if($get_viola_has_sanction > 0){
-                                            if ($count_completed_sanction == count($get_all_sanctions)) {
-                                                $info_icon1Class = 'fa fa-check-square-o';
-                                            }else{
-                                                $info_icon1Class = 'fa fa-list-ul';
-                                            }
-                                            $output .= '
-                                                <span class="cust_info_txtwicon4 font-weight-bold"><i class="'.$info_icon1Class . ' mr-1" aria-hidden="true"></i> ' . $get_viola_has_sanct_count . ' Sanction'.$sc_s.'</span>  
-                                            ';
-                                            if($get_viola_status === 'cleared'){
-                                                $output .= '<span class="cust_info_txtwicon"><i class="fa fa-calendar-check-o mr-1" aria-hidden="true"></i> ' . date('F d, Y', strtotime($get_viola_cleared_at)) . ' - ' . date('l - g:i A', strtotime($get_viola_cleared_at)).'</span> ';
-                                            }
+                                        $output .= '
+                                            <span class="cust_info_txtwicon4 font-weight-bold"><i class="'.$info_icon1Class . ' mr-1" aria-hidden="true"></i> ' . $get_viola_has_sanct_count . ' Sanction'.$sc_s.'</span>  
+                                        ';
+                                        if($get_viola_status === 'cleared'){
+                                            $output .= '<span class="cust_info_txtwicon"><i class="fa fa-calendar-check-o mr-1" aria-hidden="true"></i> ' . date('F d, Y ~ l - g:i A', strtotime($get_viola_cleared_at)) . '</span> ';
                                         }
                                         $output .= '
+                                        </div>
+                                    </div>
+                                    <hr class="hr_gry">
+                                    ';
+                                }
+                                $output .= '
+                                <div class="row mt-3 cursor_pointer" data-toggle="tooltip" data-placement="top" title="' . $recByTooltip . '">
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <span class="' .$info_textClass . ' font-weight-bold"><i class="' .$info_iconClass . ' mr-1" aria-hidden="true"></i> ' .$get_viola_offense_count. ' Offense' .$oC_s. '</span>
                                         <span class="cust_info_txtwicon"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> ' . $recBy . '</span>  
                                     </div>
                                 </div>
@@ -1656,11 +1690,16 @@ class ViolationRecordsController extends Controller
                 // if deletion was a success
                 if($delete_org_viola_data){
                     // get latest del if from deleted_violations_tbl
+                        $to_array_deleted_viola_ids = array();
                         $get_latest_del_id = Deletedviolations::select('del_id')
                                                 ->where('from_viola_id', $sel_viola_id)
                                                 ->latest('deleted_at')
                                                 ->first();
                         $latest_del_id = $get_latest_del_id->del_id;
+                        array_push($to_array_deleted_viola_ids, $latest_del_id);
+                        $add_Bracket = array_values($to_array_deleted_viola_ids);
+                        $to_Json_latest_del_id = json_encode($add_Bracket);
+                        $ext_jsonDeletedViola_ids = str_replace(array( '{', '}', '"', ':', 'del_id' ), '', $to_Json_latest_del_id);
                     // delete corresponding sanctions from sanctions_tbl
                     if($org_Vhas_sanction > 0){
                         // check if corresponding sanctions exist from sanctions_tbl
@@ -1740,8 +1779,8 @@ class ViolationRecordsController extends Controller
                         $record_act->act_respo_users_lname = $sel_respo_user_lname;
                         $record_act->act_respo_users_fname = $sel_respo_user_fname;
                         $record_act->act_type              = 'violation deletion';
-                        $record_act->act_details           = 'Deleted ' . $org_Voffense_count . ' Offense'.$ovc_s . ' made by ' . $yearLevel_txt . ' ' . $sel_stud_Course . ' student: ' . $sel_stud_Fname . ' ' . $sel_stud_Mname . ' ' . $sel_stud_Lname . ' on ' . date('F d, Y', strtotime($org_Vrecorded_at)).'.';
-                        $record_act->act_affected_id       = $latest_del_id;
+                        $record_act->act_details           = 'Temporarily Deleted ' . $org_Voffense_count . ' Offense'.$ovc_s . ' made by ' . $yearLevel_txt . ' ' . $sel_stud_Course . ' student: ' . $sel_stud_Fname . ' ' . $sel_stud_Mname . ' ' . $sel_stud_Lname . ' on ' . date('F d, Y', strtotime($org_Vrecorded_at)).'.';
+                        $record_act->act_deleted_viola_ids = $ext_jsonDeletedViola_ids;
                         $record_act->save();
 
                     return back()->withSuccessStatus('Recorded Violation with ' . $org_Voffense_count . ' Offense'.$ovc_s.' was deleted successfully.');
@@ -1769,6 +1808,7 @@ class ViolationRecordsController extends Controller
             $get_viola_has_sanct_count  = $get_viola_info->del_has_sanct_count;
             $get_viola_respo_user_id    = $get_viola_info->del_respo_user_id;
             $get_viola_cleared_at       = $get_viola_info->del_cleared_at;
+            $get_viola_reason_deletion  = $get_viola_info->reason_deletion;
             $get_viola_deleted_by       = $get_viola_info->respo_user_id;
             $get_viola_deleted_at       = $get_viola_info->deleted_at;
         // get violator's info
@@ -1791,24 +1831,40 @@ class ViolationRecordsController extends Controller
             }else{
                 $oC_s = '';
             }
-            // date deleted
+            // dates
+            $date_recorded = date('F d, Y ~ l - g:i A', strtotime($get_viola_recorded_at));
             $date_deleted = date('F d, Y ~ l - g:i A', strtotime($get_viola_deleted_at));
+            // violator's last name and Mr./Mrs
+            $query_violator_info = Students::select('Last_Name', 'Gender')
+                                            ->where('Student_Number', $sel_stud_num)
+                                            ->first();
+            $get_violator_lname = $query_violator_info->Last_Name;
+            $get_violator_gender = strtolower($query_violator_info->Gender);
+            if($get_violator_gender === 'male'){
+                $vmr_ms = 'Mr.';
+            }elseif($get_violator_gender === 'female'){
+                $vmr_ms = 'Ms.';
+            }else{
+                $vmr_ms = 'Mr./Ms.';
+            }
             // responsible user
             if($get_viola_respo_user_id == auth()->user()->id){
                 $recBy = 'Recorded by you.';
+                $recByTooltip = 'This Violation was recorded by you on ' . $date_recorded.'.';
             }else{
-                $get_recBy_info = Users::select('id', 'user_role', 'user_lname')
+                $get_recBy_info = Users::select('id', 'user_role', 'user_lname', 'user_fname')
                                         ->where('id', $get_viola_respo_user_id)
                                         ->first();
                 $recBy = ucwords($get_recBy_info->user_role).': ' . $get_recBy_info->user_lname;
+                $recByTooltip = 'This Violation was recorded by ' . ucwords($get_recBy_info->user_role).': ' . $get_recBy_info->user_fname . ' ' . $get_recBy_info->user_lname . ' on ' . $date_recorded.'.';
             }
             // responsible user (deleted violations)
-            if($get_viola_respo_user_id == auth()->user()->id){
+            if($get_viola_deleted_by == auth()->user()->id){
                 $delBy = 'Deleted by you.';
                 $delByTooltip = 'This Violation was deleted by you on ' . $date_deleted.'.';
             }else{
                 $get_delBy_info = App\Models\Users::select('id', 'user_role', 'user_lname', 'user_fname')
-                                        ->where('id', $get_viola_respo_user_id)
+                                        ->where('id', $get_viola_deleted_by)
                                         ->first();
                 $delBy = ucwords($get_delBy_info->user_role).': ' . $get_delBy_info->user_lname;
                 $delByTooltip = 'This Violation was deleted by ' . ucwords($get_delBy_info->user_role).': ' . $get_delBy_info->user_fname . ' ' . $get_delBy_info->user_lname . ' on ' . $date_deleted.'.';
@@ -1896,16 +1952,16 @@ class ViolationRecordsController extends Controller
                                 }
                                 if($get_viola_has_sanction > 0){
                                     // get all sanctions 
-                                    $get_all_sanctions = Sanctions::select('sanct_status', 'sanct_details')
-                                                                        ->where('stud_num', $sel_stud_num)
-                                                                        ->where('for_viola_id', $sel_viola_id)
-                                                                        ->orderBy('created_at', 'asc')
+                                    $get_all_sanctions = Deletedsanctions::select('del_sanct_status', 'del_sanct_details', 'del_completed_at')
+                                                                        ->where('del_stud_num', $sel_stud_num)
+                                                                        ->where('del_for_viola_id', $sel_viola_id)
+                                                                        ->orderBy('del_created_at', 'asc')
                                                                         ->offset(0)
                                                                         ->limit($get_viola_has_sanct_count)
                                                                         ->get();
-                                    $count_completed_sanction = Sanctions::where('stud_num', $sel_stud_num)
-                                                                        ->where('for_viola_id', $sel_viola_id)
-                                                                        ->where('sanct_status', '=', 'completed')
+                                    $count_completed_sanction = Deletedsanctions::where('del_stud_num', $sel_stud_num)
+                                                                        ->where('del_for_viola_id', $sel_viola_id)
+                                                                        ->where('del_sanct_status', '=', 'completed')
                                                                         ->offset(0)
                                                                         ->limit($get_viola_has_sanct_count)
                                                                         ->count();
@@ -1922,43 +1978,69 @@ class ViolationRecordsController extends Controller
                                         </div>';
 
                                         foreach($get_all_sanctions as $this_vrSanction){
-                                            if($this_vrSanction->sanct_status === 'completed'){
+                                            if($this_vrSanction->del_sanct_status === 'completed'){
                                                 $sanct_icon = 'fa fa-check-square-o';
                                             }else{
                                                 $sanct_icon = 'fa fa-square-o';
                                             }
-                                            $output .= '<span class="lightGreen_cardBody_list"><i class="'.$sanct_icon . ' mr-1 font-weight-bold" aria-hidden="true"></i> ' . $this_vrSanction->sanct_details.'</span>';
+                                            $output .= '<span class="lightGreen_cardBody_list"><i class="'.$sanct_icon . ' mr-1 font-weight-bold" aria-hidden="true"></i> ' . $this_vrSanction->del_sanct_details.'</span>';
                                         }
                                         $output .= '
                                     </div>
                                     ';
                                 }
-                                $output .='
-                                <div class="row mt-3">
-                                    <div class="col-lg-12 col-md-12 col-sm-12">
-                                        <span class="' .$info_textClass . ' font-weight-bold"><i class="' .$info_iconClass . ' mr-1" aria-hidden="true"></i> ' .$get_viola_offense_count. ' Offense' .$oC_s. '</span>  
-                                        ';
-                                        if($get_viola_has_sanction > 0){
-                                            if ($count_completed_sanction == count($get_all_sanctions)) {
-                                                $info_icon1Class = 'fa fa-check-square-o';
-                                            }else{
-                                                $info_icon1Class = 'fa fa-list-ul';
-                                            }
+                                if($get_viola_has_sanction > 0){
+                                    // date completed
+                                    $date_completed = date('F d, Y ~ l - g:i A', strtotime($get_viola_cleared_at));
+                                    if ($count_completed_sanction == $count_all_sanctions) {
+                                        $info_icon1Class = 'fa fa-check-square-o';
+                                        $sancStatusTooltip = $count_all_sanctions . ' corresponding Sanction'.$sc_s . ' for this violation has been completed by ' . $vmr_ms . ' ' . $get_violator_lname . ' on ' . $date_completed.'.';
+                                    }else{
+                                        $info_icon1Class = 'fa fa-list-ul';
+                                        $sancStatusTooltip = $count_all_sanctions . ' corresponding Sanction'.$sc_s . ' for ' . $get_viola_offense_count . ' Offense'.$oC_s.' committed by ' . $vmr_ms . ' ' . $get_violator_lname . ' on ' . $date_recorded.'.';
+                                    }
+                                    $output .= '
+                                    <hr class="hr_gry">
+                                    <div class="row mt-3 cursor_pointer" data-toggle="tooltip" data-placement="top" title="' . $sancStatusTooltip . '">
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            ';
                                             $output .= '
                                                 <span class="cust_info_txtwicon4 font-weight-bold"><i class="'.$info_icon1Class . ' mr-1" aria-hidden="true"></i> ' . $get_viola_has_sanct_count . ' Sanction'.$sc_s.'</span>  
                                             ';
                                             if($get_viola_status === 'cleared'){
-                                                $output .= '<span class="cust_info_txtwicon"><i class="fa fa-calendar-check-o mr-1" aria-hidden="true"></i> ' . date('F d, Y', strtotime($get_viola_cleared_at)) . ' - ' . date('l - g:i A', strtotime($get_viola_cleared_at)).'</span> ';
+                                                $output .= '<span class="cust_info_txtwicon"><i class="fa fa-calendar-check-o mr-1" aria-hidden="true"></i> ' . date('F d, Y ~ l - g:i A', strtotime($get_viola_cleared_at)) . '</span> ';
                                             }
-                                        }
-                                        $output .= '
+                                            $output .= '
+                                        </div>
+                                    </div>
+                                    <hr class="hr_gry">
+                                    ';
+                                }
+                                $output .= '
+                                <div class="row mt-3 cursor_pointer" data-toggle="tooltip" data-placement="top" title="' . $recByTooltip . '">
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <span class="' .$info_textClass . ' font-weight-bold"><i class="' .$info_iconClass . ' mr-1" aria-hidden="true"></i> ' .$get_viola_offense_count. ' Offense' .$oC_s. '</span>
                                         <span class="cust_info_txtwicon"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> ' . $recBy . '</span>  
                                     </div>
                                 </div>
                                 <hr class="hr_gry">
-                                <div class="row cursor_pointer" data-toggle="tooltip" data-placement="top" title="' . $delByTooltip . '">
+                                ';
+                                if(!is_null($get_viola_reason_deletion) OR !empty($get_viola_reason_deletion)){
+                                    $output .= '
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div class="card-body lightBlue_cardBody shadow-none">
+                                                <span class="lightBlue_cardBody_blueTitle">Reason for Deleting Violation:</span>
+                                                <span class="lightBlue_cardBody_list">'.$get_viola_reason_deletion.'</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    ';
+                                }
+                                $output .= '
+                                <div class="row mt-3 cursor_pointer" data-toggle="tooltip" data-placement="top" title="' . $delByTooltip . '">
                                     <div class="col-lg-12 col-md-12 col-sm-12">
-                                        <span class="cust_info_txtwicon"><i class="fa fa-calendar-minus-o mr-1" aria-hidden="true"></i> ' . date('F d, Y ~ D - g:i A', strtotime($get_viola_deleted_at)) . '</span> 
+                                        <span class="cust_info_txtwicon"><i class="fa fa-calendar-minus-o mr-1" aria-hidden="true"></i> ' . date('F d, Y ~ l - g:i A', strtotime($get_viola_deleted_at)) . '</span> 
                                         <span class="cust_info_txtwicon"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> ' . $delBy . '</span>
                                     </div>
                                 </div>
@@ -1966,7 +2048,7 @@ class ViolationRecordsController extends Controller
                         </div>
                     </div>
                 </div>
-                <form id="form_deleteViolationRec" action="'.route('violation_records.delete_violation').'" class="form" enctype="multipart/form-data" method="POST">
+                <form id="form_permDeleteViolationRec" action="'.route('violation_records.permanent_delete_violation').'" class="form" enctype="multipart/form-data" method="POST">
                     <div class="modal-body pb-0">
                         <div class="card-body lightBlue_cardBody shadow-none">
                             <span class="lightBlue_cardBody_notice"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i> This action will permanently Delete the recorded violation and its corresponding sanctions.</span>
@@ -1990,5 +2072,14 @@ class ViolationRecordsController extends Controller
 
         echo $output;
     }
+    // process permanent deletion of violation
+    public function permanent_delete_violation(Request $request){
+        // get all request
+            $sel_viola_id = $request->get('sel_viola_id');
+            $sel_stud_num = $request->get('sel_stud_num');
+        // try
+            echo 'to be deleted: ' . $sel_viola_id;
+    }
+
 
 }
