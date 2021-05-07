@@ -108,7 +108,7 @@
             </div>
         </div>
         {{-- top 5s --}}
-        <div class="row">
+        {{-- <div class="row">
             <div class="col-lg-4 col-md-4 col-sm-12">
                 <div class="accordion" id="top5ViolatorsCollapseParent">
                     <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray">
@@ -213,7 +213,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
 
         {{-- original --}}
             {{-- <div class="row">

@@ -26,6 +26,7 @@ class Violations extends Model
         'has_sanction',
         'has_sanct_count',
         'respo_user_id',
+        'notified'
     ];
     protected $casts = [
         'minor_off' => 'array',

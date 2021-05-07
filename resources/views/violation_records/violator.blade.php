@@ -75,14 +75,23 @@
                                                 ->where('stud_num', $violator_info->Student_Number)
                                                 ->where('violation_status', '=', 'cleared')
                                                 ->sum('offense_count');
-                    if($total_offenses > 1){
-                        $toc_s = 's';
+                    if($total_offenses > 0){
+                        if($total_offenses > 1){
+                            $toc_s = 's';
+                        }else{
+                            $toc_s = '';
+                        }
                     }else{
                         $toc_s = '';
                     }
-                    if($total_notCleared_off > 1){
-                        $tUoc_s = 's';
-                        $all_txt = 'all';
+                    if($total_notCleared_off > 0){
+                        if($total_notCleared_off > 1){
+                            $tUoc_s = 's';
+                            $all_txt = 'all';
+                        }else{
+                            $tUoc_s = '';
+                            $all_txt = '';
+                        }
                     }else{
                         $tUoc_s = '';
                         $all_txt = '';
@@ -117,10 +126,10 @@
             @endphp
             {{-- custom values end --}}
             <div class="col-lg-3 col-md-4 col-sm-12">
-                <div class="accordion" id="violatorProfileCollapseParent">
+                <div class="accordion gCardAccordions" id="violator{{$violator_info->Student_Number}}_ProfileCollapseParent">
                     <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray">
                         <div class="card-header p-0" id="violatorProfileCollapseHeading">
-                            <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#violatorProfileCollapseDiv" aria-expanded="true" aria-controls="violatorProfileCollapseDiv">
+                            <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#violator{{$violator_info->Student_Number}}_ProfileCollapseDiv" aria-expanded="true" aria-controls="violator{{$violator_info->Student_Number}}_ProfileCollapseDiv">
                                 <div>
                                     <span class="card_body_title">Violator's Profile</span>
                                     <span class="card_body_subtitle">
@@ -134,7 +143,7 @@
                                 <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
                             </button>
                         </div>
-                        <div id="violatorProfileCollapseDiv" class="collapse show cb_t0b15x25" aria-labelledby="violatorProfileCollapseHeading" data-parent="#violatorProfileCollapseParent">
+                        <div id="violator{{$violator_info->Student_Number}}_ProfileCollapseDiv" class="collapse gCardAccordions_collapse show cb_t0b15x25" aria-labelledby="violatorProfileCollapseHeading" data-parent="#violatorProfileCollapseParent">
                             <div class="card card_gbr shadow card-user">
                                 <div class="image">
                                     <img src="{{ asset('paper/img/damir-bosnjak.jpg') }}" alt="...">
@@ -195,39 +204,41 @@
                                 </div>
                             </div>
                             {{-- check if all offenses has corresponding sanctions to notify the violator --}}
-                            @if(!is_null($violator_info->Email) OR !empty($violator_info->Email))
-                                @php
-                                    $count_allRecViola = App\Models\Violations::where('stud_num', $violator_info->Student_Number)->count();
-                                    $check_allRecViola_hasSanct = App\Models\Violations::where('stud_num', $violator_info->Student_Number)->where('has_sanction', 1)->count();
-                                    $violator_gender = strtolower($violator_info->Gender);
-                                    if($violator_gender === 'male'){
-                                        $vMr_Ms = 'Mr.';
-                                        $vHe_She = 'he';
-                                    }elseif($violator_gender === 'female'){
-                                        $vMr_Ms = 'Ms.';
-                                        $vHe_She = 'she';
-                                    }else{
-                                        $vMr_Ms = 'Mr./Ms.';
-                                        $vHe_She = 'he/she';
-                                    }
-                                @endphp
-                                @if($check_allRecViola_hasSanct == $count_allRecViola)
-                                    <div class="row mt-3">
-                                        <div class="col-lg-12 col-md-12 col-sm-12">
-                                            <div class="card card_gbr mb-2 shadow">
-                                                <div class="card-body">
-                                                    <div class="card-body lightBlue_cardBody">
-                                                        <span class="cust_info_txtwicon2 text-justify">Corresponding Sanctions have been aplied to {{ $all_txt }} {{ $total_notCleared_off }} Uncleared Offense{{$tUoc_s }} made by {{ $violator_info->First_Name }}  {{ $violator_info->Middle_Name }} {{ $violator_info->Last_Name}}.</span>
-                                                    </div>
-                                                    <div class="row mt-1">
-                                                        <div class="col-lg-12 col-md-12 col-sm-11 d-flex justify-content-center">
-                                                            <button id="{{$violator_info->Student_Number}}" onclick="notifyViolator(this.id)" type="submit" class="btn btn_svms_blue btn-round btn_show_icon1 shadow" data-toggle="tooltip" data-placement="top" title="Notify {{ $vMr_Ms }} {{ $violator_info->Last_Name }} of {{ $all_txt }} {{ $total_notCleared_off }} Uncleared Offense{{$tUoc_s }} {{ $vHe_She }} has committed and its corresponding sanctions?">Notify Student<i class="nc-icon nc-send btn_icon_show_right1" aria-hidden="true"></i></button>
+                            @if($offenses_count > 0)
+                                @if(!is_null($violator_info->Email) OR !empty($violator_info->Email))
+                                    @php
+                                        $count_allRecViola = App\Models\Violations::where('stud_num', $violator_info->Student_Number)->count();
+                                        $check_allRecViola_hasSanct = App\Models\Violations::where('stud_num', $violator_info->Student_Number)->where('has_sanction', 1)->count();
+                                        $violator_gender = strtolower($violator_info->Gender);
+                                        if($violator_gender === 'male'){
+                                            $vMr_Ms = 'Mr.';
+                                            $vHe_She = 'he';
+                                        }elseif($violator_gender === 'female'){
+                                            $vMr_Ms = 'Ms.';
+                                            $vHe_She = 'she';
+                                        }else{
+                                            $vMr_Ms = 'Mr./Ms.';
+                                            $vHe_She = 'he/she';
+                                        }
+                                    @endphp
+                                    @if($check_allRecViola_hasSanct == $count_allRecViola)
+                                        <div class="row mt-3">
+                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                                <div class="card card_gbr mb-2 shadow">
+                                                    <div class="card-body">
+                                                        <div class="card-body lightBlue_cardBody">
+                                                            <span class="cust_info_txtwicon2 text-justify">Corresponding Sanctions have been aplied to {{ $all_txt }} {{ $total_notCleared_off }} Uncleared Offense{{$tUoc_s }} made by {{ $violator_info->First_Name }}  {{ $violator_info->Middle_Name }} {{ $violator_info->Last_Name}}.</span>
+                                                        </div>
+                                                        <div class="row mt-1">
+                                                            <div class="col-lg-12 col-md-12 col-sm-11 d-flex justify-content-center">
+                                                                <button id="{{$violator_info->Student_Number}}" onclick="notifyViolator(this.id)" type="submit" class="btn btn_svms_blue btn-round btn_show_icon1 shadow" data-toggle="tooltip" data-placement="top" title="Notify {{ $vMr_Ms }} {{ $violator_info->Last_Name }} of {{ $all_txt }} {{ $total_notCleared_off }} Uncleared Offense{{$tUoc_s }} {{ $vHe_She }} has committed and its corresponding sanctions?">Notify Student<i class="nc-icon nc-send btn_icon_show_right1" aria-hidden="true"></i></button>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    @endif
                                 @endif
                             @endif
                         </div>
@@ -493,7 +504,7 @@
                                                                             }
                                                                         @endphp
                                                                         <div class="col-lg-4 col-md-5 col-sm-12 pt-4">
-                                                                            <div class="accordion shadow cust_accordion_div" id="v{{$date_offense->viola_id}}Accordion_Parent">
+                                                                            <div class="accordion violaAccordions shadow cust_accordion_div" id="v{{$date_offense->viola_id}}Accordion_Parent">
                                                                                 <div class="card custom_accordion_card">
                                                                                     <div class="card-header p-0" id="changeUserRoleCollapse_heading">
                                                                                         <h2 class="mb-0">
@@ -508,7 +519,7 @@
                                                                                             </button>
                                                                                         </h2>
                                                                                     </div>
-                                                                                    <div id="v{{$date_offense->viola_id}}Collapse_Div" class="collapse show cust_collapse_active cb_t0b12y15" aria-labelledby="v{{$date_offense->viola_id}}Collapse_heading" data-parent="#v{{$date_offense->viola_id}}Accordion_Parent">
+                                                                                    <div id="v{{$date_offense->viola_id}}Collapse_Div" class="collapse violaAccordions_collapse show cb_t0b12y15" aria-labelledby="v{{$date_offense->viola_id}}Collapse_heading" data-parent="#v{{$date_offense->viola_id}}Accordion_Parent">
                                                                                         @if(!is_null($date_offense->minor_off) OR !empty($date_offense->minor_off))
                                                                                             @php
                                                                                                 $mo_x = 1;
@@ -641,7 +652,10 @@
                                                                                 <span class="cust_info_txtwicon"><i class="fa fa-square-o mr-1" aria-hidden="true"></i> {{ $monthly_totalUnclearOff}} Uncleared Offense{{$tUO_s}}.</span> 
                                                                             @endif
                                                                         </div>
-                                                                        <button class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Delete all recorded Offenses for the Month of {{ $monthName }} 2021?"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                                        <div class="d-flex align-items-end">
+                                                                            <button id="{{$yearly_monthlyVal_tc}}" onclick="addSanctions_allMonthlyViolations(this.id)" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Add Sanctions to all recorded Offenses for the Month of {{ $monthName }} 2021?"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+                                                                            <button id="{{$yearly_monthlyVal_tc}}" onclick="delete_allMonthlyViolations(this.id)" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Delete all recorded Offenses for the Month of {{ $monthName }} 2021?"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                                        </div>
                                                                     </div> 
                                                                 </div>
                                                             </div> 
@@ -689,10 +703,10 @@
                     @endphp
                     <div class="row mt-5">
                         <div class="col-lg-12 col-md-12 col-sm-12">
-                            <div class="accordion" id="deletedOffensesCollapseParent">
+                            <div class="accordion gCardAccordions" id="deletedOffenses{{$violator_info->Student_Number}}_CollapseParent">
                                 <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray">
                                     <div class="card-header p-0" id="deletedOffensesCollapseHeading">
-                                        <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#deletedOffensesCollapseDiv" aria-expanded="true" aria-controls="deletedOffensesCollapseDiv">
+                                        <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#deletedOffenses{{$violator_info->Student_Number}}_CollapseDiv" aria-expanded="true" aria-controls="deletedOffenses{{$violator_info->Student_Number}}_CollapseDiv">
                                             <div>
                                                 <span class="card_body_title">deleted Offenses</span>
                                                 <span class="card_body_subtitle">{{$sum_deleted_offenses }} Deleted Offense{{$doc_s}}</span>
@@ -700,7 +714,7 @@
                                             <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
                                         </button>
                                     </div>
-                                    <div id="deletedOffensesCollapseDiv" class="collapse show cb_t0b15x25" aria-labelledby="deletedOffensesCollapseHeading" data-parent="#deletedOffensesCollapseParent">
+                                    <div id="deletedOffenses{{$violator_info->Student_Number}}_CollapseDiv" class="collapse gCardAccordions_collapse show cb_t0b15x25" aria-labelledby="deletedOffensesCollapseHeading" data-parent="#deletedOffensesCollapseParent">
                                         <div class="row">
                                             @if($count_deleted_violations > 0)
                                                 @php
@@ -806,11 +820,11 @@
                                                         }
                                                     @endphp
                                                     <div class="col-lg-4 col-md-5 col-sm-12">
-                                                        <div class="accordion shadow cust_accordion_div" id="v{{$deleted_violation->from_viola_id}}Accordion_Parent">
+                                                        <div class="accordion violaAccordions shadow cust_accordion_div" id="v{{$deleted_violation->from_viola_id}}Accordion_Parent">
                                                             <div class="card custom_accordion_card">
                                                                 <div class="card-header p-0" id="changeUserRoleCollapse_heading">
                                                                     <h2 class="mb-0">
-                                                                        <button class="btn btn-block custom2_btn_collapse cb_x12y15 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#v{{$deleted_violation->from_viola_id}}Collapse_Div" aria-expanded="true" aria-controls="v{{$deleted_violation->from_viola_id}}Collapse_Div">
+                                                                        <button class="btn btn-block custom2_btn_collapse cb_x12y15 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#vD{{$deleted_violation->from_viola_id}}Collapse_Div" aria-expanded="true" aria-controls="vD{{$deleted_violation->from_viola_id}}Collapse_Div">
                                                                             <div class="d-flex justify-content-start align-items-center">
                                                                                 <div class="information_div2">
                                                                                     <span class="li_info_title">{{date('F j, Y', strtotime($deleted_violation->del_recorded_at)) }} <span class="{{$class_violationStat}}"> {{ $txt_violationStat}}</span></span>
@@ -821,7 +835,7 @@
                                                                         </button>
                                                                     </h2>
                                                                 </div>
-                                                                <div id="v{{$deleted_violation->from_viola_id}}Collapse_Div" class="collapse show cust_collapse_active cb_t0b12y15" aria-labelledby="v{{$deleted_violation->from_viola_id}}Collapse_heading" data-parent="#v{{$deleted_violation->from_viola_id}}Accordion_Parent">
+                                                                <div id="vD{{$deleted_violation->from_viola_id}}Collapse_Div" class="collapse violaAccordions_collapse show cb_t0b12y15" aria-labelledby="v{{$deleted_violation->from_viola_id}}Collapse_heading" data-parent="#v{{$deleted_violation->from_viola_id}}Accordion_Parent">
                                                                     @if(!is_null($deleted_violation->del_minor_off) OR !empty($deleted_violation->del_minor_off))
                                                                         @php
                                                                             $mo_x = 1;
@@ -986,7 +1000,6 @@
             </div>
         </div>
     {{-- new violation entry modal end --}}
-
     {{-- add sanctions on modal --}}
         <div class="modal fade" id="addSanctionsModal" tabindex="-1" role="dialog" aria-labelledby="addSanctionsModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -1072,7 +1085,23 @@
             </div>
         </div>
     {{-- recover delete violation on modal end --}}
-    
+    {{-- delete all monthly violations modal --}}
+        <div class="modal fade" id="deleteAllMonthlyViolationModal" tabindex="-1" role="dialog" aria-labelledby="deleteAllMonthlyViolationModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="deleteAllMonthlyViolationModalLabel">Delete All Violation?</span>
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="deleteAllMonthlyViolationModalHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{-- delete all monthly violations modal end --}}
 
 @endsection
 
@@ -1451,7 +1480,7 @@
             // deleting sanctions form end
         });
     </script>
-
+{{-- edit sanctions on form modal end --}}
 
 {{-- delete recorded violation --}}
     {{-- temporary deletion --}}
@@ -1553,6 +1582,31 @@
             });
         });
     </script>
+    {{-- delete all recorded vilation per month --}}
+    <script>
+        function delete_allMonthlyViolations(sel_monthly_viola){
+            var sel_monthly_viola = sel_monthly_viola;
+            var sel_stud_num = document.getElementById("vp_hidden_stud_num").value;
+            var _token = $('input[name="_token"]').val();
+            $.ajax({
+                url:"{{ route('violation_records.delete_all_monthly_violations_form') }}",
+                method:"GET",
+                data:{sel_monthly_viola:sel_monthly_viola, sel_stud_num:sel_stud_num, _token:_token},
+                success: function(data){
+                    $('#deleteAllMonthlyViolationModalHtmlData').html(data);
+                    $('#deleteAllMonthlyViolationModal').modal('show');
+                }
+            });
+        }
+    </script>
 {{-- delete recorded violation end --}}
+
+{{-- adding sanctions to all violations per month --}}
+    <script>
+        function addSanctions_allMonthlyViolations(sel_monthly_viola){
+            alert(sel_monthly_viola);
+        }
+    </script>
+{{-- adding sanctions to all violations per month end --}}
 
 @endpush

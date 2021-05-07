@@ -513,6 +513,7 @@ class ViolationRecordsController extends Controller
         return view('violation_records.deleted_violation_records');
     }
 
+    // SANCTIONS PROCESSES
     // add sanctions ~ modal
     public function add_sanction_form(Request $request){
         // get selected viola_id & selected stud_num
@@ -789,7 +790,6 @@ class ViolationRecordsController extends Controller
                 return back()->withFailedStatus('Recording User Activity has failed!');
             }
     }
-
     // edit sanctions ~ modal
     public function edit_sanction_form(Request $request){
         // get selected viola_id & selected stud_num
@@ -1625,6 +1625,7 @@ class ViolationRecordsController extends Controller
             }
     }
 
+    // VIOLATION DELETION
     // temporary delete violation confirmation modal
     public function delete_violation_form(Request $request){
         // get all request
@@ -1881,6 +1882,30 @@ class ViolationRecordsController extends Controller
         ';
 
         echo $output;
+    }
+    // temporary delete all monthly violations confirmation modal
+    public function delete_all_monthly_violations_form(Request $request){
+        // get all request
+            $sel_monthly_viola = $request->get('sel_monthly_viola');
+            $sel_stud_num      = $request->get('sel_stud_num');
+        // try
+            // echo 'Student Number: ' . $sel_stud_num . '<br/>';
+            // echo 'delete all violation for month of: ' . $sel_monthly_viola . '<br/>';
+        // query all violations for the selected month
+        $query_all_viola_info = Violations::where('stud_num', $sel_stud_num)
+                                    ->where()
+                                    ->first();
+        $get_viola_recorded_at      = $query_all_viola_info->recorded_at;
+        $get_viola_status           = $query_all_viola_info->violation_status;
+        $get_viola_offense_count    = $query_all_viola_info->offense_count;
+        $get_viola_minor_off        = $query_all_viola_info->minor_off;
+        $get_viola_less_serious_off = $query_all_viola_info->less_serious_off;
+        $get_viola_other_off        = $query_all_viola_info->other_off;
+        $get_viola_stud_num         = $query_all_viola_info->stud_num;
+        $get_viola_has_sanction     = $query_all_viola_info->has_sanction;
+        $get_viola_has_sanct_count  = $query_all_viola_info->has_sanct_count;
+        $get_viola_respo_user_id    = $query_all_viola_info->respo_user_id;
+        $get_viola_cleared_at       = $query_all_viola_info->cleared_at;
     }
     // process temporary deletion of violation
     public function delete_violation(Request $request){
@@ -2439,6 +2464,7 @@ class ViolationRecordsController extends Controller
         }
     }
 
+    // VIOLATION RECOVERY
     // recover deleted violation confirmation modal
     public function recover_deleted_violation_form(Request $request){
         // get all request
@@ -2913,5 +2939,7 @@ class ViolationRecordsController extends Controller
             return back()->withFailedStatus(' There are no selected Violations for recovery! please try again.');
         }
     }
+
+
 
 }

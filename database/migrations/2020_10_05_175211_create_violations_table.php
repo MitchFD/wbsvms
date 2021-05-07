@@ -31,6 +31,7 @@ class CreateViolationsTable extends Migration
             $table->timestamp('deleted_at')->format('Y-m-d H:i:s')->nullable();
             $table->timestamp('recovered_at')->format('Y-m-d H:i:s')->nullable();
             $table->timestamp('cleared_at')->format('Y-m-d H:i:s')->nullable();
+            $table->tinyInteger('notified')->default(0);
         });
     }
 
