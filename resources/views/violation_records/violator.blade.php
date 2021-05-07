@@ -59,6 +59,7 @@
             </div>
         </div> --}}
     {{-- card intro --}}
+    
     {{-- violator's info --}}
         <div class="row">
         {{-- violator's profile card --}}
@@ -78,6 +79,13 @@
                         $toc_s = 's';
                     }else{
                         $toc_s = '';
+                    }
+                    if($total_notCleared_off > 1){
+                        $tUoc_s = 's';
+                        $all_txt = 'all';
+                    }else{
+                        $tUoc_s = '';
+                        $all_txt = '';
                     }
                     if($total_cleared_off == $total_offenses){
                         $no_vr_imgFltr = 'up_stud_user_image';
@@ -186,6 +194,42 @@
                                     <button id="{{$violator_info->Student_Number}}" onclick="addViolationToStudent(this.id)" class="btn cust_btn_smcircle5v1" data-toggle="tooltip" data-placement="top" title="Record new Offenses for {{ $violator_info->First_Name }}  {{ $violator_info->Middle_Name }} {{ $violator_info->Last_Name}}?"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
                                 </div>
                             </div>
+                            {{-- check if all offenses has corresponding sanctions to notify the violator --}}
+                            @if(!is_null($violator_info->Email) OR !empty($violator_info->Email))
+                                @php
+                                    $count_allRecViola = App\Models\Violations::where('stud_num', $violator_info->Student_Number)->count();
+                                    $check_allRecViola_hasSanct = App\Models\Violations::where('stud_num', $violator_info->Student_Number)->where('has_sanction', 1)->count();
+                                    $violator_gender = strtolower($violator_info->Gender);
+                                    if($violator_gender === 'male'){
+                                        $vMr_Ms = 'Mr.';
+                                        $vHe_She = 'he';
+                                    }elseif($violator_gender === 'female'){
+                                        $vMr_Ms = 'Ms.';
+                                        $vHe_She = 'she';
+                                    }else{
+                                        $vMr_Ms = 'Mr./Ms.';
+                                        $vHe_She = 'he/she';
+                                    }
+                                @endphp
+                                @if($check_allRecViola_hasSanct == $count_allRecViola)
+                                    <div class="row mt-3">
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div class="card card_gbr mb-2 shadow">
+                                                <div class="card-body">
+                                                    <div class="card-body lightBlue_cardBody">
+                                                        <span class="cust_info_txtwicon2 text-justify">Corresponding Sanctions have been aplied to {{ $all_txt }} {{ $total_notCleared_off }} Uncleared Offense{{$tUoc_s }} made by {{ $violator_info->First_Name }}  {{ $violator_info->Middle_Name }} {{ $violator_info->Last_Name}}.</span>
+                                                    </div>
+                                                    <div class="row mt-1">
+                                                        <div class="col-lg-12 col-md-12 col-sm-11 d-flex justify-content-center">
+                                                            <button id="{{$violator_info->Student_Number}}" onclick="notifyViolator(this.id)" type="submit" class="btn btn_svms_blue btn-round btn_show_icon1 shadow" data-toggle="tooltip" data-placement="top" title="Notify {{ $vMr_Ms }} {{ $violator_info->Last_Name }} of {{ $all_txt }} {{ $total_notCleared_off }} Uncleared Offense{{$tUoc_s }} {{ $vHe_She }} has committed and its corresponding sanctions?">Notify Student<i class="nc-icon nc-send btn_icon_show_right1" aria-hidden="true"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -1046,6 +1090,14 @@
     </script>
 {{-- activate nav-tabs & tab-contents first child end --}}
 
+{{-- notify violator --}}
+    <script>
+        function notifyViolator(sel_Student_Number){
+            alert(sel_Student_Number);
+        }
+    </script>
+{{-- notify violator end --}}
+
 {{-- recording new offenses for the student --}}
     <script>
         function addViolationToStudent(sel_Student_Number){
@@ -1064,11 +1116,14 @@
     </script>
     <script>
         $('#newViolationEntryModal').on('show.bs.modal', function () {
-            var newViolationEntry_form  = document.querySelector("#form_addViolation");
-            var btn_submitNewViolationEntry = document.querySelector("#submit_violationForm_btn");
-            var btn_cancelNewViolationEntry = document.querySelector("#cancel_violationForm_btn");
-            var otherOffenses_input  = document.querySelector("#addOtherOffenses_input");
+            var newViolationEntry_form  = document.querySelector("#form_addNewViolation");
+            var btn_submitNewViolationEntry = document.querySelector("#submit_newViolationForm_btn");
+            var btn_cancelNewViolationEntry = document.querySelector("#cancel_newViolationForm_btn");
+            var otherOffenses_input  = document.querySelector("#addOtherOffensesNew_input");
             var otherOffensesAdd_Btn = document.querySelector("#btn_addAnother_input");
+            var addedNewOtherOff_field = $('.addedNewOtherOff_field').filter(function() {
+                return this.value != '';
+            });
             // disable cancel and submit button on form submit
             $(newViolationEntry_form).submit(function(){
                 btn_cancelNewViolationEntry.disabled = true;
@@ -1081,53 +1136,58 @@
                 if(otherOffenses_input.value !== ""){
                     otherOffensesAdd_Btn.disabled = false;
                 }else{
+                    if (addedNewOtherOff_field.length == 0) {
+                        btn_submitNewViolationEntry.disabled = true;
+                    }else{
+                        btn_submitNewViolationEntry.disabled = false;
+                    }
                     otherOffensesAdd_Btn.disabled = true;
                 }
             });
             // appending new input field
-            function addOtherOffIndexing(){
+            function addOtherOffNewIndexing(){
                 i = 1;
-                $(".addOtherOffIndex").each(function(){
+                $(".addOtherOffIndexNew").each(function(){
                     $(this).html(i+1 + '.');
                     i++;
                 });
             }
 
             var maxField = 10;
-            var addedInputFields_div = document.querySelector('.addedInputFields_div');
+            var addedInputFieldsNew_div = document.querySelector('.addedInputFieldsNew_div');
             var newInputField = '<div class="input-group mb-2"> ' +
                                     '<div class="input-group-append"> ' +
-                                        '<span class="input-group-text txt_iptgrp_append2 addOtherOffIndex font-weight-bold">1. </span> ' +
+                                        '<span class="input-group-text txt_iptgrp_append2 addOtherOffIndexNew font-weight-bold">1. </span> ' +
                                     '</div> ' +
-                                    '<input type="text" name="other_offenses[]" class="form-control input_grpInpt2" placeholder="Type Other Offense" aria-label="Type Other Offense" aria-describedby="other-offenses-input"> ' +
+                                    '<input type="text" name="other_offenses[]" class="form-control input_grpInpt2 addedNewOtherOff_field" placeholder="Type Other Offense" aria-label="Type Other Offense" aria-describedby="other-offenses-input" required /> ' +
                                     '<div class="input-group-append"> ' +
-                                        '<button class="btn btn_svms_red m-0 btn_deleteAnother_input" type="button"><i class="nc-icon nc-simple-remove font-weight-bold" aria-hidden="true"></i></button> ' +
+                                        '<button class="btn btn_svms_blue m-0 btn_deleteAnother_input" type="button"><i class="nc-icon nc-simple-remove font-weight-bold" aria-hidden="true"></i></button> ' +
                                     '</div> ' +
                                 '</div>';
             var x = 1;
             $(otherOffensesAdd_Btn).click(function(){
                 if(x < maxField){
                     x++;
-                    $(addedInputFields_div).append(newInputField);
+                    $(addedInputFieldsNew_div).append(newInputField);
                     // console.log(x);
                 }
-                addOtherOffIndexing();
+                addOtherOffNewIndexing();
             });
-            $(addedInputFields_div).on('click', '.btn_deleteAnother_input', function(e){
+            $(addedInputFieldsNew_div).on('click', '.btn_deleteAnother_input', function(e){
                 e.preventDefault();
                 $(this).closest('.input_grpInpt2').value = '';
                 $(this).closest('.input-group').last().remove();
                 x--;
                 // console.log('click');
-                addOtherOffIndexing();
+                addOtherOffNewIndexing();
             });
             
             // serialized form
-            $('#form_addViolation').each(function(){
+            $('#form_addNewViolation').each(function(){
                 $(this).data('serialized', $(this).serialize())
             }).on('change input', function(){
-                $(this).find('#submit_violationForm_btn').prop('disabled', $(this).serialize() == $(this).data('serialized'));
-            }).find('#submit_violationForm_btn').prop('disabled', true);
+                $(this).find('#submit_newViolationForm_btn').prop('disabled', $(this).serialize() == $(this).data('serialized'));
+            }).find('#submit_newViolationForm_btn').prop('disabled', true);
         });
     </script>
 {{-- recording new offenses for the student end --}}

@@ -317,6 +317,9 @@ class ViolationEntryController extends Controller
                             <div class="lightRed_cardBody">
                                 <span class="lightRed_cardBody_redTitle">Others:</span>
                                 <div class="input-group mb-2">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text txt_iptgrp_append2 font-weight-bold">1. </span>
+                                    </div>
                                     <input type="text" id="addOtherOffenses_input" name="other_offenses[]" class="form-control input_grpInpt2" placeholder="Type Other Offense" aria-label="Type Other Offense" aria-describedby="other-offenses-input">
                                     <div class="input-group-append">
                                         <button class="btn btn_svms_red m-0" id="btn_addAnother_input" type="button" disabled><i class="nc-icon nc-simple-add font-weight-bold" aria-hidden="true"></i></button>
@@ -324,6 +327,11 @@ class ViolationEntryController extends Controller
                                 </div>
                                 <div class="addedInputFields_div">
 
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <span class="cust_info_txtwicon3"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i> You can only add a total of 10 Other Offenses.</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>

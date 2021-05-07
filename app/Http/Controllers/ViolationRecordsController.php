@@ -382,7 +382,7 @@ class ViolationRecordsController extends Controller
                         </div>
                     </div>
                 </div>
-                <form id="form_addViolation" action="'.route('violation_entry.submit_violation_form').'" enctype="multipart/form-data" method="POST">
+                <form id="form_addNewViolation" action="'.route('violation_entry.submit_violation_form').'" enctype="multipart/form-data" method="POST">
                     <div class="row mt-3">
                         <div class="col-lg-6 col-md-6 col-sm-12 pr-0">
                             <div class="lightRed_cardBody h-100">
@@ -469,12 +469,12 @@ class ViolationRecordsController extends Controller
                                     <div class="input-group-append">
                                         <span class="input-group-text txt_iptgrp_append2 font-weight-bold">1. </span>
                                     </div>
-                                    <input type="text" id="addOtherOffenses_input" name="other_offenses[]" class="form-control input_grpInpt2" placeholder="Type Other Offense" aria-label="Type Other Offense" aria-describedby="other-offenses-input">
+                                    <input type="text" id="addOtherOffensesNew_input" name="other_offenses[]" class="form-control input_grpInpt2" placeholder="Type Other Offense" aria-label="Type Other Offense" aria-describedby="other-offenses-input">
                                     <div class="input-group-append">
                                         <button class="btn btn_svms_red m-0" id="btn_addAnother_input" type="button" disabled><i class="nc-icon nc-simple-add font-weight-bold" aria-hidden="true"></i></button>
                                     </div>
                                 </div>
-                                <div class="addedInputFields_div">
+                                <div class="addedInputFieldsNew_div">
 
                                 </div>
                                 <div class="row">
@@ -497,8 +497,8 @@ class ViolationRecordsController extends Controller
                             <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
                             <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
                             <div class="btn-group" role="group" aria-label="Basic example">
-                                <button id="cancel_violationForm_btn" type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
-                                <button id="submit_violationForm_btn" type="submit" class="btn btn-round btn_svms_red btn_show_icon m-0" disabled>Save <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                                <button id="cancel_newViolationForm_btn" type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                                <button id="submit_newViolationForm_btn" type="submit" class="btn btn-round btn_svms_red btn_show_icon m-0" disabled>Save <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
                             </div>
                         </div>
                     </div>
@@ -1333,7 +1333,6 @@ class ViolationRecordsController extends Controller
             }
 
     }
-
     // process adding new sanctions
     public function add_new_sanctions(Request $request){
         // get all request
@@ -1455,7 +1454,6 @@ class ViolationRecordsController extends Controller
                 return back()->withFailedStatus('Recording User Activity has failed!');
             }
     }
-
     // process deleting sanctions
     public function delete_sanction_form(Request $request){
         // custom values
@@ -1884,7 +1882,6 @@ class ViolationRecordsController extends Controller
 
         echo $output;
     }
-
     // process temporary deletion of violation
     public function delete_violation(Request $request){
         // custom values
@@ -2042,7 +2039,6 @@ class ViolationRecordsController extends Controller
                 }
             }
     }
-
     // permanent delete violation record
     public function permanently_delete_violation_form(Request $request){
         // get all request
@@ -2841,7 +2837,7 @@ class ViolationRecordsController extends Controller
                     }
                 }
             }
-            if($recover_deletedRecord AND $recover_deletedSanctions){
+            if($recover_deletedRecord){
                 // get this violation id from violations_tbl
                 $to_array_recoveredViola_ids = array();
                 $get_recovered_viola_ids = Violations::select('viola_id')
@@ -2859,6 +2855,8 @@ class ViolationRecordsController extends Controller
                 
                 // sum of all offenses 
                 $query_sumReocovered_offenses = Violations::where('stud_num', $sel_stud_num)
+                                                    ->whereNotNull('recovered_at')
+                                                    ->where('recovered_at', $now_timestamp)
                                                     ->latest('recovered_at')
                                                     ->offset(0)
                                                     ->limit($count_sel_viola_ids)
@@ -2907,7 +2905,7 @@ class ViolationRecordsController extends Controller
                 $record_act->act_recovered_viola_ids = $ext_jsonRecoveredViola_ids;
                 $record_act->save();
 
-                return back()->withSuccessStatus('Deleted Violations has been recovered successfully.');
+                return back()->withSuccessStatus(''. $query_sumReocovered_offenses . ' Deleted Offense'.$sRo_s . '  has been recovered successfully.');
             }else{
                 return back()->withFailedStatus('Violation Recovey has failed! please try again later.');
             }

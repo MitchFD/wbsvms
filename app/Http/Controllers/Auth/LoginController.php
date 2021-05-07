@@ -93,7 +93,7 @@ class LoginController extends Controller
                     $record_act->act_affected_id       = $user_id;
                     $record_act->save();
                     // redirect to violation entry
-                    return redirect('profile/index');
+                    return redirect('violation_entry/index');
                 }
             }else{
                 if($user_status == 'pending'){

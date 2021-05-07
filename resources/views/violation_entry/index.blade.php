@@ -156,7 +156,7 @@
                 </div>
             </div>
         </div>
-    {{-- violation entry modal end --}}
+    {{-- violation entry modal end --}} 
     {{-- violation entry modal --}}
         <div class="modal fade" id="notAllowedAttireModal" tabindex="-1" role="dialog" aria-labelledby="notAllowedAttireModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -215,20 +215,42 @@
                 // disable/enable add button
                 var otherOffenses_input  = document.querySelector("#addOtherOffenses_input");
                 var otherOffensesAdd_Btn = document.querySelector("#btn_addAnother_input");
+                var form_addViolation  = document.querySelector("#form_addViolation");
+                var submit_violationForm_btn = document.querySelector("#submit_violationForm_btn");
+                var cancel_violationForm_btn = document.querySelector("#cancel_violationForm_btn");
+                var addedOtherOff_field = $('.addedOtherOff_field').filter(function() {
+                    return this.value != '';
+                });
                 $(otherOffenses_input).keyup(function(){
                     if(otherOffenses_input.value !== ""){
                         otherOffensesAdd_Btn.disabled = false;
                     }else{
+                        if (addedOtherOff_field.length == 0) {
+                            submit_violationForm_btn.disabled = true;
+                        }else{
+                            submit_violationForm_btn.disabled = false;
+                        }
                         otherOffensesAdd_Btn.disabled = true;
                     }
                 });
                 // appending new input field
+                    // appending new input field
+                    function addOtherOffIndexing(){
+                        i = 1;
+                        $(".addOtherOffIndex").each(function(){
+                            $(this).html(i+1 + '.');
+                            i++;
+                        });
+                    }
                     var maxField = 10;
                     var addedInputFields_div = document.querySelector('.addedInputFields_div');
                     var newInputField = '<div class="input-group mb-2">' +
-                                            '<input type="text" name="other_offenses[]" class="form-control input_grpInpt2" placeholder="Type Other Offense" aria-label="Type Other Offense" aria-describedby="other-offenses-input"> ' +
                                             '<div class="input-group-append"> ' +
-                                                '<button class="btn btn_svms_red m-0 btn_deleteAnother_input" type="button"><i class="nc-icon nc-simple-remove font-weight-bold" aria-hidden="true"></i></button> ' +
+                                                '<span class="input-group-text txt_iptgrp_append2 addOtherOffIndex font-weight-bold">1. </span> ' +
+                                            '</div> ' +
+                                            '<input type="text" name="other_offenses[]" class="form-control input_grpInpt2 addedOtherOff_field" placeholder="Type Other Offense" aria-label="Type Other Offense" aria-describedby="other-offenses-input" required /> ' +
+                                            '<div class="input-group-append"> ' +
+                                                '<button class="btn btn_svms_blue m-0 btn_deleteAnother_input" type="button"><i class="nc-icon nc-simple-remove font-weight-bold" aria-hidden="true"></i></button> ' +
                                             '</div> ' +
                                         '</div>';
                     var x = 1;
@@ -238,6 +260,7 @@
                             $(addedInputFields_div).append(newInputField);
                             // console.log(x);
                         }
+                        addOtherOffIndexing();
                     });
                     $(addedInputFields_div).on('click', '.btn_deleteAnother_input', function(e){
                         e.preventDefault();
@@ -245,11 +268,9 @@
                         $(this).closest('.input-group').last().remove();
                         x--;
                         // console.log('click');
+                        addOtherOffIndexing();
                     });
             // disable cancel and sibmit button on submit
-                var form_addViolation  = document.querySelector("#form_addViolation");
-                var submit_violationForm_btn = document.querySelector("#submit_violationForm_btn");
-                var cancel_violationForm_btn = document.querySelector("#cancel_violationForm_btn");
                 $(form_addViolation).submit(function(){
                     cancel_violationForm_btn.disabled = true;
                     submit_violationForm_btn.disabled = true;
