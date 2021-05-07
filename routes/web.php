@@ -169,6 +169,10 @@ Route::group(['middleware' => 'auth'], function () {
 
 	// temporary delete all monthly violation confirmation on modal
 	Route::get('violation_records/delete_all_monthly_violations_form', 'App\Http\Controllers\ViolationRecordsController@delete_all_monthly_violations_form')->name('violation_records.delete_all_monthly_violations_form');
+	// process temporary deletion of all violation
+	Route::post('violation_records/delete_all_monthly_violations', 'App\Http\Controllers\ViolationRecordsController@delete_all_monthly_violations')->name('violation_records.delete_all_monthly_violations');
+	// permanent delete all violations confirmation on modal
+	Route::get('violation_records/permanent_delete_all_violations', 'App\Http\Controllers\ViolationRecordsController@permanent_delete_all_violations')->name('violation_records.permanent_delete_all_violations');
 });
 
 // student handbook

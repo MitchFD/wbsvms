@@ -654,7 +654,7 @@
                                                                         </div>
                                                                         <div class="d-flex align-items-end">
                                                                             <button id="{{$yearly_monthlyVal_tc}}" onclick="addSanctions_allMonthlyViolations(this.id)" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Add Sanctions to all recorded Offenses for the Month of {{ $monthName }} 2021?"><i class="fa fa-pencil" aria-hidden="true"></i></button>
-                                                                            <button id="{{$yearly_monthlyVal_tc}}" onclick="delete_allMonthlyViolations(this.id)" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Delete all recorded Offenses for the Month of {{ $monthName }} 2021?"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                                            <button id="{{$yearly_monthlyVal_tc}}" onclick="delete_allMonthlyViolations(this.id, {{$this_yearVal_tc}})" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Delete all recorded Offenses for the Month of {{ $monthName }} 2021?"><i class="fa fa-trash" aria-hidden="true"></i></button>
                                                                         </div>
                                                                     </div> 
                                                                 </div>
@@ -718,7 +718,7 @@
                                         <div class="row">
                                             @if($count_deleted_violations > 0)
                                                 @php
-                                                    $query_del_violations = App\Models\Deletedviolations::where('del_stud_num', $violator_id)->orderBy('deleted_at', 'desc')->get();
+                                                    $query_del_violations = App\Models\Deletedviolations::where('del_stud_num', $violator_id)->where('del_status', 1)->orderBy('deleted_at', 'desc')->get();
                                                 @endphp
                                                 @foreach($query_del_violations as $deleted_violation)
                                                     @php
@@ -965,9 +965,28 @@
                                             @endif
                                         </div>
                                         <div class="row mt-3">
-                                            <div class="col-lg-12 col-md-12 col-sm-12">
-                                                <span class="cust_info_txtwicon font-weight-bold"><i class="fa fa-trash mr-1" aria-hidden="true"></i> {{$sum_deleted_offenses }} Deleted Offense{{$doc_s}} found.</span>  
-                                            </div>
+                                            <div class="col-lg-12 col-md-12 col-sm-12 d-flex justify-content-between align-items-end">
+                                                <div>
+                                                    <span class="cust_info_txtwicon font-weight-bold"><i class="fa fa-trash mr-1" aria-hidden="true"></i> {{$sum_deleted_offenses }} Deleted Offense{{$doc_s}} found.</span> 
+                                                </div>
+                                                <div class="d-flex align-items-end">
+                                                    @if($count_deleted_violations > 0)
+                                                        @php
+                                                            $query_delViolaIds_only = App\Models\Deletedviolations::select('del_id')->where('del_stud_num', $violator_id)->where('del_status', 1)->orderBy('deleted_at', 'desc')->get();
+                                                            if(count($query_delViolaIds_only) > 0){
+                                                                $array_deletedViolaIds = array();
+                                                                foreach($query_delViolaIds_only as $this_delViolaId){
+                                                                    $array_deletedViolaIds[] = $this_delViolaId;
+                                                                }
+                                                                $toJson_arrayDeletedViolaIds = json_encode($array_deletedViolaIds);
+                                                                $ext_toJson_arrayDeletedViolaIds = str_replace(array( '{', '}', '"', ':', 'del_id' ), '', $toJson_arrayDeletedViolaIds);
+                                                            }
+                                                        @endphp
+                                                    @endif
+                                                    <button class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Recover all Recently Deleted Violations?"><i class="fa fa-external-link" aria-hidden="true"></i></button>
+                                                    <button id="{{$ext_toJson_arrayDeletedViolaIds}}" onclick="recover_allDeletedViolations(this.id)" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Permanently Delete all Recently Deleted Violations?"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                </div>
+                                            </div> 
                                         </div>
                                     </div>
                                 </div>
@@ -1102,6 +1121,23 @@
             </div>
         </div>
     {{-- delete all monthly violations modal end --}}
+    {{-- permanently delete all violations modal --}}
+        <div class="modal fade" id="permanentDeleteAllViolations" tabindex="-1" role="dialog" aria-labelledby="permanentDeleteAllViolationsLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="permanentDeleteAllViolationsLabel">Permanent Deleted Violations?</span>
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="permanentDeleteAllViolationsHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{-- permanently delete all violations modal end --}}
 
 @endsection
 
@@ -1584,17 +1620,81 @@
     </script>
     {{-- delete all recorded vilation per month --}}
     <script>
-        function delete_allMonthlyViolations(sel_monthly_viola){
+        function delete_allMonthlyViolations(sel_monthly_viola, sel_yearly_viola){
             var sel_monthly_viola = sel_monthly_viola;
+            var sel_yearly_viola = sel_yearly_viola;
             var sel_stud_num = document.getElementById("vp_hidden_stud_num").value;
             var _token = $('input[name="_token"]').val();
             $.ajax({
                 url:"{{ route('violation_records.delete_all_monthly_violations_form') }}",
                 method:"GET",
-                data:{sel_monthly_viola:sel_monthly_viola, sel_stud_num:sel_stud_num, _token:_token},
+                data:{sel_yearly_viola:sel_yearly_viola, sel_monthly_viola:sel_monthly_viola, sel_stud_num:sel_stud_num, _token:_token},
                 success: function(data){
                     $('#deleteAllMonthlyViolationModalHtmlData').html(data);
                     $('#deleteAllMonthlyViolationModal').modal('show');
+                }
+            });
+        }
+    </script>
+    <script>
+        $('#deleteAllMonthlyViolationModal').on('show.bs.modal', function () {
+            var form_deleteAllViolationRec  = document.querySelector("#form_deleteAllViolationRec");
+            var reason1_textareaInput  = document.querySelector("#delete_all_violation_reason");
+            var btn_submitDeleteAllViolationRec = document.querySelector("#submit_deleteAllViolationRecBtn");
+            var btn_cancelDeleteAllViolationRec = document.querySelector("#cancel_deleteAllViolationRecBtn");
+            // selection of sanctions for deletion
+            $("#delViolMarkAll").change(function(){
+                if(this.checked){
+                $(".delViolMarkSingle").each(function(){
+                    this.checked=true;
+                })              
+                }else{
+                $(".delViolMarkSingle").each(function(){
+                    this.checked=false;
+                })              
+                }
+            });
+            $(".delViolMarkSingle").click(function () {
+                if ($(this).is(":checked")){
+                var isDeleteAllChecked = 0;
+                $(".delViolMarkSingle").each(function(){
+                    if(!this.checked)
+                    isDeleteAllChecked = 1;
+                })              
+                if(isDeleteAllChecked == 0){ $("#delViolMarkAll").prop("checked", true); }     
+                }else {
+                $("#delViolMarkAll").prop("checked", false);
+                }
+            });
+            // disable add another input field and submit button if reason textarea is empty
+            $(reason1_textareaInput).keyup(function(){
+                if(reason1_textareaInput.value !== ""){
+                    btn_submitDeleteAllViolationRec.disabled = false;
+                }else{
+                    btn_submitDeleteAllViolationRec.disabled = true;
+                }
+            });
+            // disable cancel and sibmit button on submit
+            $(form_deleteAllViolationRec).submit(function(){
+                btn_cancelDeleteAllViolationRec.disabled = true;
+                btn_submitDeleteAllViolationRec.disabled = true;
+                return true;
+            });
+        });
+    </script>
+    {{-- recover all deleted violations --}}
+    <script>
+        function recover_allDeletedViolations(del_viola_ids){
+            var del_viola_ids = del_viola_ids;
+            var sel_stud_num = document.getElementById("vp_hidden_stud_num").value;
+            var _token = $('input[name="_token"]').val();
+            $.ajax({
+                url:"{{ route('violation_records.permanent_delete_all_violations') }}",
+                method:"GET",
+                data:{del_viola_ids:del_viola_ids, sel_stud_num:sel_stud_num, _token:_token},
+                success: function(data){
+                    $('#permanentDeleteAllViolationsHtmlData').html(data);
+                    $('#permanentDeleteAllViolations').modal('show');
                 }
             });
         }

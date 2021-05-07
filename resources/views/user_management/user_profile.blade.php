@@ -758,26 +758,6 @@
                         </button>
                     </div>
                     <div id="usersActLogsCollapseDiv" class="collapse show cb_t0b15x25" aria-labelledby="usersActLogsCollapseHeading" data-parent="#usersActLogsCollapseParent">
-                        <div class="row d-flex justify-content-center">
-                            <div class="col-lg-12 col-md-12 col-sm-12">
-                                <div class="card card_gbr shadow">
-                                    <div class="card-body">
-                                        <div class="row input-daterange">
-                                            <div class="col-md-4">
-                                                <input type="text" name="from_date" id="from_date" class="form-control cust_date_filterInput" placeholder="From Date" readonly />
-                                            </div>
-                                            <div class="col-md-4">
-                                                <input type="text" name="to_date" id="to_date" class="form-control cust_date_filterInput" placeholder="To Date" readonly />
-                                            </div>
-                                            <div class="col-md-4">
-                                                <button type="button" name="filter" id="filter" class="btn btn-primary">Filter</button>
-                                                <button type="button" name="refresh" id="refresh" class="btn btn-default">Refresh</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         <div class="row">
                             <div class="col-lg-12 col-md-12 col-sm-12">
                                 <table class="table table-hover cust_table shadow">
