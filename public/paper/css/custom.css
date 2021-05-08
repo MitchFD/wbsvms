@@ -2411,6 +2411,17 @@ a.text_svms_gray:hover {
 }
 
 /* custom inputs */
+.cust_inputDiv_wIcon i {
+  position: absolute;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: default !important;
+  left: 30px;
+  top: 16px;
+  z-index: 100;
+  color: #b3b0ad;
+}
+
 .cust_input{
   border-radius: 5px;
   font-size: 14px;
@@ -2420,17 +2431,43 @@ a.text_svms_gray:hover {
   box-shadow: none;
   color: #66615b;
   height: 45px !important;
+  transition: all 0.2s ease-in-out;
 }
 .cust_input:hover,
 .cust_input:focus {
   border: none;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
 }
-
 .cust_input_hasvalue{
   font-weight: bold !important;
   border: none;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.cust_inputv1{
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: normal;
+  padding: 10px 10px 10px 40px !important; 
+  border: none;
+  box-shadow: none;
+  color: #66615b;
+  height: 45px !important;
+  transition: all 0.2s ease-in-out;
+}
+.cust_inputv1:hover,
+.cust_inputv1:focus {
+  border: none;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+.cust_inputv1_hasvalue{
+  font-weight: bold !important;
+  border: none;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+.cust_inputv1:read-only{
+  cursor: pointer !important;
+  background-color: #fff !important;
 }
 
 /* custom dropdowns */
@@ -2655,6 +2692,13 @@ select.drpdwn_arrow2:focus {
 }
 
 /* user circle image on top nav */
+.cust_nav_link{
+  color: var(--svms_blue);
+}
+.cust_nav_link:hover,
+.cust_nav_link:focus{
+  color: var(--svms_med_dark_blue) !important;
+}
 .nav_userImg{
   /* display: block; */
   width: 35px;
@@ -2676,9 +2720,19 @@ select.drpdwn_arrow2:focus {
   background-color: var(--svms_green) !important;
   border: 2px solid var(--svms_green) !important;
 }
+.nav_userImg_red{
+  background-color: var(--svms_red) !important;
+  border: 2px solid var(--svms_red) !important;
+}
 .nav_userImg_unknown{
   background-color: var(--svms_text_gray) !important;
   border: 2px solid var(--svms_text_gray) !important;
+}
+.nav_userFnameTxt{
+  display: inline-block;
+  font-size: 13px;
+  font-weight: normal;
+  font-style: normal;
 }
 
 /* user circle images on system users table */
@@ -3252,6 +3306,23 @@ fieldset[disabled] .applyBtn.active {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
+
+/* custom dropdown-menu */
+/* .cust_dropdown_menu{
+  overflow: hidden !important;
+  border-top-left-radius: 12px !important;
+  border-top-right-radius: 12px !important;
+} */
+.cust_dropdown_menu a{
+  cursor: pointer !important;
+  overflow: hidden !important;
+}
+.cust_dropdown_menu a:hover,
+.cust_dropdown_menu a:focus{
+  background-color: var(--svms_blue) !important;
+  color: #fff !important;
+}
+
 /* nav-tab 2 */
 .cust_nav_tabs2{
   border: 0 !important;

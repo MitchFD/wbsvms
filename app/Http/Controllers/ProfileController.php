@@ -51,8 +51,10 @@ class ProfileController extends Controller
         //     ->get();
         //     return view('profile.employee_user_profile')->with('this_user');
         // }
-        $user_activities = Useractivites::where('act_respo_user_id', auth()->user()->id)->get();
-        return view('profile.index')->with(compact('user_activities'));
+        $my_first_record = Useractivites::where('act_respo_user_id', auth()->user()->id)->first();
+        $my_latest_record = Useractivites::where('act_respo_user_id', auth()->user()->id)->latest()->first();
+        $user_activities = Useractivites::where('act_respo_user_id', auth()->user()->id)->paginate(10);
+        return view('profile.index')->with(compact('user_activities', 'my_first_record', 'my_latest_record'));
     }
 
     // FUNCTIONS FOR CHECKING NEW EMAIL AVAILABILITY

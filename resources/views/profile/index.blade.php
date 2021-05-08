@@ -44,12 +44,14 @@
         {{-- directory link --}}
         <div class="row mb-3">
             <div class="col-lg-12 col-md-12 col-sm-12">
-                <a href="#" class="directory_link">My Profile</a>
+                <a href="{{ route('profile.index', 'profile') }}" class="directory_link">My Profile</a>
             </div>
         </div>
 
         {{-- data customization --}}
             @php
+                // single quote
+                $sq = "'";
                 if(auth()->user()->user_type === 'employee'){
                     $user_emp_info   = App\Models\Useremployees::where('uEmp_id', auth()->user()->user_sdca_id)->first();
                     $custom_nav_pill = 'custom_nav_link_blue';
@@ -106,6 +108,26 @@
                     $custom_nav_pill = 'custom_nav_link_gray';
                     $sdca_num_text   = 'Employee ID';
                 }
+
+                // user's image
+                if(!is_null(auth()->user()->user_image) OR !empty(auth()->user()->user_image)){
+                    $user_image_src = asset('storage/svms/user_images/'.auth()->user()->user_image);
+                    $user_image_alt = auth()->user()->user_fname . ' ' . auth()->user()->user_lname.''.$sq.'s profile image';
+                }else{
+                    if(auth()->user()->user_status == 'active'){
+                        if(auth()->user()->user_type == 'employee'){
+                            $user_image_jpg = 'employee_user_image.jpg';
+                        }elseif(auth()->user()->user_type == 'student'){
+                            $user_image_jpg = 'student_user_image.jpg';
+                        }else{
+                            $user_image_jpg = 'disabled_user_image.jpg';
+                        }
+                        $user_image_src = asset('storage/svms/user_images/'.$user_image_jpg);
+                    }else{
+                        $user_image_src = asset('storage/svms/user_images/no_student_image.jpg');
+                    }
+                    $user_image_alt = 'default user'.$sq.'s profile image';
+                }
             @endphp
         {{-- data customization end --}}
 
@@ -129,13 +151,13 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row mt-2">
             {{-- USER ACCOUNT INFORMATION --}}
             <div class="col-lg-4 col-md-5 col-sm-12">
-                <div class="accordion" id="profileCollapse">
+                <div class="accordion gCardAccordions" id="profileCollapse_{{auth()->user()->id}}">
                     <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray">
                         <div class="card-header p-0" id="profileCollapseHeading">
-                            <button id="profile_collapseBtnToggle" class="btn btn-link btn-block custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#collapse_userProfile" aria-expanded="true" aria-controls="collapse_userProfile">
+                            <button id="profile_collapseBtnToggle" class="btn btn-link btn-block custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#collapse_userProfile_{{auth()->user()->id}}" aria-expanded="true" aria-controls="collapse_userProfile_{{auth()->user()->id}}">
                                 <div>
                                     <span class="card_body_title">Account Information</span>
                                     <span class="card_body_subtitle">View and update your profile.</span>
@@ -143,17 +165,19 @@
                                 <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
                             </button>
                         </div>
-                        <div id="collapse_userProfile" class="collapse show cb_t0b15x25" aria-labelledby="profileCollapseHeading" data-parent="#profileCollapse">
+                        <div id="collapse_userProfile_{{auth()->user()->id}}" class="collapse gCardAccordions_collapse show cb_t0b15x25" aria-labelledby="profileCollapseHeading" data-parent="#profileCollapse_{{auth()->user()->id}}">
                             <ul class="nav nav-pills custom_nav_pills mt-0 mb-3 d-flex justify-content-center" id="user-pills-tab" role="tablist">
                                 <li class="nav-item">
                                     <a class="nav-link {{ $custom_nav_pill }} active" id="pills_userProfile_tab{{auth()->user()->id}}" data-toggle="pill" href="#div_userProfile_tab{{auth()->user()->id}}" role="tab" aria-controls="div_userProfile_tab{{auth()->user()->id}}" aria-selected="true">Profile</a>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {{ $custom_nav_pill }}" id="pills_userEditProfile_tab{{auth()->user()->id}}" data-toggle="pill" href="#div_userEditProfile_tab{{auth()->user()->id}}" role="tab" aria-controls="div_userEditProfile_tab{{auth()->user()->id}}" aria-selected="false">Edit Profile</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {{ $custom_nav_pill }}" id="pills_userChangePassword_tab{{auth()->user()->id}}" data-toggle="pill" href="#div_userChangePassword_tab{{auth()->user()->id}}" role="tab" aria-controls="div_userChangePassword_tab{{auth()->user()->id}}" aria-selected="false">Change Password</a>
-                                </li>
+                                @if(auth()->user()->user_status == 'active')
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ $custom_nav_pill }}" id="pills_userEditProfile_tab{{auth()->user()->id}}" data-toggle="pill" href="#div_userEditProfile_tab{{auth()->user()->id}}" role="tab" aria-controls="div_userEditProfile_tab{{auth()->user()->id}}" aria-selected="false">Edit Profile</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ $custom_nav_pill }}" id="pills_userChangePassword_tab{{auth()->user()->id}}" data-toggle="pill" href="#div_userChangePassword_tab{{auth()->user()->id}}" role="tab" aria-controls="div_userChangePassword_tab{{auth()->user()->id}}" aria-selected="false">Change Password</a>
+                                    </li>
+                                @endif
                             </ul>
                             <div class="tab-content" id="studentPills-tabContent">
                                 {{-- profile --}}
@@ -166,13 +190,7 @@
                                             <div class="author">
                                                 {{-- user image --}}
                                                 <a href="#" class="up_img_div">
-                                                    <img class="{{ $image_filter }} shadow"
-                                                    @if(!is_null(auth()->user()->user_image))
-                                                        src="{{asset('storage/svms/user_images/'.auth()->user()->user_image)}}" alt="{{auth()->user()->user_fname }} {{ auth()->user()->user_lname}}'s profile image'"
-                                                    @else
-                                                        src="{{asset('storage/svms/user_images/'.$user_alt_image.'.jpg')}}" alt="default employee user's profile image"
-                                                    @endif
-                                                    >
+                                                    <img class="{{ $image_filter }} shadow" src="{{$user_image_src}}" alt="{{$user_image_alt}}">
                                                 </a>
                                                 {{-- user name --}}
                                                 <span class="up_fullname_txt text_svms_blue">{{auth()->user()->user_fname }}  {{auth()->user()->user_lname}}</span>
@@ -379,323 +397,325 @@
                                     </div>
                                     {{-- account date created & registered by end --}}
                                 </div>
-                                {{-- edit profile --}}
-                                <div class="tab-pane fade" id="div_userEditProfile_tab{{auth()->user()->id}}" role="tabpanel" aria-labelledby="pills_userEditProfile_tab{{auth()->user()->id}}">
-                                    @if(auth()->user()->user_type === 'employee')
+                                @if(auth()->user()->user_status == 'active')
+                                    {{-- edit profile --}}
+                                    <div class="tab-pane fade" id="div_userEditProfile_tab{{auth()->user()->id}}" role="tabpanel" aria-labelledby="pills_userEditProfile_tab{{auth()->user()->id}}">
+                                        @if(auth()->user()->user_type === 'employee')
+                                            <div class="card card_gbr shadow">
+                                                <div class="card-body p-0">
+                                                    <div class="card-header cb_p15x25">
+                                                        <span class="sec_card_body_title">Edit Profile</span>
+                                                        <span class="sec_card_body_subtitle">Click the <span class="font-weight-bold">'Save Changes'</span> button to update your profile.</span>
+                                                    </div>
+                                                    <form id="form_empUserUpdateOwnProfile" class="form" method="POST" action="{{route('profile.update_emp_user_own_profile')}}" enctype="multipart/form-data" onsubmit="update_empUserOwnProfileBtn.disabled = true; return true;">
+                                                        @csrf
+                                                        <div class="cb_px25 cb_pb15">
+                                                            <div class="row d-flex justify-content-center">
+                                                                <div class="col-lg-12 col-md-12 col-sm-12 align-items-center">
+                                                                    <div class="up_img_div text-center">
+                                                                        <img class="up_user_image empOwn_imgUpld_targetImg shadow border-gray" src="{{asset('storage/svms/user_images/'.auth()->user()->user_image)}}" alt="{{auth()->user()->user_fname }} {{ auth()->user()->user_lname}}'s profile image'">
+                                                                    </div>
+                                                                    <div class="user_image_upload_input_div emp_imgUpload">
+                                                                        <i class="nc-icon nc-image emp_imgUpld_TrgtBtn"></i>
+                                                                        <input name="upd_emp_own_user_image" class="file_upload_input empOwn_img_imgUpld_fileInpt" type="file" accept="image/*"/>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <label for="upd_emp_own_email">Email Address</label>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text">
+                                                                        <i class="nc-icon nc-email-85" aria-hidden="true"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <input id="upd_emp_own_email" name="upd_emp_own_email" type="text" class="form-control" @if(auth()->user()->email != 'null') value="{{auth()->user()->email}}" @else placeholder="Type Email Address" @endif required>
+                                                                <span id="empEmailAvail_notice" class="d-none text-right">
+    
+                                                                </span>
+                                                            </div>
+                                                            <label for="upd_emp_own_id">Employee ID</label>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text">
+                                                                        <i class="nc-icon nc-badge" aria-hidden="true"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <input id="upd_emp_own_id" name="upd_emp_own_id" type="number" min="0" oninput="validity.valid||(value='');" class="form-control" @if(auth()->user()->user_sdca_id != 'null') value="{{auth()->user()->user_sdca_id}}" @else placeholder="Type Employee ID" @endif required>
+                                                            </div>
+                                                            <label for="upd_emp_own_lname">Last Name</label>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text">
+                                                                        <i class="nc-icon nc-single-02"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <input id="upd_emp_own_lname" name="upd_emp_own_lname" type="text" class="form-control" @if(auth()->user()->user_lname != 'null') value="{{auth()->user()->user_lname}}" @else placeholder="Type Last Name" @endif required>
+                                                            </div>
+                                                            <label for="upd_emp_own_fname">First Name</label>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text">
+                                                                        <i class="nc-icon nc-single-02"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <input id="upd_emp_own_fname" name="upd_emp_own_fname" type="text" class="form-control" @if(auth()->user()->user_fname != 'null') value="{{auth()->user()->user_fname}}" @else placeholder="Type First Name" @endif required>
+                                                            </div>
+                                                            <label for="upd_emp_own_fname">Gender</label>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text">
+                                                                        <i class="nc-icon nc-single-02"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <input id="upd_emp_own_gender" list="updateGenderOptions" pattern="Male|Female" name="upd_emp_own_gender" type="text" class="form-control" @if(auth()->user()->user_gender != 'null') value="{{ucfirst(auth()->user()->user_gender)}}" @else placeholder="Select Gender" @endif required>
+                                                                <datalist id="updateGenderOptions">
+                                                                    <option value="Male">
+                                                                    <option value="Female">
+                                                                </datalist>
+                                                            </div>
+                                                            <label for="upd_emp_own_jobdesc">Job Description</label>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text">
+                                                                        <i class="nc-icon nc-briefcase-24" aria-hidden="true"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <input id="upd_emp_own_jobdesc" name="upd_emp_own_jobdesc" type="text" class="form-control" @if($user_emp_info->uEmp_job_desc != 'null') value="{{$user_emp_info->uEmp_job_desc}}" @else placeholder="Type Job Position" @endif required>
+                                                            </div>
+                                                            <label for="upd_emp_own_dept">Department</label>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text">
+                                                                        <i class="nc-icon nc-bank" aria-hidden="true"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <input id="upd_emp_own_dept" name="upd_emp_own_dept" type="text" class="form-control" @if($user_emp_info->uEmp_dept != 'null') value="{{$user_emp_info->uEmp_dept}}" @else placeholder="Type Department" @endif required>
+                                                            </div>
+                                                            <label for="upd_emp_own_phnum">Phone NUmber</label>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text">
+                                                                        <i class="fa fa-mobile" aria-hidden="true"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <input name="upd_emp_own_phnum" type="number" pattern="[0-9]{11}" min="0" oninput="validity.valid||(value='');" class="form-control" @if($user_emp_info->uEmp_phnum != 'null') value="{{$user_emp_info->uEmp_phnum}}" @else placeholder="Type Contact Number" @endif required>
+                                                            </div>
+                                                            <div class="d-flex justify-content-center">
+                                                                <input type="hidden" name="own_user_id" id="own_user_id" value="{{auth()->user()->id}}"/>
+                                                                <button type="submit" id="update_empUserOwnProfileBtn" class="btn btn_svms_blue btn-round btn_show_icon" disabled>{{ __('Save Changes') }}<i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        @elseif(auth()->user()->user_type === 'student')
+                                            <div class="card card_gbr shadow">
+                                                <div class="card-body p-0">
+                                                    <div class="card-header cb_p15x25">
+                                                        <span class="sec_card_body_title">Edit Profile</span>
+                                                        <span class="sec_card_body_subtitle">Click the <span class="font-weight-bold">'Save Changes'</span> button to save the changes you've made and this will update your profile.</span>
+                                                    </div>
+                                                    <form id="form_studUpdateOwnProfile" class="form" method="POST" action="{{route('profile.update_stud_user_own_profile')}}" enctype="multipart/form-data" onsubmit="update_studUserOwnProfileBtn.disabled = true; return true;">
+                                                        @csrf
+                                                        <div class="cb_px25 cb_pb15">
+                                                            <div class="row d-flex justify-content-center">
+                                                                <div class="col-lg-12 col-md-12 col-sm-12 align-items-center">
+                                                                    <div class="up_img_div text-center">
+                                                                        <img class="up_stud_user_image studOwn_imgUpld_targetImg shadow border-gray" src="{{asset('storage/svms/user_images/'.auth()->user()->user_image)}}" alt="{{auth()->user()->user_fname }} {{ auth()->user()->user_lname}}'s profile image'">
+                                                                    </div>
+                                                                    <div class="user_image_upload_input_div stud_imgUpload">
+                                                                        <i class="nc-icon nc-image stud_imgUpld_TrgtBtn"></i>
+                                                                        <input name="upd_stud_own_user_image" class="file_upload_input studOwn_img_imgUpld_fileInpt" type="file" accept="image/*"/>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <label for="upd_stud_own_email">Email Address</label>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text">
+                                                                        <i class="nc-icon nc-email-85" aria-hidden="true"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <input id="upd_stud_own_email" name="upd_stud_own_email" type="text" class="form-control" @if(auth()->user()->email != 'null') value="{{auth()->user()->email}}" @else placeholder="Type Email Address" @endif required>
+                                                                <span id="studEmailAvail_notice" class="d-none text-right">
+    
+                                                                </span>
+                                                            </div>
+                                                            <label for="upd_stud_own_id">Student Number</label>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text">
+                                                                        <i class="nc-icon nc-badge" aria-hidden="true"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <input id="upd_stud_own_id" name="upd_stud_own_id" type="number" min="0" oninput="validity.valid||(value='');" class="form-control" @if(auth()->user()->user_sdca_id != 'null') value="{{auth()->user()->user_sdca_id}}" @else placeholder="Type Student Number" @endif required>
+                                                            </div>
+                                                            <label for="upd_stud_own_lname">Last Name</label>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text">
+                                                                        <i class="nc-icon nc-single-02"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <input id="upd_stud_own_lname" name="upd_stud_own_lname" type="text" class="form-control" @if(auth()->user()->user_lname != 'null') value="{{auth()->user()->user_lname}}" @else placeholder="Type Last Name" @endif required>
+                                                            </div>
+                                                            <label for="upd_stud_own_fname">First Name</label>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text">
+                                                                        <i class="nc-icon nc-single-02"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <input id="upd_stud_own_fname" name="upd_stud_own_fname" type="text" class="form-control" @if(auth()->user()->user_fname != 'null') value="{{auth()->user()->user_fname}}" @else placeholder="Type First Name" @endif required>
+                                                            </div>
+                                                            <label for="upd_stud_own_gender">Gender</label>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text">
+                                                                        <i class="nc-icon nc-single-02"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <input id="upd_stud_own_gender" list="updateStudGenderOptions" pattern="Male|Female" name="upd_stud_own_gender" type="text" class="form-control" @if(auth()->user()->user_gender != 'null') value="{{ucfirst(auth()->user()->user_gender)}}" @else placeholder="Select Gender" @endif required>
+                                                                <datalist id="updateStudGenderOptions">
+                                                                    <option value="Male">
+                                                                    <option value="Female">
+                                                                </datalist>
+                                                            </div>
+                                                            <label for="upd_stud_own_school">School</label>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text">
+                                                                        <i class="nc-icon nc-badge" aria-hidden="true"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <input id="upd_stud_own_school" list="updateStudSchoolOptions" pattern="SASE|SBCS|SIHTM|SHSP" name="upd_stud_own_school" type="text" class="form-control" @if($user_stud_info->uStud_school != 'null') value="{{$user_stud_info->uStud_school}}" @else placeholder="Type Your School" @endif required>
+                                                                <datalist id="updateStudSchoolOptions">
+                                                                    <option value="SASE">
+                                                                    <option value="SBCS">
+                                                                    <option value="SIHTM">
+                                                                    <option value="SHSP">
+                                                                </datalist>
+                                                            </div>
+                                                            <label for="upd_stud_own_program">Program</label>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text">
+                                                                        <i class="nc-icon nc-badge" aria-hidden="true"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <input id="upd_stud_own_program" list="updateStudProgramOptions" pattern="BS Psychology|BS Education|BA Communication|BSBA|BSA|BSIT|BSCS|BMA|BSHM|BSTM|BS Biology|BS Pharmacy|BS Radiologic Technology|BS Physical Therapy|BS Medical Technology|BS Nursing" name="upd_stud_own_program" type="text" class="form-control" @if($user_stud_info->uStud_program != 'null') value="{{$user_stud_info->uStud_program}}" @else placeholder="Type Your Program" @endif required>
+                                                                <datalist id="updateStudProgramOptions">
+                                                                    
+                                                                </datalist>
+                                                            </div>
+                                                            <label for="upd_stud_own_yearlvl">Year Level</label>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text">
+                                                                        <i class="nc-icon nc-badge" aria-hidden="true"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <input id="upd_stud_own_yearlvl" list="updateStudYearlvlOptions" pattern="FIRST YEAR|SECOND YEAR|THIRD YEAR|FOURTH YEAR|FIFTH YEAR" name="upd_stud_own_yearlvl" type="text" class="form-control" @if($user_stud_info->uStud_yearlvl != 'null') value="{{$user_stud_info->uStud_yearlvl}}" @else placeholder="Type Your Year Level" @endif required>
+                                                                <datalist id="updateStudYearlvlOptions">
+    
+                                                                </datalist>
+                                                            </div>
+                                                            <label for="upd_stud_own_section">Section</label>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text">
+                                                                        <i class="nc-icon nc-badge" aria-hidden="true"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <input id="upd_stud_own_section" name="upd_stud_own_section" type="text" class="form-control" @if($user_stud_info->uStud_section != 'null') value="{{$user_stud_info->uStud_section}}" @else placeholder="Type Your Section" @endif required>
+                                                            </div>
+                                                            <label for="upd_stud_own_phnum">Phone NUmber</label>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text">
+                                                                        <i class="fa fa-mobile" aria-hidden="true"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <input id="upd_stud_own_phnum" name="upd_stud_own_phnum" type="number" pattern="[0-9]{11}" min="0" oninput="validity.valid||(value='');" class="form-control" @if($user_stud_info->uStud_phnum != 'null') value="{{$user_stud_info->uStud_phnum}}" @else placeholder="Type Contact Number" @endif required>
+                                                            </div>
+                                                            <div class="d-flex justify-content-center">
+                                                                <input type="hidden" name="own_user_id" id="own_user_id" value="{{auth()->user()->id}}"/>
+                                                                <button type="submit" id="update_studUserOwnProfileBtn" class="btn btn-success btn-round btn_show_icon" disabled>{{ __('Save Changes') }}<i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        @else
+    
+                                        @endif
+                                        <div class="row">
+                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                                <span class="cust_info_txtwicon"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i>The System will notify you of all the changes you've made thru your registered email address. If you switched to a new email address, you will be logged out from the system and you need to log in again using the new email.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {{-- change password --}}
+                                    <div class="tab-pane fade" id="div_userChangePassword_tab{{auth()->user()->id}}" role="tabpanel" aria-labelledby="pills_userChangePassword_tab{{auth()->user()->id}}">
                                         <div class="card card_gbr shadow">
                                             <div class="card-body p-0">
                                                 <div class="card-header cb_p15x25">
-                                                    <span class="sec_card_body_title">Edit Profile</span>
-                                                    <span class="sec_card_body_subtitle">Click the <span class="font-weight-bold">'Save Changes'</span> button to update your profile.</span>
+                                                    <span class="sec_card_body_title">Change Password</span>
+                                                    <span class="sec_card_body_subtitle">Type your old password first for password change.</span>
                                                 </div>
-                                                <form id="form_empUserUpdateOwnProfile" class="form" method="POST" action="{{route('profile.update_emp_user_own_profile')}}" enctype="multipart/form-data" onsubmit="update_empUserOwnProfileBtn.disabled = true; return true;">
+                                                <form class="form" method="POST" action="{{route('profile.update_my_password')}}" enctype="multipart/form-data" onsubmit="change_myPass_btn.disabled = true; return true;">
                                                     @csrf
                                                     <div class="cb_px25 cb_pb15">
-                                                        <div class="row d-flex justify-content-center">
-                                                            <div class="col-lg-12 col-md-12 col-sm-12 align-items-center">
-                                                                <div class="up_img_div text-center">
-                                                                    <img class="up_user_image empOwn_imgUpld_targetImg shadow border-gray" src="{{asset('storage/svms/user_images/'.auth()->user()->user_image)}}" alt="{{auth()->user()->user_fname }} {{ auth()->user()->user_lname}}'s profile image'">
+                                                        <div class="light_backDrop_card mb-2">
+                                                            <label for="my_oldPass_input">Type Old Password First</label>
+                                                            <div class="input-group paswrd_inpt_fld">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text">
+                                                                        <i class="nc-icon nc-key-25" aria-hidden="true"></i>
+                                                                    </span>
                                                                 </div>
-                                                                <div class="user_image_upload_input_div emp_imgUpload">
-                                                                    <i class="nc-icon nc-image emp_imgUpld_TrgtBtn"></i>
-                                                                    <input name="upd_emp_own_user_image" class="file_upload_input empOwn_img_imgUpld_fileInpt" type="file" accept="image/*"/>
-                                                                </div>
+                                                                <input type="password" id="my_oldPass_input" name="my_oldPass_input" class="form-control" placeholder="Type your current password" required>
+                                                                <i class="fa fa-eye" id="toggleMyOldPassword"></i>
                                                             </div>
-                                                        </div>
-                                                        <label for="upd_emp_own_email">Email Address</label>
-                                                        <div class="input-group">
-                                                            <div class="input-group-prepend">
-                                                                <span class="input-group-text">
-                                                                    <i class="nc-icon nc-email-85" aria-hidden="true"></i>
-                                                                </span>
-                                                            </div>
-                                                            <input id="upd_emp_own_email" name="upd_emp_own_email" type="text" class="form-control" @if(auth()->user()->email != 'null') value="{{auth()->user()->email}}" @else placeholder="Type Email Address" @endif required>
-                                                            <span id="empEmailAvail_notice" class="d-none text-right">
-
+                                                            <span id="myOldPass_notice" class="d-none text-right">
+    
                                                             </span>
                                                         </div>
-                                                        <label for="upd_emp_own_id">Employee ID</label>
-                                                        <div class="input-group">
-                                                            <div class="input-group-prepend">
-                                                                <span class="input-group-text">
-                                                                    <i class="nc-icon nc-badge" aria-hidden="true"></i>
-                                                                </span>
+                                                        <div class="light_backDrop_card mb-2">
+                                                            <label for="upd_myNew_password">Type New Password <i class="fa fa-info-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Include numbers, symbols, and uppercase and lowercase letters to have a strong password."></i></label>
+                                                            <div class="input-group paswrd_inpt_fld">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text">
+                                                                        <i class="nc-icon nc-key-25" aria-hidden="true"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <input onkeyup="check_my_pass_strenght()" type="password" id="upd_myNew_password" name="upd_myNew_password" class="form-control" placeholder="Type a new password" required disabled>
+                                                                <i class="fa fa-eye" id="toggleMyNewPassword"></i>
                                                             </div>
-                                                            <input id="upd_emp_own_id" name="upd_emp_own_id" type="number" min="0" oninput="validity.valid||(value='');" class="form-control" @if(auth()->user()->user_sdca_id != 'null') value="{{auth()->user()->user_sdca_id}}" @else placeholder="Type Employee ID" @endif required>
-                                                        </div>
-                                                        <label for="upd_emp_own_lname">Last Name</label>
-                                                        <div class="input-group">
-                                                            <div class="input-group-prepend">
-                                                                <span class="input-group-text">
-                                                                    <i class="nc-icon nc-single-02"></i>
-                                                                </span>
+                                                            <div class="pass_strenght_indicator_div d-none">
+                                                                <span class="weak"></span>
+                                                                <span class="medium"></span>
+                                                                <span class="strong"></span>
                                                             </div>
-                                                            <input id="upd_emp_own_lname" name="upd_emp_own_lname" type="text" class="form-control" @if(auth()->user()->user_lname != 'null') value="{{auth()->user()->user_lname}}" @else placeholder="Type Last Name" @endif required>
-                                                        </div>
-                                                        <label for="upd_emp_own_fname">First Name</label>
-                                                        <div class="input-group">
-                                                            <div class="input-group-prepend">
-                                                                <span class="input-group-text">
-                                                                    <i class="nc-icon nc-single-02"></i>
-                                                                </span>
+                                                            <div id="pass_strenght_txt">
+    
                                                             </div>
-                                                            <input id="upd_emp_own_fname" name="upd_emp_own_fname" type="text" class="form-control" @if(auth()->user()->user_fname != 'null') value="{{auth()->user()->user_fname}}" @else placeholder="Type First Name" @endif required>
                                                         </div>
-                                                        <label for="upd_emp_own_fname">Gender</label>
-                                                        <div class="input-group">
-                                                            <div class="input-group-prepend">
-                                                                <span class="input-group-text">
-                                                                    <i class="nc-icon nc-single-02"></i>
-                                                                </span>
-                                                            </div>
-                                                            <input id="upd_emp_own_gender" list="updateGenderOptions" pattern="Male|Female" name="upd_emp_own_gender" type="text" class="form-control" @if(auth()->user()->user_gender != 'null') value="{{ucfirst(auth()->user()->user_gender)}}" @else placeholder="Select Gender" @endif required>
-                                                            <datalist id="updateGenderOptions">
-                                                                <option value="Male">
-                                                                <option value="Female">
-                                                            </datalist>
-                                                        </div>
-                                                        <label for="upd_emp_own_jobdesc">Job Description</label>
-                                                        <div class="input-group">
-                                                            <div class="input-group-prepend">
-                                                                <span class="input-group-text">
-                                                                    <i class="nc-icon nc-briefcase-24" aria-hidden="true"></i>
-                                                                </span>
-                                                            </div>
-                                                            <input id="upd_emp_own_jobdesc" name="upd_emp_own_jobdesc" type="text" class="form-control" @if($user_emp_info->uEmp_job_desc != 'null') value="{{$user_emp_info->uEmp_job_desc}}" @else placeholder="Type Job Position" @endif required>
-                                                        </div>
-                                                        <label for="upd_emp_own_dept">Department</label>
-                                                        <div class="input-group">
-                                                            <div class="input-group-prepend">
-                                                                <span class="input-group-text">
-                                                                    <i class="nc-icon nc-bank" aria-hidden="true"></i>
-                                                                </span>
-                                                            </div>
-                                                            <input id="upd_emp_own_dept" name="upd_emp_own_dept" type="text" class="form-control" @if($user_emp_info->uEmp_dept != 'null') value="{{$user_emp_info->uEmp_dept}}" @else placeholder="Type Department" @endif required>
-                                                        </div>
-                                                        <label for="upd_emp_own_phnum">Phone NUmber</label>
-                                                        <div class="input-group">
-                                                            <div class="input-group-prepend">
-                                                                <span class="input-group-text">
-                                                                    <i class="fa fa-mobile" aria-hidden="true"></i>
-                                                                </span>
-                                                            </div>
-                                                            <input name="upd_emp_own_phnum" type="number" pattern="[0-9]{11}" min="0" oninput="validity.valid||(value='');" class="form-control" @if($user_emp_info->uEmp_phnum != 'null') value="{{$user_emp_info->uEmp_phnum}}" @else placeholder="Type Contact Number" @endif required>
-                                                        </div>
-                                                        <div class="d-flex justify-content-center">
-                                                            <input type="hidden" name="own_user_id" id="own_user_id" value="{{auth()->user()->id}}"/>
-                                                            <button type="submit" id="update_empUserOwnProfileBtn" class="btn btn_svms_blue btn-round btn_show_icon" disabled>{{ __('Save Changes') }}<i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                                                        <div class="d-flex justify-content-center ">
+                                                            <input type="hidden" name="selected_user_own_id" value="{{auth()->user()->id}}"/>
+                                                            <button id="change_myPass_btn" type="submit" class="btn btn-success btn-round btn_show_icon" disabled>Update My Password<i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
                                                         </div>
                                                     </div>
                                                 </form>
                                             </div>
                                         </div>
-                                    @elseif(auth()->user()->user_type === 'student')
-                                        <div class="card card_gbr shadow">
-                                            <div class="card-body p-0">
-                                                <div class="card-header cb_p15x25">
-                                                    <span class="sec_card_body_title">Edit Profile</span>
-                                                    <span class="sec_card_body_subtitle">Click the <span class="font-weight-bold">'Save Changes'</span> button to save the changes you've made and this will update your profile.</span>
-                                                </div>
-                                                <form id="form_studUpdateOwnProfile" class="form" method="POST" action="{{route('profile.update_stud_user_own_profile')}}" enctype="multipart/form-data" onsubmit="update_studUserOwnProfileBtn.disabled = true; return true;">
-                                                    @csrf
-                                                    <div class="cb_px25 cb_pb15">
-                                                        <div class="row d-flex justify-content-center">
-                                                            <div class="col-lg-12 col-md-12 col-sm-12 align-items-center">
-                                                                <div class="up_img_div text-center">
-                                                                    <img class="up_stud_user_image studOwn_imgUpld_targetImg shadow border-gray" src="{{asset('storage/svms/user_images/'.auth()->user()->user_image)}}" alt="{{auth()->user()->user_fname }} {{ auth()->user()->user_lname}}'s profile image'">
-                                                                </div>
-                                                                <div class="user_image_upload_input_div stud_imgUpload">
-                                                                    <i class="nc-icon nc-image stud_imgUpld_TrgtBtn"></i>
-                                                                    <input name="upd_stud_own_user_image" class="file_upload_input studOwn_img_imgUpld_fileInpt" type="file" accept="image/*"/>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <label for="upd_stud_own_email">Email Address</label>
-                                                        <div class="input-group">
-                                                            <div class="input-group-prepend">
-                                                                <span class="input-group-text">
-                                                                    <i class="nc-icon nc-email-85" aria-hidden="true"></i>
-                                                                </span>
-                                                            </div>
-                                                            <input id="upd_stud_own_email" name="upd_stud_own_email" type="text" class="form-control" @if(auth()->user()->email != 'null') value="{{auth()->user()->email}}" @else placeholder="Type Email Address" @endif required>
-                                                            <span id="studEmailAvail_notice" class="d-none text-right">
-
-                                                            </span>
-                                                        </div>
-                                                        <label for="upd_stud_own_id">Student Number</label>
-                                                        <div class="input-group">
-                                                            <div class="input-group-prepend">
-                                                                <span class="input-group-text">
-                                                                    <i class="nc-icon nc-badge" aria-hidden="true"></i>
-                                                                </span>
-                                                            </div>
-                                                            <input id="upd_stud_own_id" name="upd_stud_own_id" type="number" min="0" oninput="validity.valid||(value='');" class="form-control" @if(auth()->user()->user_sdca_id != 'null') value="{{auth()->user()->user_sdca_id}}" @else placeholder="Type Student Number" @endif required>
-                                                        </div>
-                                                        <label for="upd_stud_own_lname">Last Name</label>
-                                                        <div class="input-group">
-                                                            <div class="input-group-prepend">
-                                                                <span class="input-group-text">
-                                                                    <i class="nc-icon nc-single-02"></i>
-                                                                </span>
-                                                            </div>
-                                                            <input id="upd_stud_own_lname" name="upd_stud_own_lname" type="text" class="form-control" @if(auth()->user()->user_lname != 'null') value="{{auth()->user()->user_lname}}" @else placeholder="Type Last Name" @endif required>
-                                                        </div>
-                                                        <label for="upd_stud_own_fname">First Name</label>
-                                                        <div class="input-group">
-                                                            <div class="input-group-prepend">
-                                                                <span class="input-group-text">
-                                                                    <i class="nc-icon nc-single-02"></i>
-                                                                </span>
-                                                            </div>
-                                                            <input id="upd_stud_own_fname" name="upd_stud_own_fname" type="text" class="form-control" @if(auth()->user()->user_fname != 'null') value="{{auth()->user()->user_fname}}" @else placeholder="Type First Name" @endif required>
-                                                        </div>
-                                                        <label for="upd_stud_own_gender">Gender</label>
-                                                        <div class="input-group">
-                                                            <div class="input-group-prepend">
-                                                                <span class="input-group-text">
-                                                                    <i class="nc-icon nc-single-02"></i>
-                                                                </span>
-                                                            </div>
-                                                            <input id="upd_stud_own_gender" list="updateStudGenderOptions" pattern="Male|Female" name="upd_stud_own_gender" type="text" class="form-control" @if(auth()->user()->user_gender != 'null') value="{{ucfirst(auth()->user()->user_gender)}}" @else placeholder="Select Gender" @endif required>
-                                                            <datalist id="updateStudGenderOptions">
-                                                                <option value="Male">
-                                                                <option value="Female">
-                                                            </datalist>
-                                                        </div>
-                                                        <label for="upd_stud_own_school">School</label>
-                                                        <div class="input-group">
-                                                            <div class="input-group-prepend">
-                                                                <span class="input-group-text">
-                                                                    <i class="nc-icon nc-badge" aria-hidden="true"></i>
-                                                                </span>
-                                                            </div>
-                                                            <input id="upd_stud_own_school" list="updateStudSchoolOptions" pattern="SASE|SBCS|SIHTM|SHSP" name="upd_stud_own_school" type="text" class="form-control" @if($user_stud_info->uStud_school != 'null') value="{{$user_stud_info->uStud_school}}" @else placeholder="Type Your School" @endif required>
-                                                            <datalist id="updateStudSchoolOptions">
-                                                                <option value="SASE">
-                                                                <option value="SBCS">
-                                                                <option value="SIHTM">
-                                                                <option value="SHSP">
-                                                            </datalist>
-                                                        </div>
-                                                        <label for="upd_stud_own_program">Program</label>
-                                                        <div class="input-group">
-                                                            <div class="input-group-prepend">
-                                                                <span class="input-group-text">
-                                                                    <i class="nc-icon nc-badge" aria-hidden="true"></i>
-                                                                </span>
-                                                            </div>
-                                                            <input id="upd_stud_own_program" list="updateStudProgramOptions" pattern="BS Psychology|BS Education|BA Communication|BSBA|BSA|BSIT|BSCS|BMA|BSHM|BSTM|BS Biology|BS Pharmacy|BS Radiologic Technology|BS Physical Therapy|BS Medical Technology|BS Nursing" name="upd_stud_own_program" type="text" class="form-control" @if($user_stud_info->uStud_program != 'null') value="{{$user_stud_info->uStud_program}}" @else placeholder="Type Your Program" @endif required>
-                                                            <datalist id="updateStudProgramOptions">
-                                                                
-                                                            </datalist>
-                                                        </div>
-                                                        <label for="upd_stud_own_yearlvl">Year Level</label>
-                                                        <div class="input-group">
-                                                            <div class="input-group-prepend">
-                                                                <span class="input-group-text">
-                                                                    <i class="nc-icon nc-badge" aria-hidden="true"></i>
-                                                                </span>
-                                                            </div>
-                                                            <input id="upd_stud_own_yearlvl" list="updateStudYearlvlOptions" pattern="FIRST YEAR|SECOND YEAR|THIRD YEAR|FOURTH YEAR|FIFTH YEAR" name="upd_stud_own_yearlvl" type="text" class="form-control" @if($user_stud_info->uStud_yearlvl != 'null') value="{{$user_stud_info->uStud_yearlvl}}" @else placeholder="Type Your Year Level" @endif required>
-                                                            <datalist id="updateStudYearlvlOptions">
-
-                                                            </datalist>
-                                                        </div>
-                                                        <label for="upd_stud_own_section">Section</label>
-                                                        <div class="input-group">
-                                                            <div class="input-group-prepend">
-                                                                <span class="input-group-text">
-                                                                    <i class="nc-icon nc-badge" aria-hidden="true"></i>
-                                                                </span>
-                                                            </div>
-                                                            <input id="upd_stud_own_section" name="upd_stud_own_section" type="text" class="form-control" @if($user_stud_info->uStud_section != 'null') value="{{$user_stud_info->uStud_section}}" @else placeholder="Type Your Section" @endif required>
-                                                        </div>
-                                                        <label for="upd_stud_own_phnum">Phone NUmber</label>
-                                                        <div class="input-group">
-                                                            <div class="input-group-prepend">
-                                                                <span class="input-group-text">
-                                                                    <i class="fa fa-mobile" aria-hidden="true"></i>
-                                                                </span>
-                                                            </div>
-                                                            <input id="upd_stud_own_phnum" name="upd_stud_own_phnum" type="number" pattern="[0-9]{11}" min="0" oninput="validity.valid||(value='');" class="form-control" @if($user_stud_info->uStud_phnum != 'null') value="{{$user_stud_info->uStud_phnum}}" @else placeholder="Type Contact Number" @endif required>
-                                                        </div>
-                                                        <div class="d-flex justify-content-center">
-                                                            <input type="hidden" name="own_user_id" id="own_user_id" value="{{auth()->user()->id}}"/>
-                                                            <button type="submit" id="update_studUserOwnProfileBtn" class="btn btn-success btn-round btn_show_icon" disabled>{{ __('Save Changes') }}<i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
-                                                        </div>
-                                                    </div>
-                                                </form>
+                                        <div class="row">
+                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                                <span class="cust_info_txtwicon"><i class="nc-icon nc-circle-10 mr-1" aria-hidden="true"></i>The System will notify you of the changes your made to your password thru your registered email address.</span>
                                             </div>
                                         </div>
-                                    @else
-
-                                    @endif
-                                    <div class="row">
-                                        <div class="col-lg-12 col-md-12 col-sm-12">
-                                            <span class="cust_info_txtwicon"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i>The System will notify you of all the changes you've made thru your registered email address. If you switched to a new email address, you will be logged out from the system and you need to log in again using the new email.</span>
-                                        </div>
                                     </div>
-                                </div>
-                                {{-- change password --}}
-                                <div class="tab-pane fade" id="div_userChangePassword_tab{{auth()->user()->id}}" role="tabpanel" aria-labelledby="pills_userChangePassword_tab{{auth()->user()->id}}">
-                                    <div class="card card_gbr shadow">
-                                        <div class="card-body p-0">
-                                            <div class="card-header cb_p15x25">
-                                                <span class="sec_card_body_title">Change Password</span>
-                                                <span class="sec_card_body_subtitle">Type your old password first for password change.</span>
-                                            </div>
-                                            <form class="form" method="POST" action="{{route('profile.update_my_password')}}" enctype="multipart/form-data" onsubmit="change_myPass_btn.disabled = true; return true;">
-                                                @csrf
-                                                <div class="cb_px25 cb_pb15">
-                                                    <div class="light_backDrop_card mb-2">
-                                                        <label for="my_oldPass_input">Type Old Password First</label>
-                                                        <div class="input-group paswrd_inpt_fld">
-                                                            <div class="input-group-prepend">
-                                                                <span class="input-group-text">
-                                                                    <i class="nc-icon nc-key-25" aria-hidden="true"></i>
-                                                                </span>
-                                                            </div>
-                                                            <input type="password" id="my_oldPass_input" name="my_oldPass_input" class="form-control" placeholder="Type your current password" required>
-                                                            <i class="fa fa-eye" id="toggleMyOldPassword"></i>
-                                                        </div>
-                                                        <span id="myOldPass_notice" class="d-none text-right">
-
-                                                        </span>
-                                                    </div>
-                                                    <div class="light_backDrop_card mb-2">
-                                                        <label for="upd_myNew_password">Type New Password <i class="fa fa-info-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Include numbers, symbols, and uppercase and lowercase letters to have a strong password."></i></label>
-                                                        <div class="input-group paswrd_inpt_fld">
-                                                            <div class="input-group-prepend">
-                                                                <span class="input-group-text">
-                                                                    <i class="nc-icon nc-key-25" aria-hidden="true"></i>
-                                                                </span>
-                                                            </div>
-                                                            <input onkeyup="check_my_pass_strenght()" type="password" id="upd_myNew_password" name="upd_myNew_password" class="form-control" placeholder="Type a new password" required disabled>
-                                                            <i class="fa fa-eye" id="toggleMyNewPassword"></i>
-                                                        </div>
-                                                        <div class="pass_strenght_indicator_div d-none">
-                                                            <span class="weak"></span>
-                                                            <span class="medium"></span>
-                                                            <span class="strong"></span>
-                                                        </div>
-                                                        <div id="pass_strenght_txt">
-
-                                                        </div>
-                                                    </div>
-                                                    <div class="d-flex justify-content-center ">
-                                                        <input type="hidden" name="selected_user_own_id" value="{{auth()->user()->id}}"/>
-                                                        <button id="change_myPass_btn" type="submit" class="btn btn-success btn-round btn_show_icon" disabled>Update My Password<i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
-                                                    </div>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-lg-12 col-md-12 col-sm-12">
-                                            <span class="cust_info_txtwicon"><i class="nc-icon nc-circle-10 mr-1" aria-hidden="true"></i>The System will notify you of the changes your made to your password thru your registered email address.</span>
-                                        </div>
-                                    </div>
-                                </div>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -712,10 +732,10 @@
             </div>
 
             <div class="col-lg-8 col-md-7 col-sm-12">
-                <div class="accordion" id="activityLogsCollapse">
+                <div class="accordion gCardAccordions" id="userActivityLogsCollapse_{{auth()->user()->id}}">
                     <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray">
                         <div class="card-header p-0" id="headingOne">
-                            <button id="actLogs_collapseBtnToggle" class="btn btn-link btn-block custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            <button id="actLogs_collapseBtnToggle" class="btn btn-link btn-block custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#collapse_userActivityLogs_{{auth()->user()->id}}" aria-expanded="true" aria-controls="collapse_userActivityLogs_{{auth()->user()->id}}">
                                 <div>
                                     <span class="card_body_title">Activity Log Histories</span>
                                     <span class="card_body_subtitle">Below are the list of your transactions with the system.</span>
@@ -726,12 +746,34 @@
                                 <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
                             </button>
                         </div>
-                        <div id="collapseOne" class="collapse show p-0" aria-labelledby="headingOne" data-parent="#activityLogsCollapse">
+                        <div id="collapse_userActivityLogs_{{auth()->user()->id}}" class="collapse gCardAccordions_collapse show p-0" aria-labelledby="headingOne" data-parent="#userActivityLogsCollapse_{{auth()->user()->id}}">
                             <div class="card-body cb_t0b15x25">
                                 @if(count($user_activities) > 0)
                                 @php
+                                    // date formats
+                                    $my_first_record_date = date('F d, Y (D - g:i A)', strtotime($my_first_record->created_at));
+                                    $my_first_latest_date = date('F d, Y (D - g:i A)', strtotime($my_latest_record->created_at));
+                                    $my_actLog_minYear = date('YYYY', strtotime($my_first_record->created_at));
                                     $transactions_count = count($user_activities);
                                 @endphp
+                                <div class="row mb-3">
+                                    <div class="col-lg-7 col-md-10 col-sm-12">
+                                        <div class="cust_inputDiv_wIcon">
+                                            <input id="myActLogsFiltr_datepickerRange" name="myActLogsFiltr_datepickerRange" type="text" class="form-control cust_inputv1" placeholder="{{$my_first_record_date}} to {{$my_first_latest_date}}" readonly />
+                                            <i class="fa fa-calendar" aria-hidden="true"></i>
+                                        </div>
+                                        <input type="hidden" name="myActLogs_hidden_dateRangeFrom" id="myActLogs_hidden_dateRangeFrom">
+                                        <input type="hidden" name="myActLogs_hidden_dateRangeTo" id="myActLogs_hidden_dateRangeTo">
+                                    </div>
+                                </div>
+                                {{$my_actLog_minYear}} <br>
+                                {{count($user_activities)}} <br>
+                                @foreach ($user_activities as $item)
+                                    {{$item->created_at}}
+                                @endforeach
+                                ----
+                                {{$my_first_record->created_at}} to
+                                {{$my_latest_record->created_at}}
                                 <div class="row">
                                     <div class="col-lg-12 col-md-12 col-sm-12">
                                         <table class="table table-hover cust_table shadow">
@@ -764,9 +806,12 @@
                                         </table>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                <div class="row d-flex align-items-center">
+                                    <div class="col-lg-6 col-md-9 col-sm-12">
                                         <span class="cust_info_txtwicon"><i class="fa fa-history" aria-hidden="true"></i> You made {{$transactions_count}} @if($transactions_count > 1) transactions @else transaction @endif in the system.</span>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-sm-12 d-flex justify-content-end align-items-center">
+                                        {{ $user_activities->links('pagination::bootstrap-4') }}
                                     </div>
                                 </div>
                                 @else
@@ -1134,5 +1179,47 @@
         }
     </script>
 {{-- password check strenght end --}}
+
+{{-- ACTIVITY LOGS --}}
+    <script>
+        $(document).ready(function(){
+            // daterange picker
+            $('#myActLogsFiltr_datepickerRange').daterangepicker({
+                timePicker: true,
+                showDropdowns: true,
+                minYear: 2020,
+                maxYear: parseInt(moment().format('YYYY'),10),
+                drops: 'up',
+                opens: 'right',
+                autoUpdateInput: false,
+                locale: {
+                    format: 'MMMM DD, YYYY - hh:mm A',
+                    cancelLabel: 'Clear'
+                    }
+            });
+            $('#myActLogsFiltr_datepickerRange').on('cancel.daterangepicker', function(ev, picker) {
+                document.getElementById("myActLogs_hidden_dateRangeFrom").value = '';
+                document.getElementById("myActLogs_hidden_dateRangeTo").value = '';
+                $(this).val('');
+                $(this).removeClass('cust_input_hasvalue');
+                // table paginatin set to 1
+                // $('#hidden_page').val(1);
+                // loadActLogsTable();
+            });
+            $('#myActLogsFiltr_datepickerRange').on('apply.daterangepicker', function(ev, picker) {
+                // for hidden data range inputs
+                var start_range = picker.startDate.format('YYYY-MM-DD HH:MM:SS');
+                var end_range = picker.endDate.format('YYYY-MM-DD HH:MM:SS');
+                document.getElementById("myActLogs_hidden_dateRangeFrom").value = start_range;
+                document.getElementById("myActLogs_hidden_dateRangeTo").value = end_range;
+                // for date range display
+                $(this).val(picker.startDate.format('MMMM DD, YYYY ~ hh:mm A') + ' to ' + picker.endDate.format('MMMM DD, YYYY ~ hh:mm A'));
+                $(this).addClass('cust_input_hasvalue');
+                // table paginatin set to 1
+                // $('#hidden_page').val(1);
+                // loadActLogsTable();
+            });
+        });
+    </script>
 
 @endpush

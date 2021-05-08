@@ -51,32 +51,57 @@
                     </div>
                 </li> --}}
                 <li class="nav-item btn-rotate dropdown">
-                    <a class="nav-link dropdown-toggle py-0" href="#" id="navbarDropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <a class="nav-link cust_nav_link dropdown-toggle py-0" href="#" id="navbarDropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         {{-- <i class="nc-icon nc-settings-gear-65"></i> --}}
                         {{-- <p>
                             <span class="d-lg-none d-md-block">{{ __('Account') }}</span>
                         </p> --}}
                         @php
-                            if(auth()->user()->user_type == 'student'){
-                                $nav_imgFltr = 'nav_userImg_stud';
-                            }elseif(auth()->user()->user_type == 'employee'){
-                                $nav_imgFltr = 'nav_userImg_emp';
+                            // single quote
+                            $sq = "'";
+                            // user image filter
+                            if(auth()->user()->user_status == 'active'){
+                                if(auth()->user()->user_type == 'student'){
+                                    $nav_imgFltr = 'nav_userImg_stud';
+                                }elseif(auth()->user()->user_type == 'employee'){
+                                    $nav_imgFltr = 'nav_userImg_emp';
+                                }else{
+                                    $nav_imgFltr = 'nav_userImg_unknown';
+                                }
+                            }elseif(auth()->user()->user_status == 'deactivated'){
+                                $nav_imgFltr = 'nav_userImg_red';
                             }else{
                                 $nav_imgFltr = 'nav_userImg_unknown';
                             }
+                            // user's image src and alt
+                            if(!is_null(auth()->user()->user_image) OR !empty(auth()->user()->user_image)){
+                                $user_image_src = asset('storage/svms/user_images/'.auth()->user()->user_image);
+                                $user_image_alt = auth()->user()->user_fname . ' ' . auth()->user()->user_lname.''.$sq.'s profile image';
+                            }else{
+                                if(auth()->user()->user_status == 'active'){
+                                    if(auth()->user()->user_type == 'employee'){
+                                        $user_image_jpg = 'employee_user_image.jpg';
+                                    }elseif(auth()->user()->user_type == 'student'){
+                                        $user_image_jpg = 'student_user_image.jpg';
+                                    }else{
+                                        $user_image_jpg = 'disabled_user_image.jpg';
+                                    }
+                                    $user_image_src = asset('storage/svms/user_images/'.$user_image_jpg);
+                                }else{
+                                    $user_image_src = asset('storage/svms/user_images/no_student_image.jpg');
+                                }
+                                $user_image_alt = 'default user'.$sq.'s profile image';
+                            }
                         @endphp
-                        @if(!is_null(auth()->user()->user_image) OR !empty(auth()->user()->user_image))
-                            <img class="nav_userImg {{ $nav_imgFltr }} mr-2" src="{{ asset('storage/svms/user_images/'.auth()->user()->user_image.'') }}" alt="your profile image">
-                        @else
-                            <img class="nav_userImg {{ $nav_imgFltr }} mr-2" src="{{ asset('storage/svms/user_images/student_user_image.jpg') }}" alt="your profile image">
-                        @endif
+                        <img class="nav_userImg {{ $nav_imgFltr }} mr-2" src="{{$user_image_src}}" alt="{{$user_image_alt}}">
+                        <span class="nav_userFnameTxt mr-2">{{auth()->user()->user_fname }} {{ auth()->user()->user_lname }}</span>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink2">
+                    <div class="dropdown-menu cust_dropdown_menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink2">
                         <form class="dropdown-item" action="{{ route('logout') }}" id="formLogOut" method="POST" style="display: none;">
                             @csrf
                         </form>
                         <a class="dropdown-item" onclick="document.getElementById('formLogOut').submit();">{{ __('Log out') }}</a>
-                        <a class="dropdown-item">{{ __('My Profile') }}</a>
+                        <a class="dropdown-item" href="{{ route('profile.index', 'profile') }}">{{ __('My Profile') }}</a>
                         {{-- <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink"> --}}
                             {{-- <a class="dropdown-item" onclick="document.getElementById('formLogOut').submit();">{{ __('Log out') }}</a>
                             <a class="dropdown-item">{{ __('My Profile') }}</a> --}}

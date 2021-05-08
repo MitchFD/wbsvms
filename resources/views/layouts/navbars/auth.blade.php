@@ -202,16 +202,14 @@
                 </li> --}}
             </ul>
         @else
-            @if(auth()->user()->user_status == 'pending')
-                <ul class="nav">
-                    <li class="{{ $elementActive == 'profile' ? 'active' : '' }}">
-                        <a href="{{ route('profile.index', 'profile') }}">
-                            <i class="nc-icon nc-single-02"></i>
-                            <p>{{ __('My Profile') }}</p>
-                        </a>
-                    </li>
-                </ul>
-            @endif
+            <ul class="nav">
+                <li class="{{ $elementActive == 'profile' ? 'active' : '' }}">
+                    <a href="{{ route('profile.index', 'profile') }}">
+                        <i class="nc-icon nc-single-02"></i>
+                        <p>{{ __('My Profile') }}</p>
+                    </a>
+                </li>
+            </ul>
         @endif
     </div>
 </div>

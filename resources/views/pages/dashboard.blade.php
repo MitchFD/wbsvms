@@ -5,99 +5,106 @@
 
 @section('content')
     <div class="content">
-        {{-- directory link --}}
-        <div class="row mb-3">
-            <div class="col-lg-12 col-md-12 col-sm-12">
-                <a href="{{ route('page.index', 'dashboard') }}" class="directory_active_link">Dashboard </a>
+    @if(auth()->user()->user_status == 'active')
+        @php
+            $get_user_role_info = App\Models\Userroles::select('uRole_id', 'uRole', 'uRole_access')->where('uRole', auth()->user()->user_role)->first();
+            $get_uRole_access   = json_decode(json_encode($get_user_role_info->uRole_access));
+        @endphp
+        @if(in_array('dashboard', $get_uRole_access))
+            {{-- directory link --}}
+            <div class="row mb-3">
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <a href="{{ route('page.index', 'dashboard') }}" class="directory_active_link">Dashboard </a>
+                </div>
             </div>
-        </div>
 
-        {{-- schools violators counts --}}
-        <div class="row">
-            <div class="col-lg-3 col-md-3 col-sm-6">
-                <div class="card card_gbr card_ofh shadow">
-                    <div class="card-body d-flex justify-content-between align-items-center">
-                        <img class="dash_cards_img" src="{{asset('storage/svms/sdca_images/schools_logos/sbcs.jpg')}}" alt="SBCS Logo">
-                        <div class="dash_cards_text_div">
-                            <span class="dash_card_title">SBCS</span>
-                            <span class="dash_card_count">20</span>
+            {{-- schools violators counts --}}
+            <div class="row">
+                <div class="col-lg-3 col-md-3 col-sm-6">
+                    <div class="card card_gbr card_ofh shadow">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <img class="dash_cards_img" src="{{asset('storage/svms/sdca_images/schools_logos/sbcs.jpg')}}" alt="SBCS Logo">
+                            <div class="dash_cards_text_div">
+                                <span class="dash_card_title">SBCS</span>
+                                <span class="dash_card_count">20</span>
+                            </div>
+                        </div>
+                        <div class="card-footer dash_card_footer align-items-center">
+                            <i class="fa fa-user mr-1"></i> 20 violators found
                         </div>
                     </div>
-                    <div class="card-footer dash_card_footer align-items-center">
-                        <i class="fa fa-user mr-1"></i> 20 violators found
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-6">
+                    <div class="card card_gbr card_ofh shadow">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <img class="dash_cards_img" src="{{asset('storage/svms/sdca_images/schools_logos/shsp.jpg')}}" alt="SHSP Logo">
+                            <div class="dash_cards_text_div">
+                                <span class="dash_card_title">SHSP</span>
+                                <span class="dash_card_count">32</span>
+                            </div>
+                        </div>
+                        <div class="card-footer dash_card_footer align-items-center">
+                            <i class="fa fa-user mr-1"></i> 31 violators found
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-6">
+                    <div class="card card_gbr card_ofh shadow">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <img class="dash_cards_img" src="{{asset('storage/svms/sdca_images/schools_logos/sihtm.jpg')}}" alt="SIHTM Logo">
+                            <div class="dash_cards_text_div">
+                                <span class="dash_card_title">SIHTM</span>
+                                <span class="dash_card_count">15</span>
+                            </div>
+                        </div>
+                        <div class="card-footer dash_card_footer align-items-center">
+                            <i class="fa fa-user mr-1"></i> 15 violators found
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-6">
+                    <div class="card card_gbr card_ofh shadow">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <img class="dash_cards_img" src="{{asset('storage/svms/sdca_images/schools_logos/sase.jpg')}}" alt="SASE Logo">
+                            <div class="dash_cards_text_div">
+                                <span class="dash_card_title">SASE</span>
+                                <span class="dash_card_count">8</span>
+                            </div>
+                        </div>
+                        <div class="card-footer dash_card_footer align-items-center">
+                            <i class="fa fa-user mr-1"></i> 8 violators found
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-3 col-sm-6">
-                <div class="card card_gbr card_ofh shadow">
-                    <div class="card-body d-flex justify-content-between align-items-center">
-                        <img class="dash_cards_img" src="{{asset('storage/svms/sdca_images/schools_logos/shsp.jpg')}}" alt="SHSP Logo">
-                        <div class="dash_cards_text_div">
-                            <span class="dash_card_title">SHSP</span>
-                            <span class="dash_card_count">32</span>
-                        </div>
-                    </div>
-                    <div class="card-footer dash_card_footer align-items-center">
-                        <i class="fa fa-user mr-1"></i> 31 violators found
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-3 col-sm-6">
-                <div class="card card_gbr card_ofh shadow">
-                    <div class="card-body d-flex justify-content-between align-items-center">
-                        <img class="dash_cards_img" src="{{asset('storage/svms/sdca_images/schools_logos/sihtm.jpg')}}" alt="SIHTM Logo">
-                        <div class="dash_cards_text_div">
-                            <span class="dash_card_title">SIHTM</span>
-                            <span class="dash_card_count">15</span>
-                        </div>
-                    </div>
-                    <div class="card-footer dash_card_footer align-items-center">
-                        <i class="fa fa-user mr-1"></i> 15 violators found
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-3 col-sm-6">
-                <div class="card card_gbr card_ofh shadow">
-                    <div class="card-body d-flex justify-content-between align-items-center">
-                        <img class="dash_cards_img" src="{{asset('storage/svms/sdca_images/schools_logos/sase.jpg')}}" alt="SASE Logo">
-                        <div class="dash_cards_text_div">
-                            <span class="dash_card_title">SASE</span>
-                            <span class="dash_card_count">8</span>
-                        </div>
-                    </div>
-                    <div class="card-footer dash_card_footer align-items-center">
-                        <i class="fa fa-user mr-1"></i> 8 violators found
-                    </div>
-                </div>
-            </div>
-        </div>
-        {{-- schools violators statistical graph --}}
-        <div class="row">
-            <div class="col-lg-12 col-md-12 col-sm-12">
-                <div class="accordion" id="schoolsViolatorsGraphCollapseParent">
-                    <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray">
-                        <div class="card-header p-0" id="schoolsViolatorsGraphCollapseHeading">
-                            <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#schoolsViolatorsGraphCollapseDiv" aria-expanded="true" aria-controls="schoolsViolatorsGraphCollapseDiv">
-                                <div>
-                                    <span class="card_body_title">Statistical Graph</span>
-                                    <span class="card_body_subtitle">View statistical graph of violators per schools.</span>
-                                </div>
-                                <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
-                            </button>
-                        </div>
-                        <div id="schoolsViolatorsGraphCollapseDiv" class="collapse show cb_t0b15x25" aria-labelledby="schoolsViolatorsGraphCollapseHeading" data-parent="#schoolsViolatorsGraphCollapseParent">
-                            <div class="row">
-                                <div class="col-lg-12 col-md-12 col-sm-12">
-                                    <div class="card card_gbr card_ofh shadow">
-                                        <div class="card-body">
-                                            <div class="chart-container cust_chart_cointainer">
-                                                <canvas id="shoolsViolatorsChart" height="80">
+            {{-- schools violators statistical graph --}}
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <div class="accordion" id="schoolsViolatorsGraphCollapseParent">
+                        <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray">
+                            <div class="card-header p-0" id="schoolsViolatorsGraphCollapseHeading">
+                                <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#schoolsViolatorsGraphCollapseDiv" aria-expanded="true" aria-controls="schoolsViolatorsGraphCollapseDiv">
+                                    <div>
+                                        <span class="card_body_title">Statistical Graph</span>
+                                        <span class="card_body_subtitle">View statistical graph of violators per schools.</span>
+                                    </div>
+                                    <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
+                                </button>
+                            </div>
+                            <div id="schoolsViolatorsGraphCollapseDiv" class="collapse show cb_t0b15x25" aria-labelledby="schoolsViolatorsGraphCollapseHeading" data-parent="#schoolsViolatorsGraphCollapseParent">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <div class="card card_gbr card_ofh shadow">
+                                            <div class="card-body">
+                                                <div class="chart-container cust_chart_cointainer">
+                                                    <canvas id="shoolsViolatorsChart" height="80">
 
-                                                </canvas>
+                                                    </canvas>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="card-footer dash_card_footer align-items-center">
-                                            <i class="fa fa-user mr-1"></i> 31 violators found
+                                            <div class="card-footer dash_card_footer align-items-center">
+                                                <i class="fa fa-user mr-1"></i> 31 violators found
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -106,116 +113,114 @@
                     </div>
                 </div>
             </div>
-        </div>
-        {{-- top 5s --}}
-        {{-- <div class="row">
-            <div class="col-lg-4 col-md-4 col-sm-12">
-                <div class="accordion" id="top5ViolatorsCollapseParent">
-                    <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray">
-                        <div class="card-header p-0" id="top5ViolatorsCollapseHeading">
-                            <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#top5ViolatorsCollapseDiv" aria-expanded="true" aria-controls="top5ViolatorsCollapseDiv">
-                                <div>
-                                    <span class="card_body_title">Top 5 Violators</span>
-                                    <span class="card_body_subtitle">Students with most offenses counts.</span>
-                                </div>
-                                <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
-                            </button>
-                        </div>
-                        <div id="top5ViolatorsCollapseDiv" class="collapse show cb_t0b15x25" aria-labelledby="top5ViolatorsCollapseHeading" data-parent="#top5ViolatorsCollapseParent">
-                            <div class="row">
-                                <div class="col-lg-12 col-md-12 col-sm-12">
-                                    <div class="list-group shadow cust_list_group_ve">
-                                        <a href="#" data-toggle="modal" class="list-group-item list-group-item-action cust_lg_item_ve2">
-                                            <div class="display_user_image_div text-center">
-                                                <img class="display_violator_image2 shadow-sm" src="{{asset('storage/svms/user_images/default_student_img.jpg')}}" alt="student's image">
-                                            </div>
-                                            <div class="information_div">
-                                                <span class="li_info_title">Mitch Frankein O. Desierto</span>
-                                                <span class="li_info_subtitle2"><span class="font-weight-bold">20150348 </span> | SBCS - BSIT 4A | Male</span>
-                                            </div>
-                                        </a>
-                                        <a href="#" data-toggle="modal" class="list-group-item list-group-item-action cust_lg_item_ve2">
-                                            <div class="display_user_image_div text-center">
-                                                <img class="display_violator_image2 shadow-sm" src="{{asset('storage/svms/user_images/default_student_img.jpg')}}" alt="student's image">
-                                            </div>
-                                            <div class="information_div">
-                                                <span class="li_info_title">Mitch Frankein O. Desierto</span>
-                                                <span class="li_info_subtitle"><span class="font-weight-bold">20150348 </span> | SBCS - BSIT 4A | Male</span>
-                                            </div>
-                                        </a>
-                                        <a href="#" data-toggle="modal" class="list-group-item list-group-item-action cust_lg_item_ve2">
-                                            <div class="display_user_image_div text-center">
-                                                <img class="display_violator_image2 shadow-sm" src="{{asset('storage/svms/user_images/default_student_img.jpg')}}" alt="student's image">
-                                            </div>
-                                            <div class="information_div">
-                                                <span class="li_info_title">Mitch Frankein O. Desierto</span>
-                                                <span class="li_info_subtitle2"><span class="font-weight-bold">20150348 </span> | SBCS - BSIT 4A | Male</span>
-                                            </div>
-                                        </a>
-                                        <a href="#" data-toggle="modal" class="list-group-item list-group-item-action cust_lg_item_ve2">
-                                            <div class="display_user_image_div text-center">
-                                                <img class="display_violator_image2 shadow-sm" src="{{asset('storage/svms/user_images/default_student_img.jpg')}}" alt="student's image">
-                                            </div>
-                                            <div class="information_div">
-                                                <span class="li_info_title">Mitch Frankein O. Desierto</span>
-                                                <span class="li_info_subtitle"><span class="font-weight-bold">20150348 </span> | SBCS - BSIT 4A | Male</span>
-                                            </div>
-                                        </a>
-                                        <a href="#" data-toggle="modal" class="list-group-item list-group-item-action cust_lg_item_ve2">
-                                            <div class="display_user_image_div text-center">
-                                                <img class="display_violator_image2 shadow-sm" src="{{asset('storage/svms/user_images/default_student_img.jpg')}}" alt="student's image">
-                                            </div>
-                                            <div class="information_div">
-                                                <span class="li_info_title">Mitch Frankein O. Desierto</span>
-                                                <span class="li_info_subtitle2"><span class="font-weight-bold">20150348 </span> | SBCS - BSIT 4A | Male</span>
-                                            </div>
-                                        </a>
+            {{-- top 5s --}}
+            {{-- <div class="row">
+                <div class="col-lg-4 col-md-4 col-sm-12">
+                    <div class="accordion" id="top5ViolatorsCollapseParent">
+                        <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray">
+                            <div class="card-header p-0" id="top5ViolatorsCollapseHeading">
+                                <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#top5ViolatorsCollapseDiv" aria-expanded="true" aria-controls="top5ViolatorsCollapseDiv">
+                                    <div>
+                                        <span class="card_body_title">Top 5 Violators</span>
+                                        <span class="card_body_subtitle">Students with most offenses counts.</span>
+                                    </div>
+                                    <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
+                                </button>
+                            </div>
+                            <div id="top5ViolatorsCollapseDiv" class="collapse show cb_t0b15x25" aria-labelledby="top5ViolatorsCollapseHeading" data-parent="#top5ViolatorsCollapseParent">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <div class="list-group shadow cust_list_group_ve">
+                                            <a href="#" data-toggle="modal" class="list-group-item list-group-item-action cust_lg_item_ve2">
+                                                <div class="display_user_image_div text-center">
+                                                    <img class="display_violator_image2 shadow-sm" src="{{asset('storage/svms/user_images/default_student_img.jpg')}}" alt="student's image">
+                                                </div>
+                                                <div class="information_div">
+                                                    <span class="li_info_title">Mitch Frankein O. Desierto</span>
+                                                    <span class="li_info_subtitle2"><span class="font-weight-bold">20150348 </span> | SBCS - BSIT 4A | Male</span>
+                                                </div>
+                                            </a>
+                                            <a href="#" data-toggle="modal" class="list-group-item list-group-item-action cust_lg_item_ve2">
+                                                <div class="display_user_image_div text-center">
+                                                    <img class="display_violator_image2 shadow-sm" src="{{asset('storage/svms/user_images/default_student_img.jpg')}}" alt="student's image">
+                                                </div>
+                                                <div class="information_div">
+                                                    <span class="li_info_title">Mitch Frankein O. Desierto</span>
+                                                    <span class="li_info_subtitle"><span class="font-weight-bold">20150348 </span> | SBCS - BSIT 4A | Male</span>
+                                                </div>
+                                            </a>
+                                            <a href="#" data-toggle="modal" class="list-group-item list-group-item-action cust_lg_item_ve2">
+                                                <div class="display_user_image_div text-center">
+                                                    <img class="display_violator_image2 shadow-sm" src="{{asset('storage/svms/user_images/default_student_img.jpg')}}" alt="student's image">
+                                                </div>
+                                                <div class="information_div">
+                                                    <span class="li_info_title">Mitch Frankein O. Desierto</span>
+                                                    <span class="li_info_subtitle2"><span class="font-weight-bold">20150348 </span> | SBCS - BSIT 4A | Male</span>
+                                                </div>
+                                            </a>
+                                            <a href="#" data-toggle="modal" class="list-group-item list-group-item-action cust_lg_item_ve2">
+                                                <div class="display_user_image_div text-center">
+                                                    <img class="display_violator_image2 shadow-sm" src="{{asset('storage/svms/user_images/default_student_img.jpg')}}" alt="student's image">
+                                                </div>
+                                                <div class="information_div">
+                                                    <span class="li_info_title">Mitch Frankein O. Desierto</span>
+                                                    <span class="li_info_subtitle"><span class="font-weight-bold">20150348 </span> | SBCS - BSIT 4A | Male</span>
+                                                </div>
+                                            </a>
+                                            <a href="#" data-toggle="modal" class="list-group-item list-group-item-action cust_lg_item_ve2">
+                                                <div class="display_user_image_div text-center">
+                                                    <img class="display_violator_image2 shadow-sm" src="{{asset('storage/svms/user_images/default_student_img.jpg')}}" alt="student's image">
+                                                </div>
+                                                <div class="information_div">
+                                                    <span class="li_info_title">Mitch Frankein O. Desierto</span>
+                                                    <span class="li_info_subtitle2"><span class="font-weight-bold">20150348 </span> | SBCS - BSIT 4A | Male</span>
+                                                </div>
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-4 col-md-4 col-sm-12">
-                <div class="accordion" id="top5ProgramsCollapseParent">
-                    <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray">
-                        <div class="card-header p-0" id="top5ProgramsCollapseHeading">
-                            <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#top5ProgramsCollapseDiv" aria-expanded="true" aria-controls="top5ProgramsCollapseDiv">
-                                <div>
-                                    <span class="card_body_title">Top 5 Programs</span>
-                                    <span class="card_body_subtitle">Programs with the most violators.</span>
-                                </div>
-                                <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
-                            </button>
-                        </div>
-                        <div id="top5ProgramsCollapseDiv" class="collapse show cb_t0b15x25" aria-labelledby="top5ProgramsCollapseHeading" data-parent="#top5ProgramsCollapseParent">
-                            
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-4 col-sm-12">
-                <div class="accordion" id="top5OffensesCollapseParent">
-                    <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray">
-                        <div class="card-header p-0" id="top5OffensesCollapseHeading">
-                            <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#top5OffensesCollapseDiv" aria-expanded="true" aria-controls="top5OffensesCollapseDiv">
-                                <div>
-                                    <span class="card_body_title">Top 5 Offenses</span>
-                                    <span class="card_body_subtitle">Most Offenses committed by students.</span>
-                                </div>
-                                <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
-                            </button>
-                        </div>
-                        <div id="top5OffensesCollapseDiv" class="collapse show cb_t0b15x25" aria-labelledby="top5OffensesCollapseHeading" data-parent="#top5OffensesCollapseParent">
-                            
+                <div class="col-lg-4 col-md-4 col-sm-12">
+                    <div class="accordion" id="top5ProgramsCollapseParent">
+                        <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray">
+                            <div class="card-header p-0" id="top5ProgramsCollapseHeading">
+                                <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#top5ProgramsCollapseDiv" aria-expanded="true" aria-controls="top5ProgramsCollapseDiv">
+                                    <div>
+                                        <span class="card_body_title">Top 5 Programs</span>
+                                        <span class="card_body_subtitle">Programs with the most violators.</span>
+                                    </div>
+                                    <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
+                                </button>
+                            </div>
+                            <div id="top5ProgramsCollapseDiv" class="collapse show cb_t0b15x25" aria-labelledby="top5ProgramsCollapseHeading" data-parent="#top5ProgramsCollapseParent">
+                                
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div> --}}
-
-        {{-- original --}}
+                <div class="col-lg-4 col-md-4 col-sm-12">
+                    <div class="accordion" id="top5OffensesCollapseParent">
+                        <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray">
+                            <div class="card-header p-0" id="top5OffensesCollapseHeading">
+                                <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#top5OffensesCollapseDiv" aria-expanded="true" aria-controls="top5OffensesCollapseDiv">
+                                    <div>
+                                        <span class="card_body_title">Top 5 Offenses</span>
+                                        <span class="card_body_subtitle">Most Offenses committed by students.</span>
+                                    </div>
+                                    <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
+                                </button>
+                            </div>
+                            <div id="top5OffensesCollapseDiv" class="collapse show cb_t0b15x25" aria-labelledby="top5OffensesCollapseHeading" data-parent="#top5OffensesCollapseParent">
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> --}}
+            {{-- original --}}
             {{-- <div class="row">
                 <div class="col-lg-3 col-md-6 col-sm-6">
                     <div class="card card-stats">
@@ -386,6 +391,12 @@
                     </div>
                 </div>
             </div>--}}
+        @else
+
+        @endif
+    @else
+        
+    @endif
     </div>
 @endsection
 
