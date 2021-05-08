@@ -706,7 +706,7 @@
                             <div class="accordion gCardAccordions" id="deletedOffenses{{$violator_info->Student_Number}}_CollapseParent">
                                 <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray">
                                     <div class="card-header p-0" id="deletedOffensesCollapseHeading">
-                                        <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#deletedOffenses{{$violator_info->Student_Number}}_CollapseDiv" aria-expanded="true" aria-controls="deletedOffenses{{$violator_info->Student_Number}}_CollapseDiv">
+                                        <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse m-0 pb-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#deletedOffenses{{$violator_info->Student_Number}}_CollapseDiv" aria-expanded="true" aria-controls="deletedOffenses{{$violator_info->Student_Number}}_CollapseDiv">
                                             <div>
                                                 <span class="card_body_title">deleted Offenses</span>
                                                 <span class="card_body_subtitle">{{$sum_deleted_offenses }} Deleted Offense{{$doc_s}}</span>
@@ -819,7 +819,7 @@
                                                             }
                                                         }
                                                     @endphp
-                                                    <div class="col-lg-4 col-md-5 col-sm-12">
+                                                    <div class="col-lg-4 col-md-5 col-sm-12 pt-4">
                                                         <div class="accordion violaAccordions shadow cust_accordion_div" id="v{{$deleted_violation->from_viola_id}}Accordion_Parent">
                                                             <div class="card custom_accordion_card">
                                                                 <div class="card-header p-0" id="changeUserRoleCollapse_heading">
@@ -984,7 +984,7 @@
                                                         @endphp
                                                     @endif
                                                     <button class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Recover all Recently Deleted Violations?"><i class="fa fa-external-link" aria-hidden="true"></i></button>
-                                                    <button id="{{$ext_toJson_arrayDeletedViolaIds}}" onclick="recover_allDeletedViolations(this.id)" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Permanently Delete all Recently Deleted Violations?"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                    <button id="{{$ext_toJson_arrayDeletedViolaIds}}" onclick="permDelete_allDeletedViolations(this.id)" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Permanently Delete all Recently Deleted Violations?"><i class="fa fa-trash" aria-hidden="true"></i></button>
                                                 </div>
                                             </div> 
                                         </div>
@@ -1642,6 +1642,20 @@
             var reason1_textareaInput  = document.querySelector("#delete_all_violation_reason");
             var btn_submitDeleteAllViolationRec = document.querySelector("#submit_deleteAllViolationRecBtn");
             var btn_cancelDeleteAllViolationRec = document.querySelector("#cancel_deleteAllViolationRecBtn");
+            // disable /enable submit button
+            function dis_en_btn_submitDeleteAllViolationRec(){
+                var has_delViolMarkSingle = 0;
+                $(".delViolMarkSingle").each(function(){
+                    if(this.checked){
+                        has_delViolMarkSingle = 1;
+                    }
+                });
+                if(reason1_textareaInput.value !== "" && has_delViolMarkSingle != 0){
+                    btn_submitDeleteAllViolationRec.disabled = false;
+                }else{
+                    btn_submitDeleteAllViolationRec.disabled = true;
+                }
+            }
             // selection of sanctions for deletion
             $("#delViolMarkAll").change(function(){
                 if(this.checked){
@@ -1653,6 +1667,7 @@
                     this.checked=false;
                 })              
                 }
+                dis_en_btn_submitDeleteAllViolationRec();
             });
             $(".delViolMarkSingle").click(function () {
                 if ($(this).is(":checked")){
@@ -1665,14 +1680,11 @@
                 }else {
                 $("#delViolMarkAll").prop("checked", false);
                 }
+                dis_en_btn_submitDeleteAllViolationRec();
             });
-            // disable add another input field and submit button if reason textarea is empty
+            // disable add submit button if reason textarea is empty
             $(reason1_textareaInput).keyup(function(){
-                if(reason1_textareaInput.value !== ""){
-                    btn_submitDeleteAllViolationRec.disabled = false;
-                }else{
-                    btn_submitDeleteAllViolationRec.disabled = true;
-                }
+                dis_en_btn_submitDeleteAllViolationRec();
             });
             // disable cancel and sibmit button on submit
             $(form_deleteAllViolationRec).submit(function(){
@@ -1682,14 +1694,14 @@
             });
         });
     </script>
-    {{-- recover all deleted violations --}}
+    {{-- permanent delete all deleted violations --}}
     <script>
-        function recover_allDeletedViolations(del_viola_ids){
+        function permDelete_allDeletedViolations(del_viola_ids){
             var del_viola_ids = del_viola_ids;
             var sel_stud_num = document.getElementById("vp_hidden_stud_num").value;
             var _token = $('input[name="_token"]').val();
             $.ajax({
-                url:"{{ route('violation_records.permanent_delete_all_violations') }}",
+                url:"{{ route('violation_records.permanent_delete_all_violations_form') }}",
                 method:"GET",
                 data:{del_viola_ids:del_viola_ids, sel_stud_num:sel_stud_num, _token:_token},
                 success: function(data){
@@ -1699,7 +1711,62 @@
             });
         }
     </script>
-{{-- delete recorded violation end --}}
+    <script>
+        $('#permanentDeleteAllViolations').on('show.bs.modal', function () {
+            var form_permDeleteAllViolationRec  = document.querySelector("#form_permDeleteAllViolationRec");
+            var btn_submitPermDeleteAllViolationRec = document.querySelector("#submit_permDeleteAllViolationRecBtn");
+            var btn_cancelPermDeleteAllViolationRec = document.querySelector("#cancel_permDeleteAllViolationRecBtn");
+            // disable / enable sumbit button 
+            function dis_en_btn_submitPermDeleteAllViolationRec(){
+                var has_permDelViolMarkSingle = 0;
+                $(".permDelViolMarkSingle").each(function(){
+                    if(this.checked){
+                        has_permDelViolMarkSingle = 1;
+                    }
+                });
+                if(has_permDelViolMarkSingle == 0){
+                    btn_submitPermDeleteAllViolationRec.disabled = true;
+                }else{
+                    btn_submitPermDeleteAllViolationRec.disabled = false;
+                }
+            }
+
+            // selection of sanctions for deletion
+            $("#permDelViolMarkAll").change(function(){
+                if(this.checked){
+                    $(".permDelViolMarkSingle").each(function(){
+                        this.checked=true;
+                    });              
+                }else{
+                    $(".permDelViolMarkSingle").each(function(){
+                        this.checked=false;
+                    });             
+                }
+                dis_en_btn_submitPermDeleteAllViolationRec();
+            });
+            $(".permDelViolMarkSingle").click(function () {
+                if ($(this).is(":checked")){
+                    var isDeleteAllChecked = 0;
+                    $(".permDelViolMarkSingle").each(function(){
+                        if(!this.checked)
+                        isDeleteAllChecked = 1;
+                    })              
+                    if(isDeleteAllChecked == 0){ $("#permDelViolMarkAll").prop("checked", true); }     
+                }else {
+                    $("#permDelViolMarkAll").prop("checked", false);
+                }
+                dis_en_btn_submitPermDeleteAllViolationRec();
+            });
+
+            // disable cancel and sibmit button on submit
+            $(form_permDeleteAllViolationRec).submit(function(){
+                btn_cancelPermDeleteAllViolationRec.disabled = true;
+                btn_submitPermDeleteAllViolationRec.disabled = true;
+                return true;
+            });
+        });
+    </script>
+{{-- permanent delete all deleted violations end --}}
 
 {{-- adding sanctions to all violations per month --}}
     <script>
