@@ -2154,7 +2154,7 @@ class ViolationRecordsController extends Controller
                         <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
                         <div class="btn-group" role="group" aria-label="delete sanctions actions">
                             <button id="cancel_deleteAllViolationRecBtn" type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
-                            <button id="submit_deleteAllViolationRecBtn" type="submit" class="btn btn-round btn_svms_red btn_show_icon m-0" disabled> Delete Violation <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                            <button id="submit_deleteAllViolationRecBtn" type="submit" class="btn btn-round btn_svms_red btn_show_icon m-0" disabled> Delete Violations <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
                         </div>
                     </div>
                 </form>
@@ -2818,8 +2818,12 @@ class ViolationRecordsController extends Controller
             $sel_respo_user_lname  = $request->get('respo_user_lname');
             $sel_respo_user_fname  = $request->get('respo_user_fname');  
         // cusotms
+            if(!is_null($sel_viola_ids) OR !empty($sel_viola_ids)){
+                $count_sel_viola_ids = count($sel_viola_ids);
+            }else{
+                $count_sel_viola_ids = 0;
+            }
             $sq = "'";
-            $count_sel_viola_ids = count($sel_viola_ids);
             if($count_sel_viola_ids > 1){
                 $sv_s = 's';
             }else{
@@ -2924,7 +2928,6 @@ class ViolationRecordsController extends Controller
             return back()->withFailedStatus(' There are no selected Violations for deletion! please try again.');
         }
     }
-
     // permanent delete all violations confirmation modal
     public function permanent_delete_all_violations_form(Request $request){
         // get all request
@@ -3213,7 +3216,7 @@ class ViolationRecordsController extends Controller
                                     <div class="form-group mx-0 mt-0 mb-1">
                                         <div class="custom-control custom-checkbox align-items-center">
                                             <input type="checkbox" name="perm_delete_all_violations" value="perm_delete_all_violations" class="custom-control-input cursor_pointer" id="permDelViolMarkAll" checked>
-                                            <label class="custom-control-label lightBlue_cardBody_chckboxLabel" for="permDelViolMarkAll">Permanent Delete All (3) Offenses.</label>
+                                            <label class="custom-control-label lightBlue_cardBody_chckboxLabel" for="permDelViolMarkAll">Permanent Delete All ('.$sum_all_del_offenses.') Offense'.$sdO_s.'.</label>
                                         </div>
                                     </div>
                                 </div>
@@ -3503,7 +3506,7 @@ class ViolationRecordsController extends Controller
                     </div>
                     <div class="modal-footer border-0">
                         <input type="hidden" name="_token" value="'.csrf_token().'">
-                        <input type="hidden" name="for_viola_id[]" value="'.$sel_viola_id.'">
+                        <input type="hidden" name="recover_viola_ids[]" value="'.$sel_viola_id.'">
                         <input type="hidden" name="sel_stud_num" value="'.$sel_stud_num.'">
                         <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
                         <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
@@ -3519,19 +3522,335 @@ class ViolationRecordsController extends Controller
 
         echo $output;
     }
+    // recover all deleted violations confirmation modal
+    public function recover_all_deleted_violation_form(Request $request){
+        // get all request
+        $sel_viola_ids = json_decode($request->get('recover_viola_ids'), true); 
+        $sel_stud_num  = $request->get('sel_stud_num');
+
+        // try
+        // echo 'student number: ' . $sel_stud_num . '<br/>';
+        // echo 'selected violation ids: <br/>';
+        // if(count($sel_viola_ids) > 0){
+        //     foreach($sel_viola_ids as $this_viola_id){
+        //         echo ': ' . $this_viola_id . '<br/>';
+        //     }
+        // }
+
+        // get violator's info
+        $get_violator_info = Students::select('Last_Name', 'Gender')->where('Student_Number', $sel_stud_num)->first();
+        $violator_Lname    = $get_violator_info->Last_Name;
+        $violator_Gender   = $get_violator_info->Gender;
+        // Mr./Mrs format
+        $violator_gender = Str::lower($violator_Gender);
+        if($violator_gender == 'male'){
+            $vmr_ms = 'Mr.';
+        }elseif($violator_gender == 'female'){
+            $vmr_ms = 'Ms.';
+        }else{
+            $vmr_ms = 'Mr./Ms.';
+        }
+
+        $output = '';
+        $output .= '
+            <div class="modal-body border-0 p-0">
+                <form id="form_recoverAllDeletedViolationRec" action="'.route('violation_records.recover_deleted_violation').'" class="form" enctype="multipart/form-data" method="POST">
+                    <div class="cust_modal_body_gray">
+                    ';
+                    if(count($sel_viola_ids) > 0){
+                        $sum_all_del_offenses = 0;
+                        foreach($sel_viola_ids as $this_viola_id){
+                            // query selected violation's info
+                            $query_this_viola_info = Deletedviolations::where('del_id', $this_viola_id)
+                                                        ->where('del_stud_num', $sel_stud_num)
+                                                        ->first();
+                            $get_from_viola_id              = $query_this_viola_info->from_viola_id;
+                            $get_viola_del_recorded_at      = $query_this_viola_info->del_recorded_at;
+                            $get_viola_del_status           = $query_this_viola_info->del_violation_status;
+                            $get_viola_del_offense_count    = $query_this_viola_info->del_offense_count;
+                            $get_viola_del_minor_off        = $query_this_viola_info->del_minor_off;
+                            $get_viola_del_less_serious_off = $query_this_viola_info->del_less_serious_off;
+                            $get_viola_del_other_off        = $query_this_viola_info->del_other_off;
+                            $get_viola_del_stud_num         = $query_this_viola_info->del_stud_num;
+                            $get_viola_del_has_sanction     = $query_this_viola_info->del_has_sanction;
+                            $get_viola_del_has_sanct_count  = $query_this_viola_info->del_has_sanct_count;
+                            $get_viola_del_respo_user_id    = $query_this_viola_info->del_respo_user_id;
+                            $get_viola_del_cleared_at       = $query_this_viola_info->del_cleared_at;
+                            $get_viola_reason_deletion      = $query_this_viola_info->reason_deletion;
+                            $get_viola_respo_user_id        = $query_this_viola_info->respo_user_id;
+                            $get_viola_deleted_at           = $query_this_viola_info->deleted_at;
+
+                            // sum of all recently deleted offenses
+                            $sum_all_del_offenses += $get_viola_del_offense_count;
+                            if($sum_all_del_offenses > 1){
+                                $sdO_s = 's';
+                            }else{
+                                $sdO_s = '';
+                            }
+
+                            // plural deleted offense count each
+                            if($get_viola_del_offense_count > 1){
+                                $doC_s = 's';
+                            }else{
+                                $doC_s = '';
+                            }
+
+                            // dates
+                            $del_date_recorded = date('F d, Y ~ l - g:i A', strtotime($get_viola_del_recorded_at));
+                            $del_date_cleared = date('F d, Y ~ l - g:i A', strtotime($get_viola_del_cleared_at));
+                            $date_deleted_at = date('F d, Y ~ l - g:i A', strtotime($get_viola_deleted_at));
+
+                            // responsible user
+                            if($get_viola_del_respo_user_id == auth()->user()->id){
+                                $recBy = 'Recorded by you.';
+                                $recByTooltip = 'This Violation was recorded by you on ' . $del_date_recorded.'.';
+                            }else{
+                                $get_recBy_info = Users::select('id', 'user_role', 'user_lname', 'user_fname')
+                                            ->where('id', $get_viola_del_respo_user_id)
+                                            ->first();
+                                $recBy = ucwords($get_recBy_info->user_role).': ' . $get_recBy_info->user_lname;
+                                $recByTooltip = 'This Violation was recorded by ' . ucwords($get_recBy_info->user_role).': ' . $get_recBy_info->user_fname . ' ' . $get_recBy_info->user_lname . ' on ' . $del_date_recorded.'.';
+                            }
+                            // responsible user (deleted violations)
+                            if($get_viola_respo_user_id == auth()->user()->id){
+                                $delBy = 'Deleted by you.';
+                                $delByTooltip = 'This Violation was deleted by you on ' . $date_deleted_at.'.';
+                            }else{
+                                $get_delBy_info = App\Models\Users::select('id', 'user_role', 'user_lname', 'user_fname')
+                                                        ->where('id', $get_viola_respo_user_id)
+                                                        ->first();
+                                $delBy = ucwords($get_delBy_info->user_role).': ' . $get_delBy_info->user_lname;
+                                $delByTooltip = 'This Violation was deleted by ' . ucwords($get_delBy_info->user_role).': ' . $get_delBy_info->user_fname . ' ' . $get_delBy_info->user_lname . ' on ' . $date_deleted_at.'.';
+                            }
+
+                            // cleared/uncleared classes
+                            if($get_viola_del_status === 'cleared'){
+                                $light_cardBody       = 'lightGreen_cardBody';
+                                $light_cardBody_title = 'lightGreen_cardBody_greenTitle';
+                                $light_cardBody_list  = 'lightGreen_cardBody_list';
+                                $info_textClass       = 'cust_info_txtwicon4';
+                                $info_iconClass       = 'fa fa-check-square-o';
+                                $class_violationStat1 = 'text-success font-italic';
+                                $txt_violationStat1   = '~ Cleared';
+                            }else{
+                                $light_cardBody       = 'lightRed_cardBody';
+                                $light_cardBody_title = 'lightRed_cardBody_redTitle';
+                                $light_cardBody_list  = 'lightRed_cardBody_list';
+                                $info_textClass       = 'cust_info_txtwicon3';
+                                $info_iconClass       = 'fa fa-exclamation-circle';
+                                $class_violationStat1 = 'text_svms_red font-italic';
+                                $txt_violationStat1   = '~ Not Cleared';    
+                            }
+
+                            // output each recently deleted violations
+                            $output .= '
+                            <div class="accordion shadow-none cust_accordion_div1 mb-2" id="recoverDelAllViola_SelectOption_Parent'.$this_viola_id.'">
+                                <div class="card custom_accordion_card">
+                                    <div class="card-header py10l15r10 d-flex justify-content-between align-items-center" id="recoverDelAllViola_SelectOption_heading'.$this_viola_id.'">
+                                        <div class="form-group m-0">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" id="'.$this_viola_id.'_markRecoverDelThisViola_id" value="'.$get_from_viola_id.'" name="recover_viola_ids[]" class="custom-control-input cust_checkbox_label recoverDelViolMarkSingle" checked>
+                                                <label class="custom-control-label cust_checkbox_label" for="'.$this_viola_id.'_markRecoverDelThisViola_id">
+                                                    <span class="li_info_title"> '.date('F d, Y', strtotime($del_date_recorded)).' <span class="'.$class_violationStat1.'"> ' . $txt_violationStat1.'</span></span>
+                                                    <span class="li_info_subtitle">'.date('l - g:i A', strtotime($del_date_recorded)).'</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <button class="btn cust_btn_smcircle3" type="button" data-toggle="collapse" data-target="#recoverDelAllViola_SelectOption'.$this_viola_id.'" aria-expanded="true" aria-controls="recoverDelAllViola_SelectOption'.$this_viola_id.'">
+                                            <i class="nc-icon nc-minimal-down"></i>
+                                        </button>
+                                    </div>
+                                    <div id="recoverDelAllViola_SelectOption'.$this_viola_id.'" class="collapse cust_collapse_active cb_t0b12y20" aria-labelledby="recoverDelAllViola_SelectOption_heading'.$this_viola_id.'" data-parent="#recoverDelAllViola_SelectOption_Parent'.$this_viola_id.'">
+                                    ';
+                                    if(!is_null(json_decode(json_encode($get_viola_del_minor_off), true)) OR !empty(json_decode(json_encode($get_viola_del_minor_off), true))){
+                                        $vmo_x = 1;
+                                        $output .= '
+                                        <div class="card-body '.  $light_cardBody  .' mb-2">
+                                            <span class="'. $light_cardBody_title  .' mb-1">Minor Offenses:</span>
+                                            ';
+                                            foreach(json_decode(json_encode($get_viola_del_minor_off), true) as $viola_minor_offenses){
+                                                $output .= '<span class="'. $light_cardBody_list  .'"><span class="font-weight-bold mr-1">'. $vmo_x++ .'.</span> '. $viola_minor_offenses .'</span>';
+                                            }
+                                            $output .='
+                                        </div>
+                                        ';
+                                    }
+                                    if(!is_null(json_decode(json_encode($get_viola_del_less_serious_off), true)) OR !empty(json_decode(json_encode($get_viola_del_less_serious_off), true))){
+                                        $vlso_x = 1;
+                                        $output .= '
+                                        <div class="card-body '.  $light_cardBody  .' mb-2">
+                                            <span class="'. $light_cardBody_title  .' mb-1">Less Serious Offenses:</span>
+                                            ';
+                                            foreach(json_decode(json_encode($get_viola_del_less_serious_off), true) as $viola_less_serious_offenses){
+                                                $output .= '<span class="'. $light_cardBody_list  .'"><span class="font-weight-bold mr-1">'. $vlso_x++ .'.</span> '. $viola_less_serious_offenses .'</span>';
+                                            }
+                                            $output .='
+                                        </div>
+                                        ';
+                                    }
+                                    if(!is_null(json_decode(json_encode($get_viola_del_other_off), true)) OR !empty(json_decode(json_encode($get_viola_del_other_off), true))){
+                                        if(!in_array(null, json_decode(json_encode($get_viola_del_other_off), true))){
+                                            $voo_x = 1;
+                                            $output .= '
+                                            <div class="card-body '.  $light_cardBody  .' mb-2">
+                                                <span class="'. $light_cardBody_title  .' mb-1">Other Offenses:</span>
+                                                ';
+                                                foreach(json_decode(json_encode($get_viola_del_other_off), true) as $viola_other_offenses){
+                                                    $output .= '<span class="'. $light_cardBody_list  .'"><span class="font-weight-bold mr-1">'. $voo_x++ .'.</span> '. $viola_other_offenses .'</span>';
+                                                }
+                                                $output .='
+                                            </div>
+                                            ';
+                                        }
+                                    }
+                                    if($get_viola_del_has_sanction > 0){
+                                        // get all sanctions 
+                                        $get_all_sanctions = Deletedsanctions::select('del_sanct_status', 'del_sanct_details', 'del_completed_at')
+                                                                            ->where('del_stud_num', $sel_stud_num)
+                                                                            ->where('del_for_viola_id', $get_from_viola_id)
+                                                                            ->orderBy('deleted_at', 'asc')
+                                                                            ->offset(0)
+                                                                            ->limit($get_viola_del_has_sanct_count)
+                                                                            ->get();
+                                        $count_completed_sanction = Deletedsanctions::where('del_stud_num', $sel_stud_num)
+                                                                            ->where('del_for_viola_id', $get_from_viola_id)
+                                                                            ->where('del_sanct_status', '=', 'completed')
+                                                                            ->offset(0)
+                                                                            ->limit($get_viola_del_has_sanct_count)
+                                                                            ->count();
+                                        $count_all_sanctions = count($get_all_sanctions);
+                                        if($count_all_sanctions > 1){
+                                            $sc_s = 's';
+                                        }else{
+                                            $sc_s = '';
+                                        }
+                                        $output .= '
+                                        <div class="card-body lightGreen_cardBody mb-2">
+                                            <div class="d-flex justify-content-between">
+                                                <span class="lightGreen_cardBody_greenTitle mb-1">Sanctions:</span>
+                                            </div>';
+
+                                            foreach($get_all_sanctions as $this_vrSanction){
+                                                if($this_vrSanction->del_sanct_status === 'completed'){
+                                                    $sanct_icon = 'fa fa-check-square-o';
+                                                }else{
+                                                    $sanct_icon = 'fa fa-square-o';
+                                                }
+                                                $output .= '<span class="lightGreen_cardBody_list"><i class="'.$sanct_icon . ' mr-1 font-weight-bold" aria-hidden="true"></i> ' . $this_vrSanction->del_sanct_details.'</span>';
+                                            }
+                                            $output .= '
+                                        </div>
+                                        ';
+                                    }
+                                    if($get_viola_del_has_sanction > 0){
+                                        // date completed
+                                        if ($count_completed_sanction == $count_all_sanctions) {
+                                            $info_icon1Class = 'fa fa-check-square-o';
+                                            $sancStatusTooltip = $count_all_sanctions . ' corresponding Sanction'.$sc_s . ' for this violation has been completed by ' . $vmr_ms . ' ' . $violator_Lname . ' on ' . $del_date_cleared.'.';
+                                        }else{
+                                            $info_icon1Class = 'fa fa-list-ul';
+                                            $sancStatusTooltip = $count_all_sanctions . ' corresponding Sanction'.$sc_s . ' for ' . $get_viola_del_offense_count . ' Offense'.$doC_s.' committed by ' . $vmr_ms . ' ' . $violator_Lname . ' on ' . $del_date_recorded.'.';
+                                        }
+                                        $output .= '
+                                        <div class="row mt-3 cursor_pointer" data-toggle="tooltip" data-placement="top" title="' . $sancStatusTooltip . '">
+                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                                ';
+                                                $output .= '
+                                                    <span class="cust_info_txtwicon4 font-weight-bold"><i class="'.$info_icon1Class . ' mr-1" aria-hidden="true"></i> ' . $get_viola_del_has_sanct_count . ' Sanction'.$sc_s.'</span>  
+                                                ';
+                                                if($get_viola_del_status === 'cleared'){
+                                                    $output .= '<span class="cust_info_txtwicon"><i class="fa fa-calendar-check-o mr-1" aria-hidden="true"></i> ' . $del_date_cleared . '</span> ';
+                                                }
+                                                $output .= '
+                                            </div>
+                                        </div>
+                                        <hr class="hr_gry">
+                                        ';
+                                    }
+                                    $output .='
+                                        <div class="row mt-3 cursor_pointer" data-toggle="tooltip" data-placement="top" title="' . $recByTooltip . '">
+                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                                <span class="' .$info_textClass . ' font-weight-bold"><i class="' .$info_iconClass . ' mr-1" aria-hidden="true"></i> ' .$get_viola_del_offense_count. ' Offense' .$doC_s. '</span>
+                                                <span class="cust_info_txtwicon"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> ' . $recBy . '</span>  
+                                            </div>
+                                        </div>
+                                        ';
+                                        if(!is_null($get_viola_reason_deletion) OR !empty($get_viola_reason_deletion)){
+                                            $output .= '
+                                            <div class="row mt-3">
+                                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                                    <div class="card-body lightBlue_cardBody shadow-none">
+                                                        <span class="lightBlue_cardBody_blueTitle">Reason for Deleting Violation:</span>
+                                                        <span class="lightBlue_cardBody_list">'.$get_viola_reason_deletion.'</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            ';
+                                        }
+                                        $output .= '
+                                        <div class="row mt-3 cursor_pointer" data-toggle="tooltip" data-placement="top" title="' . $delByTooltip . '">
+                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                                <span class="cust_info_txtwicon"><i class="fa fa-calendar-minus-o mr-1" aria-hidden="true"></i> ' . $date_deleted_at . '</span> 
+                                                <span class="cust_info_txtwicon"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> ' . $delBy . '</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            ';
+                        }
+                    }
+                    $output .= '
+                    </div>
+                    <div class="modal-body pb-0">
+                        <div class="card-body lightBlue_cardBody shadow-none">
+                            <div class="row mb-2">
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <div class="form-group mx-0 mt-0 mb-1">
+                                        <div class="custom-control custom-checkbox align-items-center">
+                                            <input type="checkbox" name="recover_delete_all_violations" value="recover_delete_all_violations" class="custom-control-input cursor_pointer" id="recoverDelViolMarkAll" checked>
+                                            <label class="custom-control-label lightBlue_cardBody_chckboxLabel" for="recoverDelViolMarkAll">Recover All Deleted ('.$sum_all_del_offenses.') Offense'.$sdO_s.'.</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="lightBlue_cardBody_notice"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i> This action will recover selected Recently Deleted violation records and its corresponding sanctions.</span>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <input type="hidden" name="_token" value="'.csrf_token().'">
+                        <input type="hidden" name="sel_stud_num" value="'.$sel_stud_num.'">
+                        <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
+                        <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
+                        <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
+                        <div class="btn-group" role="group" aria-label="delete sanctions actions">
+                            <button id="cancel_recoverAllDeletedViolationRecBtn" type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                            <button id="submit_recoverAllDeletedViolationRecBtn" type="submit" class="btn btn-round btn_svms_red btn_show_icon m-0"> Recover Violation <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        ';
+
+        echo $output;
+    }
     // process recover deleted violation
     public function recover_deleted_violation(Request $request){
         // custom values
             $now_timestamp     = now();
         // get all request
-            $sel_viola_ids         = json_decode(json_encode($request->get('for_viola_id'))); 
+            $sel_viola_ids         = json_decode(json_encode($request->get('recover_viola_ids'))); 
             $sel_stud_num          = $request->get('sel_stud_num');
             $sel_respo_user_id     = $request->get('respo_user_id');
             $sel_respo_user_lname  = $request->get('respo_user_lname');
             $sel_respo_user_fname  = $request->get('respo_user_fname');  
         // cusotms
+            if(!is_null($sel_viola_ids) OR !empty($sel_viola_ids)){
+                $count_sel_viola_ids = count($sel_viola_ids);
+            }else{
+                $count_sel_viola_ids = 0;
+            }
             $sq = "'";
-            $count_sel_viola_ids = count($sel_viola_ids);
             if($count_sel_viola_ids > 1){
                 $sv_s = 's';
             }else{

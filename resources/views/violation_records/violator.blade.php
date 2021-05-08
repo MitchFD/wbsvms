@@ -983,7 +983,7 @@
                                                             }
                                                         @endphp
                                                     @endif
-                                                    <button class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Recover all Recently Deleted Violations?"><i class="fa fa-external-link" aria-hidden="true"></i></button>
+                                                    <button id="{{$ext_toJson_arrayDeletedViolaIds}}" onclick="recover_allDeletedViolations(this.id)" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Recover all Recently Deleted Violations?"><i class="fa fa-external-link" aria-hidden="true"></i></button>
                                                     <button id="{{$ext_toJson_arrayDeletedViolaIds}}" onclick="permDelete_allDeletedViolations(this.id)" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Permanently Delete all Recently Deleted Violations?"><i class="fa fa-trash" aria-hidden="true"></i></button>
                                                 </div>
                                             </div> 
@@ -1087,23 +1087,6 @@
             </div>
         </div>
     {{-- permanently delete violation on modal end --}}
-    {{-- recover delete violation on modal --}}
-        <div class="modal fade" id="recoverDeletedViolationModal" tabindex="-1" role="dialog" aria-labelledby="recoverDeletedViolationModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content cust_modal">
-                    <div class="modal-header border-0">
-                        <span class="modal-title cust_modal_title" id="recoverDeletedViolationModalLabel">Recover Violation?</span>
-                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div id="recoverDeletedViolationModalHtmlData">
-                    
-                    </div>
-                </div>
-            </div>
-        </div>
-    {{-- recover delete violation on modal end --}}
     {{-- delete all monthly violations modal --}}
         <div class="modal fade" id="deleteAllMonthlyViolationModal" tabindex="-1" role="dialog" aria-labelledby="deleteAllMonthlyViolationModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -1138,6 +1121,41 @@
             </div>
         </div>
     {{-- permanently delete all violations modal end --}}
+
+    {{-- recover delete violation on modal --}}
+        {{-- single recovey --}}
+        <div class="modal fade" id="recoverDeletedViolationModal" tabindex="-1" role="dialog" aria-labelledby="recoverDeletedViolationModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="recoverDeletedViolationModalLabel">Recover Violation?</span>
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="recoverDeletedViolationModalHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- multiple recovery --}}
+        <div class="modal fade" id="recoverAllDeletedViolationModal" tabindex="-1" role="dialog" aria-labelledby="recoverAllDeletedViolationModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="recoverAllDeletedViolationModalLabel">Recover Deleted Violations?</span>
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="recoverAllDeletedViolationModalHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{-- recover delete violation on modal end --}}
 
 @endsection
 
@@ -1558,36 +1576,6 @@
             });
         });
     </script>
-    {{-- recover deleted violation --}}
-    <script>
-        function recoverThisDeletedViolation(sel_viola_id){
-            var sel_viola_id = sel_viola_id;
-            var sel_stud_num = document.getElementById("vp_hidden_stud_num").value;
-            var _token = $('input[name="_token"]').val();
-            $.ajax({
-                url:"{{ route('violation_records.recover_deleted_violation_form') }}",
-                method:"GET",
-                data:{sel_viola_id:sel_viola_id, sel_stud_num:sel_stud_num, _token:_token},
-                success: function(data){
-                    $('#recoverDeletedViolationModalHtmlData').html(data);
-                    $('#recoverDeletedViolationModal').modal('show');
-                }
-            });
-        }
-    </script>
-    <script>
-        $('#form_recoverDeletedViolationRec').on('show.bs.modal', function () {
-            var form_permDeleteViolationRec  = document.querySelector("#form_permDeleteViolationRec");
-            var btn_submitRecoverDeletedViolationRec = document.querySelector("#submit_recoverDeletedViolationRecBtn");
-            var btn_cancelRecoverDeletedViolationRec = document.querySelector("#cancel_recoverDeletedViolationRecBtn");
-            // disable cancel and sibmit button on submit
-            $(form_permDeleteViolationRec).submit(function(){
-                btn_cancelRecoverDeletedViolationRec.disabled = true;
-                btn_submitRecoverDeletedViolationRec.disabled = true;
-                return true;
-            });
-        });
-    </script>
     {{-- permanent deletion --}}
     <script>
         function permanentDeleteThisViolation(sel_viola_id){
@@ -1767,6 +1755,111 @@
         });
     </script>
 {{-- permanent delete all deleted violations end --}}
+
+{{-- recover deleted violation --}}
+    {{-- single recovery --}}
+    <script>
+        function recoverThisDeletedViolation(sel_viola_id){
+            var sel_viola_id = sel_viola_id;
+            var sel_stud_num = document.getElementById("vp_hidden_stud_num").value;
+            var _token = $('input[name="_token"]').val();
+            $.ajax({
+                url:"{{ route('violation_records.recover_deleted_violation_form') }}",
+                method:"GET",
+                data:{sel_viola_id:sel_viola_id, sel_stud_num:sel_stud_num, _token:_token},
+                success: function(data){
+                    $('#recoverDeletedViolationModalHtmlData').html(data);
+                    $('#recoverDeletedViolationModal').modal('show');
+                }
+            });
+        }
+    </script>
+    <script>
+        $('#recoverDeletedViolationModal').on('show.bs.modal', function () {
+            var form_recoverDeletedViolationRec  = document.querySelector("#form_recoverDeletedViolationRec");
+            var btn_submitRecoverDeletedViolationRec = document.querySelector("#submit_recoverDeletedViolationRecBtn");
+            var btn_cancelRecoverDeletedViolationRec = document.querySelector("#cancel_recoverDeletedViolationRecBtn");
+            // disable cancel and sibmit button on submit
+            $(form_recoverDeletedViolationRec).submit(function(){
+                btn_cancelRecoverDeletedViolationRec.disabled = true;
+                btn_submitRecoverDeletedViolationRec.disabled = true;
+                return true;
+            });
+        });
+    </script>
+    {{-- multiple recovery --}}
+    <script>
+        function recover_allDeletedViolations(recover_viola_ids){
+            var recover_viola_ids = recover_viola_ids;
+            var sel_stud_num = document.getElementById("vp_hidden_stud_num").value;
+            var _token = $('input[name="_token"]').val();
+            $.ajax({
+                url:"{{ route('violation_records.recover_all_deleted_violation_form') }}",
+                method:"GET",
+                data:{recover_viola_ids:recover_viola_ids, sel_stud_num:sel_stud_num, _token:_token},
+                success: function(data){
+                    $('#recoverAllDeletedViolationModalHtmlData').html(data);
+                    $('#recoverAllDeletedViolationModal').modal('show');
+                }
+            });
+        }
+    </script>
+    <script>
+        $('#recoverAllDeletedViolationModal').on('show.bs.modal', function () {
+            var form_recoverAllDeletedViolationRec  = document.querySelector("#form_recoverAllDeletedViolationRec");
+            var btn_submitRecoverAllDeletedViolationRec = document.querySelector("#submit_recoverAllDeletedViolationRecBtn");
+            var btn_cancelRecoverAllDeletedViolationRec = document.querySelector("#cancel_recoverAllDeletedViolationRecBtn");
+            // disable / enable sumbit button 
+            function dis_en_btn_submitRecoverAllDeletedViolationRec(){
+                var has_recoverAllDelViolMarkSingle = 0;
+                $(".recoverDelViolMarkSingle").each(function(){
+                    if(this.checked){
+                        has_recoverAllDelViolMarkSingle = 1;
+                    }
+                });
+                if(has_recoverAllDelViolMarkSingle == 0){
+                    btn_submitRecoverAllDeletedViolationRec.disabled = true;
+                }else{
+                    btn_submitRecoverAllDeletedViolationRec.disabled = false;
+                }
+            }
+
+            // selection of sanctions for deletion
+            $("#recoverDelViolMarkAll").change(function(){
+                if(this.checked){
+                    $(".recoverDelViolMarkSingle").each(function(){
+                        this.checked=true;
+                    });              
+                }else{
+                    $(".recoverDelViolMarkSingle").each(function(){
+                        this.checked=false;
+                    });             
+                }
+                dis_en_btn_submitRecoverAllDeletedViolationRec();
+            });
+            $(".recoverDelViolMarkSingle").click(function () {
+                if ($(this).is(":checked")){
+                    var isRecoverAllChecked = 0;
+                    $(".recoverDelViolMarkSingle").each(function(){
+                        if(!this.checked)
+                        isRecoverAllChecked = 1;
+                    })              
+                    if(isRecoverAllChecked == 0){ $("#recoverDelViolMarkAll").prop("checked", true); }     
+                }else {
+                    $("#recoverDelViolMarkAll").prop("checked", false);
+                }
+                dis_en_btn_submitRecoverAllDeletedViolationRec();
+            });
+
+            // disable cancel and sibmit button on submit
+            $(form_recoverAllDeletedViolationRec).submit(function(){
+                btn_cancelRecoverAllDeletedViolationRec.disabled = true;
+                btn_submitRecoverAllDeletedViolationRec.disabled = true;
+                return true;
+            });
+        });
+    </script>
+{{-- recover deleted violation end --}}
 
 {{-- adding sanctions to all violations per month --}}
     <script>

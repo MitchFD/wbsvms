@@ -166,12 +166,14 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::post('violation_records/delete_all_monthly_violations', 'App\Http\Controllers\ViolationRecordsController@delete_all_monthly_violations')->name('violation_records.delete_all_monthly_violations');
 	// permanent delete all violations confirmation on modal
 	Route::get('violation_records/permanent_delete_all_violations_form', 'App\Http\Controllers\ViolationRecordsController@permanent_delete_all_violations_form')->name('violation_records.permanent_delete_all_violations_form');
-	
+
 	// process permanent delete violation
 	Route::post('violation_records/permanent_delete_violation', 'App\Http\Controllers\ViolationRecordsController@permanent_delete_violation')->name('violation_records.permanent_delete_violation');
 
-	// recover deleted violation confirmation on modal
+	// single recovery of violations confirmation on modal
 	Route::get('violation_records/recover_deleted_violation_form', 'App\Http\Controllers\ViolationRecordsController@recover_deleted_violation_form')->name('violation_records.recover_deleted_violation_form');
+	// multiple recvery of violations confirmation on modal
+	Route::get('violation_records/recover_all_deleted_violation_form', 'App\Http\Controllers\ViolationRecordsController@recover_all_deleted_violation_form')->name('violation_records.recover_all_deleted_violation_form');
 	// process recover deleted violation
 	Route::post('violation_records/recover_deleted_violation', 'App\Http\Controllers\ViolationRecordsController@recover_deleted_violation')->name('violation_records.recover_deleted_violation');
 });
