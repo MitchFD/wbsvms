@@ -160,6 +160,8 @@ Route::group(['middleware' => 'auth'], function () {
 	// permanent delete violation confirmation on modal
 	Route::get('violation_records/permanently_delete_violation_form', 'App\Http\Controllers\ViolationRecordsController@permanently_delete_violation_form')->name('violation_records.permanently_delete_violation_form');
 
+	// temporary delete all yearly violation confirmation on modal
+	Route::get('violation_records/delete_all_yearly_violations_form', 'App\Http\Controllers\ViolationRecordsController@delete_all_yearly_violations_form')->name('violation_records.delete_all_yearly_violations_form');
 	// temporary delete all monthly violation confirmation on modal
 	Route::get('violation_records/delete_all_monthly_violations_form', 'App\Http\Controllers\ViolationRecordsController@delete_all_monthly_violations_form')->name('violation_records.delete_all_monthly_violations_form');
 	// process temporary deletion of all violation

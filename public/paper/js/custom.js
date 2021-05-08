@@ -78,10 +78,10 @@
         $(".gCardAccordions .gCardAccordions_collapse").on('shown.bs.collapse', function (){
             var active_gCards = $(this).attr('id');
             var gCards_hideAccordions= localStorage.gCards_hideAccordions === undefined ? new Array() : JSON.parse(localStorage.gCards_hideAccordions);
-            var elementIndex=$.inArray(active_gCards,gCards_hideAccordions);
-            if (elementIndex!==-1) //check the array
+            var elementAIndex=$.inArray(active_gCards,gCards_hideAccordions);
+            if (elementAIndex!==-1) //check the array
             {        
-                gCards_hideAccordions.splice(elementIndex,1); //remove item from array
+                gCards_hideAccordions.splice(elementAIndex,1); //remove item from array
             }
             localStorage.gCards_hideAccordions=JSON.stringify(gCards_hideAccordions); //save array on localStorage
         });
@@ -103,14 +103,15 @@
     // MAIN GRAY CARD ACCORDIONS END
 
     // VIOLATION CARDS ACCORDIONS
+    // "show" is default
     $(document).ready(function(){
         $(".violaAccordions .violaAccordions_collapse").on('shown.bs.collapse', function (){
             var active_vCards = $(this).attr('id');
             var violaCards_hideAccordions= localStorage.violaCards_hideAccordions === undefined ? new Array() : JSON.parse(localStorage.violaCards_hideAccordions);
-            var elementIndex=$.inArray(active_vCards,violaCards_hideAccordions);
-            if (elementIndex!==-1) //check the array
+            var elementBIndex=$.inArray(active_vCards,violaCards_hideAccordions);
+            if (elementBIndex!==-1) //check the array
             {        
-                violaCards_hideAccordions.splice(elementIndex,1); //remove item from array
+                violaCards_hideAccordions.splice(elementBIndex,1); //remove item from array
             }
             localStorage.violaCards_hideAccordions=JSON.stringify(violaCards_hideAccordions); //save array on localStorage
         });
@@ -126,6 +127,33 @@
             if ($("#"+violaCards_hideAccordions[i]).hasClass('violaAccordions_collapse')) // check if this is a violaCards_hideAccordions
             {
                 $("#"+violaCards_hideAccordions[i]).collapse("hide");
+            }
+        }
+    });
+    // "hide" is default
+    $(document).ready(function(){
+        $(".hidden_violaAccordions .hidden_violaAccordions_collapse").on('shown.bs.collapse', function (){
+            var inactive_vCards = $(this).attr('id');
+            var hidden_violaCards_showAccordions= localStorage.hidden_violaCards_showAccordions === undefined ? new Array() : JSON.parse(localStorage.hidden_violaCards_showAccordions);
+            if ($.inArray(inactive_vCards,hidden_violaCards_showAccordions)==-1) //check that the element is not in the array
+                hidden_violaCards_showAccordions.push(inactive_vCards);
+            localStorage.hidden_violaCards_showAccordions=JSON.stringify(hidden_violaCards_showAccordions);
+        });
+        $(".hidden_violaAccordions .hidden_violaAccordions_collapse").on('hidden.bs.collapse', function (){
+            var inactive_vCards = $(this).attr('id');
+            var hidden_violaCards_showAccordions= localStorage.hidden_violaCards_showAccordions === undefined ? new Array() : JSON.parse(localStorage.hidden_violaCards_showAccordions);
+            var elementCIndex=$.inArray(inactive_vCards,hidden_violaCards_showAccordions);
+            if (elementCIndex!==-1) //check the array
+            {        
+                hidden_violaCards_showAccordions.splice(elementCIndex,1); //remove item from array
+            }
+            localStorage.hidden_violaCards_showAccordions=JSON.stringify(hidden_violaCards_showAccordions); //save array on localStorage
+        });
+        var hidden_violaCards_showAccordions=localStorage.hidden_violaCards_showAccordions === undefined ? new Array() : JSON.parse(localStorage.hidden_violaCards_showAccordions); //get all hidden_violaCards_showAccordions
+        for (var i in hidden_violaCards_showAccordions){ //<-- hidden_violaCards_showAccordions is the name of the cookie
+            if ($("#"+hidden_violaCards_showAccordions[i]).hasClass('hidden_violaAccordions_collapse')) // check if this is a hidden_violaCards_showAccordions
+            {
+                $("#"+hidden_violaCards_showAccordions[i]).collapse("show");
             }
         }
     });

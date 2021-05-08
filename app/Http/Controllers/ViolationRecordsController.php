@@ -275,7 +275,6 @@ class ViolationRecordsController extends Controller
             return view('violation_records.unknown_violator')->with(compact('violator_id'));
         }
     }
-
     // add new violation entry
     public function new_violation_form_modal(Request $request){
         // get student number
@@ -1904,6 +1903,7 @@ class ViolationRecordsController extends Controller
             $vmr_ms = 'Mr./Ms.';
         }
 
+        // output
         $output = '';
         $output .= '
             <div class="modal-body border-0 p-0">
@@ -2170,6 +2170,289 @@ class ViolationRecordsController extends Controller
         // echo 'violation count: ' . $count_sel_viola . '<br/>';
         // echo 'Offenses count: ' . $sum_all_offenses . '<br/>';
     }
+    // temporary delete all yearly violations confirmation modal
+    public function delete_all_yearly_violations_form(Request $request){
+        // get all request
+        $sel_yearly_viola = $request->get('sel_yearly_viola');
+        $sel_stud_num      = $request->get('sel_stud_num');
+
+        // try
+        // echo 'student number: ' . $sel_stud_num.'<br/>';
+        // echo 'delete all violations from year: ' . $sel_yearly_viola.'<br/>';
+
+        // get violator's info
+        $get_violator_info = Students::select('Last_Name', 'Gender')->where('Student_Number', $sel_stud_num)->first();
+        $violator_Lname    = $get_violator_info->Last_Name;
+        $violator_Gender   = $get_violator_info->Gender;
+        // Mr./Mrs format
+        $violator_gender = Str::lower($violator_Gender);
+        if($violator_gender == 'male'){
+            $vmr_ms = 'Mr.';
+        }elseif($violator_gender == 'female'){
+            $vmr_ms = 'Ms.';
+        }else{
+            $vmr_ms = 'Mr./Ms.';
+        }
+
+        // output
+        $output = '';
+        $output .= '
+            <div class="modal-body border-0 p-0">
+                <form id="form_deleteAllYearlyViolationRec" action="'.route('violation_records.delete_all_monthly_violations').'" class="form" enctype="multipart/form-data" method="POST">
+                    <div class="cust_modal_body_gray">
+                    ';
+                    // query all violations for the selected month
+                    $query_all_viola_info = Violations::where('stud_num', $sel_stud_num)
+                    ->whereYear('recorded_at', $sel_yearly_viola)
+                    ->get();
+
+                    $count_sel_viola = count($query_all_viola_info);
+                    if($count_sel_viola > 0){
+                        $sum_all_offenses = 0;
+                        foreach($query_all_viola_info as $query_this_viola_info){
+                            // get violation info
+                            $get_viola_id               = $query_this_viola_info->viola_id;
+                            $get_viola_recorded_at      = $query_this_viola_info->recorded_at;
+                            $get_viola_status           = $query_this_viola_info->violation_status;
+                            $get_viola_offense_count    = $query_this_viola_info->offense_count;
+                            $get_viola_minor_off        = $query_this_viola_info->minor_off;
+                            $get_viola_less_serious_off = $query_this_viola_info->less_serious_off;
+                            $get_viola_other_off        = $query_this_viola_info->other_off;
+                            $get_viola_stud_num         = $query_this_viola_info->stud_num;
+                            $get_viola_has_sanction     = $query_this_viola_info->has_sanction;
+                            $get_viola_has_sanct_count  = $query_this_viola_info->has_sanct_count;
+                            $get_viola_respo_user_id    = $query_this_viola_info->respo_user_id;
+                            $get_viola_cleared_at       = $query_this_viola_info->cleared_at;
+
+                            // sum of all offenses
+                            $sum_all_offenses += $get_viola_offense_count;
+                            if($sum_all_offenses > 1){
+                                $sO_s = 's';
+                            }else{
+                                $sO_s = '';
+                            }
+
+                            // plural offense count each
+                            if($get_viola_offense_count > 1){
+                                $oC_s = 's';
+                            }else{
+                                $oC_s = '';
+                            }
+
+                            // dates
+                            $date_recorded = date('F d, Y ~ l - g:i A', strtotime($get_viola_recorded_at));
+                            $date_cleared = date('F d, Y ~ l - g:i A', strtotime($get_viola_cleared_at));
+                            
+                            // responsible user
+                            if($get_viola_respo_user_id == auth()->user()->id){
+                                $recBy = 'Recorded by you.';
+                                $recByTooltip = 'This Violation was recorded by you on ' . $date_recorded.'.';
+                            }else{
+                                $get_recBy_info = Users::select('id', 'user_role', 'user_lname', 'user_fname')
+                                            ->where('id', $get_viola_respo_user_id)
+                                            ->first();
+                                $recBy = ucwords($get_recBy_info->user_role).': ' . $get_recBy_info->user_lname;
+                                $recByTooltip = 'This Violation was recorded by ' . ucwords($get_recBy_info->user_role).': ' . $get_recBy_info->user_fname . ' ' . $get_recBy_info->user_lname . ' on ' . $date_recorded.'.';
+                            }
+
+                            // cleared/uncleared classes
+                            if($get_viola_status === 'cleared'){
+                                $light_cardBody       = 'lightGreen_cardBody';
+                                $light_cardBody_title = 'lightGreen_cardBody_greenTitle';
+                                $light_cardBody_list  = 'lightGreen_cardBody_list';
+                                $info_textClass       = 'cust_info_txtwicon4';
+                                $info_iconClass       = 'fa fa-check-square-o';
+                                $class_violationStat1 = 'text-success font-italic';
+                                $txt_violationStat1   = '~ Cleared';
+                            }else{
+                                $light_cardBody       = 'lightRed_cardBody';
+                                $light_cardBody_title = 'lightRed_cardBody_redTitle';
+                                $light_cardBody_list  = 'lightRed_cardBody_list';
+                                $info_textClass       = 'cust_info_txtwicon3';
+                                $info_iconClass       = 'fa fa-exclamation-circle';
+                                $class_violationStat1 = 'text_svms_red font-italic';
+                                $txt_violationStat1   = '~ Not Cleared';    
+                            }
+
+                            // ouput
+                            $output .= '
+                            <div class="accordion shadow-none cust_accordion_div1 mb-2" id="delAllYearlyViola_SelectOption_Parent'.$get_viola_id.'">
+                                <div class="card custom_accordion_card">
+                                    <div class="card-header py10l15r10 d-flex justify-content-between align-items-center" id="delAllYearlyViola_SelectOption_heading'.$get_viola_id.'">
+                                        <div class="form-group m-0">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" id="'.$get_viola_id.'_markDelThisYearViola_id" value="'.$get_viola_id.'" name="del_all_viola_id[]" class="custom-control-input cust_checkbox_label delViolMarkSingleYear" checked>
+                                                <label class="custom-control-label cust_checkbox_label" for="'.$get_viola_id.'_markDelThisYearViola_id">
+                                                    <span class="li_info_title"> '.date('F d, Y', strtotime($get_viola_recorded_at)).' <span class="'.$class_violationStat1.'"> ' . $txt_violationStat1.'</span></span>
+                                                    <span class="li_info_subtitle">'.date('l - g:i A', strtotime($get_viola_recorded_at)).'</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <button class="btn cust_btn_smcircle3" type="button" data-toggle="collapse" data-target="#delAllYearlyViola_SelectOption'.$get_viola_id.'" aria-expanded="true" aria-controls="delAllYearlyViola_SelectOption'.$get_viola_id.'">
+                                            <i class="nc-icon nc-minimal-down"></i>
+                                        </button>
+                                    </div>
+                                    <div id="delAllYearlyViola_SelectOption'.$get_viola_id.'" class="collapse cust_collapse_active cb_t0b12y20" aria-labelledby="delAllYearlyViola_SelectOption_heading'.$get_viola_id.'" data-parent="#delAllYearlyViola_SelectOption_Parent'.$get_viola_id.'">
+                                    ';
+                                    if(!is_null(json_decode(json_encode($get_viola_minor_off), true)) OR !empty(json_decode(json_encode($get_viola_minor_off), true))){
+                                        $vmo_x = 1;
+                                        $output .= '
+                                        <div class="card-body '.  $light_cardBody  .' mb-2">
+                                            <span class="'. $light_cardBody_title  .' mb-1">Minor Offenses:</span>
+                                            ';
+                                            foreach(json_decode(json_encode($get_viola_minor_off), true) as $viola_minor_offenses){
+                                                $output .= '<span class="'. $light_cardBody_list  .'"><span class="font-weight-bold mr-1">'. $vmo_x++ .'.</span> '. $viola_minor_offenses .'</span>';
+                                            }
+                                            $output .='
+                                        </div>
+                                        ';
+                                    }
+                                    if(!is_null(json_decode(json_encode($get_viola_less_serious_off), true)) OR !empty(json_decode(json_encode($get_viola_less_serious_off), true))){
+                                        $vlso_x = 1;
+                                        $output .= '
+                                        <div class="card-body '.  $light_cardBody  .' mb-2">
+                                            <span class="'. $light_cardBody_title  .' mb-1">Less Serious Offenses:</span>
+                                            ';
+                                            foreach(json_decode(json_encode($get_viola_less_serious_off), true) as $viola_less_serious_offenses){
+                                                $output .= '<span class="'. $light_cardBody_list  .'"><span class="font-weight-bold mr-1">'. $vlso_x++ .'.</span> '. $viola_less_serious_offenses .'</span>';
+                                            }
+                                            $output .='
+                                        </div>
+                                        ';
+                                    }
+                                    if(!is_null(json_decode(json_encode($get_viola_other_off), true)) OR !empty(json_decode(json_encode($get_viola_other_off), true))){
+                                        if(!in_array(null, json_decode(json_encode($get_viola_other_off), true))){
+                                            $voo_x = 1;
+                                            $output .= '
+                                            <div class="card-body '.  $light_cardBody  .' mb-2">
+                                                <span class="'. $light_cardBody_title  .' mb-1">Other Offenses:</span>
+                                                ';
+                                                foreach(json_decode(json_encode($get_viola_other_off), true) as $viola_other_offenses){
+                                                    $output .= '<span class="'. $light_cardBody_list  .'"><span class="font-weight-bold mr-1">'. $voo_x++ .'.</span> '. $viola_other_offenses .'</span>';
+                                                }
+                                                $output .='
+                                            </div>
+                                            ';
+                                        }
+                                    }
+                                    if($get_viola_has_sanction > 0){
+                                        // get all sanctions 
+                                        $get_all_sanctions = Sanctions::select('sanct_status', 'sanct_details', 'completed_at')
+                                                                            ->where('stud_num', $get_viola_stud_num)
+                                                                            ->where('for_viola_id', $get_viola_id)
+                                                                            ->orderBy('created_at', 'asc')
+                                                                            ->offset(0)
+                                                                            ->limit($get_viola_has_sanct_count)
+                                                                            ->get();
+                                        $count_completed_sanction = Sanctions::where('stud_num', $get_viola_stud_num)
+                                                                            ->where('for_viola_id', $get_viola_id)
+                                                                            ->where('sanct_status', '=', 'completed')
+                                                                            ->offset(0)
+                                                                            ->limit($get_viola_has_sanct_count)
+                                                                            ->count();
+                                        $count_all_sanctions = count($get_all_sanctions);
+                                        if($count_all_sanctions > 1){
+                                            $sc_s = 's';
+                                        }else{
+                                            $sc_s = '';
+                                        }
+                                        $output .= '
+                                        <div class="card-body lightGreen_cardBody mb-2">
+                                            <div class="d-flex justify-content-between">
+                                                <span class="lightGreen_cardBody_greenTitle mb-1">Sanctions:</span>
+                                            </div>';
+
+                                            foreach($get_all_sanctions as $this_vrSanction){
+                                                if($this_vrSanction->sanct_status === 'completed'){
+                                                    $sanct_icon = 'fa fa-check-square-o';
+                                                }else{
+                                                    $sanct_icon = 'fa fa-square-o';
+                                                }
+                                                $output .= '<span class="lightGreen_cardBody_list"><i class="'.$sanct_icon . ' mr-1 font-weight-bold" aria-hidden="true"></i> ' . $this_vrSanction->sanct_details.'</span>';
+                                            }
+                                            $output .= '
+                                        </div>
+                                        ';
+                                    }
+                                    if($get_viola_has_sanction > 0){
+                                        // date completed
+                                        $date_completed = date('F d, Y ~ l - g:i A', strtotime($get_viola_cleared_at));
+                                        if ($count_completed_sanction == $count_all_sanctions) {
+                                            $info_icon1Class = 'fa fa-check-square-o';
+                                            $sancStatusTooltip = $count_all_sanctions . ' corresponding Sanction'.$sc_s . ' for this violation has been completed by ' . $vmr_ms . ' ' . $violator_Lname . ' on ' . $date_completed.'.';
+                                        }else{
+                                            $info_icon1Class = 'fa fa-list-ul';
+                                            $sancStatusTooltip = $count_all_sanctions . ' corresponding Sanction'.$sc_s . ' for ' . $get_viola_offense_count . ' Offense'.$oC_s.' committed by ' . $vmr_ms . ' ' . $violator_Lname . ' on ' . $date_recorded.'.';
+                                        }
+                                        $output .= '
+                                        <div class="row mt-3 cursor_pointer" data-toggle="tooltip" data-placement="top" title="' . $sancStatusTooltip . '">
+                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                                ';
+                                                $output .= '
+                                                    <span class="cust_info_txtwicon4 font-weight-bold"><i class="'.$info_icon1Class . ' mr-1" aria-hidden="true"></i> ' . $get_viola_has_sanct_count . ' Sanction'.$sc_s.'</span>  
+                                                ';
+                                                if($get_viola_status === 'cleared'){
+                                                    $output .= '<span class="cust_info_txtwicon"><i class="fa fa-calendar-check-o mr-1" aria-hidden="true"></i> ' . date('F d, Y ~ l - g:i A', strtotime($get_viola_cleared_at)) . '</span> ';
+                                                }
+                                                $output .= '
+                                            </div>
+                                        </div>
+                                        <hr class="hr_gry">
+                                        ';
+                                    }
+                                    $output .='
+                                        <div class="row mt-3 cursor_pointer" data-toggle="tooltip" data-placement="top" title="' . $recByTooltip . '">
+                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                                <span class="' .$info_textClass . ' font-weight-bold"><i class="' .$info_iconClass . ' mr-1" aria-hidden="true"></i> ' .$get_viola_offense_count. ' Offense' .$oC_s. '</span>
+                                                <span class="cust_info_txtwicon"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> ' . $recBy . '</span>  
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            ';
+                        }
+                    }
+                    $output .= '
+                    </div>
+                    <div class="modal-body pb-0">
+                        <div class="card-body lightBlue_cardBody shadow-none mb-2">
+                            <div class="row mb-2">
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <div class="form-group mx-0 mt-0 mb-1">
+                                        <div class="custom-control custom-checkbox align-items-center">
+                                            <input type="checkbox" name="delete_all_violations" value="delete_all_violations" class="custom-control-input cursor_pointer" id="delViolMarkAllYear" checked>
+                                            <label class="custom-control-label lightBlue_cardBody_chckboxLabel" for="delViolMarkAllYear">Delete All ('.$sum_all_offenses.') Offense'.$sO_s.'.</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="lightBlue_cardBody_notice"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i> Deleting recorded violation will also delete its corresponding sanctions.</span>
+                        </div>
+                        <div class="card-body lightBlue_cardBody shadow-none">
+                            <span class="lightBlue_cardBody_blueTitle">Reason for Deleting Violations:</span>
+                            <div class="form-group">
+                                <textarea class="form-control" id="delete_all_yearly_violation_reason" name="delete_all_violation_reason" rows="3" placeholder="Type reason for Deleting Recorded Violations (required)" required></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <input type="hidden" name="_token" value="'.csrf_token().'">
+                        <input type="hidden" name="sel_stud_num" value="'.$sel_stud_num.'">
+                        <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
+                        <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
+                        <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
+                        <div class="btn-group" role="group" aria-label="delete sanctions actions">
+                            <button id="cancel_deleteAllYearlyViolationRecBtn" type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                            <button id="submit_deleteAllYearlyViolationRecBtn" type="submit" class="btn btn-round btn_svms_red btn_show_icon m-0" disabled> Delete Violations <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        ';
+
+        echo $output;
+    }
     // process temporary deletion of violation
     public function delete_violation(Request $request){
         // custom values
@@ -2342,7 +2625,11 @@ class ViolationRecordsController extends Controller
         $get_tobe_deleted_viola_ids = json_decode(json_encode($request->get('del_all_viola_id')));
         $get_reason_deletion        = $request->get('delete_all_violation_reason'); 
         
-        $count_selected_viola_ids = count($get_tobe_deleted_viola_ids);
+        if(!is_null($get_tobe_deleted_viola_ids) OR !empty($get_tobe_deleted_viola_ids)){
+            $count_selected_viola_ids = count($get_tobe_deleted_viola_ids);
+        }else{
+            $count_selected_viola_ids = 0;
+        }
         if($count_selected_viola_ids > 1){
             $tbV_s = 's';
         }else{
@@ -3651,8 +3938,8 @@ class ViolationRecordsController extends Controller
                                             <div class="custom-control custom-checkbox">
                                                 <input type="checkbox" id="'.$this_viola_id.'_markRecoverDelThisViola_id" value="'.$get_from_viola_id.'" name="recover_viola_ids[]" class="custom-control-input cust_checkbox_label recoverDelViolMarkSingle" checked>
                                                 <label class="custom-control-label cust_checkbox_label" for="'.$this_viola_id.'_markRecoverDelThisViola_id">
-                                                    <span class="li_info_title"> '.date('F d, Y', strtotime($del_date_recorded)).' <span class="'.$class_violationStat1.'"> ' . $txt_violationStat1.'</span></span>
-                                                    <span class="li_info_subtitle">'.date('l - g:i A', strtotime($del_date_recorded)).'</span>
+                                                    <span class="li_info_title"> '.date('F d, Y', strtotime($get_viola_del_recorded_at)).' <span class="'.$class_violationStat1.'"> ' . $txt_violationStat1.'</span></span>
+                                                    <span class="li_info_subtitle">'.date('l - g:i A', strtotime($get_viola_del_recorded_at)).'</span>
                                                 </label>
                                             </div>
                                         </div>

@@ -738,6 +738,11 @@ fieldset[disabled] .btn_svms_blue.active {
   background-color: #E7E7E7 !important;
 }
 
+/* global border radius */
+.br_12px{
+  border-radius: 12px !important;
+}
+
 /* global card customization */
 .cb_p15x25{
   padding: 15px 25px !important;
@@ -791,6 +796,9 @@ fieldset[disabled] .btn_svms_blue.active {
 }
 .cb_t20b0x25{
   padding: 20px 25px 0 25px !important;
+}
+.cb_y20l0r25{
+  padding: 20px 0 20px 25px !important;
 }
 /* border-radius */
 .card_gbr{

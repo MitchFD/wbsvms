@@ -313,8 +313,37 @@
                                                             ->groupBy('month')
                                                             ->orderBy('month', 'desc')
                                                             ->get();
+                                            // count all offenses for this month
+                                            $yearly_totalOffenses = App\Models\Violations::where('stud_num', $violator_info->Student_Number)
+                                                    ->whereYear('recorded_at', $this_yearVal_tc)
+                                                    ->sum('offense_count');
+                                            if($yearly_totalOffenses > 1){
+                                                $yOc_s = 's'; 
+                                            }else{
+                                                $yOc_s = '';
+                                            }
+                                            // count all violations per year
+                                            $yearly_totalUnclearedOffenses = App\Models\Violations::where('stud_num', $violator_info->Student_Number)
+                                                    ->whereYear('recorded_at', $this_yearVal_tc)
+                                                    ->where('violation_status', '=', 'not cleared')
+                                                    ->sum('offense_count');
+                                            if($yearly_totalUnclearedOffenses > 1){
+                                                $yOC_s = 's'; 
+                                            }else{
+                                                $yOC_s = '';
+                                            }
+                                            // count all cleared violations per year
+                                            $yearly_totalClearedOffenses = App\Models\Violations::where('stud_num', $violator_info->Student_Number)
+                                                    ->whereYear('recorded_at', $this_yearVal_tc)
+                                                    ->where('violation_status', '=', 'cleared')
+                                                    ->sum('offense_count');
+                                            if($yearly_totalClearedOffenses > 1){
+                                                $yOUC_s = 's'; 
+                                            }else{
+                                                $yOUC_s = '';
+                                            }
                                         @endphp
-                                        <div class="tab-pane card_body_bg_gray card_bbr cb_t20b0x25 fade" id="{{$this_yearVal_tc}}TabPanel" role="tabpanel" aria-labelledby="{{$this_yearVal_tc}}NavTab">
+                                        <div class="tab-pane card_body_bg_gray card_bbr cb_y20l0r25 fade" style="margin-right: 40px;" id="{{$this_yearVal_tc}}TabPanel" role="tabpanel" aria-labelledby="{{$this_yearVal_tc}}NavTab">
                                             <div class="row">
                                                 <div class="col-lg-12 col-md-12 col-sm-12">
                                                     <ul class="nav nav-tabs cust_nav_tabs2" id="monthlyOffensesTab" role="tablist">
@@ -405,7 +434,7 @@
                                                                         $tCO_s = '';
                                                                     }
                                                             @endphp
-                                                            <div class="tab-pane card_body_bg_gray2 card_bbr card_ofh cb_t20b20x25 fade" style="margin-bottom: -25px;" id="{{$yearly_monthlyVal_tc}}TabPanel" role="tabpanel" aria-labelledby="{{$yearly_monthlyVal_tc}}NavTab">
+                                                            <div class="tab-pane card_body_bg_gray2 card_bbr card_ofh cb_t20b20x25 fade" style="margin-right: -40px;" id="{{$yearly_monthlyVal_tc}}TabPanel" role="tabpanel" aria-labelledby="{{$yearly_monthlyVal_tc}}NavTab">
                                                                 <div class="row">
                                                                     @php
                                                                         // get all offenses for this month per date
@@ -644,7 +673,7 @@
                                                                 <div class="row mt-3">
                                                                     <div class="col-lg-12 col-md-12 col-sm-12 d-flex justify-content-between align-items-end">
                                                                         <div>
-                                                                            <span class="cust_info_txtwicon font-weight-bold"><i class="fa fa-list-ul mr-1" aria-hidden="true"></i> {{ $monthly_totalOffenses }} Total Offense{{$tO_s}} for {{ $monthName }} 2021.</span>  
+                                                                            <span class="cust_info_txtwicon font-weight-bold"><i class="fa fa-list-ul mr-1" aria-hidden="true"></i> {{ $monthly_totalOffenses }} Total Offense{{$tO_s}} for {{ $monthName }} {{ $this_yearVal_tc}}.</span>  
                                                                             @if($monthly_totalClearedOff > 0)
                                                                                 <span class="cust_info_txtwicon"><i class="fa fa-check-square-o mr-1" aria-hidden="true"></i> {{ $monthly_totalClearedOff }} Cleared Offense{{$tCO_s}}.</span> 
                                                                             @endif
@@ -653,8 +682,8 @@
                                                                             @endif
                                                                         </div>
                                                                         <div class="d-flex align-items-end">
-                                                                            <button id="{{$yearly_monthlyVal_tc}}" onclick="addSanctions_allMonthlyViolations(this.id)" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Add Sanctions to all recorded Offenses for the Month of {{ $monthName }} 2021?"><i class="fa fa-pencil" aria-hidden="true"></i></button>
-                                                                            <button id="{{$yearly_monthlyVal_tc}}" onclick="delete_allMonthlyViolations(this.id, {{$this_yearVal_tc}})" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Delete all recorded Offenses for the Month of {{ $monthName }} 2021?"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                                            <button id="{{$yearly_monthlyVal_tc}}" onclick="addSanctions_allMonthlyViolations(this.id)" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Add Sanctions to all recorded Offenses for the Month of {{ $monthName }} {{ $this_yearVal_tc}}?"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+                                                                            <button id="{{$yearly_monthlyVal_tc}}" onclick="delete_allMonthlyViolations(this.id, {{$this_yearVal_tc}})" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Delete all recorded Offenses for the Month of {{ $monthName }} {{ $this_yearVal_tc}}?"><i class="fa fa-trash" aria-hidden="true"></i></button>
                                                                         </div>
                                                                     </div> 
                                                                 </div>
@@ -662,6 +691,23 @@
                                                         @endforeach
                                                     </div>
                                                 </div>
+                                            </div>
+                                            <div class="row mt-3">
+                                                <div class="col-lg-12 col-md-12 col-sm-12 d-flex justify-content-between align-items-end">
+                                                    <div>
+                                                        <span class="cust_info_txtwicon font-weight-bold"><i class="fa fa-list-ul mr-1" aria-hidden="true"></i> {{ $yearly_totalOffenses }} Total Offense{{$yOc_s}} for the year {{ $this_yearVal_tc}}.</span>  
+                                                        @if($yearly_totalClearedOffenses > 0)
+                                                            <span class="cust_info_txtwicon"><i class="fa fa-check-square-o mr-1" aria-hidden="true"></i> {{ $yearly_totalClearedOffenses }} Cleared Offense{{$yOC_s}}.</span> 
+                                                        @endif
+                                                        @if($yearly_totalUnclearedOffenses > 0)
+                                                            <span class="cust_info_txtwicon"><i class="fa fa-square-o mr-1" aria-hidden="true"></i> {{ $yearly_totalUnclearedOffenses}} Uncleared Offense{{$yOUC_s}}.</span> 
+                                                        @endif
+                                                    </div>
+                                                    <div class="d-flex align-items-end">
+                                                        {{-- <button id="{{$yearly_monthlyVal_tc}}" onclick="addSanctions_allMonthlyViolations(this.id)" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Add Sanctions to all recorded Offenses for the Month of {{ $monthName }} 2021?"><i class="fa fa-pencil" aria-hidden="true"></i></button> --}}
+                                                        <button style="margin-right: 25px;" id="{{$this_yearVal_tc}}" onclick="delete_allYearlyViolations(this.id)" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Delete all recorded Offenses for the Year {{ $this_yearVal_tc}}?"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                    </div>
+                                                </div> 
                                             </div>
                                         </div>
                                     @endforeach
@@ -701,12 +747,12 @@
                             $doc_s = '';
                         }
                     @endphp
-                    <div class="row mt-5">
+                    <div class="row mt-4">
                         <div class="col-lg-12 col-md-12 col-sm-12">
                             <div class="accordion gCardAccordions" id="deletedOffenses{{$violator_info->Student_Number}}_CollapseParent">
                                 <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray">
                                     <div class="card-header p-0" id="deletedOffensesCollapseHeading">
-                                        <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse m-0 pb-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#deletedOffenses{{$violator_info->Student_Number}}_CollapseDiv" aria-expanded="true" aria-controls="deletedOffenses{{$violator_info->Student_Number}}_CollapseDiv">
+                                        <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#deletedOffenses{{$violator_info->Student_Number}}_CollapseDiv" aria-expanded="true" aria-controls="deletedOffenses{{$violator_info->Student_Number}}_CollapseDiv">
                                             <div>
                                                 <span class="card_body_title">deleted Offenses</span>
                                                 <span class="card_body_subtitle">{{$sum_deleted_offenses }} Deleted Offense{{$doc_s}}</span>
@@ -820,7 +866,7 @@
                                                         }
                                                     @endphp
                                                     <div class="col-lg-4 col-md-5 col-sm-12 pt-4">
-                                                        <div class="accordion violaAccordions shadow cust_accordion_div" id="v{{$deleted_violation->from_viola_id}}Accordion_Parent">
+                                                        <div class="accordion hidden_violaAccordions shadow cust_accordion_div" id="v{{$deleted_violation->from_viola_id}}Accordion_Parent">
                                                             <div class="card custom_accordion_card">
                                                                 <div class="card-header p-0" id="changeUserRoleCollapse_heading">
                                                                     <h2 class="mb-0">
@@ -835,7 +881,7 @@
                                                                         </button>
                                                                     </h2>
                                                                 </div>
-                                                                <div id="vD{{$deleted_violation->from_viola_id}}Collapse_Div" class="collapse violaAccordions_collapse show cb_t0b12y15" aria-labelledby="v{{$deleted_violation->from_viola_id}}Collapse_heading" data-parent="#v{{$deleted_violation->from_viola_id}}Accordion_Parent">
+                                                                <div id="vD{{$deleted_violation->from_viola_id}}Collapse_Div" class="hidden_violaAccordions_collapse collapse cb_t0b12y15" aria-labelledby="v{{$deleted_violation->from_viola_id}}Collapse_heading" data-parent="#v{{$deleted_violation->from_viola_id}}Accordion_Parent">
                                                                     @if(!is_null($deleted_violation->del_minor_off) OR !empty($deleted_violation->del_minor_off))
                                                                         @php
                                                                             $mo_x = 1;
@@ -1092,7 +1138,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content cust_modal">
                     <div class="modal-header border-0">
-                        <span class="modal-title cust_modal_title" id="deleteAllMonthlyViolationModalLabel">Delete All Violation?</span>
+                        <span class="modal-title cust_modal_title" id="deleteAllMonthlyViolationModalLabel">Delete All  <span id="monthTxt_modalTitle" class="font-weight-bold">  </span>  Violations?</span>
                         <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -1104,6 +1150,23 @@
             </div>
         </div>
     {{-- delete all monthly violations modal end --}}
+    {{-- delete all yearly violations modal --}}
+        <div class="modal fade" id="deleteAllYearlyViolationModal" tabindex="-1" role="dialog" aria-labelledby="deleteAllYearlyViolationModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="deleteAllYearlyViolationModalLabel">Delete All <span id="yearTxt_modalTitle" class="font-weight-bold">  </span> Violations?</span>
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="deleteAllYearlyViolationModalHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{-- delete all yearly violations modal end --}}
     {{-- permanently delete all violations modal --}}
         <div class="modal fade" id="permanentDeleteAllViolations" tabindex="-1" role="dialog" aria-labelledby="permanentDeleteAllViolationsLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -1611,6 +1674,10 @@
         function delete_allMonthlyViolations(sel_monthly_viola, sel_yearly_viola){
             var sel_monthly_viola = sel_monthly_viola;
             var sel_yearly_viola = sel_yearly_viola;
+            var months = [ "January", "February", "March", "April", "May", "June", 
+                    "July", "August", "September", "October", "November", "December" ];
+
+            var selectedMonthName = months[sel_monthly_viola - 1];
             var sel_stud_num = document.getElementById("vp_hidden_stud_num").value;
             var _token = $('input[name="_token"]').val();
             $.ajax({
@@ -1620,6 +1687,7 @@
                 success: function(data){
                     $('#deleteAllMonthlyViolationModalHtmlData').html(data);
                     $('#deleteAllMonthlyViolationModal').modal('show');
+                    $('#monthTxt_modalTitle').html(' '+selectedMonthName+' '+' '+sel_yearly_viola+' ');
                 }
             });
         }
@@ -1678,6 +1746,82 @@
             $(form_deleteAllViolationRec).submit(function(){
                 btn_cancelDeleteAllViolationRec.disabled = true;
                 btn_submitDeleteAllViolationRec.disabled = true;
+                return true;
+            });
+        });
+    </script>
+    {{-- delete all recorded vilation per year --}}
+    <script>
+        function delete_allYearlyViolations(sel_yearly_viola){
+            var sel_yearly_viola = sel_yearly_viola;
+            var sel_stud_num = document.getElementById("vp_hidden_stud_num").value;
+            var _token = $('input[name="_token"]').val();
+            $.ajax({
+                url:"{{ route('violation_records.delete_all_yearly_violations_form') }}",
+                method:"GET",
+                data:{sel_yearly_viola:sel_yearly_viola, sel_stud_num:sel_stud_num, _token:_token},
+                success: function(data){
+                    $('#deleteAllYearlyViolationModalHtmlData').html(data);
+                    $('#deleteAllYearlyViolationModal').modal('show');
+                    $('#yearTxt_modalTitle').html(sel_yearly_viola);
+                }
+            });
+        }
+    </script>
+    <script>
+        $('#deleteAllYearlyViolationModal').on('show.bs.modal', function () {
+            var form_deleteAllYearlyViolationRec  = document.querySelector("#form_deleteAllYearlyViolationRec");
+            var reason2_textareaInput  = document.querySelector("#delete_all_yearly_violation_reason");
+            var btn_submitDeleteAllYearlyViolationRec = document.querySelector("#submit_deleteAllYearlyViolationRecBtn");
+            var btn_cancelDeleteAllYearlyViolationRec = document.querySelector("#cancel_deleteAllYearlyViolationRecBtn");
+            // disable /enable submit button
+            function dis_en_btn_submitDeleteAllYearlyViolationRec(){
+                var has_delViolMarkSingleYear = 0;
+                $(".delViolMarkSingleYear").each(function(){
+                    if(this.checked){
+                        has_delViolMarkSingleYear = 1;
+                    }
+                });
+                if(reason2_textareaInput.value !== "" && has_delViolMarkSingleYear != 0){
+                    btn_submitDeleteAllYearlyViolationRec.disabled = false;
+                }else{
+                    btn_submitDeleteAllYearlyViolationRec.disabled = true;
+                }
+            }
+            // selection of sanctions for deletion
+            $("#delViolMarkAllYear").change(function(){
+                if(this.checked){
+                $(".delViolMarkSingleYear").each(function(){
+                    this.checked=true;
+                })              
+                }else{
+                $(".delViolMarkSingleYear").each(function(){
+                    this.checked=false;
+                })              
+                }
+                dis_en_btn_submitDeleteAllYearlyViolationRec();
+            });
+            $(".delViolMarkSingleYear").click(function () {
+                if ($(this).is(":checked")){
+                var isDeleteAllChecked = 0;
+                $(".delViolMarkSingleYear").each(function(){
+                    if(!this.checked)
+                    isDeleteAllChecked = 1;
+                })              
+                if(isDeleteAllChecked == 0){ $("#delViolMarkAllYear").prop("checked", true); }     
+                }else {
+                $("#delViolMarkAllYear").prop("checked", false);
+                }
+                dis_en_btn_submitDeleteAllYearlyViolationRec();
+            });
+            // disable add submit button if reason textarea is empty
+            $(reason2_textareaInput).keyup(function(){
+                dis_en_btn_submitDeleteAllYearlyViolationRec();
+            });
+            // disable cancel and sibmit button on submit
+            $(form_deleteAllYearlyViolationRec).submit(function(){
+                btn_cancelDeleteAllYearlyViolationRec.disabled = true;
+                btn_submitDeleteAllYearlyViolationRec.disabled = true;
                 return true;
             });
         });
