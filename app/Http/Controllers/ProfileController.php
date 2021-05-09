@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Users;
+use App\Models\Userroles;
 use App\Models\Userupdatesstatus;
 use App\Models\Useremployees;
 use App\Models\Editedolduseremployees;
@@ -51,10 +52,17 @@ class ProfileController extends Controller
         //     ->get();
         //     return view('profile.employee_user_profile')->with('this_user');
         // }
-        $my_first_record = Useractivites::where('act_respo_user_id', auth()->user()->id)->first();
-        $my_latest_record = Useractivites::where('act_respo_user_id', auth()->user()->id)->latest()->first();
-        $user_activities = Useractivites::where('act_respo_user_id', auth()->user()->id)->paginate(10);
-        return view('profile.index')->with(compact('user_activities', 'my_first_record', 'my_latest_record'));
+        // redirects
+        $get_user_role_info = Userroles::select('uRole_id', 'uRole', 'uRole_access')->where('uRole', auth()->user()->user_role)->first();
+        $get_uRole_access   = json_decode(json_encode($get_user_role_info->uRole_access));
+        if(in_array('profile', $get_uRole_access)){
+            $my_first_record = Useractivites::where('act_respo_user_id', auth()->user()->id)->first();
+            $my_latest_record = Useractivites::where('act_respo_user_id', auth()->user()->id)->latest()->first();
+            $user_activities = Useractivites::where('act_respo_user_id', auth()->user()->id)->paginate(10);
+            return view('profile.index')->with(compact('user_activities', 'my_first_record', 'my_latest_record'));
+        }else{
+            return view('profile.access_denied');
+        }
     }
 
     // FUNCTIONS FOR CHECKING NEW EMAIL AVAILABILITY

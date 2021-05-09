@@ -1098,6 +1098,13 @@ input[type=checkbox]:checked + .lightRed_cardBody_chckboxLabel{
   text-transform: uppercase !important;
   color: var(--svms_blue) !important;
 }
+.directory_active_linkv1{
+  font-size: 12px !important;
+  font-weight: bold !important;
+  text-decoration: none !important;
+  text-transform: uppercase !important;
+  color: var(--svms_red) !important;
+}
 
 
 /* page intro card */
@@ -1121,6 +1128,13 @@ input[type=checkbox]:checked + .lightRed_cardBody_chckboxLabel{
   font-weight: bold;
   text-transform: uppercase;
   color: var(--svms_blue);
+}
+.page_intro_titlev1{
+  display: block;
+  font-size: 60px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: var(--svms_red);
 }
 .page_intro_subtitle{
   display: block;

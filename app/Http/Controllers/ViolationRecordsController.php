@@ -11,6 +11,7 @@ use App\Models\Deletedviolations;
 use App\Models\Sanctions;
 use App\Models\Deletedsanctions;
 use App\Models\Users;
+use App\Models\Userroles;
 use App\Models\Useractivites;
 use Illuminate\Mail\Mailable;
 
@@ -18,261 +19,275 @@ class ViolationRecordsController extends Controller
 {
     // main page
     public function index(Request $request){
-        if($request->ajax()){
-            // custom var
-            $vr_output = '';
-            $vr_paginate = '';
-            $vr_total_matched_results = '';
-            $vr_total_filtered_result = '';
-            // get all request
-            $vr_search      = $request->get('vr_search');
-            $vr_schools     = $request->get('vr_schools');
-            $vr_programs    = $request->get('vr_programs');
-            $vr_yearlvls    = $request->get('vr_yearlvls');
-            $vr_genders     = $request->get('vr_genders');
-            $vr_minAgeRange = $request->get('vr_minAgeRange');
-            $vr_maxAgeRange = $request->get('vr_maxAgeRange');
-            $vr_status      = $request->get('vr_status');
-            $vr_rangefrom   = $request->get('vr_rangefrom');
-            $vr_rangeTo     = $request->get('vr_rangeTo');
-            $df_minAgeRange = $request->get('df_minAgeRange');
-            $df_maxAgeRange = $request->get('df_maxAgeRange');
-
-            if($vr_search != ''){
-                $fltr_VR_tbl = DB::table('violations_tbl')
-                                ->join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
-                                ->select('violations_tbl.*', 'students_tbl.*')
-                                ->where(function($vrQuery) use ($vr_search) {
-                                    $vrQuery->orWhere('students_tbl.Student_Number', 'like', '%'.$vr_search.'%')
-                                                ->orWhere('students_tbl.First_Name', 'like', '%'.$vr_search.'%')
-                                                ->orWhere('students_tbl.Middle_Name', 'like', '%'.$vr_search.'%')
-                                                ->orWhere('students_tbl.Last_Name', 'like', '%'.$vr_search.'%')
-                                                ->orWhere('students_tbl.Gender', 'like', '%'.$vr_search.'%')
-                                                ->orWhere('students_tbl.School_Name', 'like', '%'.$vr_search.'%')
-                                                ->orWhere('students_tbl.YearLevel', 'like', '%'.$vr_search.'%')
-                                                ->orWhere('students_tbl.Course', 'like', '%'.$vr_search.'%')
-                                                ->orWhere('violations_tbl.stud_num', 'like', '%'.$vr_search.'%');
-                                })
-                                ->where(function($vrQuery) use ($vr_schools, $vr_programs, $vr_yearlvls, $vr_genders, $vr_minAgeRange, $vr_maxAgeRange, $df_minAgeRange, $df_maxAgeRange, $vr_status, $vr_rangefrom, $vr_rangeTo){
-                                    if($vr_schools != 0 OR !empty($vr_schools)){
-                                        $vrQuery->where('students_tbl.School_Name', '=', $vr_schools);
-                                    }
-                                    if($vr_programs != 0 OR !empty($vr_programs)){
-                                        $vrQuery->where('students_tbl.Course', '=', $vr_programs);
-                                    }
-                                    if($vr_yearlvls != 0 OR !empty($vr_yearlvls)){
-                                        $vrQuery->where('students_tbl.YearLevel', '=', $vr_yearlvls);
-                                    }
-                                    if($vr_genders != 0 OR !empty($vr_genders)){
-                                        $lower_vr_gender = Str::lower($vr_genders);
-                                        $vrQuery->where('students_tbl.Gender', '=', $lower_vr_gender);
-                                    }
-                                    if($vr_minAgeRange != $df_minAgeRange OR $vr_maxAgeRange != $df_maxAgeRange){
-                                        $vrQuery->whereBetween('students_tbl.Age', [$vr_minAgeRange, $vr_maxAgeRange]);
-                                    }
-                                    if($vr_status != 0 OR !empty($vr_status)){
-                                        $lower_vr_status = Str::lower($vr_status);
-                                        $vrQuery->where('violations_tbl.violation_status', '=', $lower_vr_status);
-                                    }
-                                    if($vr_rangefrom != 0 OR !empty($vr_rangefrom) AND $vr_rangeTo != 0 OR !empty($vr_rangeTo)){
-                                        $vrQuery->whereBetween('violations_tbl.recorded_at', [$vr_rangefrom, $vr_rangeTo]);
-                                    }
-                                })
-                                ->orderBy('violations_tbl.recorded_at', 'DESC')
-                                ->paginate(10);
-                $matched_result_txt = ' Matched Records';
-            }else{
-                $fltr_VR_tbl = DB::table('violations_tbl')
-                                ->join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
-                                ->select('violations_tbl.*', 'students_tbl.*')
-                                ->where(function($vrQuery) use ($vr_schools, $vr_programs, $vr_yearlvls, $vr_genders, $vr_minAgeRange, $vr_maxAgeRange, $df_minAgeRange, $df_maxAgeRange, $vr_status, $vr_rangefrom, $vr_rangeTo){
-                                    if($vr_schools != 0 OR !empty($vr_schools)){
-                                        $vrQuery->where('students_tbl.School_Name', '=', $vr_schools);
-                                    }
-                                    if($vr_programs != 0 OR !empty($vr_programs)){
-                                        $vrQuery->where('students_tbl.Course', '=', $vr_programs);
-                                    }
-                                    if($vr_yearlvls != 0 OR !empty($vr_yearlvls)){
-                                        $vrQuery->where('students_tbl.YearLevel', '=', $vr_yearlvls);
-                                    }
-                                    if($vr_genders != 0 OR !empty($vr_genders)){
-                                        $lower_vr_gender = Str::lower($vr_genders);
-                                        $vrQuery->where('students_tbl.Gender', '=', $lower_vr_gender);
-                                    }
-                                    if($vr_minAgeRange != $df_minAgeRange OR $vr_maxAgeRange != $df_maxAgeRange){
-                                        $vrQuery->whereBetween('students_tbl.Age', [$vr_minAgeRange, $vr_maxAgeRange]);
-                                    }
-                                    if($vr_status != 0 OR !empty($vr_status)){
-                                        $lower_vr_status = Str::lower($vr_status);
-                                        $vrQuery->where('violations_tbl.violation_status', '=', $lower_vr_status);
-                                    }
-                                    if($vr_rangefrom != 0 OR !empty($vr_rangefrom) AND $vr_rangeTo != 0 OR !empty($vr_rangeTo)){
-                                        $vrQuery->whereBetween('violations_tbl.recorded_at', [$vr_rangefrom, $vr_rangeTo]);
-                                    }
-                                })
-                                ->orderBy('violations_tbl.recorded_at', 'DESC')
-                                ->paginate(10);
-                $matched_result_txt = ' Record';
-            }
-            // total filtered date
-            $vr_count_filtered_result = count($fltr_VR_tbl);
-            $vr_total_filtered_result = $fltr_VR_tbl->total();
-            // plural text
-            if($vr_total_filtered_result > 0){
-                if($vr_total_filtered_result > 1){
-                    $s = 's';
+        // redirects
+        $get_user_role_info = Userroles::select('uRole_id', 'uRole', 'uRole_access')->where('uRole', auth()->user()->user_role)->first();
+        $get_uRole_access   = json_decode(json_encode($get_user_role_info->uRole_access));
+        if(in_array('violation records', $get_uRole_access)){
+            if($request->ajax()){
+                // custom var
+                $vr_output = '';
+                $vr_paginate = '';
+                $vr_total_matched_results = '';
+                $vr_total_filtered_result = '';
+                // get all request
+                $vr_search      = $request->get('vr_search');
+                $vr_schools     = $request->get('vr_schools');
+                $vr_programs    = $request->get('vr_programs');
+                $vr_yearlvls    = $request->get('vr_yearlvls');
+                $vr_genders     = $request->get('vr_genders');
+                $vr_minAgeRange = $request->get('vr_minAgeRange');
+                $vr_maxAgeRange = $request->get('vr_maxAgeRange');
+                $vr_status      = $request->get('vr_status');
+                $vr_rangefrom   = $request->get('vr_rangefrom');
+                $vr_rangeTo     = $request->get('vr_rangeTo');
+                $df_minAgeRange = $request->get('df_minAgeRange');
+                $df_maxAgeRange = $request->get('df_maxAgeRange');
+    
+                if($vr_search != ''){
+                    $fltr_VR_tbl = DB::table('violations_tbl')
+                                    ->join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
+                                    ->select('violations_tbl.*', 'students_tbl.*')
+                                    ->where(function($vrQuery) use ($vr_search) {
+                                        $vrQuery->orWhere('students_tbl.Student_Number', 'like', '%'.$vr_search.'%')
+                                                    ->orWhere('students_tbl.First_Name', 'like', '%'.$vr_search.'%')
+                                                    ->orWhere('students_tbl.Middle_Name', 'like', '%'.$vr_search.'%')
+                                                    ->orWhere('students_tbl.Last_Name', 'like', '%'.$vr_search.'%')
+                                                    ->orWhere('students_tbl.Gender', 'like', '%'.$vr_search.'%')
+                                                    ->orWhere('students_tbl.School_Name', 'like', '%'.$vr_search.'%')
+                                                    ->orWhere('students_tbl.YearLevel', 'like', '%'.$vr_search.'%')
+                                                    ->orWhere('students_tbl.Course', 'like', '%'.$vr_search.'%')
+                                                    ->orWhere('violations_tbl.stud_num', 'like', '%'.$vr_search.'%');
+                                    })
+                                    ->where(function($vrQuery) use ($vr_schools, $vr_programs, $vr_yearlvls, $vr_genders, $vr_minAgeRange, $vr_maxAgeRange, $df_minAgeRange, $df_maxAgeRange, $vr_status, $vr_rangefrom, $vr_rangeTo){
+                                        if($vr_schools != 0 OR !empty($vr_schools)){
+                                            $vrQuery->where('students_tbl.School_Name', '=', $vr_schools);
+                                        }
+                                        if($vr_programs != 0 OR !empty($vr_programs)){
+                                            $vrQuery->where('students_tbl.Course', '=', $vr_programs);
+                                        }
+                                        if($vr_yearlvls != 0 OR !empty($vr_yearlvls)){
+                                            $vrQuery->where('students_tbl.YearLevel', '=', $vr_yearlvls);
+                                        }
+                                        if($vr_genders != 0 OR !empty($vr_genders)){
+                                            $lower_vr_gender = Str::lower($vr_genders);
+                                            $vrQuery->where('students_tbl.Gender', '=', $lower_vr_gender);
+                                        }
+                                        if($vr_minAgeRange != $df_minAgeRange OR $vr_maxAgeRange != $df_maxAgeRange){
+                                            $vrQuery->whereBetween('students_tbl.Age', [$vr_minAgeRange, $vr_maxAgeRange]);
+                                        }
+                                        if($vr_status != 0 OR !empty($vr_status)){
+                                            $lower_vr_status = Str::lower($vr_status);
+                                            $vrQuery->where('violations_tbl.violation_status', '=', $lower_vr_status);
+                                        }
+                                        if($vr_rangefrom != 0 OR !empty($vr_rangefrom) AND $vr_rangeTo != 0 OR !empty($vr_rangeTo)){
+                                            $vrQuery->whereBetween('violations_tbl.recorded_at', [$vr_rangefrom, $vr_rangeTo]);
+                                        }
+                                    })
+                                    ->orderBy('violations_tbl.recorded_at', 'DESC')
+                                    ->paginate(10);
+                    $matched_result_txt = ' Matched Records';
+                }else{
+                    $fltr_VR_tbl = DB::table('violations_tbl')
+                                    ->join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
+                                    ->select('violations_tbl.*', 'students_tbl.*')
+                                    ->where(function($vrQuery) use ($vr_schools, $vr_programs, $vr_yearlvls, $vr_genders, $vr_minAgeRange, $vr_maxAgeRange, $df_minAgeRange, $df_maxAgeRange, $vr_status, $vr_rangefrom, $vr_rangeTo){
+                                        if($vr_schools != 0 OR !empty($vr_schools)){
+                                            $vrQuery->where('students_tbl.School_Name', '=', $vr_schools);
+                                        }
+                                        if($vr_programs != 0 OR !empty($vr_programs)){
+                                            $vrQuery->where('students_tbl.Course', '=', $vr_programs);
+                                        }
+                                        if($vr_yearlvls != 0 OR !empty($vr_yearlvls)){
+                                            $vrQuery->where('students_tbl.YearLevel', '=', $vr_yearlvls);
+                                        }
+                                        if($vr_genders != 0 OR !empty($vr_genders)){
+                                            $lower_vr_gender = Str::lower($vr_genders);
+                                            $vrQuery->where('students_tbl.Gender', '=', $lower_vr_gender);
+                                        }
+                                        if($vr_minAgeRange != $df_minAgeRange OR $vr_maxAgeRange != $df_maxAgeRange){
+                                            $vrQuery->whereBetween('students_tbl.Age', [$vr_minAgeRange, $vr_maxAgeRange]);
+                                        }
+                                        if($vr_status != 0 OR !empty($vr_status)){
+                                            $lower_vr_status = Str::lower($vr_status);
+                                            $vrQuery->where('violations_tbl.violation_status', '=', $lower_vr_status);
+                                        }
+                                        if($vr_rangefrom != 0 OR !empty($vr_rangefrom) AND $vr_rangeTo != 0 OR !empty($vr_rangeTo)){
+                                            $vrQuery->whereBetween('violations_tbl.recorded_at', [$vr_rangefrom, $vr_rangeTo]);
+                                        }
+                                    })
+                                    ->orderBy('violations_tbl.recorded_at', 'DESC')
+                                    ->paginate(10);
+                    $matched_result_txt = ' Record';
+                }
+                // total filtered date
+                $vr_count_filtered_result = count($fltr_VR_tbl);
+                $vr_total_filtered_result = $fltr_VR_tbl->total();
+                // plural text
+                if($vr_total_filtered_result > 0){
+                    if($vr_total_filtered_result > 1){
+                        $s = 's';
+                    }else{
+                        $s = '';
+                    }
+                    $vr_total_matched_results = $fltr_VR_tbl->firstItem() . ' - ' . $fltr_VR_tbl->lastItem() . ' of ' . $vr_total_filtered_result . ' ' . $matched_result_txt.''.$s;
                 }else{
                     $s = '';
+                    $vr_total_matched_results = 'No Records Found';
                 }
-                $vr_total_matched_results = $fltr_VR_tbl->firstItem() . ' - ' . $fltr_VR_tbl->lastItem() . ' of ' . $vr_total_filtered_result . ' ' . $matched_result_txt.''.$s;
-            }else{
-                $s = '';
-                $vr_total_matched_results = 'No Records Found';
-            }
-            if($vr_count_filtered_result > 0){
-                // custom values
-                $sq = "'";
-                foreach($fltr_VR_tbl as $this_violator){
-                    if($this_violator->offense_count > 1){
-                        $oc_s = 's';
-                    }else{
-                        $oc_s = '';
-                    }
-                    // violation status classes
-                    if($this_violator->violation_status === 'cleared'){
-                        $violator_img = 'default_cleared_student_img.jpg';
-                        $violation_statTxt = ' <span class="text-success font-italic"> ~ Cleared</span>';
-                        $badge_stat = 'cust_badge_grn';
-                        $img_class = 'display_violator_image3';
-                    }else{
-                        $violator_img = 'default_student_img.jpg';
-                        $violation_statTxt = ' <span class="text_svms_red font-italic"> ~ Not Cleared</span>';
-                        $badge_stat = 'cust_badge_red';
-                        $img_class = 'display_violator_image2';
-                    }
-                    $vr_output .= '
-                    <tr id="'.$this_violator->Student_Number.'" onclick="viewStudentOffenses(this.id)" class="tr_pointer">
-                        <td class="pl12 d-flex justify-content-start align-items-center">
-                            ';
-                            if(!is_null($this_violator->Student_Image) OR !empty($this_violator->Student_Image)){
-                                $vr_output .= '<img class="'.$img_class.' shadow-sm" src="'.asset('storage/svms/sdca_images/registered_students_imgs/'.$this_violator->Student_Image.'').'" alt="student'.$sq.'s image">';
-                            }else{
-                                $vr_output .= '<img class="'.$img_class.' shadow-sm" src="'.asset('storage/svms/sdca_images/registered_students_imgs/'.$violator_img.'').'" alt="student'.$sq.'s image">';
-                            }
-                            $vr_output .= '
-                            <div class="cust_td_info">
-                                <span class="actLogs_tdTitle font-weight-bold">
-                                    '.preg_replace('/('.$vr_search.')/i','<span class="red_highlight2">$1</span>', $this_violator->First_Name) . ' 
-                                    ' . preg_replace('/('.$vr_search.')/i','<span class="red_highlight2">$1</span>', $this_violator->Middle_Name) . ' 
-                                    ' . preg_replace('/('.$vr_search.')/i','<span class="red_highlight2">$1</span>', $this_violator->Last_Name) . '
-                                </span>
-                                <span class="actLogs_tdSubTitle">
-                                    <span class="sub1">'.preg_replace('/('.$vr_search.')/i','<span class="red_highlight2">$1</span>', $this_violator->Student_Number) . ' <span class="subDiv"> | </span> 
-                                    <span class="sub1"> ' . preg_replace('/('.$vr_search.')/i','<span class="red_highlight2">$1</span>', $this_violator->School_Name) . ' <span class="subDiv"> | </span> 
-                                        ' . preg_replace('/('.$vr_search.')/i','<span class="red_highlight2">$1</span>', $this_violator->Course) . ' <span class="subDiv"> | </span> 
-                                        ' . preg_replace('/('.$vr_search.')/i','<span class="red_highlight2">$1</span>', $this_violator->YearLevel.'-Y') . 
-                                        ' </span> <span class="subDiv"> | 
-                                    </span> 
-                                    <span class="sub1"> ' . preg_replace('/('.$vr_search.')/i','<span class="red_highlight2">$1</span>', $this_violator->Gender) . ' </span> </span>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="d-inline">
-                                <span class="actLogs_content">'.date('F d, Y', strtotime($this_violator->recorded_at)) . '</span>
-                                <span class="actLogs_tdSubTitle sub2">'.date('D', strtotime($this_violator->recorded_at)) . ' - '. date('g:i A', strtotime($this_violator->recorded_at)) . '</span>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="d-inline">
-                                <span class="actLogs_content">'.$this_violator->offense_count.' Offense'.$oc_s . ' ' . $violation_statTxt.'</span>
-                                <span class="actLogs_tdSubTitle sub2">
+                if($vr_count_filtered_result > 0){
+                    // custom values
+                    $sq = "'";
+                    foreach($fltr_VR_tbl as $this_violator){
+                        if($this_violator->offense_count > 1){
+                            $oc_s = 's';
+                        }else{
+                            $oc_s = '';
+                        }
+                        // violation status classes
+                        if($this_violator->violation_status === 'cleared'){
+                            $violator_img = 'default_cleared_student_img.jpg';
+                            $violation_statTxt = ' <span class="text-success font-italic"> ~ Cleared</span>';
+                            $badge_stat = 'cust_badge_grn';
+                            $img_class = 'display_violator_image3';
+                        }else{
+                            $violator_img = 'default_student_img.jpg';
+                            $violation_statTxt = ' <span class="text_svms_red font-italic"> ~ Not Cleared</span>';
+                            $badge_stat = 'cust_badge_red';
+                            $img_class = 'display_violator_image2';
+                        }
+                        $vr_output .= '
+                        <tr id="'.$this_violator->Student_Number.'" onclick="viewStudentOffenses(this.id)" class="tr_pointer">
+                            <td class="pl12 d-flex justify-content-start align-items-center">
                                 ';
-                                // set new array value
-                                $to_array_allOffenses = array();
-                                // merge all offenses to $to_array_allOffenses
-                                if(!is_null($this_violator->minor_off) OR !empty($this_violator->minor_off)){
-                                    foreach(json_decode($this_violator->minor_off, true) as $this_mo){
-                                        array_push($to_array_allOffenses, $this_mo);
-                                    }
-                                }
-                                if(!is_null($this_violator->less_serious_off) OR !empty($this_violator->less_serious_off)){
-                                    foreach(json_decode($this_violator->less_serious_off, true) as $this_lso){
-                                        array_push($to_array_allOffenses, $this_lso);
-                                    }
-                                }
-                                if(!is_null($this_violator->other_off) OR !empty($this_violator->other_off)){
-                                    if(!in_array(null, json_decode($this_violator->other_off, true))){
-                                        foreach(json_decode($this_violator->other_off, true) as $this_oo){
-                                            array_push($to_array_allOffenses, $this_oo);
-                                        }
-                                    }
-                                }
-                                // convert $to_array_allOffenses to json
-                                $toJson = json_encode($to_array_allOffenses);
-                                // count all merged offenses
-                                $count_allOffenses = json_encode(count($to_array_allOffenses));
-                                $x = 0;
-                                // display 4 badge
-                                foreach(json_decode($toJson, true) as $all_offense){
-                                    if($count_allOffenses <= 3){
-                                        $vr_output .= ' <span class="badge '.$badge_stat.'"> '.Str::limit($all_offense, $limit=20, $end='...').' </span> ';
-                                    }else{
-                                        $vr_output .= ' <span class="badge '.$badge_stat.'"> '.Str::limit($all_offense, $limit=15, $end='...').' </span> ';
-                                    }
-                                    $x++;
-                                    if($x == 4){
-                                        break;
-                                    }
-                                }
-                                // display more count if offenses count > 4
-                                if($count_allOffenses > 4){
-                                    $sub_moreOffense_count = $count_allOffenses - 4;
-                                    $vr_output .= ' <span class="badge '.$badge_stat.'"> '. $sub_moreOffense_count . ' more...</span> ';
+                                if(!is_null($this_violator->Student_Image) OR !empty($this_violator->Student_Image)){
+                                    $vr_output .= '<img class="'.$img_class.' shadow-sm" src="'.asset('storage/svms/sdca_images/registered_students_imgs/'.$this_violator->Student_Image.'').'" alt="student'.$sq.'s image">';
+                                }else{
+                                    $vr_output .= '<img class="'.$img_class.' shadow-sm" src="'.asset('storage/svms/sdca_images/registered_students_imgs/'.$violator_img.'').'" alt="student'.$sq.'s image">';
                                 }
                                 $vr_output .= '
-                                </span>
-                            </div>
-                        </td>
-                    </tr>
+                                <div class="cust_td_info">
+                                    <span class="actLogs_tdTitle font-weight-bold">
+                                        '.preg_replace('/('.$vr_search.')/i','<span class="red_highlight2">$1</span>', $this_violator->First_Name) . ' 
+                                        ' . preg_replace('/('.$vr_search.')/i','<span class="red_highlight2">$1</span>', $this_violator->Middle_Name) . ' 
+                                        ' . preg_replace('/('.$vr_search.')/i','<span class="red_highlight2">$1</span>', $this_violator->Last_Name) . '
+                                    </span>
+                                    <span class="actLogs_tdSubTitle">
+                                        <span class="sub1">'.preg_replace('/('.$vr_search.')/i','<span class="red_highlight2">$1</span>', $this_violator->Student_Number) . ' <span class="subDiv"> | </span> 
+                                        <span class="sub1"> ' . preg_replace('/('.$vr_search.')/i','<span class="red_highlight2">$1</span>', $this_violator->School_Name) . ' <span class="subDiv"> | </span> 
+                                            ' . preg_replace('/('.$vr_search.')/i','<span class="red_highlight2">$1</span>', $this_violator->Course) . ' <span class="subDiv"> | </span> 
+                                            ' . preg_replace('/('.$vr_search.')/i','<span class="red_highlight2">$1</span>', $this_violator->YearLevel.'-Y') . 
+                                            ' </span> <span class="subDiv"> | 
+                                        </span> 
+                                        <span class="sub1"> ' . preg_replace('/('.$vr_search.')/i','<span class="red_highlight2">$1</span>', $this_violator->Gender) . ' </span> </span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-inline">
+                                    <span class="actLogs_content">'.date('F d, Y', strtotime($this_violator->recorded_at)) . '</span>
+                                    <span class="actLogs_tdSubTitle sub2">'.date('D', strtotime($this_violator->recorded_at)) . ' - '. date('g:i A', strtotime($this_violator->recorded_at)) . '</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-inline">
+                                    <span class="actLogs_content">'.$this_violator->offense_count.' Offense'.$oc_s . ' ' . $violation_statTxt.'</span>
+                                    <span class="actLogs_tdSubTitle sub2">
+                                    ';
+                                    // set new array value
+                                    $to_array_allOffenses = array();
+                                    // merge all offenses to $to_array_allOffenses
+                                    if(!is_null($this_violator->minor_off) OR !empty($this_violator->minor_off)){
+                                        foreach(json_decode($this_violator->minor_off, true) as $this_mo){
+                                            array_push($to_array_allOffenses, $this_mo);
+                                        }
+                                    }
+                                    if(!is_null($this_violator->less_serious_off) OR !empty($this_violator->less_serious_off)){
+                                        foreach(json_decode($this_violator->less_serious_off, true) as $this_lso){
+                                            array_push($to_array_allOffenses, $this_lso);
+                                        }
+                                    }
+                                    if(!is_null($this_violator->other_off) OR !empty($this_violator->other_off)){
+                                        if(!in_array(null, json_decode($this_violator->other_off, true))){
+                                            foreach(json_decode($this_violator->other_off, true) as $this_oo){
+                                                array_push($to_array_allOffenses, $this_oo);
+                                            }
+                                        }
+                                    }
+                                    // convert $to_array_allOffenses to json
+                                    $toJson = json_encode($to_array_allOffenses);
+                                    // count all merged offenses
+                                    $count_allOffenses = json_encode(count($to_array_allOffenses));
+                                    $x = 0;
+                                    // display 4 badge
+                                    foreach(json_decode($toJson, true) as $all_offense){
+                                        if($count_allOffenses <= 3){
+                                            $vr_output .= ' <span class="badge '.$badge_stat.'"> '.Str::limit($all_offense, $limit=20, $end='...').' </span> ';
+                                        }else{
+                                            $vr_output .= ' <span class="badge '.$badge_stat.'"> '.Str::limit($all_offense, $limit=15, $end='...').' </span> ';
+                                        }
+                                        $x++;
+                                        if($x == 4){
+                                            break;
+                                        }
+                                    }
+                                    // display more count if offenses count > 4
+                                    if($count_allOffenses > 4){
+                                        $sub_moreOffense_count = $count_allOffenses - 4;
+                                        $vr_output .= ' <span class="badge '.$badge_stat.'"> '. $sub_moreOffense_count . ' more...</span> ';
+                                    }
+                                    $vr_output .= '
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                        ';
+                    }
+                }else{
+                    $vr_output .='
+                        <tr class="no_data_row">
+                            <td align="center" colspan="7">
+                                <div class="no_data_div2 d-flex justify-content-center align-items-center text-center flex-column">
+                                    <img class="no_data_svg" src="'. asset('storage/svms/illustrations/no_violations_found.svg').'" alt="no matching Data found">
+                                    <span class="font-italic font-weight-bold">No Records Found! </span>
+                                </div>
+                            </td>
+                        </tr>
                     ';
                 }
+                $vr_paginate .= $fltr_VR_tbl->links('pagination::bootstrap-4');
+                $vr_data = array(
+                    'vr_table'            => $vr_output,
+                    'vr_table_paginate'   => $vr_paginate,
+                    'vr_total_rows'       => $vr_total_matched_results,
+                    'vr_total_data_found' => $vr_total_filtered_result
+                   );
+                   
+                echo json_encode($vr_data);
             }else{
-                $vr_output .='
-                    <tr class="no_data_row">
-                        <td align="center" colspan="7">
-                            <div class="no_data_div2 d-flex justify-content-center align-items-center text-center flex-column">
-                                <img class="no_data_svg" src="'. asset('storage/svms/illustrations/no_violations_found.svg').'" alt="no matching Data found">
-                                <span class="font-italic font-weight-bold">No Records Found! </span>
-                            </div>
-                        </td>
-                    </tr>
-                ';
+                return view('violation_records.index');
             }
-            $vr_paginate .= $fltr_VR_tbl->links('pagination::bootstrap-4');
-            $vr_data = array(
-                'vr_table'            => $vr_output,
-                'vr_table_paginate'   => $vr_paginate,
-                'vr_total_rows'       => $vr_total_matched_results,
-                'vr_total_data_found' => $vr_total_filtered_result
-               );
-               
-            echo json_encode($vr_data);
         }else{
-            return view('violation_records.index');
+            return view('profile.access_denied');
         }
     }
 
     // violator's profile module
     public function violator($violator_id){
-        // check if $violator_id exists in students_tbl
-        $check_exist = Students::where('Student_Number', $violator_id)->count();
-        if($check_exist > 0){
-            // get violator's info from students_tbl and violations_tbl
-            $violator_info = Students::where('Student_Number', $violator_id)->first();
-            $offenses_count = Violations::where('stud_num', $violator_id)->count();
-            return view('violation_records.violator')->with(compact('violator_info', 'offenses_count', 'violator_id'));
+        // redirects
+        $get_user_role_info = Userroles::select('uRole_id', 'uRole', 'uRole_access')->where('uRole', auth()->user()->user_role)->first();
+        $get_uRole_access   = json_decode(json_encode($get_user_role_info->uRole_access));
+        if(in_array('violation records', $get_uRole_access)){
+            // check if $violator_id exists in students_tbl
+            $check_exist = Students::where('Student_Number', $violator_id)->count();
+            if($check_exist > 0){
+                // get violator's info from students_tbl and violations_tbl
+                $violator_info = Students::where('Student_Number', $violator_id)->first();
+                $offenses_count = Violations::where('stud_num', $violator_id)->count();
+                return view('violation_records.violator')->with(compact('violator_info', 'offenses_count', 'violator_id'));
+            }else{
+                return view('violation_records.unknown_violator')->with(compact('violator_id'));
+            }
         }else{
-            return view('violation_records.unknown_violator')->with(compact('violator_id'));
+            return view('profile.access_denied');
         }
     }
     // add new violation entry

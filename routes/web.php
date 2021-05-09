@@ -47,6 +47,9 @@ Route::group(['middleware' => 'auth'], function () {
 	// change password
 	Route::post('profile/check_my_old_password', ['as' => 'profile.check_my_old_password', 'uses' => 'App\Http\Controllers\ProfileController@check_my_old_password']);
 	Route::post('profile/update_my_password', ['as' => 'profile.update_my_password', 'uses' => 'App\Http\Controllers\ProfileController@update_my_password']);
+
+	// access denied
+	Route::get('profile/access_denied', ['as' => 'profile.access_denied', 'uses' => 'App\Http\Controllers\ProfileController@access_denied']);
 });
 
 // user management

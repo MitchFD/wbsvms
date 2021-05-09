@@ -32,83 +32,113 @@ class UserManagementController extends Controller
      * @return \Illuminate\View\View
      */
     public function index(){
-        // users
-        $active_users      = Users::where('user_status', 'active')->where('user_role_status', 'active')->get();
-        $deactivated_users = Users::where('user_status', 'deactivated')->orWhere('user_role_status', 'deactivated')->get();
-        $pending_users     = Users::where('user_role', 'pending')->where('user_status', 'pending')->where('user_role_status', 'pending')->get();
-        $deleted_users     = Users::where('user_status', 'deleted')->get();
-        $registered_users  = Users::where('user_status', '!=', 'deleted')->get();
+        // redirects
+        $get_user_role_info = Userroles::select('uRole_id', 'uRole', 'uRole_access')->where('uRole', auth()->user()->user_role)->first();
+        $get_uRole_access   = json_decode(json_encode($get_user_role_info->uRole_access));
+        if(in_array('users management', $get_uRole_access)){
+            // users
+            $active_users      = Users::where('user_status', 'active')->where('user_role_status', 'active')->get();
+            $deactivated_users = Users::where('user_status', 'deactivated')->orWhere('user_role_status', 'deactivated')->get();
+            $pending_users     = Users::where('user_role', 'pending')->where('user_status', 'pending')->where('user_role_status', 'pending')->get();
+            $deleted_users     = Users::where('user_status', 'deleted')->get();
+            $registered_users  = Users::where('user_status', '!=', 'deleted')->get();
 
-        // user roles
-        $active_roles      = Userroles::where('uRole_status', 'active')->get();
-        $deactivated_roles = Userroles::where('uRole_status', 'deactivated')->get();
-        $deleted_roles     = Userroles::where('uRole_status', 'deleted')->get();
-        $registered_roles  = Userroles::where('uRole_status', '!=', 'deleted')->get();
+            // user roles
+            $active_roles      = Userroles::where('uRole_status', 'active')->get();
+            $deactivated_roles = Userroles::where('uRole_status', 'deactivated')->get();
+            $deleted_roles     = Userroles::where('uRole_status', 'deleted')->get();
+            $registered_roles  = Userroles::where('uRole_status', '!=', 'deleted')->get();
 
-        // user activities
-        $all_activities = Useractivites::get();
-
-        return view('user_management.index')->with(compact('active_users', 'deactivated_users', 'pending_users', 'deleted_users', 'registered_users', 'active_roles', 'deactivated_roles', 'deleted_roles', 'registered_roles', 'all_activities'));
+            // user activities
+            $all_activities = Useractivites::get();
+            return view('user_management.index')->with(compact('active_users', 'deactivated_users', 'pending_users', 'deleted_users', 'registered_users', 'active_roles', 'deactivated_roles', 'deleted_roles', 'registered_roles', 'all_activities'));
+        }else{
+            return view('profile.access_denied');
+        }
     }
 
     // sub-modules
     // overview_users_management
     public function overview_users_management(){
-        // users
-        $count_active_users      = Users::where('user_status', 'active')->where('user_role_status', 'active')->count();
-        $count_deactivated_users = Users::where('user_status', 'deactivated')->orWhere('user_role_status', 'deactivated')->count();
-        $count_pending_users     = Users::where('user_role', 'pending')->orWhere('user_status', 'pending')->orWhere('user_role_status', 'pending')->count();
-        $count_deleted_users     = Users::where('user_status', 'deleted')->count();
-        $count_registered_users  = Users::where('user_status', '!=', 'deleted')->count();
+        // redirects
+        $get_user_role_info = Userroles::select('uRole_id', 'uRole', 'uRole_access')->where('uRole', auth()->user()->user_role)->first();
+        $get_uRole_access   = json_decode(json_encode($get_user_role_info->uRole_access));
+        if(in_array('users management', $get_uRole_access)){
+            // users
+            $count_active_users      = Users::where('user_status', 'active')->where('user_role_status', 'active')->count();
+            $count_deactivated_users = Users::where('user_status', 'deactivated')->orWhere('user_role_status', 'deactivated')->count();
+            $count_pending_users     = Users::where('user_role', 'pending')->orWhere('user_status', 'pending')->orWhere('user_role_status', 'pending')->count();
+            $count_deleted_users     = Users::where('user_status', 'deleted')->count();
+            $count_registered_users  = Users::where('user_status', '!=', 'deleted')->count();
 
-        // system roles
-        $count_active_roles      = Userroles::where('uRole_status', 'active')->count();
-        $count_deactivated_roles = Userroles::where('uRole_status', 'deactivated')->count();
-        $count_deleted_roles     = Userroles::where('uRole_status', 'deleted')->count();
-        $count_registered_roles  = Userroles::where('uRole_status', '!=', 'deleted')->count();
-
-        return view('user_management.overview')->with(compact('count_active_users', 'count_deactivated_users', 'count_pending_users', 'count_deleted_users', 'count_registered_users', 'count_active_roles', 'count_deactivated_roles', 'count_deleted_roles', 'count_registered_roles'));
+            // system roles
+            $count_active_roles      = Userroles::where('uRole_status', 'active')->count();
+            $count_deactivated_roles = Userroles::where('uRole_status', 'deactivated')->count();
+            $count_deleted_roles     = Userroles::where('uRole_status', 'deleted')->count();
+            $count_registered_roles  = Userroles::where('uRole_status', '!=', 'deleted')->count();
+            return view('user_management.overview')->with(compact('count_active_users', 'count_deactivated_users', 'count_pending_users', 'count_deleted_users', 'count_registered_users', 'count_active_roles', 'count_deactivated_roles', 'count_deleted_roles', 'count_registered_roles'));
+        }else{
+            return view('profile.access_denied');
+        }
     }
 
     // create_users
     public function create_users(){
-        $employee_system_roles = Userroles::select('uRole_type', 'uRole')->where('uRole_type', 'employee')->get();
-        $student_system_roles  = Userroles::select('uRole_type', 'uRole')->where('uRole_type', 'student')->get();
-        return view('user_management.create_users')->with(compact('employee_system_roles', 'student_system_roles'));
+        // redirects
+        $get_user_role_info = Userroles::select('uRole_id', 'uRole', 'uRole_access')->where('uRole', auth()->user()->user_role)->first();
+        $get_uRole_access   = json_decode(json_encode($get_user_role_info->uRole_access));
+        if(in_array('users management', $get_uRole_access)){
+            $employee_system_roles = Userroles::select('uRole_type', 'uRole')->where('uRole_type', 'employee')->get();
+            $student_system_roles  = Userroles::select('uRole_type', 'uRole')->where('uRole_type', 'student')->get();
+            return view('user_management.create_users')->with(compact('employee_system_roles', 'student_system_roles'));
+        }else{
+            return view('profile.access_denied');
+        }
     }
 
     // system_users
     public function system_users(){
-        // users
-        $count_active_users      = Users::where('user_status', 'active')->where('user_role_status', 'active')->count();
-        $count_deactivated_users = Users::where('user_status', 'deactivated')->orWhere('user_role_status', 'deactivated')->count();
-        $count_deleted_users     = Users::where('user_status', 'deleted')->count();
-        $count_registered_users  = Users::count();
-        $count_pending_users     = Users::where('user_status', 'pending')->orWhere('user_role_status', 'pending')->count();
-        $count_employee_users    = Users::where('user_type', 'employee')->count();
-        $count_student_users     = Users::where('user_type', 'student')->count();
-        $count_male_users        = Users::where('user_gender', 'male')->count();
-        $count_female_users      = Users::where('user_gender', 'female')->count();
-        // $count_registered_users  = Users::where('user_status', '!=', 'deleted')->count();
+        // redirects
+        $get_user_role_info = Userroles::select('uRole_id', 'uRole', 'uRole_access')->where('uRole', auth()->user()->user_role)->first();
+        $get_uRole_access   = json_decode(json_encode($get_user_role_info->uRole_access));
+        if(in_array('users management', $get_uRole_access)){
+            // users
+            $count_active_users      = Users::where('user_status', 'active')->where('user_role_status', 'active')->count();
+            $count_deactivated_users = Users::where('user_status', 'deactivated')->orWhere('user_role_status', 'deactivated')->count();
+            $count_deleted_users     = Users::where('user_status', 'deleted')->count();
+            $count_registered_users  = Users::count();
+            $count_pending_users     = Users::where('user_status', 'pending')->orWhere('user_role_status', 'pending')->count();
+            $count_employee_users    = Users::where('user_type', 'employee')->count();
+            $count_student_users     = Users::where('user_type', 'student')->count();
+            $count_male_users        = Users::where('user_gender', 'male')->count();
+            $count_female_users      = Users::where('user_gender', 'female')->count();
+            // $count_registered_users  = Users::where('user_status', '!=', 'deleted')->count();
 
-        // system roles
-        $count_total_roles       = Userroles::where('uRole_status', '!=', 'deleted')->count();
-        $count_active_roles      = Userroles::where('uRole_status', 'active')->count();
-        $count_deactivated_roles = Userroles::where('uRole_status', 'deactivated')->count();
-        $count_empty_roles       = Userroles::where('assUsers_count', 0)->count();
-        $count_pending_roles     = Userroles::where('uRole_status', 'pending')->count();
-
-        return view('user_management.system_users')->with(compact('count_total_roles', 'count_active_users', 'count_deactivated_users', 'count_pending_users', 'count_deleted_users', 'count_registered_users', 'count_employee_users', 'count_student_users', 'count_male_users', 'count_female_users', 'count_active_roles', 'count_deactivated_roles', 'count_empty_roles', 'count_pending_roles'));
+            // system roles
+            $count_total_roles       = Userroles::where('uRole_status', '!=', 'deleted')->count();
+            $count_active_roles      = Userroles::where('uRole_status', 'active')->count();
+            $count_deactivated_roles = Userroles::where('uRole_status', 'deactivated')->count();
+            $count_empty_roles       = Userroles::where('assUsers_count', 0)->count();
+            $count_pending_roles     = Userroles::where('uRole_status', 'pending')->count();
+            return view('user_management.system_users')->with(compact('count_total_roles', 'count_active_users', 'count_deactivated_users', 'count_pending_users', 'count_deleted_users', 'count_registered_users', 'count_employee_users', 'count_student_users', 'count_male_users', 'count_female_users', 'count_active_roles', 'count_deactivated_roles', 'count_empty_roles', 'count_pending_roles'));
+        }else{
+            return view('profile.access_denied');
+        }
     }
     // user_profile
     public function user_profile($user_id){
-        // user data
-        $user_data = Users::where('id', $user_id)->first();
-
-        // user activities
-        $user_activities = Useractivites::where('act_respo_user_id', $user_id)->count();
-
-        return view('user_management.user_profile')->with(compact('user_data', 'user_activities'));
+        // redirects
+        $get_user_role_info = Userroles::select('uRole_id', 'uRole', 'uRole_access')->where('uRole', auth()->user()->user_role)->first();
+        $get_uRole_access   = json_decode(json_encode($get_user_role_info->uRole_access));
+        if(in_array('users management', $get_uRole_access)){
+            // user data
+            $user_data = Users::where('id', $user_id)->first();
+            // user activities
+            $user_activities = Useractivites::where('act_respo_user_id', $user_id)->count();
+            return view('user_management.user_profile')->with(compact('user_data', 'user_activities'));
+        }else{
+            return view('profile.access_denied');
+        }
     }
 
     // live search filter for system users table
@@ -253,153 +283,167 @@ class UserManagementController extends Controller
 
     // system_roles
     public function system_roles(){
-        return view('user_management.system_roles');
+        // redirects
+        $get_user_role_info = Userroles::select('uRole_id', 'uRole', 'uRole_access')->where('uRole', auth()->user()->user_role)->first();
+        $get_uRole_access   = json_decode(json_encode($get_user_role_info->uRole_access));
+        if(in_array('users management', $get_uRole_access)){
+            return view('user_management.system_roles');
+        }else{
+            return view('profile.access_denied');
+        }
     }
 
     // users_logs
     public function users_logs(Request $request){
-        if($request->ajax()){
-            // custom var
-            $output = '';
-            $paginate = '';
-            $total_matched_results = '';
-            // get all request
-            $logs_search    = $request->get('logs_search');
-            $logs_userTypes = $request->get('logs_userTypes');
-            $logs_userRoles = $request->get('logs_userRoles');
-            $logs_users     = $request->get('logs_users');
-            $logs_category  = $request->get('logs_category');
-            $logs_rangefrom = $request->get('logs_rangefrom');
-            $logs_rangeTo   = $request->get('logs_rangeTo');
-            $logs_page      = $request->get('page');
-
-            if($logs_search != ''){
-                $filter_user_logs_table = DB::table('users_activity_tbl')
-                                        ->join('users', 'users_activity_tbl.act_respo_user_id', '=', 'users.id')
-                                        ->select('users_activity_tbl.*', 'users.id', 'users.user_role', 'users.user_status', 'users.user_role_status', 'users.user_type', 'users.user_sdca_id', 'users.user_image', 'users.user_gender')
-                                        ->where(function($query) use ($logs_search) {
-                                            $query->orWhere('users.user_sdca_id', 'like', '%'.$logs_search.'%')
-                                                        ->orWhere('users.user_role', 'like', '%'.$logs_search.'%')
-                                                        ->orWhere('users.user_type', 'like', '%'.$logs_search.'%')
-                                                        ->orWhere('users.user_gender', 'like', '%'.$logs_search.'%')
-                                                        ->orWhere('users_activity_tbl.act_respo_users_lname', 'like', '%'.$logs_search.'%')
-                                                        ->orWhere('users_activity_tbl.act_respo_users_fname', 'like', '%'.$logs_search.'%')
-                                                        ->orWhere('users_activity_tbl.act_type', 'like', '%'.$logs_search.'%')
-                                                        ->orWhere('users_activity_tbl.act_details', 'like', '%'.$logs_search.'%');
-                                        })
-                                        ->where(function($query) use ($logs_userTypes, $logs_userRoles, $logs_users, $logs_category, $logs_rangefrom, $logs_rangeTo){
-                                            if($logs_userTypes != 0 OR !empty($logs_userTypes)){
-                                                $query->where('users.user_type', '=', $logs_userTypes);
-                                            }
-                                            if($logs_userRoles != 0 OR !empty($logs_userRoles)){
-                                                $query->where('users.user_role', '=', $logs_userRoles);
-                                            }
-                                            if($logs_users != 0 OR !empty($logs_users)){
-                                                $query->where('users.id', '=', $logs_users);
-                                            }
-                                            if($logs_category != 0 OR !empty($logs_category)){
-                                                $query->where('users_activity_tbl.act_type', '=', $logs_category);
-                                            }
-                                            if($logs_rangefrom != 0 OR !empty($logs_rangefrom) AND $logs_rangeTo != 0 OR !empty($logs_rangeTo)){
-                                                $query->whereBetween('users_activity_tbl.created_at', [$logs_rangefrom, $logs_rangeTo]);
-                                            }
-                                        })
-                                        ->orderBy('users_activity_tbl.created_at', 'DESC')
-                                        ->paginate(10);
-                $matched_result_txt = ' Matched Records';
-            }else{
-                $filter_user_logs_table = DB::table('users_activity_tbl')
-                                        ->join('users', 'users_activity_tbl.act_respo_user_id', '=', 'users.id')
-                                        ->select('users_activity_tbl.*', 'users.id', 'users.user_role', 'users.user_status', 'users.user_role_status', 'users.user_type', 'users.user_sdca_id', 'users.user_image', 'users.user_gender')
-                                        ->where(function($query) use ($logs_userTypes, $logs_userRoles, $logs_users, $logs_category, $logs_rangefrom, $logs_rangeTo){
-                                            if($logs_userTypes != 0 OR !empty($logs_userTypes)){
-                                                $query->where('users.user_type', '=', $logs_userTypes);
-                                            }
-                                            if($logs_userRoles != 0 OR !empty($logs_userRoles)){
-                                                $query->where('users.user_role', '=', $logs_userRoles);
-                                            }
-                                            if($logs_users != 0 OR !empty($logs_users)){
-                                                $query->where('users.id', '=', $logs_users);
-                                            }
-                                            if($logs_category != 0 OR !empty($logs_category)){
-                                                $query->where('users_activity_tbl.act_type', '=', $logs_category);
-                                            }
-                                            if($logs_rangefrom != 0 OR !empty($logs_rangefrom) AND $logs_rangeTo != 0 OR !empty($logs_rangeTo)){
-                                                $query->whereBetween('users_activity_tbl.created_at', [$logs_rangefrom, $logs_rangeTo]);
-                                            }
-                                        })
-                                        ->orderBy('users_activity_tbl.created_at', 'DESC')
-                                        ->paginate(10);
-                $matched_result_txt = ' Record';
-            }
-            // total filtered date
-            $count_filtered_result = count($filter_user_logs_table);
-            $total_filtered_result = $filter_user_logs_table->total();
-            // plural text
-            if($total_filtered_result > 0){
-                if($total_filtered_result > 1){
-                    $s = 's';
+        // redirects
+        $get_user_role_info = Userroles::select('uRole_id', 'uRole', 'uRole_access')->where('uRole', auth()->user()->user_role)->first();
+        $get_uRole_access   = json_decode(json_encode($get_user_role_info->uRole_access));
+        if(in_array('users management', $get_uRole_access)){
+            if($request->ajax()){
+                // custom var
+                $output = '';
+                $paginate = '';
+                $total_matched_results = '';
+                // get all request
+                $logs_search    = $request->get('logs_search');
+                $logs_userTypes = $request->get('logs_userTypes');
+                $logs_userRoles = $request->get('logs_userRoles');
+                $logs_users     = $request->get('logs_users');
+                $logs_category  = $request->get('logs_category');
+                $logs_rangefrom = $request->get('logs_rangefrom');
+                $logs_rangeTo   = $request->get('logs_rangeTo');
+                $logs_page      = $request->get('page');
+    
+                if($logs_search != ''){
+                    $filter_user_logs_table = DB::table('users_activity_tbl')
+                                            ->join('users', 'users_activity_tbl.act_respo_user_id', '=', 'users.id')
+                                            ->select('users_activity_tbl.*', 'users.id', 'users.user_role', 'users.user_status', 'users.user_role_status', 'users.user_type', 'users.user_sdca_id', 'users.user_image', 'users.user_gender')
+                                            ->where(function($query) use ($logs_search) {
+                                                $query->orWhere('users.user_sdca_id', 'like', '%'.$logs_search.'%')
+                                                            ->orWhere('users.user_role', 'like', '%'.$logs_search.'%')
+                                                            ->orWhere('users.user_type', 'like', '%'.$logs_search.'%')
+                                                            ->orWhere('users.user_gender', 'like', '%'.$logs_search.'%')
+                                                            ->orWhere('users_activity_tbl.act_respo_users_lname', 'like', '%'.$logs_search.'%')
+                                                            ->orWhere('users_activity_tbl.act_respo_users_fname', 'like', '%'.$logs_search.'%')
+                                                            ->orWhere('users_activity_tbl.act_type', 'like', '%'.$logs_search.'%')
+                                                            ->orWhere('users_activity_tbl.act_details', 'like', '%'.$logs_search.'%');
+                                            })
+                                            ->where(function($query) use ($logs_userTypes, $logs_userRoles, $logs_users, $logs_category, $logs_rangefrom, $logs_rangeTo){
+                                                if($logs_userTypes != 0 OR !empty($logs_userTypes)){
+                                                    $query->where('users.user_type', '=', $logs_userTypes);
+                                                }
+                                                if($logs_userRoles != 0 OR !empty($logs_userRoles)){
+                                                    $query->where('users.user_role', '=', $logs_userRoles);
+                                                }
+                                                if($logs_users != 0 OR !empty($logs_users)){
+                                                    $query->where('users.id', '=', $logs_users);
+                                                }
+                                                if($logs_category != 0 OR !empty($logs_category)){
+                                                    $query->where('users_activity_tbl.act_type', '=', $logs_category);
+                                                }
+                                                if($logs_rangefrom != 0 OR !empty($logs_rangefrom) AND $logs_rangeTo != 0 OR !empty($logs_rangeTo)){
+                                                    $query->whereBetween('users_activity_tbl.created_at', [$logs_rangefrom, $logs_rangeTo]);
+                                                }
+                                            })
+                                            ->orderBy('users_activity_tbl.created_at', 'DESC')
+                                            ->paginate(10);
+                    $matched_result_txt = ' Matched Records';
+                }else{
+                    $filter_user_logs_table = DB::table('users_activity_tbl')
+                                            ->join('users', 'users_activity_tbl.act_respo_user_id', '=', 'users.id')
+                                            ->select('users_activity_tbl.*', 'users.id', 'users.user_role', 'users.user_status', 'users.user_role_status', 'users.user_type', 'users.user_sdca_id', 'users.user_image', 'users.user_gender')
+                                            ->where(function($query) use ($logs_userTypes, $logs_userRoles, $logs_users, $logs_category, $logs_rangefrom, $logs_rangeTo){
+                                                if($logs_userTypes != 0 OR !empty($logs_userTypes)){
+                                                    $query->where('users.user_type', '=', $logs_userTypes);
+                                                }
+                                                if($logs_userRoles != 0 OR !empty($logs_userRoles)){
+                                                    $query->where('users.user_role', '=', $logs_userRoles);
+                                                }
+                                                if($logs_users != 0 OR !empty($logs_users)){
+                                                    $query->where('users.id', '=', $logs_users);
+                                                }
+                                                if($logs_category != 0 OR !empty($logs_category)){
+                                                    $query->where('users_activity_tbl.act_type', '=', $logs_category);
+                                                }
+                                                if($logs_rangefrom != 0 OR !empty($logs_rangefrom) AND $logs_rangeTo != 0 OR !empty($logs_rangeTo)){
+                                                    $query->whereBetween('users_activity_tbl.created_at', [$logs_rangefrom, $logs_rangeTo]);
+                                                }
+                                            })
+                                            ->orderBy('users_activity_tbl.created_at', 'DESC')
+                                            ->paginate(10);
+                    $matched_result_txt = ' Record';
+                }
+                // total filtered date
+                $count_filtered_result = count($filter_user_logs_table);
+                $total_filtered_result = $filter_user_logs_table->total();
+                // plural text
+                if($total_filtered_result > 0){
+                    if($total_filtered_result > 1){
+                        $s = 's';
+                    }else{
+                        $s = '';
+                    }
+                    $total_matched_results = $filter_user_logs_table->firstItem() . ' - ' . $filter_user_logs_table->lastItem() . ' of ' . $total_filtered_result . ' ' . $matched_result_txt.''.$s;
                 }else{
                     $s = '';
+                    $total_matched_results = 'No Records Found';
                 }
-                $total_matched_results = $filter_user_logs_table->firstItem() . ' - ' . $filter_user_logs_table->lastItem() . ' of ' . $total_filtered_result . ' ' . $matched_result_txt.''.$s;
-            }else{
-                $s = '';
-                $total_matched_results = 'No Records Found';
-            }
-            if($count_filtered_result > 0){
-                foreach($filter_user_logs_table as $users_logs){
-                    // custom values
-                    if($users_logs->user_type === 'employee'){
-                        $img_border = 'rslts_emp';
-                    }elseif($users_logs->user_type === 'student'){
-                        $img_border = 'rslts_stud';
-                    }else{
-                        $img_border = 'rslts_unknown';
+                if($count_filtered_result > 0){
+                    foreach($filter_user_logs_table as $users_logs){
+                        // custom values
+                        if($users_logs->user_type === 'employee'){
+                            $img_border = 'rslts_emp';
+                        }elseif($users_logs->user_type === 'student'){
+                            $img_border = 'rslts_stud';
+                        }else{
+                            $img_border = 'rslts_unknown';
+                        }
+                        $output .= '
+                        <tr>
+                            <td class="pl12 d-flex justify-content-start align-items-center">
+                                <img class="rslts_userImgs ' . $img_border.'" src="'.asset('storage/svms/user_images/'.$users_logs->user_image.'').'" alt="user image">
+                                <div class="cust_td_info">
+                                    <span class="actLogs_tdTitle font-weight-bold">'.preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', $users_logs->act_respo_users_fname) . ' ' .preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', $users_logs->act_respo_users_lname) . '</span>
+                                    <span class="actLogs_tdSubTitle"><span class="sub1">'.preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', $users_logs->user_sdca_id) . ' </span> <span class="subDiv"> / </span> <span class="sub1"> ' . preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', ucwords($users_logs->user_role)).'</span></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-inline">
+                                    <span class="actLogs_content">'.preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', date('F d, Y', strtotime($users_logs->created_at))) . '</span>
+                                    <span class="actLogs_tdSubTitle sub2">'.preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', date('D', strtotime($users_logs->created_at))) . ' - '.preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', date('g:i A', strtotime($users_logs->created_at))) . '</span>
+                                </div>
+                            </td>
+                            <td><span class="actLogs_content">'.preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', $users_logs->act_type) . '</span></td>
+                            <td><span class="actLogs_content">'.preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', $users_logs->act_details) . '</span></td>
+                        </tr>
+                    ';
                     }
-                    $output .= '
-                    <tr>
-                        <td class="pl12 d-flex justify-content-start align-items-center">
-                            <img class="rslts_userImgs ' . $img_border.'" src="'.asset('storage/svms/user_images/'.$users_logs->user_image.'').'" alt="user image">
-                            <div class="cust_td_info">
-                                <span class="actLogs_tdTitle font-weight-bold">'.preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', $users_logs->act_respo_users_fname) . ' ' .preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', $users_logs->act_respo_users_lname) . '</span>
-                                <span class="actLogs_tdSubTitle"><span class="sub1">'.preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', $users_logs->user_sdca_id) . ' </span> <span class="subDiv"> / </span> <span class="sub1"> ' . preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', ucwords($users_logs->user_role)).'</span></span>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="d-inline">
-                                <span class="actLogs_content">'.preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', date('F d, Y', strtotime($users_logs->created_at))) . '</span>
-                                <span class="actLogs_tdSubTitle sub2">'.preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', date('D', strtotime($users_logs->created_at))) . ' - '.preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', date('g:i A', strtotime($users_logs->created_at))) . '</span>
-                            </div>
-                        </td>
-                        <td><span class="actLogs_content">'.preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', $users_logs->act_type) . '</span></td>
-                        <td><span class="actLogs_content">'.preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', $users_logs->act_details) . '</span></td>
-                    </tr>
-                ';
+                }else{
+                    $output .='
+                        <tr class="no_data_row">
+                            <td align="center" colspan="7">
+                                <div class="no_data_div d-flex justify-content-center align-items-center text-center flex-column">
+                                    <img class="illustration_svg" src="'. asset('storage/svms/illustrations/no_matching_users_found.svg') .'" alt="no matching users found">
+                                    <span class="font-italic">No Records Found!
+                                </div>
+                            </td>
+                        </tr>
+                    ';
                 }
+                $paginate .= $filter_user_logs_table->links('pagination::bootstrap-4');
+                $data = array(
+                    'users_logs_table' => $output,
+                    'paginate'         => $paginate,
+                    'total_rows'       => $total_matched_results,
+                    'total_data_found' => $total_filtered_result
+                   );
+             
+                echo json_encode($data);
             }else{
-                $output .='
-                    <tr class="no_data_row">
-                        <td align="center" colspan="7">
-                            <div class="no_data_div d-flex justify-content-center align-items-center text-center flex-column">
-                                <img class="illustration_svg" src="'. asset('storage/svms/illustrations/no_matching_users_found.svg') .'" alt="no matching users found">
-                                <span class="font-italic">No Records Found!
-                            </div>
-                        </td>
-                    </tr>
-                ';
+                return view('user_management.users_logs');
             }
-            $paginate .= $filter_user_logs_table->links('pagination::bootstrap-4');
-            $data = array(
-                'users_logs_table' => $output,
-                'paginate'         => $paginate,
-                'total_rows'       => $total_matched_results,
-                'total_data_found' => $total_filtered_result
-               );
-         
-            echo json_encode($data);
         }else{
-            return view('user_management.users_logs');
+            return view('profile.access_denied');
         }
     }
 
