@@ -58,7 +58,7 @@ class ProfileController extends Controller
         if(in_array('profile', $get_uRole_access)){
             $my_first_record = Useractivites::where('act_respo_user_id', auth()->user()->id)->first();
             $my_latest_record = Useractivites::where('act_respo_user_id', auth()->user()->id)->latest()->first();
-            $user_activities = Useractivites::where('act_respo_user_id', auth()->user()->id)->paginate(10);
+            $user_activities = Useractivites::where('act_respo_user_id', auth()->user()->id)->orderBy('created_at', 'DESC')->paginate(10);
             return view('profile.index')->with(compact('user_activities', 'my_first_record', 'my_latest_record'));
         }else{
             return view('profile.access_denied');
@@ -145,6 +145,20 @@ class ProfileController extends Controller
             $emp_org_empJobdesc = $fetch_original_emp->uEmp_job_desc;
             $emp_org_empDept    = $fetch_original_emp->uEmp_dept;
             $emp_org_empPhnum   = $fetch_original_emp->uEmp_phnum;
+        // assign user image
+        if(!is_null($emp_org_empImage) OR !empty($emp_org_empImage)){
+            $emp_org_empImage = $emp_org_empImage;
+        }else{
+            $tolower_uType = Str::lower($emp_org_empuType);
+            if($tolower_uType === 'employee'){
+                $emp_org_empImage = 'employee_user_image.jpg';
+            }elseif($tolower_uType === 'student'){
+                $emp_org_empImage = 'student_user_image.jpg';
+            }else{
+                $emp_org_empImage = 'disabled_user_image.jpg';
+            }
+            // $emp_org_empImage = null;
+        }
         // user gender format
                 $old_user_gender = Str::lower($emp_org_empGender);
                 $new_user_gender = Str::lower($get_upd_empGender);
@@ -357,6 +371,20 @@ class ProfileController extends Controller
             $stud_orgYearlvl     = $fetch_original_stud->uStud_yearlvl;
             $stud_orgSection     = $fetch_original_stud->uStud_section;
             $stud_orgPhnum       = $fetch_original_stud->uStud_phnum;
+        // assign user image
+            if(!is_null($stud_orgImage) OR !empty($stud_orgImage)){
+                $stud_orgImage = $stud_orgImage;
+            }else{
+                $tolower_uType = Str::lower($stud_orgType);
+                if($tolower_uType === 'employee'){
+                    $stud_orgImage = 'employee_user_image.jpg';
+                }elseif($tolower_uType === 'student'){
+                    $stud_orgImage = 'student_user_image.jpg';
+                }else{
+                    $stud_orgImage = 'disabled_user_image.jpg';
+                }
+                // $stud_orgImage = null;
+            }
         // user gender format
                 $old_user_gender = Str::lower($stud_orgGender);
                 $new_user_gender = Str::lower($get_upd_studGender);

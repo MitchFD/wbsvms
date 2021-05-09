@@ -484,7 +484,7 @@ class ViolationEntryController extends Controller
                 $record_act->act_respo_users_lname = $get_respo_user_lname;
                 $record_act->act_respo_users_fname = $get_respo_user_fname;
                 $record_act->act_type              = 'violation entry';
-                $record_act->act_details           = 'Record ' . $total_offenses_count . ' Offense'.$s . ' made by ' . $yearLevel_txt . ' ' . $get_sel_stud_course . ' student: ' . $get_sel_stud_fname . ' ' . $get_sel_stud_mname . ' ' . $get_sel_stud_lname;
+                $record_act->act_details           = 'Recorded ' . $total_offenses_count . ' Offense'.$s . ' made by ' . $yearLevel_txt . ' ' . $get_sel_stud_course . ' student: ' . $get_sel_stud_fname . ' ' . $get_sel_stud_mname . ' ' . $get_sel_stud_lname;
                 $record_act->act_affected_id       = $new_viola_id;
                 $record_act->save();
 

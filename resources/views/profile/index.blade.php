@@ -413,7 +413,8 @@
                                                             <div class="row d-flex justify-content-center">
                                                                 <div class="col-lg-12 col-md-12 col-sm-12 align-items-center">
                                                                     <div class="up_img_div text-center">
-                                                                        <img class="up_user_image empOwn_imgUpld_targetImg shadow border-gray" src="{{asset('storage/svms/user_images/'.auth()->user()->user_image)}}" alt="{{auth()->user()->user_fname }} {{ auth()->user()->user_lname}}'s profile image'">
+                                                                        <img class="{{ $image_filter }} up_user_image empOwn_imgUpld_targetImg shadow" src="{{$user_image_src}}" alt="{{$user_image_alt}}">
+                                                                        {{-- <img class="up_user_image empOwn_imgUpld_targetImg shadow border-gray" src="{{asset('storage/svms/user_images/'.auth()->user()->user_image)}}" alt="{{auth()->user()->user_fname }} {{ auth()->user()->user_lname}}'s profile image'"> --}}
                                                                     </div>
                                                                     <div class="user_image_upload_input_div emp_imgUpload">
                                                                         <i class="nc-icon nc-image emp_imgUpld_TrgtBtn"></i>
@@ -521,7 +522,8 @@
                                                             <div class="row d-flex justify-content-center">
                                                                 <div class="col-lg-12 col-md-12 col-sm-12 align-items-center">
                                                                     <div class="up_img_div text-center">
-                                                                        <img class="up_stud_user_image studOwn_imgUpld_targetImg shadow border-gray" src="{{asset('storage/svms/user_images/'.auth()->user()->user_image)}}" alt="{{auth()->user()->user_fname }} {{ auth()->user()->user_lname}}'s profile image'">
+                                                                        <img class="{{ $image_filter }} up_stud_user_image studOwn_imgUpld_targetImg shadow" src="{{$user_image_src}}" alt="{{$user_image_alt}}">
+                                                                        {{-- <img class="up_stud_user_image studOwn_imgUpld_targetImg shadow border-gray" src="{{asset('storage/svms/user_images/'.auth()->user()->user_image)}}" alt="{{auth()->user()->user_fname }} {{ auth()->user()->user_lname}}'s profile image'"> --}}
                                                                     </div>
                                                                     <div class="user_image_upload_input_div stud_imgUpload">
                                                                         <i class="nc-icon nc-image stud_imgUpld_TrgtBtn"></i>
