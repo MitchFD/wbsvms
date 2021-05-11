@@ -23,10 +23,10 @@
         margin-bottom: 1rem !important;
         background-color: transparent !important;
         border-collapse: collapse !important;
-        border: 1px solid #f5f5f5 !important;
+        border: 1px solid #FBF1F1 !important;
     ">
         <thead style="
-            background-color: #242333;
+            background-color: #BD171B;
             color: #ffffff;
             text-transform: uppercase;
             font-size: 12px;
@@ -35,13 +35,13 @@
                 <th style="padding: 10px 15px; border-top: 0px; border-left: 0px; border: 0px !important;">Recorded Offenses</th>
             </tr>
         </thead>
-        <tbody style="background-color: #ffffff; color: #242333; font-size: 12px;">
+        <tbody style="background-color: #ffffff; color: #BD171B; font-size: 12px;">
             {{-- offenses --}}
             @if(!is_null($details['minor_off']) OR !empty($details['minor_off']))
                 @php
                     $mo_i = 1;
                 @endphp
-                <tr style="line-height: 12px; margin: 7px 0 !important; border-bottom: 1px solid #f5f5f5 !important;">
+                <tr style="line-height: 12px; margin: 7px 0 !important; border-bottom: 1px solid #FBF1F1 !important;">
                     <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
                         <p style="margin: 10px 15px 5px 15px !important;"><strong>Minor Offense{{$details['s']}}:</strong></p>
                         @foreach($details['minor_off'] as $minor_offense)
@@ -54,7 +54,7 @@
                 @php
                     $lso_i = 1;
                 @endphp
-                <tr style="line-height: 12px; margin: 7px 0 !important; border-bottom: 1px solid #f5f5f5 !important;">
+                <tr style="line-height: 12px; margin: 7px 0 !important; border-bottom: 1px solid #FBF1F1 !important;">
                     <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
                         <p style="margin: 10px 15px 5px 15px !important;"><strong>Less Serious Offense{{$details['s']}}:</strong></p>
                         @foreach($details['less_serious_off'] as $less_serious_offense)
@@ -68,7 +68,7 @@
                     @php
                         $oo_i = 1;
                     @endphp
-                    <tr style="line-height: 12px; margin: 7px 0 !important; border-bottom: 1px solid #f5f5f5 !important;">
+                    <tr style="line-height: 12px; margin: 7px 0 !important; border-bottom: 1px solid #FBF1F1 !important;">
                         <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
                             <p style="margin: 10px 15px 5px 15px !important;"><strong>Other Offense{{$details['s']}}:</strong></p>
                             @foreach($details['other_off'] as $other_offense)
@@ -79,7 +79,7 @@
                 @endif
             @endif
             {{-- date recorded --}}
-            <tr style="line-height: 12px; margin: 7px 0 !important; background-color: #f5f5f5;">
+            <tr style="line-height: 12px; margin: 7px 0 !important; background-color: #FBF1F1;">
                 <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
                     <p style="margin: 10px 15px 5px 15px !important;"><strong>Date Recorded</strong></p>
                     <p style="margin: 4px 15px 10px 15px !important;">{{ date('F d, Y', strtotime($details['date_recorded'])) }} -  {{ date('D', strtotime($details['date_recorded'])) }} at {{ date('g:i A', strtotime($details['date_recorded'])) }}</p>

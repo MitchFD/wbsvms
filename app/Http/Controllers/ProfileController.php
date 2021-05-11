@@ -38,28 +38,101 @@ class ProfileController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function index(){
+    public function index(Request $request){
         // get user type
-        // $user_type = auth()->user()->user_type;
-        // if($user_type == 'student'){
-        //     $this_user = DB::table('users')
-        //     ->join('user_students_tbl', 'users.id', '=', 'user_students_tbl.uStud_num')
-        //     ->get();
-        //     return view('profile.student_user_profile')->with('this_user');
-        // }else{
-        //     $this_user = DB::table('users')
-        //     ->join('user_employees_tbl', 'users.id', '=', 'user_employees_tbl.uEmp_id')
-        //     ->get();
-        //     return view('profile.employee_user_profile')->with('this_user');
-        // }
-        // redirects
+            // $user_type = auth()->user()->user_type;
+            // if($user_type == 'student'){
+            //     $this_user = DB::table('users')
+            //     ->join('user_students_tbl', 'users.id', '=', 'user_students_tbl.uStud_num')
+            //     ->get();
+            //     return view('profile.student_user_profile')->with('this_user');
+            // }else{
+            //     $this_user = DB::table('users')
+            //     ->join('user_employees_tbl', 'users.id', '=', 'user_employees_tbl.uEmp_id')
+            //     ->get();
+            //     return view('profile.employee_user_profile')->with('this_user');
+            // }
+            // redirects
         $get_user_role_info = Userroles::select('uRole_id', 'uRole', 'uRole_access')->where('uRole', auth()->user()->user_role)->first();
         $get_uRole_access   = json_decode(json_encode($get_user_role_info->uRole_access));
         if(in_array('profile', $get_uRole_access)){
             $my_first_record = Useractivites::where('act_respo_user_id', auth()->user()->id)->first();
             $my_latest_record = Useractivites::where('act_respo_user_id', auth()->user()->id)->latest()->first();
-            $user_activities = Useractivites::where('act_respo_user_id', auth()->user()->id)->orderBy('created_at', 'DESC')->paginate(10);
-            return view('profile.index')->with(compact('user_activities', 'my_first_record', 'my_latest_record'));
+            $my_trans_categories = Useractivites::select('act_type')->where('act_respo_user_id', auth()->user()->id)->groupBy('act_type')->get();
+            $count_my_logs = Useractivites::where('act_respo_user_id', auth()->user()->id)->count();
+            if($request->ajax()){
+                // custom var
+                $output = '';
+                $al_paginate = '';
+                $al_total_results = '';
+                // get all request
+                $al_rangefrom = $request->get('al_rangefrom');
+                $al_rangeTo   = $request->get('al_rangeTo');
+                $al_category  = $request->get('al_category');
+                $page         = $request->get('page');
+                // query
+                $filter_my_logs_table = Useractivites::where('act_respo_user_id', auth()->user()->id)
+                                        ->where(function($query) use ($al_rangefrom, $al_rangeTo, $al_category){
+                                            if($al_category != 0 OR !empty($al_category)){
+                                                $query->where('act_type', '=', $al_category);
+                                            }
+                                            if($al_rangefrom != 0 OR !empty($al_rangefrom) OR !is_null($al_rangefrom) AND $al_rangeTo != 0 OR !empty($al_rangeTo) OR !is_null($al_rangeTo)){
+                                                $query->whereBetween('created_at', [$al_rangefrom, $al_rangeTo]);
+                                            }
+                                        })
+                                        ->orderBy('created_at', 'DESC')
+                                        ->paginate(10);
+                // total filtered date
+                $al_count_Filtered_result = count($filter_my_logs_table);
+                $al_totalFiltered_result = $filter_my_logs_table->total();
+                // custom values
+                if($al_totalFiltered_result > 0){
+                    if($al_totalFiltered_result > 1){
+                        $s = 's';
+                    }else{
+                        $s = '';
+                    }
+                    $al_total_results = $filter_my_logs_table->firstItem() . ' - ' . $filter_my_logs_table->lastItem() . ' of ' . $al_totalFiltered_result . ' Record'.$s;
+                }else{
+                    $s = '';
+                    $al_total_results = 'No Records Found';
+                }
+                // display
+                if($al_count_Filtered_result > 0){
+                    foreach($filter_my_logs_table as $users_logs){
+                        // custom values
+                        $format_createdAt = ''.date('F d, Y (D - g:i A)', strtotime($users_logs->created_at));
+                        $output .= '
+                        <tr>
+                            <td class="p12 w35prcnt">'.$format_createdAt.'</td>
+                            <td>'.$users_logs->act_details.'</td>
+                        </tr>
+                    ';
+                    }
+                }else{
+                    $output .='
+                        <tr class="no_data_row">
+                            <td align="center" colspan="7">
+                                <div class="no_data_div d-flex justify-content-center align-items-center text-center flex-column">
+                                    <img class="illustration_svg" src="'. asset('storage/svms/illustrations/no_matching_users_found.svg') .'" alt="no matching users found">
+                                    <span class="font-italic">No Records Found!
+                                </div>
+                            </td>
+                        </tr>
+                    ';
+                }
+                $al_paginate .= $filter_my_logs_table->links('pagination::bootstrap-4');
+                $data = array(
+                    'al_table'            => $output,
+                    'vr_table_paginate'   => $al_paginate,
+                    'vr_total_rows'       => $al_total_results,
+                    'vr_total_data_found' => $al_totalFiltered_result
+                   );
+             
+                echo json_encode($data);
+            }else{
+                return view('profile.index')->with(compact('count_my_logs', 'my_first_record', 'my_latest_record', 'my_trans_categories'));
+            }
         }else{
             return view('profile.access_denied');
         }
@@ -685,8 +758,7 @@ class ProfileController extends Controller
      * @param  \App\Http\Requests\ProfileRequest  $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(ProfileRequest $request)
-    {
+    public function update(ProfileRequest $request){
         auth()->user()->update($request->all());
 
         return back()->withStatus(__('Profile successfully updated.'));
@@ -698,8 +770,7 @@ class ProfileController extends Controller
      * @param  \App\Http\Requests\PasswordRequest  $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function password(PasswordRequest $request)
-    {
+    public function password(PasswordRequest $request){
         auth()->user()->update(['password' => Hash::make($request->get('password'))]);
 
         return back()->withPasswordStatus(__('Password successfully updated.'));

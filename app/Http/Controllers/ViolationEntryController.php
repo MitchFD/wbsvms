@@ -489,9 +489,9 @@ class ViolationEntryController extends Controller
                 $record_act->save();
 
                 // send email per student
-                // if(!empty($get_sel_stud_email) OR !is_null($get_sel_stud_email)){
-                //     \Mail::to('mfodesierto2@gmail.com')->send(new \App\Mail\ViolationRecordedSendMail($details));
-                // }
+                if(!empty($get_sel_stud_email) OR !is_null($get_sel_stud_email)){
+                    \Mail::to('mfodesierto2@gmail.com')->send(new \App\Mail\ViolationRecordedSendMail($details));
+                }
             }else{
                 return back()->withFailedStatus('Recording Offenses has failed! Try Again later.');
             }

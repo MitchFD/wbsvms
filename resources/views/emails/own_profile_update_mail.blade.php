@@ -55,7 +55,7 @@
                         alt="your old profile image">
                 </td>
                 <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
-                    <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_image'] !== $new_profile['user_image']) updated @endif </em></strong></p>
+                    <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_image'] != $new_profile['user_image']) updated @endif </em></strong></p>
                     <img src="{{$message->embed($new_profile['user_image'])}}" 
                         style="height: 60px !important; 
                             width: 60px !important;
@@ -77,7 +77,7 @@
                     <p style="margin: 4px 15px 10px 15px !important;">{{ ucwords($old_profile['user_role']) }}</p>
                 </td>
                 <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
-                    <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_role'] !== $new_profile['user_role']) updated @endif </em></strong></p>
+                    <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_role'] != $new_profile['user_role']) updated @endif </em></strong></p>
                     <p style="margin: 4px 15px 10px 15px !important;">{{ ucwords($new_profile['user_role']) }}</p>
                 </td>
             </tr>
@@ -88,7 +88,7 @@
                     <p style="margin: 4px 15px 10px 15px !important;">{{ $old_profile['user_email'] }}</p>
                 </td>
                 <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
-                    <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_email'] !== $new_profile['user_email']) updated @endif </em></strong></p>
+                    <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_email'] != $new_profile['user_email']) updated @endif </em></strong></p>
                     <p style="margin: 4px 15px 10px 15px !important;">{{ $new_profile['user_email'] }}</p>
                 </td>
             </tr>
@@ -99,7 +99,7 @@
                     <p style="margin: 4px 15px 10px 15px !important;">{{ $old_profile['user_last_name'] }}</p>
                 </td>
                 <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
-                    <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_last_name'] !== $new_profile['user_last_name']) updated @endif </em></strong></p>
+                    <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_last_name'] != $new_profile['user_last_name']) updated @endif </em></strong></p>
                     <p style="margin: 4px 15px 10px 15px !important;">{{ $new_profile['user_last_name'] }}</p>
                 </td>
             </tr>
@@ -110,7 +110,7 @@
                     <p style="margin: 4px 15px 10px 15px !important;">{{ $old_profile['user_first_name'] }}</p>
                 </td>
                 <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
-                    <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_first_name'] !== $new_profile['user_first_name']) updated @endif </em></strong></p>
+                    <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_first_name'] != $new_profile['user_first_name']) updated @endif </em></strong></p>
                     <p style="margin: 4px 15px 10px 15px !important;">{{ $new_profile['user_first_name'] }}</p>
                 </td>
             </tr>
@@ -121,7 +121,7 @@
                     <p style="margin: 4px 15px 10px 15px !important;">{{ ucwords($old_profile['user_gender']) }}</p>
                 </td>
                 <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
-                    <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_gender'] !== $new_profile['user_gender']) updated @endif </em></strong></p>
+                    <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_gender'] != $new_profile['user_gender']) updated @endif </em></strong></p>
                     <p style="margin: 4px 15px 10px 15px !important;">{{ ucwords($new_profile['user_gender']) }}</p>
                 </td>
             </tr>
@@ -133,7 +133,7 @@
                         <p style="margin: 4px 15px 10px 15px !important;">{{ $old_profile['user_sdca_id'] }}</p>
                     </td>
                     <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
-                        <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_sdca_id'] !== $new_profile['user_sdca_id']) updated @endif </em></strong></p>
+                        <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_sdca_id'] != $new_profile['user_sdca_id']) updated @endif </em></strong></p>
                         <p style="margin: 4px 15px 10px 15px !important;">{{ $new_profile['user_sdca_id'] }}</p>
                     </td>
                 </tr>
@@ -144,7 +144,7 @@
                         <p style="margin: 4px 15px 10px 15px !important;">{{ $old_profile['user_school'] }}</p>
                     </td>
                     <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
-                        <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_school'] !== $new_profile['user_school']) updated @endif </em></strong></p>
+                        <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_school'] != $new_profile['user_school']) updated @endif </em></strong></p>
                         <p style="margin: 4px 15px 10px 15px !important;">{{ $new_profile['user_school'] }}</p>
                     </td>
                 </tr>
@@ -155,7 +155,7 @@
                         <p style="margin: 4px 15px 10px 15px !important;">{{ $old_profile['user_program'] }}</p>
                     </td>
                     <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
-                        <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_program'] !== $new_profile['user_program']) updated @endif </em></strong></p>
+                        <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_program'] != $new_profile['user_program']) updated @endif </em></strong></p>
                         <p style="margin: 4px 15px 10px 15px !important;">{{ $new_profile['user_program'] }}</p>
                     </td>
                 </tr>
@@ -166,7 +166,7 @@
                         <p style="margin: 4px 15px 10px 15px !important;">{{ $old_profile['user_yrlvl'] }}</p>
                     </td>
                     <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
-                        <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_yrlvl'] !== $new_profile['user_yrlvl']) updated @endif </em></strong></p>
+                        <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_yrlvl'] != $new_profile['user_yrlvl']) updated @endif </em></strong></p>
                         <p style="margin: 4px 15px 10px 15px !important;">{{ $new_profile['user_yrlvl'] }}</p>
                     </td>
                 </tr>
@@ -177,7 +177,7 @@
                         <p style="margin: 4px 15px 10px 15px !important;">{{ $old_profile['user_section'] }}</p>
                     </td>
                     <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
-                        <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_section'] !== $new_profile['user_section']) updated @endif </em></strong></p>
+                        <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_section'] != $new_profile['user_section']) updated @endif </em></strong></p>
                         <p style="margin: 4px 15px 10px 15px !important;">{{ $new_profile['user_section'] }}</p>
                     </td>
                 </tr>
@@ -189,7 +189,7 @@
                         <p style="margin: 4px 15px 10px 15px !important;">{{ $old_profile['user_sdca_id'] }}</p>
                     </td>
                     <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
-                        <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_sdca_id'] !== $new_profile['user_sdca_id']) updated @endif </em></strong></p>
+                        <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_sdca_id'] != $new_profile['user_sdca_id']) updated @endif </em></strong></p>
                         <p style="margin: 4px 15px 10px 15px !important;">{{ $new_profile['user_sdca_id'] }}</p>
                     </td>
                 </tr>   
@@ -200,7 +200,7 @@
                         <p style="margin: 4px 15px 10px 15px !important;">{{ $old_profile['user_job_desc'] }}</p>
                     </td>
                     <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
-                        <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_job_desc'] !== $new_profile['user_job_desc']) updated @endif </em></strong></p>
+                        <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_job_desc'] != $new_profile['user_job_desc']) updated @endif </em></strong></p>
                         <p style="margin: 4px 15px 10px 15px !important;">{{ $new_profile['user_job_desc'] }}</p>
                     </td>
                 </tr>
@@ -211,7 +211,7 @@
                         <p style="margin: 4px 15px 10px 15px !important;">{{ $old_profile['user_dept'] }}</p>
                     </td>
                     <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
-                        <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_dept'] !== $new_profile['user_dept']) updated @endif </em></strong></p>
+                        <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_dept'] != $new_profile['user_dept']) updated @endif </em></strong></p>
                         <p style="margin: 4px 15px 10px 15px !important;">{{ $new_profile['user_dept'] }}</p>
                     </td>
                 </tr>
@@ -225,7 +225,7 @@
                     <p style="margin: 4px 15px 10px 15px !important;">{{ $old_profile['user_phnum'] }}</p>
                 </td>
                 <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
-                    <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_phnum'] !== $new_profile['user_phnum']) updated @endif </em></strong></p>
+                    <p style="margin: 10px 15px 3px 15px !important;"><strong>~ <em style="color: #6bd098 !important;"> @if($old_profile['user_phnum'] != $new_profile['user_phnum']) updated @endif </em></strong></p>
                     <p style="margin: 4px 15px 10px 15px !important;">{{ $new_profile['user_phnum'] }}</p>
                 </td>
             </tr>
@@ -239,7 +239,7 @@
         </tbody>
     </table>
     <br />
-    @if($old_profile['user_email'] !== $new_profile['user_email'])
+    @if($old_profile['user_email'] != $new_profile['user_email'])
         <p>Our system noticed that you have switched to a new email address. We have sent a message to your new email address <strong> ({{ $new_profile['user_email'] }}) </strong> for instructions to access our system.</p>
     @endif
     <p>If you don't recognize this update, you can email us back to restore your old profile information. Or head to this link <a href="http://127.0.0.1:8000/">Student Violation Mangement System</a> and login to the system with the newly registered email to edit incorrect updates.</p>

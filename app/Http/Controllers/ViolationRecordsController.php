@@ -42,6 +42,7 @@ class ViolationRecordsController extends Controller
                 $vr_rangeTo     = $request->get('vr_rangeTo');
                 $df_minAgeRange = $request->get('df_minAgeRange');
                 $df_maxAgeRange = $request->get('df_maxAgeRange');
+                $page = $request->get('page');
     
                 if($vr_search != ''){
                     $fltr_VR_tbl = DB::table('violations_tbl')

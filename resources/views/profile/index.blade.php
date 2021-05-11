@@ -750,32 +750,36 @@
                         </div>
                         <div id="collapse_userActivityLogs_{{auth()->user()->id}}" class="collapse gCardAccordions_collapse show p-0" aria-labelledby="headingOne" data-parent="#userActivityLogsCollapse_{{auth()->user()->id}}">
                             <div class="card-body cb_t0b15x25">
-                                @if(count($user_activities) > 0)
                                 @php
-                                    // date formats
+                                    // date formats for #myActLogsFiltr_datepickerRange placeholder
                                     $my_first_record_date = date('F d, Y (D - g:i A)', strtotime($my_first_record->created_at));
                                     $my_first_latest_date = date('F d, Y (D - g:i A)', strtotime($my_latest_record->created_at));
-                                    $my_actLog_minYear = date('YYYY', strtotime($my_first_record->created_at));
-                                    $transactions_count = count($user_activities);
                                 @endphp
-                                <div class="row mb-3">
-                                    <div class="col-lg-7 col-md-10 col-sm-12">
+                                <div class="row mb-2">
+                                    <div class="col-lg-7 col-md-9 col-sm-12">
                                         <div class="cust_inputDiv_wIcon">
                                             <input id="myActLogsFiltr_datepickerRange" name="myActLogsFiltr_datepickerRange" type="text" class="form-control cust_inputv1" placeholder="{{$my_first_record_date}} to {{$my_first_latest_date}}" readonly />
                                             <i class="fa fa-calendar" aria-hidden="true"></i>
                                         </div>
                                         <input type="hidden" name="myActLogs_hidden_dateRangeFrom" id="myActLogs_hidden_dateRangeFrom">
                                         <input type="hidden" name="myActLogs_hidden_dateRangeTo" id="myActLogs_hidden_dateRangeTo">
+                                        <input type="hidden" name="al_hiddenTotalData_found" id="al_hiddenTotalData_found">
+                                    </div>
+                                    <div class="col-lg-3 col-md-12 col-sm-12">
+                                        <div class="form-group cust_inputDiv_wIconv1">
+                                            <select id="myActLogsFiltr_categories" class="form-control cust_selectDropdownBox1 drpdwn_arrow">
+                                                <option value="0" selected>All Categories</option>
+                                                @if(count($my_trans_categories) > 0)
+                                                    @foreach ($my_trans_categories as $this_category)
+                                                        <option value="{{$this_category->act_type}}">{{ucwords($this_category->act_type) }}</option>
+                                                    @endforeach
+                                                @endif
+                                                
+                                            </select>
+                                            <i class="fa fa-list-ul" aria-hidden="true"></i>
+                                        </div>
                                     </div>
                                 </div>
-                                {{$my_actLog_minYear}} <br>
-                                {{count($user_activities)}} <br>
-                                @foreach ($user_activities as $item)
-                                    {{$item->created_at}}
-                                @endforeach
-                                ----
-                                {{$my_first_record->created_at}} to
-                                {{$my_latest_record->created_at}}
                                 <div class="row">
                                     <div class="col-lg-12 col-md-12 col-sm-12">
                                         <table class="table table-hover cust_table shadow">
@@ -785,40 +789,27 @@
                                                     <th>Transaction Details</th>
                                                 </tr>
                                             </thead>
-                                            <tbody class="tbody_svms_white">
-                                            @foreach($user_activities->sortByDesc('created_at') as $user_activity)
-                                                <tr>
-                                                    <td class="p12 w35prcnt">{{date('F d, Y', strtotime($user_activity->created_at)) }} - {{date('D', strtotime($user_activity->created_at)) }} at {{ date('g:i A', strtotime($user_activity->created_at))}}</td>
-                                                    <td>
-                                                        @if($user_activity->act_type == 'login')
-                                                            You logged in to the system.
-                                                        @elseif($user_activity->act_type == 'logout')
-                                                            You logged out from the system.
-                                                        @elseif($user_activity->act_type == 'register')
-                                                            You registered as @if(auth()->user()->user_type == 'student') a Student User. @else an Employee User. @endif
-                                                        @elseif($user_activity->act_type == 'update account')
-                                                            You Updated your Account Information.
-                                                        @else
-                                                            {{$user_activity->act_details}}.
-                                                        @endif
-                                                    </td>
-                                                </tr>
-                                            @endforeach
+                                            <tbody class="tbody_svms_white" id="al_tableTbody">
+                                                {{-- ajax table --}}
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
                                 <div class="row d-flex align-items-center">
-                                    <div class="col-lg-6 col-md-9 col-sm-12">
-                                        <span class="cust_info_txtwicon"><i class="fa fa-history" aria-hidden="true"></i> You made {{$transactions_count}} @if($transactions_count > 1) transactions @else transaction @endif in the system.</span>
+                                    <div class="col-lg-6 col-md-6 col-sm-12">
+                                        <span>Total Data: <span class="font-weight-bold" id="al_tableTotalData_count"> </span> </span>
                                     </div>
                                     <div class="col-lg-6 col-md-6 col-sm-12 d-flex justify-content-end align-items-center">
-                                        {{ $user_activities->links('pagination::bootstrap-4') }}
+                                        @csrf
+                                        <input type="hidden" name="dateRangePicker_minDate" id="dateRangePicker_minDate" value="{{$my_first_record_date}}">
+                                        <input type="hidden" name="dateRangePicker_maxDate" id="dateRangePicker_maxDate" value="{{$my_first_latest_date}}">
+                                        <input type="hidden" name="al_hidden_page" id="al_hidden_page" value="1" />
+                                        <div id="al_tablePagination">
+                                            {{-- {{ $user_activities->links('pagination::bootstrap-4') }} --}}
+                                        </div>
+                                        
                                     </div>
                                 </div>
-                                @else
-                                
-                                @endif
                             </div>
                         </div>
                     </div>
@@ -1185,42 +1176,139 @@
 {{-- ACTIVITY LOGS --}}
     <script>
         $(document).ready(function(){
-            // daterange picker
-            $('#myActLogsFiltr_datepickerRange').daterangepicker({
-                timePicker: true,
-                showDropdowns: true,
-                minYear: 2020,
-                maxYear: parseInt(moment().format('YYYY'),10),
-                drops: 'up',
-                opens: 'right',
-                autoUpdateInput: false,
-                locale: {
-                    format: 'MMMM DD, YYYY - hh:mm A',
-                    cancelLabel: 'Clear'
+            load_myActLogs_table();
+
+            // function for ajax table pagination
+                $(window).on('hashchange', function() {
+                    if (window.location.hash) {
+                        var page = window.location.hash.replace('#', '');
+                        if (page == Number.NaN || page <= 0) {
+                            return false;
+                        }else{
+                            getAlPage(page);
+                        }
                     }
-            });
-            $('#myActLogsFiltr_datepickerRange').on('cancel.daterangepicker', function(ev, picker) {
-                document.getElementById("myActLogs_hidden_dateRangeFrom").value = '';
-                document.getElementById("myActLogs_hidden_dateRangeTo").value = '';
-                $(this).val('');
-                $(this).removeClass('cust_input_hasvalue');
-                // table paginatin set to 1
-                // $('#hidden_page').val(1);
-                // loadActLogsTable();
-            });
-            $('#myActLogsFiltr_datepickerRange').on('apply.daterangepicker', function(ev, picker) {
-                // for hidden data range inputs
-                var start_range = picker.startDate.format('YYYY-MM-DD HH:MM:SS');
-                var end_range = picker.endDate.format('YYYY-MM-DD HH:MM:SS');
-                document.getElementById("myActLogs_hidden_dateRangeFrom").value = start_range;
-                document.getElementById("myActLogs_hidden_dateRangeTo").value = end_range;
-                // for date range display
-                $(this).val(picker.startDate.format('MMMM DD, YYYY ~ hh:mm A') + ' to ' + picker.endDate.format('MMMM DD, YYYY ~ hh:mm A'));
-                $(this).addClass('cust_input_hasvalue');
-                // table paginatin set to 1
-                // $('#hidden_page').val(1);
-                // loadActLogsTable();
-            });
+                });
+                $(document).on('click', '.pagination a', function(event){
+                    event.preventDefault();
+                    var page = $(this).attr('href').split('page=')[1];
+                    $('#al_hidden_page').val(page);
+                    
+                    load_myActLogs_table();
+                    getAlPage(page);
+                    $('li.page-item').removeClass('active');
+                    $(this).parent('li.page-item').addClass('active');
+                });
+                function getAlPage(page){
+                    $.ajax({
+                        url: '?page=' + page,
+                        type: "get",
+                        datatype: "html"
+                    }).done(function(data){
+                        location.hash = page;
+                    }).fail(function(jqXHR, ajaxOptions, thrownError){
+                        alert('No response from server');
+                    });
+                }
+            // function for ajax table pagination end
+
+            function load_myActLogs_table(){
+                // get all filters' values
+                var al_rangefrom = document.getElementById("myActLogs_hidden_dateRangeFrom").value;
+                var al_rangeTo = document.getElementById("myActLogs_hidden_dateRangeTo").value;
+                var al_category = document.getElementById("myActLogsFiltr_categories").value;
+                var page = document.getElementById("al_hidden_page").value;
+
+                console.log('');
+                console.log('From date: ' + al_rangefrom);
+                console.log('To Date: ' + al_rangeTo);
+                console.log('Category: ' + al_category);
+                console.log('page: ' + page);
+
+                $.ajax({
+                    url:"{{ route('profile.index') }}",
+                    method:"GET",
+                    data:{
+                        al_rangefrom:al_rangefrom, 
+                        al_rangeTo:al_rangeTo, 
+                        al_category:al_category, 
+                        page:page
+                        },
+                    dataType:'json',
+                    success:function(al_data){
+                        $('#al_tableTbody').html(al_data.al_table);
+                        $('#al_tablePagination').html(al_data.vr_table_paginate);
+                        $('#al_tableTotalData_count').html(al_data.vr_total_rows);
+                        $('#al_hiddenTotalData_found').val(al_data.vr_total_data_found);
+
+                        // for disabling/ enabling generate report button
+                        // var violationRecs_totalData = document.getElementById("al_hiddenTotalData_found").value;
+                        // if(violationRecs_totalData > 0){
+                        //     $('#generateViolationRecs_btn').prop('disabled', false);
+                        // }else{
+                        //     $('#generateViolationRecs_btn').prop('disabled', true);
+                        // }
+                    }
+                });
+            }
+
+            // daterange picker
+                var vMinDate = document.getElementById("dateRangePicker_minDate").value;
+                var vMaxDate = document.getElementById("dateRangePicker_maxDate").value;
+                // console.log(vMinDate);
+                // console.log(vMaxDate);
+                $('#myActLogsFiltr_datepickerRange').daterangepicker({
+                    timePicker: true,
+                    showDropdowns: true,
+                    minYear: vMinDate,
+                    maxYear: parseInt(moment().format('YYYY'),10),
+                    // maxDate: vMaxDate,
+                    // minDate: vMinDate,
+                    drops: 'down',
+                    opens: 'right',
+                    autoUpdateInput: false,
+                    locale: {
+                        format: 'MMMM DD, YYYY (ddd - hh:mm A)',
+                        cancelLabel: 'Clear'
+                        }
+                });
+                $('#myActLogsFiltr_datepickerRange').on('cancel.daterangepicker', function(ev, picker) {
+                    document.getElementById("myActLogs_hidden_dateRangeFrom").value = '';
+                    document.getElementById("myActLogs_hidden_dateRangeTo").value = '';
+                    $(this).val('');
+                    $(this).removeClass('cust_input_hasvalue');
+                    // table paginatin set to 1
+                    $('#al_hidden_page').val(1);
+                    load_myActLogs_table();
+                });
+                $('#myActLogsFiltr_datepickerRange').on('apply.daterangepicker', function(ev, picker) {
+                    // for hidden data range inputs
+                    var start_range = picker.startDate.format('YYYY-MM-DD HH:MM:SS');
+                    var end_range = picker.endDate.format('YYYY-MM-DD HH:MM:SS');
+                    document.getElementById("myActLogs_hidden_dateRangeFrom").value = start_range;
+                    document.getElementById("myActLogs_hidden_dateRangeTo").value = end_range;
+                    // for date range display
+                    $(this).val(picker.startDate.format('MMMM DD, YYYY (ddd - hh:mm A)') + ' to ' + picker.endDate.format('MMMM DD, YYYY (ddd - hh:mm A)'));
+                    $(this).addClass('cust_input_hasvalue');
+                    // table paginatin set to 1
+                    $('#al_hidden_page').val(1);
+                    load_myActLogs_table();
+                });
+            // daterange picker end
+
+            // filter log categories
+                $('#myActLogsFiltr_categories').on('change paste keyup', function(){
+                    var selectedCategory = $(this).val();
+                    if(selectedCategory != 0){
+                        $(this).addClass('cust_input_hasvalue');
+                    }else{
+                        $(this).removeClass('cust_input_hasvalue');
+                    }
+                    // table paginatin set to 1
+                    $('#al_hidden_page').val(1);
+                    load_myActLogs_table();
+                });
+            // filter log categories end
         });
     </script>
 

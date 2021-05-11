@@ -191,7 +191,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-12 col-md-12 col-sm-12">
-                                        <input id="violationRecFltr_datepickerRange" name="violationRecFltr_datepickerRange" type="text" class="form-control cust_input" placeholder="Select Date Range" />
+                                        <input id="violationRecFltr_datepickerRange" name="violationRecFltr_datepickerRange" type="text" class="form-control cust_input" placeholder="Select Date Range" readonly />
                                         <input type="hidden" name="violationRecFltr_hidden_dateRangeFrom" id="violationRecFltr_hidden_dateRangeFrom">
                                         <input type="hidden" name="violationRecFltr_hidden_dateRangeTo" id="violationRecFltr_hidden_dateRangeTo">
                                         {{-- @php
@@ -336,7 +336,8 @@
                             df_maxAgeRange:df_maxAgeRange,
                             vr_status:vr_status,
                             vr_rangefrom:vr_rangefrom,
-                            vr_rangeTo:vr_rangeTo
+                            vr_rangeTo:vr_rangeTo,
+                            page:page
                             },
                         dataType:'json',
                         success:function(vr_data){
@@ -365,38 +366,37 @@
             // load_violationRec_table() end 
 
             // function for ajax table pagination
-                function vr_getData(vr_page){
-                    $.ajax({
-                        url: '?page=' + vr_page,
-                        type: "get",
-                        datatype: "html"
-                    }).done(function(data){
-                        location.hash = vr_page;
-                    }).fail(function(jqXHR, ajaxOptions, thrownError){
-                        alert('No response from server');
-                    });
-                }
                 $(window).on('hashchange', function() {
                     if (window.location.hash) {
-                        var vr_page = window.location.hash.replace('#', '');
-                        if (vr_page == Number.NaN || vr_page <= 0) {
+                        var page = window.location.hash.replace('#', '');
+                        if (page == Number.NaN || page <= 0) {
                             return false;
                         }else{
-                            vr_getData(vr_page);
+                            vr_getData(page);
                         }
                     }
                 });
                 $('#vr_tablePagination').on('click', '.pagination a', function(event){
                     event.preventDefault();
-
-                    var vr_page = $(this).attr('href').split('page=')[1];
-                    $('#vr_hidden_page').val(vr_page);
+                    var page = $(this).attr('href').split('page=')[1];
+                    $('#vr_hidden_page').val(page);
 
                     load_violationRec_table();
-                    vr_getData(vr_page);
+                    vr_getData(page);
                     $('li.page-item').removeClass('active');
                     $(this).parent('li.page-item').addClass('active');
                 });
+                function vr_getData(page){
+                    $.ajax({
+                        url: '?page=' + page,
+                        type: "get",
+                        datatype: "html"
+                    }).done(function(data){
+                        location.hash = page;
+                    }).fail(function(jqXHR, ajaxOptions, thrownError){
+                        alert('No response from server');
+                    });
+                }
             // function for ajax table pagination end
 
             // daterange picker
@@ -409,7 +409,8 @@
                     opens: 'right',
                     autoUpdateInput: false,
                     locale: {
-                        format: 'MMMM DD, YYYY - hh:mm A',
+                        // format: 'MMMM DD, YYYY - hh:mm A',
+                        format: 'MMMM DD, YYYY (ddd - hh:mm A)',
                         cancelLabel: 'Clear'
                         }
                 });
