@@ -56,9 +56,12 @@ class ProfileController extends Controller
         $get_user_role_info = Userroles::select('uRole_id', 'uRole', 'uRole_access')->where('uRole', auth()->user()->user_role)->first();
         $get_uRole_access   = json_decode(json_encode($get_user_role_info->uRole_access));
         if(in_array('profile', $get_uRole_access)){
+            // my first and last record - dates
             $my_first_record = Useractivites::where('act_respo_user_id', auth()->user()->id)->first();
             $my_latest_record = Useractivites::where('act_respo_user_id', auth()->user()->id)->latest()->first();
+            // my categories options
             $my_trans_categories = Useractivites::select('act_type')->where('act_respo_user_id', auth()->user()->id)->groupBy('act_type')->get();
+            // count my logs
             $count_my_logs = Useractivites::where('act_respo_user_id', auth()->user()->id)->count();
             if($request->ajax()){
                 // custom var
@@ -114,7 +117,7 @@ class ProfileController extends Controller
                         <tr class="no_data_row">
                             <td align="center" colspan="7">
                                 <div class="no_data_div d-flex justify-content-center align-items-center text-center flex-column">
-                                    <img class="illustration_svg" src="'. asset('storage/svms/illustrations/no_matching_users_found.svg') .'" alt="no matching users found">
+                                    <img class="illustration_svg" src="'. asset('storage/svms/illustrations/no_records_found.svg') .'" alt="no matching users found">
                                     <span class="font-italic">No Records Found!
                                 </div>
                             </td>

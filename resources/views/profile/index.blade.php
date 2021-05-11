@@ -52,16 +52,23 @@
             @php
                 // single quote
                 $sq = "'";
-                if(auth()->user()->user_type === 'employee'){
+
+                // to lower values
+                $toLower_userType = Str::lower(auth()->user()->user_type);
+                $toLower_userStatus = Str::lower(auth()->user()->user_status);
+                $toLower_userRoleStatus = Str::lower(auth()->user()->user_role_status);
+
+                // image filters
+                if($toLower_userType === 'employee'){
                     $user_emp_info   = App\Models\Useremployees::where('uEmp_id', auth()->user()->user_sdca_id)->first();
                     $custom_nav_pill = 'custom_nav_link_blue';
                     $sdca_num_text   = 'Employee ID';
-                    if(auth()->user()->user_role_status === 'active'){
-                        if(auth()->user()->user_status === 'active'){
+                    if($toLower_userRoleStatus === 'active'){
+                        if($toLower_userStatus === 'active'){
                             $image_filter   = 'up_user_image';
                             $user_alt_image = 'employee_user_image';
                         }else{
-                            if(auth()->user()->user_status === 'deactivated' OR auth()->user()->user_status === 'deleted'){
+                            if($toLower_userStatus === 'deactivated' OR $toLower_userStatus === 'deleted'){
                                 $image_filter   = 'up_red_user_image';
                                 $user_alt_image = 'no_student_image';
                             }else{
@@ -70,7 +77,7 @@
                             }
                         }
                     }else{
-                        if(auth()->user()->user_role_status === 'deactivated' OR auth()->user()->user_role_status === 'deleted'){
+                        if($toLower_userRoleStatus === 'deactivated' OR $toLower_userRoleStatus === 'deleted'){
                             $image_filter   = 'up_red_user_image';
                             $user_alt_image = 'no_student_image';
                         }else{
@@ -78,16 +85,16 @@
                             $user_alt_image = 'disabled_user_image';
                         }   
                     }
-                }else if(auth()->user()->user_type === 'student'){
+                }else if($toLower_userType === 'student'){
                     $user_stud_info  = App\Models\Userstudents::where('uStud_num', auth()->user()->user_sdca_id)->first();
                     $custom_nav_pill = 'custom_nav_link_green';
                     $sdca_num_text   = 'Student Number';
-                    if(auth()->user()->user_role_status === 'active'){
-                        if(auth()->user()->user_status === 'active'){
+                    if($toLower_userRoleStatus === 'active'){
+                        if($toLower_userStatus === 'active'){
                             $image_filter   = 'up_stud_user_image';
                             $user_alt_image = 'student_user_image';
                         }else{
-                            if(auth()->user()->user_status === 'deactivated' OR auth()->user()->user_status === 'deleted'){
+                            if($toLower_userStatus === 'deactivated' OR $toLower_userStatus === 'deleted'){
                                 $image_filter   = 'up_red_user_image';
                                 $user_alt_image = 'no_student_image';
                             }else{
@@ -96,7 +103,7 @@
                             }
                         }
                     }else{
-                        if(auth()->user()->user_role_status === 'deactivated'  OR auth()->user()->user_role_status === 'deleted'){
+                        if($toLower_userRoleStatus === 'deactivated'  OR $toLower_userRoleStatus === 'deleted'){
                             $image_filter   = 'up_red_user_image';
                             $user_alt_image = 'no_student_image';
                         }else{
@@ -114,10 +121,10 @@
                     $user_image_src = asset('storage/svms/user_images/'.auth()->user()->user_image);
                     $user_image_alt = auth()->user()->user_fname . ' ' . auth()->user()->user_lname.''.$sq.'s profile image';
                 }else{
-                    if(auth()->user()->user_status == 'active'){
-                        if(auth()->user()->user_type == 'employee'){
+                    if($toLower_userStatus == 'active'){
+                        if($toLower_userType == 'employee'){
                             $user_image_jpg = 'employee_user_image.jpg';
-                        }elseif(auth()->user()->user_type == 'student'){
+                        }elseif($toLower_userType == 'student'){
                             $user_image_jpg = 'student_user_image.jpg';
                         }else{
                             $user_image_jpg = 'disabled_user_image.jpg';
@@ -138,7 +145,7 @@
                     <div class="card-body card_intro">
                         <div class="page_intro">
                             <span class="page_intro_title">My Profile</span>
-                            @if(auth()->user()->user_status == 'pending')
+                            @if($toLower_userStatus == 'pending')
                                 <span class="page_intro_subtitle">Your account is currently not active. Please wait as the System Administrator reviews your registration. Head to the Student Discipline Office if your account is still not active after 2 to 3 days of registration to acticate your account.</span>
                             @else
                                 <span class="page_intro_subtitle">This page displays your registered account's information. You can view, edit, and update your profile, and you can also view your activity log histories.</span>
@@ -170,7 +177,7 @@
                                 <li class="nav-item">
                                     <a class="nav-link {{ $custom_nav_pill }} active" id="pills_userProfile_tab{{auth()->user()->id}}" data-toggle="pill" href="#div_userProfile_tab{{auth()->user()->id}}" role="tab" aria-controls="div_userProfile_tab{{auth()->user()->id}}" aria-selected="true">Profile</a>
                                 </li>
-                                @if(auth()->user()->user_status == 'active')
+                                @if($toLower_userStatus == 'active')
                                     <li class="nav-item">
                                         <a class="nav-link {{ $custom_nav_pill }}" id="pills_userEditProfile_tab{{auth()->user()->id}}" data-toggle="pill" href="#div_userEditProfile_tab{{auth()->user()->id}}" role="tab" aria-controls="div_userEditProfile_tab{{auth()->user()->id}}" aria-selected="false">Edit Profile</a>
                                     </li>
@@ -207,7 +214,7 @@
                                                     <span class="up_info_txt mb-0 font-italic text_svms_red"><i class="fa fa-exclamation-circle"></i> {{$sdca_num_text}} unknown</span>
                                                 @endif
                                                 {{-- if user type = student --}}
-                                                @if(auth()->user()->user_type === 'student')
+                                                @if($toLower_userType === 'student')
                                                     {{-- student school & program --}}
                                                     @if(!is_null($user_stud_info->uStud_program))
                                                         <span class="up_info_txt mb-0">{{$user_stud_info->uStud_program}}-{{$user_stud_info->uStud_section}}</span>
@@ -232,7 +239,7 @@
                                                         <span class="up_info_txt mb-0 font-italic text_svms_red"><i class="fa fa-exclamation-circle"></i> no contact number</span>
                                                     @endif
                                                 {{-- if user type = employee --}}
-                                                @elseif(auth()->user()->user_type === 'employee')
+                                                @elseif($toLower_userType === 'employee')
                                                     {{-- employee department & job description --}}
                                                     @if(!is_null($user_emp_info->uEmp_job_desc))
                                                         <span class="up_info_txt mb-0">{{$user_emp_info->uEmp_job_desc}}</span>
@@ -285,25 +292,25 @@
                                                 {{-- account status --}}
                                                 @php
                                                 // values for account status
-                                                    if(auth()->user()->user_role_status === 'active'){
-                                                        if(auth()->user()->user_status === 'active'){
+                                                    if($toLower_userRoleStatus === 'active'){
+                                                        if($toLower_userStatus === 'active'){
                                                             // deactivate account
                                                             $btn_class    = "btn-success";
                                                             $btn_label    = "Your Account is Activated";
                                                             $btn_icon     = "fa fa-toggle-on";
                                                             $acc_stat_txt = "Active";
-                                                        }elseif(auth()->user()->user_status === 'deactivated'){
+                                                        }elseif($toLower_userStatus === 'deactivated'){
                                                             // activate account
                                                             $btn_class    = "btn_svms_red";
                                                             $btn_label    = "Your Account has been Deactivated";
                                                             $btn_icon     = "fa fa-toggle-off";
                                                             $acc_stat_txt = "Deactivated";
-                                                        }elseif(auth()->user()->user_status === 'pending'){
+                                                        }elseif($toLower_userStatus === 'pending'){
                                                             $btn_class    = "btn-secondary";
                                                             $btn_label    = "Your Account is Pending";
                                                             $btn_icon     = "fa fa-spinner";
                                                             $acc_stat_txt = "Pending";
-                                                        }elseif(auth()->user()->user_status === 'deleted'){
+                                                        }elseif($toLower_userStatus === 'deleted'){
                                                             // user account is deleted - recover option
                                                             $btn_class    = "btn-secondary";
                                                             $btn_label    = "Your Account is Pending";
@@ -316,19 +323,19 @@
                                                             $btn_icon     = "fa fa-toggle-off";
                                                             $acc_stat_txt = "Pending";
                                                         }
-                                                    }elseif(auth()->user()->user_role_status === 'deactivated'){
+                                                    }elseif($toLower_userRoleStatus === 'deactivated'){
                                                         // activate role first
                                                         $btn_class    = "btn_svms_red";
                                                         $btn_label    = "Your Account has been Deactivated";
                                                         $btn_icon     = "fa fa-toggle-off";
                                                         $acc_stat_txt = "Deactivated";
-                                                    }elseif(auth()->user()->user_role_status === 'pending'){
+                                                    }elseif($toLower_userRoleStatus === 'pending'){
                                                         // manage role first
                                                         $btn_class    = "btn-secondary";
                                                         $btn_label    = "Your Account is Pending";
                                                         $btn_icon     = "fa fa-spinner";
                                                         $acc_stat_txt = "Pending";
-                                                    }elseif(auth()->user()->user_role_status === 'deleted'){
+                                                    }elseif($toLower_userRoleStatus === 'deleted'){
                                                         // role is deleted - assign new role
                                                         $btn_class    = "btn-secondary";
                                                         $btn_label    = "Your Account is Pending";
@@ -397,10 +404,10 @@
                                     </div>
                                     {{-- account date created & registered by end --}}
                                 </div>
-                                @if(auth()->user()->user_status == 'active')
+                                @if($toLower_userStatus == 'active')
                                     {{-- edit profile --}}
                                     <div class="tab-pane fade" id="div_userEditProfile_tab{{auth()->user()->id}}" role="tabpanel" aria-labelledby="pills_userEditProfile_tab{{auth()->user()->id}}">
-                                        @if(auth()->user()->user_type === 'employee')
+                                        @if($toLower_userType === 'employee')
                                             <div class="card card_gbr shadow">
                                                 <div class="card-body p-0">
                                                     <div class="card-header cb_p15x25">
@@ -509,7 +516,7 @@
                                                     </form>
                                                 </div>
                                             </div>
-                                        @elseif(auth()->user()->user_type === 'student')
+                                        @elseif($toLower_userType === 'student')
                                             <div class="card card_gbr shadow">
                                                 <div class="card-body p-0">
                                                     <div class="card-header cb_p15x25">
@@ -756,16 +763,16 @@
                                     $my_first_latest_date = date('F d, Y (D - g:i A)', strtotime($my_latest_record->created_at));
                                 @endphp
                                 <div class="row mb-2">
-                                    <div class="col-lg-7 col-md-9 col-sm-12">
+                                    <div class="col-lg-8 col-md-9 col-sm-12">
                                         <div class="cust_inputDiv_wIcon">
-                                            <input id="myActLogsFiltr_datepickerRange" name="myActLogsFiltr_datepickerRange" type="text" class="form-control cust_inputv1" placeholder="{{$my_first_record_date}} to {{$my_first_latest_date}}" readonly />
+                                            <input id="myActLogsFiltr_datepickerRange" name="myActLogsFiltr_datepickerRange" type="text" class="form-control cust_inputv1 readOnlyClass" placeholder="{{$my_first_record_date}} to {{$my_first_latest_date}}" readonly />
                                             <i class="fa fa-calendar" aria-hidden="true"></i>
                                         </div>
                                         <input type="hidden" name="myActLogs_hidden_dateRangeFrom" id="myActLogs_hidden_dateRangeFrom">
                                         <input type="hidden" name="myActLogs_hidden_dateRangeTo" id="myActLogs_hidden_dateRangeTo">
                                         <input type="hidden" name="al_hiddenTotalData_found" id="al_hiddenTotalData_found">
                                     </div>
-                                    <div class="col-lg-3 col-md-12 col-sm-12">
+                                    <div class="col-lg-4 col-md-3 col-sm-12">
                                         <div class="form-group cust_inputDiv_wIconv1">
                                             <select id="myActLogsFiltr_categories" class="form-control cust_selectDropdownBox1 drpdwn_arrow">
                                                 <option value="0" selected>All Categories</option>
@@ -807,7 +814,6 @@
                                         <div id="al_tablePagination">
                                             {{-- {{ $user_activities->links('pagination::bootstrap-4') }} --}}
                                         </div>
-                                        
                                     </div>
                                 </div>
                             </div>

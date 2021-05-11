@@ -135,7 +135,12 @@ class UserManagementController extends Controller
             $user_data = Users::where('id', $user_id)->first();
             // user activities
             $user_activities = Useractivites::where('act_respo_user_id', $user_id)->count();
-            return view('user_management.user_profile')->with(compact('user_data', 'user_activities'));
+            // user's first and latest record
+            $user_first_record = Useractivites::where('act_respo_user_id', $user_id)->first();
+            $user_latest_record = Useractivites::where('act_respo_user_id', $user_id)->latest()->first();
+            // my categories options
+            $user_trans_categories = Useractivites::select('act_type')->where('act_respo_user_id', $user_id)->groupBy('act_type')->get();
+            return view('user_management.user_profile')->with(compact('user_data', 'user_activities', 'user_first_record', 'user_latest_record', 'user_trans_categories'));
         }else{
             return view('profile.access_denied');
         }
@@ -202,11 +207,29 @@ class UserManagementController extends Controller
                         }
                     }
 
-                    // user type image filter
-                    if($row->user_type === 'employee'){
-                        $uImg_fltr = 'rslts_emp';
+                    // tolower case user_type
+                    $tolower_uType = Str::lower($row->user_type);
+
+                    // user image handler
+                    if(!is_null($row->user_image) OR !empty($row->user_image)){
+                        $user_imgJpgFile = $row->user_image;
                     }else{
+                        if($tolower_uType === 'employee'){
+                            $user_imgJpgFile = 'employee_user_image.jpg';
+                        }elseif($tolower_uType === 'student'){
+                            $user_imgJpgFile = 'student_user_image.jpg';
+                        }else{
+                            $user_imgJpgFile = 'disabled_user_image.jpg';
+                        }
+                    }
+
+                    // user type image filter
+                    if($tolower_uType === 'employee'){
+                        $uImg_fltr = 'rslts_emp';
+                    }elseif($tolower_uType === 'student'){
                         $uImg_fltr = 'rslts_stud';
+                    }else{
+                        $uImg_fltr = 'rslts_unknown';
                     }
 
                     // custom texts
@@ -215,7 +238,7 @@ class UserManagementController extends Controller
                     $output .='
                         <tr class="'.$tr_gray_stat.'">
                             <td class="pl12">
-                                <img class="rslts_userImgs '.$uImg_fltr.' '.$img_rslts_deact.'" src="'.asset('storage/svms/user_images/'.$row->user_image.'').'" alt="user image">
+                                <img class="rslts_userImgs '.$uImg_fltr.' '.$img_rslts_deact.'" src="'.asset('storage/svms/user_images/'.$user_imgJpgFile).'" alt="'.$row->user_fname . ' ' . $row->user_lname.''.$apost.'s profile image">
                                 <span class="ml-3">'.preg_replace('/('.$users_query.')/i','<span class="grn_highlight">$1</span>', $row->user_fname). ' ' .preg_replace('/('.$users_query.')/i','<span class="grn_highlight">$1</span>', $row->user_lname).'</span>
                             </td>
                             <td>'.preg_replace('/('.$users_query.')/i','<span class="grn_highlight">$1</span>', ucwords($row->user_sdca_id)).'</td>

@@ -2494,7 +2494,11 @@ a.text_svms_gray:hover {
   border: none;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
 }
-.cust_inputv1:read-only{
+/* .cust_inputv1:read-only{
+  cursor: pointer !important;
+  background-color: #fff !important;
+} */
+.readOnlyClass:read-only{
   cursor: pointer !important;
   background-color: #fff !important;
 }

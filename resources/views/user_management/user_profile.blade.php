@@ -44,14 +44,23 @@
         {{-- directory link --}}
         <div class="row mb-3">
             <div class="col-lg-12 col-md-12 col-sm-12">
-                <a href="{{ route('user_management.overview_users_management', 'overview_users_management') }}" class="directory_link">Users Management</a> <span class="directory_divider"> / </span> <a href="{{ route('user_management.system_users', 'system_users') }}" class="directory_link">System Users </a> <span class="directory_divider"> / </span> <a href="{{ route('user_management.user_profile', 'user_profile') }}" class="directory_active_link">User Profile <span class="directory_divider"> / </span> {{ $user_data->user_fname }} {{ $user_data->user_lname }}</a>
+                <a href="{{ route('user_management.overview_users_management', 'overview_users_management') }}" class="directory_link">Users Management</a> <span class="directory_divider"> / </span> <a href="{{ route('user_management.system_users', 'system_users') }}" class="directory_link">System Users </a> <span class="directory_divider"> / </span> <a href="{{ route('user_management.user_profile', 'user_profile') }}" class="directory_active_link">User Profile <span class="directory_divider"> ~ </span> {{ $user_data->user_fname }} {{ $user_data->user_lname }}</a>
             </div>
         </div>
 
         {{-- data customizations --}}
         @php
+        // single quote
+        $sq = "'";
+
+        // to lower values
+        $toLower_userType = Str::lower($user_data->user_type);
+        $toLower_userStatus = Str::lower($user_data->user_status);
+        $toLower_userRoleStatus = Str::lower($user_data->user_role_status);
+        $toLower_userGender = Str::lower($user_data->user_gender);
+        
         // his/her text
-            if($user_data->user_gender === 'male'){
+            if($toLower_userGender === 'male'){
                 $gender_txt = 'his';
             }else{
                 $gender_txt = 'her';
@@ -59,60 +68,80 @@
         // his/her text end
 
         // filter for user types 
-            if($user_data->user_type === 'student'){
-                $user_stud_info  = App\Models\Userstudents::where('uStud_num', $user_data->user_sdca_id)->first();
-                $custom_nav_pill = 'custom_nav_link_green';
-                if($user_data->user_role_status === 'active'){
-                    if($user_data->user_status === 'active'){
-                        $image_filter   = 'up_stud_user_image';
-                        $user_alt_image = 'student_user_image';
-                    }else{
-                        if($user_data->user_status === 'deactivated' OR $user_data->user_status === 'deleted'){
-                            $image_filter   = 'up_red_user_image';
-                            $user_alt_image = 'no_student_image';
-                        }else{
-                            $image_filter   = 'up_gray_user_image';
-                            $user_alt_image = 'disabled_user_image';
-                        }
-                    }
+        if($toLower_userType === 'student'){
+            $user_stud_info  = App\Models\Userstudents::where('uStud_num', $user_data->user_sdca_id)->first();
+            $custom_nav_pill = 'custom_nav_link_green';
+            if($toLower_userRoleStatus === 'active'){
+                if($toLower_userStatus === 'active'){
+                    $image_filter   = 'up_stud_user_image';
+                    $user_alt_image = 'student_user_image';
                 }else{
-                    if($user_data->user_role_status === 'deactivated'  OR $user_data->user_role_status === 'deleted'){
+                    if($toLower_userStatus === 'deactivated' OR $toLower_userStatus === 'deleted'){
                         $image_filter   = 'up_red_user_image';
                         $user_alt_image = 'no_student_image';
                     }else{
                         $image_filter   = 'up_gray_user_image';
                         $user_alt_image = 'disabled_user_image';
-                    }   
-                }
-            }else if($user_data->user_type === 'employee'){
-                $user_emp_info   = App\Models\Useremployees::where('uEmp_id', $user_data->user_sdca_id)->first();
-                $custom_nav_pill = 'custom_nav_link_blue';
-                if($user_data->user_role_status === 'active'){
-                    if($user_data->user_status === 'active'){
-                        $image_filter   = 'up_user_image';
-                        $user_alt_image = 'employee_user_image';
-                    }else{
-                        if($user_data->user_status === 'deactivated' OR $user_data->user_status === 'deleted'){
-                            $image_filter   = 'up_red_user_image';
-                            $user_alt_image = 'no_student_image';
-                        }else{
-                            $image_filter   = 'up_gray_user_image';
-                            $user_alt_image = 'disabled_user_image';
-                        }
                     }
-                }else{
-                    if($user_data->user_role_status === 'deactivated' OR $user_data->user_role_status === 'deleted'){
-                        $image_filter   = 'up_red_user_image';
-                        $user_alt_image = 'no_student_image';
-                    }else{
-                        $image_filter   = 'up_gray_user_image';
-                        $user_alt_image = 'disabled_user_image';
-                    }   
                 }
             }else{
-                $custom_nav_pill = 'custom_nav_link_gray';
+                if($toLower_userRoleStatus === 'deactivated'  OR $toLower_userRoleStatus === 'deleted'){
+                    $image_filter   = 'up_red_user_image';
+                    $user_alt_image = 'no_student_image';
+                }else{
+                    $image_filter   = 'up_gray_user_image';
+                    $user_alt_image = 'disabled_user_image';
+                }   
             }
+        }else if($toLower_userType === 'employee'){
+            $user_emp_info   = App\Models\Useremployees::where('uEmp_id', $user_data->user_sdca_id)->first();
+            $custom_nav_pill = 'custom_nav_link_blue';
+            if($toLower_userRoleStatus === 'active'){
+                if($toLower_userStatus === 'active'){
+                    $image_filter   = 'up_user_image';
+                    $user_alt_image = 'employee_user_image';
+                }else{
+                    if($toLower_userStatus === 'deactivated' OR $toLower_userStatus === 'deleted'){
+                        $image_filter   = 'up_red_user_image';
+                        $user_alt_image = 'no_student_image';
+                    }else{
+                        $image_filter   = 'up_gray_user_image';
+                        $user_alt_image = 'disabled_user_image';
+                    }
+                }
+            }else{
+                if($toLower_userRoleStatus === 'deactivated' OR $toLower_userRoleStatus === 'deleted'){
+                    $image_filter   = 'up_red_user_image';
+                    $user_alt_image = 'no_student_image';
+                }else{
+                    $image_filter   = 'up_gray_user_image';
+                    $user_alt_image = 'disabled_user_image';
+                }   
+            }
+        }else{
+            $custom_nav_pill = 'custom_nav_link_gray';
+        }
         // filter for user types end 
+
+        // user's image
+        if(!is_null($user_data->user_image) OR !empty($user_data->user_image)){
+            $user_image_src = asset('storage/svms/user_images/'.$user_data->user_image);
+            $user_image_alt = $user_data->user_fname . ' ' . $user_data->user_lname.''.$sq.'s profile image';
+        }else{
+            if($toLower_userStatus == 'active'){
+                if($user_data->user_type == 'employee'){
+                    $user_image_jpg = 'employee_user_image.jpg';
+                }elseif($user_data->user_type == 'student'){
+                    $user_image_jpg = 'student_user_image.jpg';
+                }else{
+                    $user_image_jpg = 'disabled_user_image.jpg';
+                }
+                $user_image_src = asset('storage/svms/user_images/'.$user_image_jpg);
+            }else{
+                $user_image_src = asset('storage/svms/user_images/no_student_image.jpg');
+            }
+            $user_image_alt = 'default user'.$sq.'s profile image';
+        }
         @endphp
 
         {{-- card intro --}}
@@ -121,7 +150,7 @@
                 <div class="card card_gbr shadow">
                     <div class="card-body card_intro">
                         <div class="page_intro">
-                            <span class="page_intro_title">User Profile</span>
+                            <span class="page_intro_title">User's Profile</span>
                             <span class="page_intro_subtitle">This page allows you to view and manage <span class="font-weight-bold"> {{ $user_data->user_fname }} {{ $user_data->user_lname}}</span>'s Account Information. You can Activate/Deactivate, Edit, and/or Delete {{ $gender_txt }} account, manage {{ $gender_txt }} assigned system role, view {{ $gender_txt }} logs from the system and generate reports.</span>
                         </div>
                         <div class="page_illustration">
@@ -167,13 +196,7 @@
                                         <div class="card-body">
                                             <div class="author">
                                                 <a href="#" class="up_img_div">
-                                                    <img class="{{ $image_filter }} shadow"
-                                                    @if(!is_null($user_data->user_image))
-                                                        src="{{asset('storage/svms/user_images/'.$user_data->user_image)}}" alt="{{$user_data->user_fname }} {{ $user_data->user_lname}}'s profile image'"
-                                                    @else
-                                                        src="{{asset('storage/svms/user_images/'.$user_alt_image.'.jpg')}}" alt="default employee user's profile image"
-                                                    @endif
-                                                    >
+                                                    <img class="{{ $image_filter }} shadow" src="{{$user_image_src}}" alt="{{$user_image_alt}}">
                                                 </a>
                                                 <span class="up_fullname_txt text_svms_blue">{{$user_data->user_fname }}  {{$user_data->user_lname}}</span>
                                                 @if(!is_null($user_data->user_role) OR $user_data->user_role !== 'pending')
@@ -219,10 +242,10 @@
                                                     {{-- gender --}}
                                                     <span class="cat_title_txt">Gender</span>
                                                     @if(!is_null($user_data->user_gender))
-                                                        @if($user_data->user_gender === 'male')
-                                                            <span class="up_info_txt"><i class="fa fa-male"></i> {{ $user_data->user_gender}}</span> 
-                                                        @elseif($user_data->user_gender === 'female')
-                                                            <span class="up_info_txt"><i class="fa fa-female"></i> {{ $user_data->user_gender}}</span> 
+                                                        @if($toLower_userGender === 'male')
+                                                            <span class="up_info_txt"><i class="fa fa-male"></i> {{ ucwords($user_data->user_gender) }}</span> 
+                                                        @elseif($toLower_userGender === 'female')
+                                                            <span class="up_info_txt"><i class="fa fa-female"></i> {{ ucwords($user_data->user_gender) }}</span> 
                                                         @else
                                                             <span class="up_info_txt mb-0 font-italic text_svms_red"><i class="fa fa-exclamation-circle"></i> gender unknown</span>
                                                         @endif
@@ -267,9 +290,9 @@
                                                     {{-- gender --}}
                                                     <span class="cat_title_txt">Gender</span>
                                                     @if(!is_null($user_data->user_gender))
-                                                        @if($user_data->user_gender === 'male')
+                                                        @if($toLower_userGender === 'male')
                                                             <span class="up_info_txt mb-0"><i class="fa fa-male"></i> {{ ucwords($user_data->user_gender) }}</span> 
-                                                        @elseif($user_data->user_gender === 'female')
+                                                        @elseif($toLower_userGender === 'female')
                                                             <span class="up_info_txt mb-0"><i class="fa fa-female"></i> {{ ucwords($user_data->user_gender) }}</span> 
                                                         @else
                                                             <span class="up_info_txt mb-0 font-italic text_svms_red"><i class="fa fa-exclamation-circle"></i> gender unknown</span>
@@ -287,28 +310,28 @@
                                         {{-- account status --}}
                                         @php
                                         // values for account status
-                                            if($user_data->user_role_status === 'active'){
-                                                if($user_data->user_status === 'active'){
+                                            if($toLower_userRoleStatus === 'active'){
+                                                if($toLower_userStatus === 'active'){
                                                     // deactivate account
                                                     $btn_class  = "btn-success";
                                                     $btn_label  = "Account is Activated";
                                                     $btn_icon   = "fa fa-toggle-on";
                                                     $btn_action = 'onclick=deactivateUserAccount(this.id)';
                                                     $question   = 'Deactivate';
-                                                }elseif($user_data->user_status === 'deactivated'){
+                                                }elseif($toLower_userStatus === 'deactivated'){
                                                     // activate account
                                                     $btn_class  = "btn_svms_red";
                                                     $btn_label  = "Account is Deactivated";
                                                     $btn_icon   = "fa fa-toggle-off";
                                                     $btn_action = 'onclick=activateUserAccount(this.id)';
                                                     $question   = 'Activate';
-                                                }elseif($user_data->user_status === 'pending'){
+                                                }elseif($toLower_userStatus === 'pending'){
                                                     $btn_class  = "btn-secondary";
                                                     $btn_label  = "Account is Pending";
                                                     $btn_icon   = "fa fa-spinner";
                                                     $btn_action = 'onclick=activateUserAccount(this.id)';
                                                     $question   = 'Activate';
-                                                }elseif($user_data->user_status === 'deleted'){
+                                                }elseif($toLower_userStatus === 'deleted'){
                                                     // user account is deleted - recover option
                                                     $btn_class  = "btn-secondary";
                                                     $btn_label  = "Account is Pending";
@@ -323,21 +346,21 @@
                                                     $btn_action = 'onclick=activateUserAccount(this.id)';
                                                     $question   = 'Activate';
                                                 }
-                                            }elseif($user_data->user_role_status === 'deactivated'){
+                                            }elseif($toLower_userRoleStatus === 'deactivated'){
                                                 // activate role first
                                                 $btn_class  = "btn_svms_red";
                                                 $btn_label  = "Account is Deactivated";
                                                 $btn_icon   = "fa fa-toggle-off";
                                                 $btn_action = 'onclick=activateUserAccount(this.id)';
                                                 $question   = 'Activate';
-                                            }elseif($user_data->user_role_status === 'pending'){
+                                            }elseif($toLower_userRoleStatus === 'pending'){
                                                 // manage role first
                                                 $btn_class  = "btn-secondary";
                                                 $btn_label  = "Account is Pending";
                                                 $btn_icon   = "fa fa-spinner";
                                                 $btn_action = 'onclick=manageRoleFirst(this.id)';
                                                 $question   = 'Activate';
-                                            }elseif($user_data->user_role_status === 'deleted'){
+                                            }elseif($toLower_userRoleStatus === 'deleted'){
                                                 // role is deleted - assign new role
                                                 $btn_class  = "btn-secondary";
                                                 $btn_label  = "Account is Pending";
@@ -425,7 +448,8 @@
                                                         <div class="row d-flex justify-content-center">
                                                             <div class="col-lg-12 col-md-12 col-sm-12 align-items-center">
                                                                 <div class="up_img_div text-center">
-                                                                    <img class="up_stud_user_image stud_imgUpld_targetImg shadow border-gray" src="{{asset('storage/svms/user_images/'.$user_data->user_image)}}" alt="{{$user_data->user_fname }} {{ $user_data->user_lname}}'s profile image'">
+                                                                    {{-- <img class="up_stud_user_image stud_imgUpld_targetImg shadow border-gray" src="{{asset('storage/svms/user_images/'.$user_data->user_image)}}" alt="{{$user_data->user_fname }} {{ $user_data->user_lname}}'s profile image'"> --}}
+                                                                    <img class="{{ $image_filter }} up_stud_user_image stud_imgUpld_targetImg shadow" src="{{$user_image_src}}" alt="{{$user_image_alt}}">
                                                                 </div>
                                                                 <div class="user_image_upload_input_div stud_imgUpload">
                                                                     <i class="nc-icon nc-image stud_imgUpld_TrgtBtn"></i>
@@ -566,7 +590,8 @@
                                                         <div class="row d-flex justify-content-center">
                                                             <div class="col-lg-12 col-md-12 col-sm-12 align-items-center">
                                                                 <div class="up_img_div text-center">
-                                                                    <img class="up_user_image emp_imgUpld_targetImg shadow border-gray" src="{{asset('storage/svms/user_images/'.$user_data->user_image)}}" alt="{{$user_data->user_fname }} {{ $user_data->user_lname}}'s profile image'">
+                                                                    {{-- <img class="up_user_image emp_imgUpld_targetImg shadow border-gray" src="{{asset('storage/svms/user_images/'.$user_data->user_image)}}" alt="{{$user_data->user_fname }} {{ $user_data->user_lname}}'s profile image'"> --}}
+                                                                    <img class="{{ $image_filter }} up_user_image emp_imgUpld_targetImg shadow" src="{{$user_image_src}}" alt="{{$user_image_alt}}">
                                                                 </div>
                                                                 <div class="user_image_upload_input_div emp_imgUpload">
                                                                     <i class="nc-icon nc-image emp_imgUpld_TrgtBtn"></i>
@@ -760,6 +785,67 @@
                     <div id="usersActLogsCollapseDiv" class="collapse show cb_t0b15x25" aria-labelledby="usersActLogsCollapseHeading" data-parent="#usersActLogsCollapseParent">
                         <div class="row">
                             <div class="col-lg-12 col-md-12 col-sm-12">
+                                <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray2">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            @php
+                                                // date formats for #userActLogsFiltr_datepickerRange placeholder
+                                                if(!is_null($user_first_record) OR !empty($user_first_record) OR $user_first_record != 0){
+                                                    $user_first_record_date = date('F d, Y (D - g:i A)', strtotime($user_first_record->created_at));
+                                                }else{
+                                                    $user_first_record_date = '';
+                                                }
+                                                if(!is_null($user_latest_record) OR !empty($user_latest_record) OR $user_latest_record != 0){
+                                                    $user_latest_record_date = date('F d, Y (D - g:i A)', strtotime($user_latest_record->created_at));
+                                                }else{
+                                                    $user_latest_record_date = '';
+                                                }
+                                                // date range placeholder 
+                                                if(!is_null($user_first_record) OR !empty($user_first_record) OR $user_first_record != 0 AND !is_null($user_latest_record) OR !empty($user_latest_record) OR $user_latest_record != 0){
+                                                    $dateRange_placeholder = ''.$user_first_record_date . ' to ' . $user_latest_record_date.'';
+                                                    $readOnly_class = 'readOnlyClass';
+                                                }else{
+                                                    $dateRange_placeholder = 'No Records Found...';
+                                                    $readOnly_class = '';
+                                                }
+                                                // categori input placeholder
+                                                if(!is_null($user_trans_categories) OR !empty($user_trans_categories) OR $user_trans_categories != 0){
+                                                    $categories_placeholder = 'All Categories';
+                                                    $readOnly_attr = 'readonly';
+                                                }else{
+                                                    $categories_placeholder = 'No Records Found...';
+                                                    $readOnly_attr = '';
+                                                }
+                                            @endphp
+                                            <div class="col-lg-8 col-md-9 col-sm-12">
+                                                <div class="cust_inputDiv_wIcon">
+                                                    <input id="userActLogsFiltr_datepickerRange" name="userActLogsFiltr_datepickerRange" type="text" class="form-control cust_inputv1 {{ $readOnly_class }}" placeholder="{{ $dateRange_placeholder }}" readonly />
+                                                    <i class="fa fa-calendar" aria-hidden="true"></i>
+                                                </div>
+                                                <input type="hidden" name="userActLogs_hidden_dateRangeFrom" id="userActLogs_hidden_dateRangeFrom">
+                                                <input type="hidden" name="userActLogs_hidden_dateRangeTo" id="userActLogs_hidden_dateRangeTo">
+                                                <input type="hidden" name="uac_hiddenTotalData_found" id="uac_hiddenTotalData_found">
+                                            </div>
+                                            <div class="col-lg-4 col-md-3 col-sm-12">
+                                                <div class="form-group cust_inputDiv_wIconv1">
+                                                    <select id="userActLogsFiltr_categories" class="form-control cust_selectDropdownBox1 drpdwn_arrow" {{ $readOnly_attr }}>
+                                                        <option value="0" selected>{{$categories_placeholder}}</option>
+                                                        @if(count($user_trans_categories) > 0)
+                                                            @foreach ($user_trans_categories as $this_category)
+                                                                <option value="{{$this_category->act_type}}">{{ucwords($this_category->act_type) }}</option>
+                                                            @endforeach
+                                                        @endif
+                                                    </select>
+                                                    <i class="fa fa-list-ul" aria-hidden="true"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12">
                                 <table class="table table-hover cust_table shadow">
                                     <thead class="thead_svms_blue">
                                         <tr>
@@ -768,7 +854,7 @@
                                             <th>Details</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="tbody_svms_white" id="usersActLogs_tbody">
+                                    <tbody class="tbody_svms_white" id="ual_tableTbody">
                                         {{-- ajax data table --}}
                                     </tbody>
                                 </table>
@@ -776,11 +862,23 @@
                         </div>
                         <div class="row d-flex justify-content-center align-items-center">
                             <div class="col-lg-6 col-md-6 col-sm-12">
+                                <span>Total Data: <span class="font-weight-bold" id="ual_tableTotalData_count"> </span> </span>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12 d-flex justify-content-end align-items-center">
+                                @csrf
+                                <input type="hidden" name="ual_dateRangePicker_minDate" id="ual_dateRangePicker_minDate" value="{{$user_first_record_date}}">
+                                <input type="hidden" name="ual_dateRangePicker_maxDate" id="ual_dateRangePicker_maxDate" value="{{$user_latest_record_date}}">
+                                <input type="hidden" name="ual_hidden_page" id="ual_hidden_page" value="1" />
+                                <div id="ual_tablePagination">
+                                    {{-- {{ $user_activities->links('pagination::bootstrap-4') }} --}}
+                                </div>
+                            </div>
+                            {{-- <div class="col-lg-6 col-md-6 col-sm-12">
                                 <span>Total Data: <span class="font-weight-bold" id="total_data_count"> </span> </span>
-                            </div>
-                            <div class="col-lg-6 col-md-6 col-sm-12 d-flex justify-content-end align-items-end">
+                            </div> --}}
+                            {{-- <div class="col-lg-6 col-md-6 col-sm-12 d-flex justify-content-end align-items-end">
                                 <a href="#" class="btn btn-success cust_bt_links shadow" role="button"><i class="fa fa-print mr-1" aria-hidden="true"></i> Generate Report</a>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                 </div>
@@ -1310,4 +1408,52 @@
     </script>
 {{-- disable submit button on Change User Role Modal if any of inputs have chagned end --}}
 
+
+{{-- USER'S ACTIVITY LOGS --}}
+    <script>
+        $(document).ready(function(){
+            load_userActLogs_table()
+
+            function load_userActLogs_table(){
+                // get all filtered values
+                var ual_rangefrom = document.getElementById("userActLogs_hidden_dateRangeFrom").value;
+                var ual_rangeTo = document.getElementById("userActLogs_hidden_dateRangeTo").value;
+                var ual_category = document.getElementById("userActLogsFiltr_categories").value;
+                var page = document.getElementById("ual_hidden_page").value;
+
+                console.log('');
+                console.log('From date: ' + ual_rangefrom);
+                console.log('To Date: ' + ual_rangeTo);
+                console.log('Category: ' + ual_category);
+                console.log('page: ' + page);
+
+                // $.ajax({
+                //     url:"{{ route('user_management.user_profile') }}",
+                //     method:"GET",
+                //     data:{
+                //         ual_rangefrom:ual_rangefrom, 
+                //         ual_rangeTo:ual_rangeTo, 
+                //         ual_category:ual_category, 
+                //         page:page
+                //         },
+                //     dataType:'json',
+                //     success:function(ual_data){
+                //         $('#ual_tableTbody').html(ual_data.ual_table);
+                //         $('#ual_tablePagination').html(ual_data.ual_table_paginate);
+                //         $('#ual_tableTotalData_count').html(ual_data.ual_total_rows);
+                //         $('#uac_hiddenTotalData_found').val(ual_data.ual_total_data_found);
+
+                //         // for disabling/ enabling generate report button
+                //         // var violationRecs_totalData = document.getElementById("al_hiddenTotalData_found").value;
+                //         // if(violationRecs_totalData > 0){
+                //         //     $('#generateViolationRecs_btn').prop('disabled', false);
+                //         // }else{
+                //         //     $('#generateViolationRecs_btn').prop('disabled', true);
+                //         // }
+                //     }
+                // });
+            }
+        });
+    </script>
+{{-- USER'S ACTIVITY LOGS end --}}
 @endpush

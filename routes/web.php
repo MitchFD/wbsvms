@@ -29,6 +29,7 @@ Auth::routes();
 
 Route::get('/home', 'App\Http\Controllers\HomeController@index')->name('home');
 
+// my profile
 Route::group(['middleware' => 'auth'], function () {
 	// original
 	// Route::resource('user', 'App\Http\Controllers\UserController', ['except' => ['show']]);
