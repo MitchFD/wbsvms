@@ -844,7 +844,8 @@
                                         @if(count($user_trans_categories) > 0)
                                         <div class="row mt-2">
                                             <div class="col-lg-12 col-md-12 col-sm-12 d-flex justify-content-end">
-                                                <a href="#" type="button" id="generateActLogs_btn" class="btn btn-success cust_bt_links shadow mr-2"><i class="nc-icon nc-single-copy-04 mr-1" aria-hidden="true"></i> Generate Report</a>
+                                                {{-- <a target="_blank" href="{{ url('user_management/user_act_logs/pdf_user_logs/'.$user_data->id) }}" type="button" id="generateActLogs_btn" class="btn btn-success cust_bt_links shadow mr-2"><i class="nc-icon nc-single-copy-04 mr-1" aria-hidden="true"></i> Generate Report</a> --}}
+                                                <button onclick="generatePDF_userLogs({{$user_data->id}})" type="button" id="generateActLogs_btn" class="btn btn-success cust_bt_links shadow mr-2"><i class="nc-icon nc-single-copy-04 mr-1" aria-hidden="true"></i> Generate Report</button>
                                                 <button type="button" id="resetUserActLogsFilter_btn" class="btn btn_svms_blue cust_bt_links shadow" disabled><i class="fa fa-refresh mr-1" aria-hidden="true"></i> Reset</button>
                                             </div>
                                         </div>
@@ -1586,5 +1587,31 @@
             // reset filters end
         });
     </script>
+    {{-- generate PDF - User's logs --}}
+    <script>
+        function generatePDF_userLogs(user_id){
+            // get all filtered values
+            var ual_user_id = user_id;
+            var ual_rangefrom = document.getElementById("userActLogs_hidden_dateRangeFrom").value;
+            var ual_rangeTo = document.getElementById("userActLogs_hidden_dateRangeTo").value;
+            var ual_category = document.getElementById("userActLogsFiltr_categories").value;
+            // custom values
+            if(ual_rangefrom != ""){
+                ual_rangefrom = ual_rangefrom;
+            }else{
+                ual_rangefrom = 0;
+            }
+            if(ual_rangeTo != ""){
+                ual_rangeTo = ual_rangeTo;
+            }else{
+                ual_rangeTo = 0;
+            }
+            // url redirect
+            var url = "{{ url('user_management/user_act_logs/pdf_user_logs', 'parameters') }}";
+            url = url.replace('parameters', ual_user_id+'/'+ual_rangefrom+'/'+ual_rangeTo+'/'+ual_category);
+            window.open(url, "_blank");
+        }
+    </script>
 {{-- USER'S ACTIVITY LOGS end --}}
+
 @endpush

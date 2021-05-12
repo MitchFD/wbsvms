@@ -60,15 +60,24 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::post('/user_management/new_employee_user_process_registration', 'App\Http\Controllers\UserManagementController@new_employee_user_process_registration')->name('user_management.new_employee_user_process_registration');
 	Route::post('/user_management/new_student_user_process_registration', 'App\Http\Controllers\UserManagementController@new_student_user_process_registration')->name('user_management.new_student_user_process_registration');
 
-	// links
+	// LINKS
+	// overview users management
 	Route::get('overview_users_management', ['as' => 'user_management.overview_users_management', 'uses' => 'App\Http\Controllers\UserManagementController@overview_users_management']);
+	// create users page
 	Route::get('create_users', ['as' => 'user_management.create_users', 'uses' => 'App\Http\Controllers\UserManagementController@create_users']);
+	// system users page
 	Route::get('system_users', ['as' => 'user_management.system_users', 'uses' => 'App\Http\Controllers\UserManagementController@system_users']);
+		// user's profile
 		Route::get('user_management/user_profile/{user_id}', ['as' => 'user_management.user_profile', 'uses' => 'App\Http\Controllers\UserManagementController@user_profile']);
+		// load user's act logs from ajax request
 		Route::get('user_management/user_act_logs', ['as' => 'user_management.user_act_logs', 'uses' => 'App\Http\Controllers\UserManagementController@user_act_logs']);
+		// generate PDF - user's act logs
+		Route::get('user_management/user_act_logs/pdf_user_logs/{user_id}/{range_from}/{range_to}/{category}', 'App\Http\Controllers\UserManagementController@pdf_user_logs');
+	// system roles page
 	Route::get('system_roles', ['as' => 'user_management.system_roles', 'uses' => 'App\Http\Controllers\UserManagementController@system_roles']);
-	// Route::get('users_logs', ['as' => 'user_management.users_logs', 'uses' => 'App\Http\Controllers\UserManagementController@users_logs']);
+	// user logs page
 	Route::get('user_management/users_logs', 'App\Http\Controllers\UserManagementController@users_logs')->name('user_management.users_logs');
+	// LINKS END
 
 	// for activate/deactivate system users
 	Route::get('user_management/deactivate_user_account_modal', 'App\Http\Controllers\UserManagementController@deactivate_user_account_modal')->name('user_management.deactivate_user_account_modal');

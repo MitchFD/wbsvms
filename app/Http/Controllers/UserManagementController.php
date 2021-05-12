@@ -200,7 +200,7 @@ class UserManagementController extends Controller
                     $output .= '
                     <tr>
                         <td class="p12">
-                            <span class="actLogs_contentv1">'. date('F d, Y', strtotime($users_logs->created_at)) . ' <span class="sub2">' . date('(D - g:i A)', strtotime($users_logs->created_at)). '</span></span>
+                            <span class="actLogs_contentv1 font-weight-bold">'. date('F d, Y', strtotime($users_logs->created_at)) . ' <span class="sub2 font-weight-normal">' . date('(D - g:i A)', strtotime($users_logs->created_at)). '</span></span>
                         </td>
                         <td><span class="actLogs_contentv1">'.ucwords($users_logs->act_type) . '</span></td>
                         <td><span class="actLogs_contentv1">~ ' . $users_logs->act_details . '</span></td>
@@ -231,6 +231,44 @@ class UserManagementController extends Controller
         }else{
             return view('user_management.user_profile')->with(compact('user_data', 'user_activities', 'user_first_record', 'user_latest_record', 'user_trans_categories'));
         }
+    }
+    // generate PDF = user's logs 
+    public function pdf_user_logs($ual_user_id, $ual_rangefrom, $ual_rangeTo, $ual_category){
+        // custom values
+        $output = '';
+        // to lower values
+        $toLower_category = Str::lower($ual_category);
+        // query
+        $query_user_logs = Useractivites::where('act_respo_user_id', $ual_user_id)
+                    ->where(function($query) use ($ual_rangefrom, $ual_rangeTo, $ual_category, $toLower_category){
+                        if($ual_category != 0 OR !empty($ual_category)){
+                            $query->where('act_type', '=', $toLower_category);
+                        }
+                        if($ual_rangefrom != 0 AND $ual_rangeTo != 0){
+                            $query->whereBetween('created_at', [$ual_rangefrom, $ual_rangeTo]);
+                        }
+                    })
+                    ->orderBy('created_at', 'DESC')
+                    ->get();
+        // count query
+        $count_query_user_logs = count($query_user_logs);
+        if($count_query_user_logs > 0){
+            foreach($query_user_logs as $this_logs){
+                $output .= ''.$this_logs.'<br/>';
+            }
+        }else{
+            $output .= 'No Records Found!';
+        }
+        // $output .= 'user id: ' . $ual_user_id . ' <br/>';
+        // $output .= 'range from: ' . $ual_rangefrom . ' <br/>';
+        // $output .= 'range to: ' . $ual_rangeTo . ' <br/>';
+        // $output .= 'category: ' . $ual_category . ' <br/>';
+        // generate pdf
+        $pdf = \App::make('dompdf.wrapper');
+        // $pdf->loadHTML($output);
+        $show = $query_user_logs;
+        $pdf = PDF::loadView('pdfs/user_logs_pdf', compact('show'));
+        return $pdf->stream('pdfs/user_logs_pdf');
     }
 
     // live search filter for system users table
