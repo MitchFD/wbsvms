@@ -809,12 +809,12 @@
                                                     $readOnly_class = '';
                                                 }
                                                 // categori input placeholder
-                                                if(!is_null($user_trans_categories) OR !empty($user_trans_categories) OR $user_trans_categories != 0){
+                                                if(count($user_trans_categories) > 0){
                                                     $categories_placeholder = 'All Categories';
-                                                    $readOnly_attr = 'readonly';
+                                                    $readOnly_attr = '';
                                                 }else{
                                                     $categories_placeholder = 'No Records Found...';
-                                                    $readOnly_attr = '';
+                                                    $readOnly_attr = 'readonly';
                                                 }
                                             @endphp
                                             <div class="col-lg-8 col-md-9 col-sm-12">
@@ -822,12 +822,13 @@
                                                     <input id="userActLogsFiltr_datepickerRange" name="userActLogsFiltr_datepickerRange" type="text" class="form-control cust_inputv1 {{ $readOnly_class }}" placeholder="{{ $dateRange_placeholder }}" readonly />
                                                     <i class="fa fa-calendar" aria-hidden="true"></i>
                                                 </div>
+                                                @csrf
                                                 <input type="hidden" name="userActLogs_hidden_dateRangeFrom" id="userActLogs_hidden_dateRangeFrom">
                                                 <input type="hidden" name="userActLogs_hidden_dateRangeTo" id="userActLogs_hidden_dateRangeTo">
                                                 <input type="hidden" name="uac_hiddenTotalData_found" id="uac_hiddenTotalData_found">
                                             </div>
                                             <div class="col-lg-4 col-md-3 col-sm-12">
-                                                <div class="form-group cust_inputDiv_wIconv1">
+                                                <div class="form-group cust_inputDiv_wIconv1 mb-1">
                                                     <select id="userActLogsFiltr_categories" class="form-control cust_selectDropdownBox1 drpdwn_arrow" {{ $readOnly_attr }}>
                                                         <option value="0" selected>{{$categories_placeholder}}</option>
                                                         @if(count($user_trans_categories) > 0)
@@ -840,6 +841,14 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        @if(count($user_trans_categories) > 0)
+                                        <div class="row mt-2">
+                                            <div class="col-lg-12 col-md-12 col-sm-12 d-flex justify-content-end">
+                                                <a href="#" type="button" id="generateActLogs_btn" class="btn btn-success cust_bt_links shadow mr-2"><i class="nc-icon nc-single-copy-04 mr-1" aria-hidden="true"></i> Generate Report</a>
+                                                <button type="button" id="resetUserActLogsFilter_btn" class="btn btn_svms_blue cust_bt_links shadow" disabled><i class="fa fa-refresh mr-1" aria-hidden="true"></i> Reset</button>
+                                            </div>
+                                        </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -869,6 +878,7 @@
                                 <input type="hidden" name="ual_dateRangePicker_minDate" id="ual_dateRangePicker_minDate" value="{{$user_first_record_date}}">
                                 <input type="hidden" name="ual_dateRangePicker_maxDate" id="ual_dateRangePicker_maxDate" value="{{$user_latest_record_date}}">
                                 <input type="hidden" name="ual_hidden_page" id="ual_hidden_page" value="1" />
+                                <input type="hidden" name="ual_user_id" id="ual_user_id" value="{{$user_data->id}}" />
                                 <div id="ual_tablePagination">
                                     {{-- {{ $user_activities->links('pagination::bootstrap-4') }} --}}
                                 </div>
@@ -1412,47 +1422,168 @@
 {{-- USER'S ACTIVITY LOGS --}}
     <script>
         $(document).ready(function(){
-            load_userActLogs_table()
+            load_userActLogs_table();
+
+            // function for ajax table pagination
+            $(window).on('hashchange', function() {
+                    if (window.location.hash) {
+                        var page = window.location.hash.replace('#', '');
+                        if (page == Number.NaN || page <= 0) {
+                            return false;
+                        }else{
+                            getUalPage(page);
+                        }
+                    }
+                });
+                $(document).on('click', '.pagination a', function(event){
+                    event.preventDefault();
+                    var page = $(this).attr('href').split('page=')[1];
+                    $('#ual_hidden_page').val(page);
+                    
+                    load_userActLogs_table();
+                    getUalPage(page);
+                    $('li.page-item').removeClass('active');
+                    $(this).parent('li.page-item').addClass('active');
+                });
+                function getUalPage(page){
+                    $.ajax({
+                        url: '?page=' + page,
+                        type: "get",
+                        datatype: "html"
+                    }).done(function(data){
+                        location.hash = page;
+                    }).fail(function(jqXHR, ajaxOptions, thrownError){
+                        alert('No response from server');
+                    });
+                }
+            // function for ajax table pagination end
 
             function load_userActLogs_table(){
                 // get all filtered values
                 var ual_rangefrom = document.getElementById("userActLogs_hidden_dateRangeFrom").value;
                 var ual_rangeTo = document.getElementById("userActLogs_hidden_dateRangeTo").value;
                 var ual_category = document.getElementById("userActLogsFiltr_categories").value;
+                var ual_user_id = document.getElementById("ual_user_id").value;
                 var page = document.getElementById("ual_hidden_page").value;
 
                 console.log('');
+                console.log('user id: ' + ual_user_id);
                 console.log('From date: ' + ual_rangefrom);
                 console.log('To Date: ' + ual_rangeTo);
                 console.log('Category: ' + ual_category);
                 console.log('page: ' + page);
 
-                // $.ajax({
-                //     url:"{{ route('user_management.user_profile') }}",
-                //     method:"GET",
-                //     data:{
-                //         ual_rangefrom:ual_rangefrom, 
-                //         ual_rangeTo:ual_rangeTo, 
-                //         ual_category:ual_category, 
-                //         page:page
-                //         },
-                //     dataType:'json',
-                //     success:function(ual_data){
-                //         $('#ual_tableTbody').html(ual_data.ual_table);
-                //         $('#ual_tablePagination').html(ual_data.ual_table_paginate);
-                //         $('#ual_tableTotalData_count').html(ual_data.ual_total_rows);
-                //         $('#uac_hiddenTotalData_found').val(ual_data.ual_total_data_found);
+                $.ajax({
+                    url:"{{ route('user_management.user_act_logs') }}",
+                    method:"GET",
+                    data:{
+                        ual_user_id:ual_user_id,
+                        ual_rangefrom:ual_rangefrom, 
+                        ual_rangeTo:ual_rangeTo, 
+                        ual_category:ual_category, 
+                        page:page
+                        },
+                    dataType:'json',
+                    success:function(ual_data){
+                        $('#ual_tableTbody').html(ual_data.ual_table);
+                        $('#ual_tablePagination').html(ual_data.ual_table_paginate);
+                        $('#ual_tableTotalData_count').html(ual_data.ual_total_rows);
+                        $('#uac_hiddenTotalData_found').val(ual_data.ual_total_data_found);
 
-                //         // for disabling/ enabling generate report button
-                //         // var violationRecs_totalData = document.getElementById("al_hiddenTotalData_found").value;
-                //         // if(violationRecs_totalData > 0){
-                //         //     $('#generateViolationRecs_btn').prop('disabled', false);
-                //         // }else{
-                //         //     $('#generateViolationRecs_btn').prop('disabled', true);
-                //         // }
-                //     }
-                // });
+                        // for disabling/ enabling generate report button
+                        // var violationRecs_totalData = document.getElementById("al_hiddenTotalData_found").value;
+                        // if(violationRecs_totalData > 0){
+                        //     $('#generateViolationRecs_btn').prop('disabled', false);
+                        // }else{
+                        //     $('#generateViolationRecs_btn').prop('disabled', true);
+                        // }
+                    }
+                });
+
+                // for disabling/ enabling reset filter button
+                if(ual_category != 0 || ual_rangefrom != '' || ual_rangeTo != ''){
+                    $('#resetUserActLogsFilter_btn').prop('disabled', false);
+                }else{
+                    $('#resetUserActLogsFilter_btn').prop('disabled', true);
+                }
             }
+
+            // daterange picker
+                var ualMinDate = document.getElementById("ual_dateRangePicker_minDate").value;
+                var vMaxDate = document.getElementById("ual_dateRangePicker_maxDate").value;
+                // console.log(ualMinDate);
+                // console.log(vMaxDate);
+                $('#userActLogsFiltr_datepickerRange').daterangepicker({
+                    timePicker: true,
+                    showDropdowns: true,
+                    minYear: ualMinDate,
+                    maxYear: parseInt(moment().format('YYYY'),10),
+                    maxDate: vMaxDate,
+                    minDate: ualMinDate,
+                    drops: 'down',
+                    opens: 'right',
+                    autoUpdateInput: false,
+                    locale: {
+                        format: 'MMMM DD, YYYY (ddd - hh:mm A)',
+                        cancelLabel: 'Clear'
+                        }
+                });
+                $('#userActLogsFiltr_datepickerRange').on('cancel.daterangepicker', function(ev, picker) {
+                    document.getElementById("userActLogs_hidden_dateRangeFrom").value = '';
+                    document.getElementById("userActLogs_hidden_dateRangeTo").value = '';
+                    $(this).val('');
+                    $(this).removeClass('cust_input_hasvalue');
+                    // table paginatin set to 1
+                    $('#ual_hidden_page').val(1);
+                    load_userActLogs_table();
+                });
+                $('#userActLogsFiltr_datepickerRange').on('apply.daterangepicker', function(ev, picker) {
+                    // for hidden data range inputs
+                    var start_range = picker.startDate.format('YYYY-MM-DD HH:MM:SS');
+                    var end_range = picker.endDate.format('YYYY-MM-DD HH:MM:SS');
+                    document.getElementById("userActLogs_hidden_dateRangeFrom").value = start_range;
+                    document.getElementById("userActLogs_hidden_dateRangeTo").value = end_range;
+                    // for date range display
+                    $(this).val(picker.startDate.format('MMMM DD, YYYY (ddd - hh:mm A)') + ' to ' + picker.endDate.format('MMMM DD, YYYY (ddd - hh:mm A)'));
+                    $(this).addClass('cust_input_hasvalue');
+                    // table paginatin set to 1
+                    $('#ual_hidden_page').val(1);
+                    load_userActLogs_table();
+                });
+            // daterange picker end
+
+            // filter log categories
+                $('#userActLogsFiltr_categories').on('change paste keyup', function(){
+                    var selectedCategory = $(this).val();
+                    if(selectedCategory != 0){
+                        $(this).addClass('cust_input_hasvalue');
+                    }else{
+                        $(this).removeClass('cust_input_hasvalue');
+                    }
+                    // table paginatin set to 1
+                    $('#ual_hidden_page').val(1);
+                    load_userActLogs_table();
+                });
+            // filter log categories end
+
+            // reset filters
+                $('#resetUserActLogsFilter_btn').on('click', function(){
+                    // for hidden data range inputs
+                    document.getElementById("userActLogs_hidden_dateRangeFrom").value = '';
+                    document.getElementById("userActLogs_hidden_dateRangeTo").value = '';
+                    // for date range display
+                    document.getElementById("userActLogsFiltr_datepickerRange").classList.remove("cust_input_hasvalue");
+                    document.getElementById("userActLogsFiltr_datepickerRange").value = '';
+                    // categories
+                    document.getElementById("userActLogsFiltr_categories").classList.remove("cust_input_hasvalue");
+                    $('#userActLogsFiltr_categories').val(0);
+                    // disable reset button
+                    $(this).prop('disabled', true);
+                    // table paginatin set to 1
+                    $('#ual_hidden_page').val(1);
+                    load_userActLogs_table();
+                });
+            // reset filters end
         });
     </script>
 {{-- USER'S ACTIVITY LOGS end --}}

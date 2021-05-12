@@ -593,6 +593,9 @@ fieldset[disabled] .btn_svms_blue.active {
 }
 
 /* table customizations */
+.w20prcnt{
+  width: 20%;
+}
 .w35prcnt{
   width: 35%;
 }
@@ -626,6 +629,13 @@ fieldset[disabled] .btn_svms_blue.active {
   display: block;
   margin: 0;
   font-size: 13px;
+  font-weight: normal;
+  color: var(--svms_blue);
+}
+.actLogs_contentv1{
+  display: block;
+  margin: 0;
+  font-size: 0.84375rem;
   font-weight: normal;
   color: var(--svms_blue);
 }
