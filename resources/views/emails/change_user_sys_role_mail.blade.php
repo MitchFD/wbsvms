@@ -16,7 +16,7 @@
     <p>This email is to notify you that the system Administrator of the Student Violation Management System has changed your System Role from <strong> {{ $details['old_sys_role'] }} Role </strong> to <strong> {{ $details['new_sys_role'] }} Role </strong> for the following reason/s:</p>
     <p>~ <i>{{$details['change_role_reason']}}</i> </p>
     <br />
-    <p>Kindly head to this link <a href="http://127.0.0.1:8000/">Student Violation Mangement System</a> and log into the system to access your new Role for SVMS.</p>
+    <p>Kindly head to this link <a target="_blank" href="http://127.0.0.1:8000/">Student Violation Mangement System</a> and log into the system to access your new Role for SVMS.</p>
     <br />
     <p>Thank you for your time, and have a good day.</p>
 </body>

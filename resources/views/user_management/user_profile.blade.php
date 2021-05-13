@@ -50,98 +50,98 @@
 
         {{-- data customizations --}}
         @php
-        // single quote
-        $sq = "'";
+            // single quote
+            $sq = "'";
 
-        // to lower values
-        $toLower_userType = Str::lower($user_data->user_type);
-        $toLower_userStatus = Str::lower($user_data->user_status);
-        $toLower_userRoleStatus = Str::lower($user_data->user_role_status);
-        $toLower_userGender = Str::lower($user_data->user_gender);
-        
-        // his/her text
-            if($toLower_userGender === 'male'){
-                $gender_txt = 'his';
-            }else{
-                $gender_txt = 'her';
-            }
-        // his/her text end
-
-        // filter for user types 
-        if($toLower_userType === 'student'){
-            $user_stud_info  = App\Models\Userstudents::where('uStud_num', $user_data->user_sdca_id)->first();
-            $custom_nav_pill = 'custom_nav_link_green';
-            if($toLower_userRoleStatus === 'active'){
-                if($toLower_userStatus === 'active'){
-                    $image_filter   = 'up_stud_user_image';
-                    $user_alt_image = 'student_user_image';
+            // to lower values
+            $toLower_userType = Str::lower($user_data->user_type);
+            $toLower_userStatus = Str::lower($user_data->user_status);
+            $toLower_userRoleStatus = Str::lower($user_data->user_role_status);
+            $toLower_userGender = Str::lower($user_data->user_gender);
+            
+            // his/her text
+                if($toLower_userGender === 'male'){
+                    $gender_txt = 'his';
                 }else{
-                    if($toLower_userStatus === 'deactivated' OR $toLower_userStatus === 'deleted'){
+                    $gender_txt = 'her';
+                }
+            // his/her text end
+
+            // filter for user types 
+            if($toLower_userType === 'student'){
+                $user_stud_info  = App\Models\Userstudents::where('uStud_num', $user_data->user_sdca_id)->first();
+                $custom_nav_pill = 'custom_nav_link_green';
+                if($toLower_userRoleStatus === 'active'){
+                    if($toLower_userStatus === 'active'){
+                        $image_filter   = 'up_stud_user_image';
+                        $user_alt_image = 'student_user_image';
+                    }else{
+                        if($toLower_userStatus === 'deactivated' OR $toLower_userStatus === 'deleted'){
+                            $image_filter   = 'up_red_user_image';
+                            $user_alt_image = 'no_student_image';
+                        }else{
+                            $image_filter   = 'up_gray_user_image';
+                            $user_alt_image = 'disabled_user_image';
+                        }
+                    }
+                }else{
+                    if($toLower_userRoleStatus === 'deactivated'  OR $toLower_userRoleStatus === 'deleted'){
                         $image_filter   = 'up_red_user_image';
                         $user_alt_image = 'no_student_image';
                     }else{
                         $image_filter   = 'up_gray_user_image';
                         $user_alt_image = 'disabled_user_image';
-                    }
+                    }   
                 }
-            }else{
-                if($toLower_userRoleStatus === 'deactivated'  OR $toLower_userRoleStatus === 'deleted'){
-                    $image_filter   = 'up_red_user_image';
-                    $user_alt_image = 'no_student_image';
+            }else if($toLower_userType === 'employee'){
+                $user_emp_info   = App\Models\Useremployees::where('uEmp_id', $user_data->user_sdca_id)->first();
+                $custom_nav_pill = 'custom_nav_link_blue';
+                if($toLower_userRoleStatus === 'active'){
+                    if($toLower_userStatus === 'active'){
+                        $image_filter   = 'up_user_image';
+                        $user_alt_image = 'employee_user_image';
+                    }else{
+                        if($toLower_userStatus === 'deactivated' OR $toLower_userStatus === 'deleted'){
+                            $image_filter   = 'up_red_user_image';
+                            $user_alt_image = 'no_student_image';
+                        }else{
+                            $image_filter   = 'up_gray_user_image';
+                            $user_alt_image = 'disabled_user_image';
+                        }
+                    }
                 }else{
-                    $image_filter   = 'up_gray_user_image';
-                    $user_alt_image = 'disabled_user_image';
-                }   
-            }
-        }else if($toLower_userType === 'employee'){
-            $user_emp_info   = App\Models\Useremployees::where('uEmp_id', $user_data->user_sdca_id)->first();
-            $custom_nav_pill = 'custom_nav_link_blue';
-            if($toLower_userRoleStatus === 'active'){
-                if($toLower_userStatus === 'active'){
-                    $image_filter   = 'up_user_image';
-                    $user_alt_image = 'employee_user_image';
-                }else{
-                    if($toLower_userStatus === 'deactivated' OR $toLower_userStatus === 'deleted'){
+                    if($toLower_userRoleStatus === 'deactivated' OR $toLower_userRoleStatus === 'deleted'){
                         $image_filter   = 'up_red_user_image';
                         $user_alt_image = 'no_student_image';
                     }else{
                         $image_filter   = 'up_gray_user_image';
                         $user_alt_image = 'disabled_user_image';
-                    }
+                    }   
                 }
             }else{
-                if($toLower_userRoleStatus === 'deactivated' OR $toLower_userRoleStatus === 'deleted'){
-                    $image_filter   = 'up_red_user_image';
-                    $user_alt_image = 'no_student_image';
-                }else{
-                    $image_filter   = 'up_gray_user_image';
-                    $user_alt_image = 'disabled_user_image';
-                }   
+                $custom_nav_pill = 'custom_nav_link_gray';
             }
-        }else{
-            $custom_nav_pill = 'custom_nav_link_gray';
-        }
-        // filter for user types end 
+            // filter for user types end 
 
-        // user's image
-        if(!is_null($user_data->user_image) OR !empty($user_data->user_image)){
-            $user_image_src = asset('storage/svms/user_images/'.$user_data->user_image);
-            $user_image_alt = $user_data->user_fname . ' ' . $user_data->user_lname.''.$sq.'s profile image';
-        }else{
-            if($toLower_userStatus == 'active'){
-                if($user_data->user_type == 'employee'){
-                    $user_image_jpg = 'employee_user_image.jpg';
-                }elseif($user_data->user_type == 'student'){
-                    $user_image_jpg = 'student_user_image.jpg';
-                }else{
-                    $user_image_jpg = 'disabled_user_image.jpg';
-                }
-                $user_image_src = asset('storage/svms/user_images/'.$user_image_jpg);
+            // user's image
+            if(!is_null($user_data->user_image) OR !empty($user_data->user_image)){
+                $user_image_src = asset('storage/svms/user_images/'.$user_data->user_image);
+                $user_image_alt = $user_data->user_fname . ' ' . $user_data->user_lname.''.$sq.'s profile image';
             }else{
-                $user_image_src = asset('storage/svms/user_images/no_student_image.jpg');
+                if($toLower_userStatus == 'active'){
+                    if($user_data->user_type == 'employee'){
+                        $user_image_jpg = 'employee_user_image.jpg';
+                    }elseif($user_data->user_type == 'student'){
+                        $user_image_jpg = 'student_user_image.jpg';
+                    }else{
+                        $user_image_jpg = 'disabled_user_image.jpg';
+                    }
+                    $user_image_src = asset('storage/svms/user_images/'.$user_image_jpg);
+                }else{
+                    $user_image_src = asset('storage/svms/user_images/no_student_image.jpg');
+                }
+                $user_image_alt = 'default user'.$sq.'s profile image';
             }
-            $user_image_alt = 'default user'.$sq.'s profile image';
-        }
         @endphp
 
         {{-- card intro --}}
@@ -770,133 +770,135 @@
             </div>
         {{-- user profile card end --}}
         {{-- user activity logs --}}
-        <div class="col-lg-8 col-md-7 col-sm-12">
-            <div class="accordion" id="usersActLogsCollapseParent">
-                <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray">
-                    <div class="card-header p-0" id="usersActLogsCollapseHeading">
-                        <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#usersActLogsCollapseDiv" aria-expanded="true" aria-controls="usersActLogsCollapseDiv">
-                            <div>
-                                <span class="card_body_title">User's Activity Logs</span>
-                                <span class="card_body_subtitle">View {{ $user_data->user_fname }} {{ $user_data->user_lname}}'s Activity Logs and generate report.</span>
-                            </div>
-                            <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
-                        </button>
-                    </div>
-                    <div id="usersActLogsCollapseDiv" class="collapse show cb_t0b15x25" aria-labelledby="usersActLogsCollapseHeading" data-parent="#usersActLogsCollapseParent">
-                        <div class="row">
-                            <div class="col-lg-12 col-md-12 col-sm-12">
-                                <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray2">
-                                    <div class="card-body">
+            <div class="col-lg-8 col-md-7 col-sm-12">
+                <div class="accordion" id="usersActLogsCollapseParent">
+                    <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray">
+                        <div class="card-header p-0" id="usersActLogsCollapseHeading">
+                            <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#usersActLogsCollapseDiv" aria-expanded="true" aria-controls="usersActLogsCollapseDiv">
+                                <div>
+                                    <span class="card_body_title">User's Activity Logs</span>
+                                    <span class="card_body_subtitle">View {{ $user_data->user_fname }} {{ $user_data->user_lname}}'s Activity Logs and generate report.</span>
+                                </div>
+                                <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
+                            </button>
+                        </div>
+                        <div id="usersActLogsCollapseDiv" class="collapse show cb_t0b15x25" aria-labelledby="usersActLogsCollapseHeading" data-parent="#usersActLogsCollapseParent">
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray2">
                                         @csrf
-                                        <div class="row">
-                                            @php
-                                                // date formats for #userActLogsFiltr_datepickerRange placeholder
-                                                if(!is_null($user_first_record) OR !empty($user_first_record) OR $user_first_record != 0){
-                                                    $user_first_record_date = date('F d, Y (D - g:i A)', strtotime($user_first_record->created_at));
-                                                }else{
-                                                    $user_first_record_date = '';
-                                                }
-                                                if(!is_null($user_latest_record) OR !empty($user_latest_record) OR $user_latest_record != 0){
-                                                    $user_latest_record_date = date('F d, Y (D - g:i A)', strtotime($user_latest_record->created_at));
-                                                }else{
-                                                    $user_latest_record_date = '';
-                                                }
-                                                // date range placeholder 
-                                                if(!is_null($user_first_record) OR !empty($user_first_record) OR $user_first_record != 0 AND !is_null($user_latest_record) OR !empty($user_latest_record) OR $user_latest_record != 0){
-                                                    $dateRange_placeholder = ''.$user_first_record_date . ' to ' . $user_latest_record_date.'';
-                                                    $readOnly_class = 'readOnlyClass';
-                                                }else{
-                                                    $dateRange_placeholder = 'No Records Found...';
-                                                    $readOnly_class = '';
-                                                }
-                                                // categori input placeholder
-                                                if(count($user_trans_categories) > 0){
-                                                    $categories_placeholder = 'All Categories';
-                                                    $readOnly_attr = '';
-                                                }else{
-                                                    $categories_placeholder = 'No Records Found...';
-                                                    $readOnly_attr = 'readonly';
-                                                }
-                                            @endphp
-                                            <div class="col-lg-8 col-md-9 col-sm-12">
-                                                <div class="cust_inputDiv_wIcon">
-                                                    <input id="userActLogsFiltr_datepickerRange" name="userActLogsFiltr_datepickerRange" type="text" class="form-control cust_inputv1 {{ $readOnly_class }}" placeholder="{{ $dateRange_placeholder }}" readonly />
-                                                    <i class="fa fa-calendar" aria-hidden="true"></i>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                @php
+                                                    // date formats for #userActLogsFiltr_datepickerRange placeholder
+                                                    if(!is_null($user_first_record) OR !empty($user_first_record) OR $user_first_record != 0){
+                                                        $user_first_record_date = date('F d, Y (D - g:i A)', strtotime($user_first_record->created_at));
+                                                    }else{
+                                                        $user_first_record_date = '';
+                                                    }
+                                                    if(!is_null($user_latest_record) OR !empty($user_latest_record) OR $user_latest_record != 0){
+                                                        $user_latest_record_date = date('F d, Y (D - g:i A)', strtotime($user_latest_record->created_at));
+                                                    }else{
+                                                        $user_latest_record_date = '';
+                                                    }
+                                                    // date range placeholder 
+                                                    if(!is_null($user_first_record) OR !empty($user_first_record) OR $user_first_record != 0 AND !is_null($user_latest_record) OR !empty($user_latest_record) OR $user_latest_record != 0){
+                                                        $dateRange_placeholder = ''.$user_first_record_date . ' to ' . $user_latest_record_date.'';
+                                                        $readOnly_class = 'readOnlyClass';
+                                                    }else{
+                                                        $dateRange_placeholder = 'No Records Found...';
+                                                        $readOnly_class = '';
+                                                    }
+                                                    // categori input placeholder
+                                                    if(count($user_trans_categories) > 0){
+                                                        $categories_placeholder = 'All Categories';
+                                                        $readOnly_attr = '';
+                                                    }else{
+                                                        $categories_placeholder = 'No Records Found...';
+                                                        $readOnly_attr = 'readonly';
+                                                    }
+                                                @endphp
+                                                <div class="col-lg-8 col-md-9 col-sm-12">
+                                                    <div class="cust_inputDiv_wIcon">
+                                                        <input id="userActLogsFiltr_datepickerRange" name="userActLogsFiltr_datepickerRange" type="text" class="form-control cust_inputv1 {{ $readOnly_class }}" placeholder="{{ $dateRange_placeholder }}" readonly />
+                                                        <i class="fa fa-calendar" aria-hidden="true"></i>
+                                                    </div>
+                                                    <input type="hidden" name="userActLogs_hidden_dateRangeFrom" id="userActLogs_hidden_dateRangeFrom">
+                                                    <input type="hidden" name="userActLogs_hidden_dateRangeTo" id="userActLogs_hidden_dateRangeTo">
+                                                    <input type="hidden" name="uac_hiddenTotalData_found" id="uac_hiddenTotalData_found">
                                                 </div>
-                                                @csrf
-                                                <input type="hidden" name="userActLogs_hidden_dateRangeFrom" id="userActLogs_hidden_dateRangeFrom">
-                                                <input type="hidden" name="userActLogs_hidden_dateRangeTo" id="userActLogs_hidden_dateRangeTo">
-                                                <input type="hidden" name="uac_hiddenTotalData_found" id="uac_hiddenTotalData_found">
-                                            </div>
-                                            <div class="col-lg-4 col-md-3 col-sm-12">
-                                                <div class="form-group cust_inputDiv_wIconv1 mb-1">
-                                                    <select id="userActLogsFiltr_categories" class="form-control cust_selectDropdownBox1 drpdwn_arrow" {{ $readOnly_attr }}>
-                                                        <option value="0" selected>{{$categories_placeholder}}</option>
-                                                        @if(count($user_trans_categories) > 0)
-                                                            @foreach ($user_trans_categories as $this_category)
-                                                                <option value="{{$this_category->act_type}}">{{ucwords($this_category->act_type) }}</option>
-                                                            @endforeach
-                                                        @endif
-                                                    </select>
-                                                    <i class="fa fa-list-ul" aria-hidden="true"></i>
+                                                <div class="col-lg-4 col-md-3 col-sm-12">
+                                                    <div class="form-group cust_inputDiv_wIconv1 mb-1">
+                                                        <select id="userActLogsFiltr_categories" class="form-control cust_selectDropdownBox1 drpdwn_arrow" {{ $readOnly_attr }}>
+                                                            <option value="0" selected>{{$categories_placeholder}}</option>
+                                                            @if(count($user_trans_categories) > 0)
+                                                                @foreach ($user_trans_categories as $this_category)
+                                                                    <option value="{{$this_category->act_type}}">{{ucwords($this_category->act_type) }}</option>
+                                                                @endforeach
+                                                            @endif
+                                                        </select>
+                                                        <i class="fa fa-list-ul" aria-hidden="true"></i>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        @if(count($user_trans_categories) > 0)
-                                        <div class="row mt-2">
-                                            <div class="col-lg-12 col-md-12 col-sm-12 d-flex justify-content-end">
-                                                {{-- <a target="_blank" href="{{ url('user_management/user_act_logs/pdf_user_logs/'.$user_data->id) }}" type="button" id="generateActLogs_btn" class="btn btn-success cust_bt_links shadow mr-2"><i class="nc-icon nc-single-copy-04 mr-1" aria-hidden="true"></i> Generate Report</a> --}}
-                                                <button onclick="generatePDF_userLogs({{$user_data->id}})" type="button" id="generateActLogs_btn" class="btn btn-success cust_bt_links shadow mr-2"><i class="nc-icon nc-single-copy-04 mr-1" aria-hidden="true"></i> Generate Report</button>
-                                                <button type="button" id="resetUserActLogsFilter_btn" class="btn btn_svms_blue cust_bt_links shadow" disabled><i class="fa fa-refresh mr-1" aria-hidden="true"></i> Reset</button>
+                                            @if(count($user_trans_categories) > 0)
+                                            <div class="row mt-2">
+                                                <div class="col-lg-8 col-md-8 col-sm-12 d-flex align-items-center">
+                                                    <span class="cust_info_txtwicon font-weight-bold"><i class="fa fa-list-ul mr-1" aria-hidden="true"></i> <span class="total_rec_found"> </span></span>
+                                                </div>
+                                                <div class="col-lg-4 col-md-4 col-sm-12 d-flex justify-content-end">
+                                                    {{-- <a target="_blank" href="{{ url('user_management/user_act_logs/pdf_user_logs/'.$user_data->id) }}" type="button" id="generateActLogs_btn" class="btn btn-success cust_bt_links shadow mr-2"><i class="nc-icon nc-single-copy-04 mr-1" aria-hidden="true"></i> Generate Report</a> --}}
+                                                    <button onclick="generatePDF_userLogs({{$user_data->id}})" type="button" id="generateActLogs_btn" class="btn btn-success cust_bt_links shadow mr-2"><i class="nc-icon nc-single-copy-04 mr-1" aria-hidden="true"></i> Generate Report</button>
+                                                    <button type="button" id="resetUserActLogsFilter_btn" class="btn btn_svms_blue cust_bt_links shadow" disabled><i class="fa fa-refresh mr-1" aria-hidden="true"></i> Reset</button>
+                                                </div>
                                             </div>
+                                            @endif
                                         </div>
-                                        @endif
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-12 col-md-12 col-sm-12">
-                                <table class="table table-hover cust_table shadow">
-                                    <thead class="thead_svms_blue">
-                                        <tr>
-                                            <th class="pl12">~ Date</th>
-                                            <th>Category</th>
-                                            <th>Details</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="tbody_svms_white" id="ual_tableTbody">
-                                        {{-- ajax data table --}}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="row d-flex justify-content-center align-items-center">
-                            <div class="col-lg-6 col-md-6 col-sm-12">
-                                <span>Total Data: <span class="font-weight-bold" id="ual_tableTotalData_count"> </span> </span>
-                            </div>
-                            <div class="col-lg-6 col-md-6 col-sm-12 d-flex justify-content-end align-items-center">
-                                @csrf
-                                <input type="hidden" name="ual_dateRangePicker_minDate" id="ual_dateRangePicker_minDate" value="{{$user_first_record_date}}">
-                                <input type="hidden" name="ual_dateRangePicker_maxDate" id="ual_dateRangePicker_maxDate" value="{{$user_latest_record->created_at}}">
-                                <input type="hidden" name="ual_hidden_page" id="ual_hidden_page" value="1" />
-                                <input type="hidden" name="ual_user_id" id="ual_user_id" value="{{$user_data->id}}" />
-                                <div id="ual_tablePagination">
-                                    {{-- {{ $user_activities->links('pagination::bootstrap-4') }} --}}
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <table class="table table-hover cust_table shadow">
+                                        <thead class="thead_svms_blue">
+                                            <tr>
+                                                <th class="pl12">~ Date</th>
+                                                <th>Category</th>
+                                                <th>Details</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="tbody_svms_white" id="ual_tableTbody">
+                                            {{-- ajax data table --}}
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
-                            {{-- <div class="col-lg-6 col-md-6 col-sm-12">
-                                <span>Total Data: <span class="font-weight-bold" id="total_data_count"> </span> </span>
-                            </div> --}}
-                            {{-- <div class="col-lg-6 col-md-6 col-sm-12 d-flex justify-content-end align-items-end">
-                                <a href="#" class="btn btn-success cust_bt_links shadow" role="button"><i class="fa fa-print mr-1" aria-hidden="true"></i> Generate Report</a>
-                            </div> --}}
+                            <div class="row d-flex justify-content-center align-items-center">
+                                <div class="col-lg-6 col-md-6 col-sm-12">
+                                    <span>Total Data: <span class="font-weight-bold" id="ual_tableTotalData_count"> </span> </span>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-12 d-flex justify-content-end align-items-center">
+                                    @csrf
+                                    <input type="hidden" name="ual_dateRangePicker_minDate" id="ual_dateRangePicker_minDate" value="{{$user_first_record_date}}">
+                                    <input type="hidden" name="ual_dateRangePicker_maxDate" id="ual_dateRangePicker_maxDate" value="{{$user_latest_record_date}}">
+                                    <input type="hidden" name="ual_hidden_page" id="ual_hidden_page" value="1" />
+                                    <input type="hidden" name="ual_user_id" id="ual_user_id" value="{{$user_data->id}}" />
+                                    <div id="ual_tablePagination">
+                                        {{-- {{ $user_activities->links('pagination::bootstrap-4') }} --}}
+                                    </div>
+                                </div>
+                                {{-- <div class="col-lg-6 col-md-6 col-sm-12">
+                                    <span>Total Data: <span class="font-weight-bold" id="total_data_count"> </span> </span>
+                                </div> --}}
+                                {{-- <div class="col-lg-6 col-md-6 col-sm-12 d-flex justify-content-end align-items-end">
+                                    <a href="#" class="btn btn-success cust_bt_links shadow" role="button"><i class="fa fa-print mr-1" aria-hidden="true"></i> Generate Report</a>
+                                </div> --}}
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    {{-- user activity logs end --}}
+        {{-- user activity logs end --}}
         </div>
     </div>
 
@@ -918,7 +920,7 @@
             </div>
         </div>
     {{-- deactivate user account modal end --}}
-    {{-- deactivate user account modal --}}
+    {{-- activate user account modal --}}
         <div class="modal fade" id="activateUserAccountModal" tabindex="-1" role="dialog" aria-labelledby="activateUserAccountModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content cust_modal">
@@ -934,7 +936,7 @@
                 </div>
             </div>
         </div>
-    {{-- deactivate user account modal end --}}
+    {{-- activate user account modal end --}}
     {{-- manage user role first modal --}}
         <div class="modal fade" id="manageUserRoleFirstModal" tabindex="-1" role="dialog" aria-labelledby="manageUserRoleFirstModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -992,6 +994,7 @@
 @push('scripts')
 
 {{-- activate/deactivate user account open modal for confirmation --}}
+    {{-- deactivate user account --}}
     <script>
         function deactivateUserAccount(deactivate_user_id){
             var deactivate_user_id = deactivate_user_id;
@@ -1007,6 +1010,21 @@
             });
         }
     </script>
+    <script>
+        $('#deactivateUserAccountModal').on('show.bs.modal', function () {
+            var form_deactivateUserAccount  = document.querySelector("#form_deactivateUserAccount");
+            var reason_deactivateUserAccount  = document.querySelector("#deactivate_user_account_reason");
+            var submit_deactivateUserAccountBtn = document.querySelector("#submit_deactivateUserAccountBtn");
+            var cancel_deactivateUserAccountBtn = document.querySelector("#cancel_deactivateUserAccountBtn");
+            // disable cancel and sibmit button on submit
+            $(form_deactivateUserAccount).submit(function(){
+                submit_deactivateUserAccountBtn.disabled = true;
+                cancel_deactivateUserAccountBtn.disabled = true;
+                return true;
+            });
+        });
+    </script>
+    {{-- activate user account --}}
     <script>
         function activateUserAccount(activate_user_id){
             var activate_user_id = activate_user_id;
@@ -1044,6 +1062,7 @@
 {{-- change user role open modal --}}
     <script>
         function changeUserRole(sel_user_id){
+            $("html").removeClass("perfect-scrollbar-on");
             var sel_user_id = sel_user_id;
             var _token = $('input[name="_token"]').val();
             $('#addNewSystemRoleModal').modal('hide');
@@ -1052,6 +1071,7 @@
                 method:"GET",
                 data:{sel_user_id:sel_user_id, _token:_token},
                 success: function(data){
+                    $("html").removeClass("perfect-scrollbar-on");
                     $('#changeUserRoleHtmlData').html(data); 
                     $('#changeUserRoleModal').modal('show');
                 }
@@ -1062,6 +1082,7 @@
 {{-- add new system role open modal --}}
     <script>
         function add_newSystemRole_modal(prev_user_id){
+            $("html").removeClass("perfect-scrollbar-on");
             var prev_user_id = prev_user_id;
             var _token = $('input[name="_token"]').val();
             $('#changeUserRoleModal').modal('hide');
@@ -1070,6 +1091,7 @@
                 method:"GET",
                 data:{prev_user_id:prev_user_id, _token:_token},
                 success: function(data){
+                    $("html").removeClass("perfect-scrollbar-on");
                     $('#addNewSystemRoleHtmlData').html(data); 
                     $('#addNewSystemRoleModal').modal('show');
                 }
@@ -1410,16 +1432,53 @@
 {{-- disable submit button on Change User Role Modal if any of inputs have chagned --}}
     <script>
         $('#changeUserRoleModal').on('show.bs.modal', function () {
+            var form_changeUserRole  = document.querySelector("#form_changeUserRole");
+            var reason_changeUserRole  = document.querySelector("#change_user_role_reason");
+            var submit_changeUserRoleBtn = document.querySelector("#submit_changeUserRoleBtn");
+            var cancel_changeUserRoleBtn = document.querySelector("#cancel_changeUserRoleBtn");
             $('#form_changeUserRole').each(function(){
                 $(this).data('serialized', $(this).serialize())
             }).on('change input', function(){
                 $(this).find('#submit_changeUserRoleBtn').prop('disabled', $(this).serialize() == $(this).data('serialized'));
                 console.log('nagbago');
             }).find('#submit_changeUserRoleBtn').prop('disabled', true);
+            // disable cancel and sibmit button on submit
+            $('#form_changeUserRole').submit(function(){
+                submit_changeUserRoleBtn.disabled = true;
+                cancel_changeUserRoleBtn.disabled = true;
+                return true;
+            });
         });
     </script>
 {{-- disable submit button on Change User Role Modal if any of inputs have chagned end --}}
 
+{{-- ADD NEW ROLE MODAL --}}
+{{-- disable / enable submit button on required inputs --}}
+    <script>
+        $('#addNewSystemRoleModal').on('show.bs.modal', function () {
+            $("html").removeClass("perfect-scrollbar-on");
+            var form_addNewRoleModal = document.querySelector("#form_addNewRoleModal");
+            var input_createRoleName = document.querySelector("#create_role_name");
+            var btn_submit_newSystemRole_btn = document.querySelector("#submit_newSystemRole_btn");
+            var btn_cancel_newSystemRole_btn = document.querySelector(".cancel_newSystemRole_btn");
+            if(input_createRoleName != ""){
+                btn_submit_newSystemRole_btn.disabled = false;
+            }else{
+                btn_submit_newSystemRole_btn.disabled = true;
+            }
+            // disable cancel and sibmit button on submit
+            $(form_addNewRoleModal).submit(function(){
+                btn_submit_newSystemRole_btn.disabled = true;
+                btn_cancel_newSystemRole_btn.disabled = true;
+                return true;
+            });
+        });
+
+        $('#addNewSystemRoleModal').on('hidden.bs.modal', function () {
+            $("html").addClass("perfect-scrollbar-on");
+        });
+    </script>
+{{-- disable / enable submit button on required inputs --}}
 
 {{-- USER'S ACTIVITY LOGS --}}
     <script>
@@ -1491,6 +1550,7 @@
                         $('#ual_tablePagination').html(ual_data.ual_table_paginate);
                         $('#ual_tableTotalData_count').html(ual_data.ual_total_rows);
                         $('#uac_hiddenTotalData_found').val(ual_data.ual_total_data_found);
+                        $('.total_rec_found').html(ual_data.ual_total_rec_found);
 
                         // for disabling/ enabling generate report button
                         var val_hiddenTotalData_found = document.getElementById("uac_hiddenTotalData_found").value;

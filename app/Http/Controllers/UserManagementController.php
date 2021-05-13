@@ -189,9 +189,11 @@ class UserManagementController extends Controller
                     $s = '';
                 }
                 $ual_total_results = $filter_user_logs_table->firstItem() . ' - ' . $filter_user_logs_table->lastItem() . ' of ' . $ual_totalFiltered_result . ' Record'.$s;
+                $total_rec_found = $ual_totalFiltered_result . ' Record'.$s . ' Found.';
             }else{
                 $s = '';
                 $ual_total_results = 'No Records Found';
+                $total_rec_found = 'No Records Found.';
             }
             // display
             if($al_count_Filtered_result > 0){
@@ -225,7 +227,8 @@ class UserManagementController extends Controller
                 'ual_table'            => $output,
                 'ual_table_paginate'   => $ual_paginate,
                 'ual_total_rows'       => $ual_total_results,
-                'ual_total_data_found' => $ual_totalFiltered_result
+                'ual_total_data_found' => $ual_totalFiltered_result,
+                'ual_total_rec_found'  => $total_rec_found
                 );
             
             echo json_encode($data);
@@ -293,9 +296,10 @@ class UserManagementController extends Controller
         // generate pdf
         $pdf = \App::make('dompdf.wrapper');
         // $pdf->loadHTML($output);
-        $pdf = PDF::loadView('pdfs/user_logs_pdf', compact('query_user_logs', 'now_timestamp', 'query_respo_user', 'query_sel_user', 'display_category', 'display_date_range1', 'display_date_range2', 'display_date_range3', 'display_date_range4'));
+        $pdf = PDF::loadView('reports/user_logs_pdf', compact('query_user_logs', 'now_timestamp', 'query_respo_user', 'query_sel_user', 'display_category', 'display_date_range1', 'display_date_range2', 'display_date_range3', 'display_date_range4'));
         $pdf->setPaper('A4');
-        return $pdf->stream('pdfs/user_logs_pdf.pdf');
+        $pdf->getDomPDF()->set_option("enable_php", true);
+        return $pdf->stream('reports/user_logs_pdf.pdf');
     }
 
     // live search filter for system users table
@@ -1529,15 +1533,18 @@ class UserManagementController extends Controller
             $get_sel_user_gender        = $get_sel_user_info->user_gender;
             $get_sel_user_registered_by = $get_sel_user_info->registered_by;
             $get_sel_user_created_at    = $get_sel_user_info->created_at;
+        // to lower case
+            $toLower_userStatus = Str::lower($get_sel_user_status);
+            $toLower_userType = Str::lower($get_sel_user_type);
         // get all system roles
             $get_all_emp_roles  = Userroles::select('uRole_id', 'uRole_status', 'uRole_type', 'uRole', 'uRole_access')->where('uRole_status', '!=', 'deleted')->where('uRole_type', 'employee')->get();
             $get_all_stud_roles = Userroles::select('uRole_id', 'uRole_status', 'uRole_type', 'uRole', 'uRole_access')->where('uRole_status', '!=', 'deleted')->where('uRole_type', 'student')->get();
         // filter values
-            if($get_sel_user_type === 'student'){
+            if($toLower_userType === 'student'){
                 $get_stud_info = Userstudents::select('uStud_num', 'uStud_school', 'uStud_program', 'uStud_yearlvl', 'uStud_section', 'uStud_phnum')->where('uStud_num', $get_sel_user_sdca_id)->first();
                 $sdca_id_title = 'Student Number';
                 $img_filter = 'studImg_background';
-            }else if($get_sel_user_type === 'employee'){
+            }else if($toLower_userType === 'employee'){
                 $get_emp_info = Useremployees::select('uEmp_id', 'uEmp_job_desc', 'uEmp_dept', 'uEmp_phnum')->where('uEmp_id', $get_sel_user_sdca_id)->first();
                 $sdca_id_title = 'Employee ID';
                 $img_filter = 'empImg_background';
@@ -1556,6 +1563,25 @@ class UserManagementController extends Controller
                 $mr_ms   = 'Mr./Ms.';
             }
             $sq = "'";
+        // user's image
+            if(!is_null($get_sel_user_image) OR !empty($get_sel_user_image)){
+                $user_image_src = asset('storage/svms/user_images/'.$get_sel_user_image);
+                $user_image_alt = $get_sel_user_fname . ' ' . $get_sel_user_lname.''.$sq.'s profile image';
+            }else{
+                if($toLower_userStatus == 'active'){
+                    if($toLower_userType == 'employee'){
+                        $user_image_jpg = 'employee_user_image.jpg';
+                    }elseif($toLower_userType == 'student'){
+                        $user_image_jpg = 'student_user_image.jpg';
+                    }else{
+                        $user_image_jpg = 'disabled_user_image.jpg';
+                    }
+                    $user_image_src = asset('storage/svms/user_images/'.$user_image_jpg);
+                }else{
+                    $user_image_src = asset('storage/svms/user_images/no_student_image.jpg');
+                }
+                $user_image_alt = 'default user'.$sq.'s profile image';
+            }
         $output = '';
         $output .= '
             <div class="modal-body border-0 p-0">
@@ -1567,7 +1593,7 @@ class UserManagementController extends Controller
                                     <button class="btn btn-block custom2_btn_collapse cb_x12y20 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#changeUserRoleCollapse_Div'.$get_sel_user_id.'" aria-expanded="true" aria-controls="changeUserRoleCollapse_Div'.$get_sel_user_id.'">
                                         <div class="d-flex justify-content-start align-items-center">
                                             <div class="display_user_image_div text-center">
-                                                <img class="'.$img_filter.' shadow-sm" src="'.asset('storage/svms/user_images/'.$get_sel_user_image).'" alt="student user profile">
+                                                <img class="'.$img_filter.' shadow-sm" src="'.$user_image_src.'" alt="student user profile">
                                             </div>
                                             <div class="information_div">
                                                 <span class="li_info_title">'.$get_sel_user_fname. ' ' .$get_sel_user_lname.'</span>
@@ -1735,7 +1761,7 @@ class UserManagementController extends Controller
                         <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
                         <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
                         <div class="btn-group" role="group" aria-label="Basic example">
-                            <button type="button" class="btn btn-round btn-secondary btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                            <button id="cancel_changeUserRoleBtn" type="button" class="btn btn-round btn-secondary btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
                             <button id="submit_changeUserRoleBtn" type="submit" class="btn btn-round btn-success btn_show_icon m-0" disabled>Apply Changes <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
                         </div>
                     </div>
@@ -1847,7 +1873,7 @@ class UserManagementController extends Controller
                     // send email
                         $details = [
                             'svms_logo'          => "storage/svms/logos/svms_logo_text.png",
-                            'title'              => 'PASSWORD UPDATE',
+                            'title'              => 'SYSTEM ROLE UPDATE',
                             'recipient'          => $mr_ms . ' ' .$get_sel_user_fname . ' ' . $get_sel_user_lname,
                             'responsible_user'   => $respo_mr_ms . ' ' .$get_respo_user_fname . ' ' . $get_respo_user_lname,
                             'change_role_reason' => $get_change_role_reason,
@@ -1934,7 +1960,8 @@ class UserManagementController extends Controller
             $get_all_stud_type_roles   = Userroles::select('uRole_id', 'uRole_status', 'uRole_type', 'uRole', 'uRole_access', 'assUsers_count', 'created_by', 'created_at')->where('uRole_status', '!=', 'deleted')->where('uRole_type', 'student')->get();
             $count_all_emp_type_roles  = Userroles::where('uRole_status', '!=', 'deleted')->where('uRole_type', 'employee')->count();
             $count_all_stud_type_roles = Userroles::where('uRole_status', '!=', 'deleted')->where('uRole_type', 'student')->count();
-
+        // single quote
+            $sq = "'";
         $output = '';
         $output .= '
             <div class="modal-body border-0 p-0">
@@ -1946,7 +1973,7 @@ class UserManagementController extends Controller
                                     <button class="btn btn-block custom2_btn_collapse cb_x12y20 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#empTypeRolesCollapse_Div" aria-expanded="true" aria-controls="empTypeRolesCollapse_Div">
                                         <div>
                                             <span class="li_info_title">Employee Type Roles</span>
-                                            <span class="li_info_subtitle">'.$count_all_emp_type_roles.' System '; if($count_all_emp_type_roles > 1){ $output .= ' Roles '; }else{ $output .= ' Role '; } $output .= ' Found</span>
+                                            <span class="li_info_subtitle">'.$count_all_emp_type_roles.' System '; if($count_all_emp_type_roles > 1){ $output .= ' Users '; }else{ $output .= ' User '; } $output .= ' Found</span>
                                         </div>
                                         <i class="nc-icon nc-minimal-down"></i>
                                     </button>
@@ -1970,10 +1997,33 @@ class UserManagementController extends Controller
                                                 </div>
                                                 <div class="assignedUsersCirclesDiv">';
                                                     if($count_assigned_emp_users > 14){
-                                                        $get_only_14_emp_users = Users::select('id', 'user_image', 'user_lname', 'user_fname')->where('user_role', $emp_type_role->uRole)->take(13)->get();
+                                                        $get_only_14_emp_users = Users::select('id', 'user_status', 'user_type', 'user_image', 'user_lname', 'user_fname')->where('user_role', $emp_type_role->uRole)->take(13)->get();
                                                         $more_emp_users_count = $count_assigned_emp_users - 13;
                                                         foreach($get_only_14_emp_users->sortBy('id') as $display_13_emp_users){
-                                                            $output .= '<img class="assignedUsersCirclesImgs2 F4F4F5_border" src="'.asset('storage/svms/user_images/'.$display_13_emp_users->user_image).'" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="';if(auth()->user()->id === $display_13_emp_users->id){$output .='You';}else{ $output .= ''.$display_13_emp_users->user_fname . ' ' .$display_13_emp_users->user_lname. ' ';} $output .= '">';
+                                                            // to lower case
+                                                            $toLower_userStatus = Str::lower($display_13_emp_users->user_status);
+                                                            $toLower_userType = Str::lower($display_13_emp_users->user_type);
+                                                            // users image
+                                                            if(!is_null($display_13_emp_users->user_image) OR !empty($display_13_emp_users->user_image)){
+                                                                $user_image_src = asset('storage/svms/user_images/'.$display_13_emp_users->user_image);
+                                                                $user_image_alt = $display_13_emp_users->user_fname . ' ' . $display_13_emp_users->user_lname.''.$sq.'s profile image';
+                                                            }else{
+                                                                if($toLower_userStatus == 'active'){
+                                                                    if($toLower_userType == 'employee'){
+                                                                        $user_image_jpg = 'employee_user_image.jpg';
+                                                                    }elseif($toLower_userType == 'student'){
+                                                                        $user_image_jpg = 'student_user_image.jpg';
+                                                                    }else{
+                                                                        $user_image_jpg = 'disabled_user_image.jpg';
+                                                                    }
+                                                                    $user_image_src = asset('storage/svms/user_images/'.$user_image_jpg);
+                                                                }else{
+                                                                    $user_image_src = asset('storage/svms/user_images/no_student_image.jpg');
+                                                                }
+                                                                $user_image_alt = 'default user'.$sq.'s profile image';
+                                                            }
+                                                            // output user images
+                                                            $output .= '<img class="assignedUsersCirclesImgs2 F4F4F5_border" src="'.$user_image_src.'" alt="'.$user_image_src.'" data-toggle="tooltip" data-placement="top" title="';if(auth()->user()->id === $display_13_emp_users->id){$output .='You';}else{ $output .= ''.$display_13_emp_users->user_fname . ' ' .$display_13_emp_users->user_lname. ' ';} $output .= '">';
                                                         }
                                                         $output .= '
                                                         <div class="moreImgsCounterDiv2" data-toggle="tooltip" data-placement="top" title="'.$more_emp_users_count.' more '; if($more_emp_users_count > 1){ $output .= 'users'; }else{ $output .= 'user'; } $output .='">
@@ -1981,9 +2031,32 @@ class UserManagementController extends Controller
                                                         </div>
                                                         ';
                                                     }else{
-                                                        $get_all_assigned_emp_users = Users::select('id', 'user_image', 'user_lname', 'user_fname')->where('user_role', $emp_type_role->uRole)->get();
+                                                        $get_all_assigned_emp_users = Users::select('id', 'user_status', 'user_type', 'user_image', 'user_lname', 'user_fname')->where('user_role', $emp_type_role->uRole)->get();
                                                         foreach($get_all_assigned_emp_users->sortBy('id') as $assigned_emp_user){
-                                                            $output .= '<img class="assignedUsersCirclesImgs2 F4F4F5_border" src="'.asset('storage/svms/user_images/'.$assigned_emp_user->user_image).'" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="';if(auth()->user()->id === $assigned_emp_user->id){$output .='You';}else{ $output .= ''.$assigned_emp_user->user_fname . ' ' .$assigned_emp_user->user_lname. ' ';} $output .= '">';
+                                                            // to lower case
+                                                            $toLower_userStatus = Str::lower($assigned_emp_user->user_status);
+                                                            $toLower_userType = Str::lower($assigned_emp_user->user_type);
+                                                            // users image
+                                                            if(!is_null($assigned_emp_user->user_image) OR !empty($assigned_emp_user->user_image)){
+                                                                $user_image_src = asset('storage/svms/user_images/'.$assigned_emp_user->user_image);
+                                                                $user_image_alt = $assigned_emp_user->user_fname . ' ' . $assigned_emp_user->user_lname.''.$sq.'s profile image';
+                                                            }else{
+                                                                if($toLower_userStatus == 'active'){
+                                                                    if($toLower_userType == 'employee'){
+                                                                        $user_image_jpg = 'employee_user_image.jpg';
+                                                                    }elseif($toLower_userType == 'student'){
+                                                                        $user_image_jpg = 'student_user_image.jpg';
+                                                                    }else{
+                                                                        $user_image_jpg = 'disabled_user_image.jpg';
+                                                                    }
+                                                                    $user_image_src = asset('storage/svms/user_images/'.$user_image_jpg);
+                                                                }else{
+                                                                    $user_image_src = asset('storage/svms/user_images/no_student_image.jpg');
+                                                                }
+                                                                $user_image_alt = 'default user'.$sq.'s profile image';
+                                                            }
+                                                            // output user images
+                                                            $output .= '<img class="assignedUsersCirclesImgs2 F4F4F5_border" src="'.$user_image_src.'" alt="'.$user_image_alt.'" data-toggle="tooltip" data-placement="top" title="';if(auth()->user()->id === $assigned_emp_user->id){$output .='You';}else{ $output .= ''.$assigned_emp_user->user_fname . ' ' .$assigned_emp_user->user_lname. ' ';} $output .= '">';
                                                         }
                                                     }
                                                 $output .= '
@@ -2005,7 +2078,7 @@ class UserManagementController extends Controller
                                     <button class="btn btn-block custom2_btn_collapse cb_x12y20 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#studTypeRolesCollapse_Div" aria-expanded="true" aria-controls="studTypeRolesCollapse_Div">
                                         <div>
                                             <span class="li_info_title">Student Type Roles</span>
-                                            <span class="li_info_subtitle">'.$count_all_stud_type_roles.' System '; if($count_all_stud_type_roles > 1){ $output .= ' Roles '; }else{ $output .= ' Role '; } $output .= ' Found</span>
+                                            <span class="li_info_subtitle">'.$count_all_stud_type_roles.' System '; if($count_all_stud_type_roles > 1){ $output .= ' Users '; }else{ $output .= ' User '; } $output .= ' Found</span>
                                         </div>
                                         <i class="nc-icon nc-minimal-down"></i>
                                     </button>
@@ -2029,10 +2102,33 @@ class UserManagementController extends Controller
                                                 </div>
                                                 <div class="assignedUsersCirclesDiv">';
                                                     if($count_assigned_stud_users > 14){
-                                                        $get_only_14_emp_users = Users::select('id', 'user_image', 'user_lname', 'user_fname')->where('user_role', $stud_type_role->uRole)->take(13)->get();
+                                                        $get_only_14_emp_users = Users::select('id', 'user_status', 'user_type', 'user_image', 'user_lname', 'user_fname')->where('user_role', $stud_type_role->uRole)->take(13)->get();
                                                         $more_stud_users_count = $count_assigned_stud_users - 13;
                                                         foreach($get_only_14_emp_users->sortBy('id') as $display_13_stud_users){
-                                                            $output .= '<img class="assignedUsersCirclesImgs2 F4F4F5_border" src="'.asset('storage/svms/user_images/'.$display_13_stud_users->user_image).'" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="';if(auth()->user()->id === $display_13_stud_users->id){$output .='You';}else{ $output .= ''.$display_13_stud_users->user_fname . ' ' .$display_13_stud_users->user_lname. ' ';} $output .= '">';
+                                                            // to lower case
+                                                            $toLower_userStatus = Str::lower($display_13_stud_users->user_status);
+                                                            $toLower_userType = Str::lower($display_13_stud_users->user_type);
+                                                            // users image
+                                                            if(!is_null($display_13_stud_users->user_image) OR !empty($display_13_stud_users->user_image)){
+                                                                $user_image_src = asset('storage/svms/user_images/'.$display_13_stud_users->user_image);
+                                                                $user_image_alt = $display_13_stud_users->user_fname . ' ' . $display_13_stud_users->user_lname.''.$sq.'s profile image';
+                                                            }else{
+                                                                if($toLower_userStatus == 'active'){
+                                                                    if($toLower_userType == 'employee'){
+                                                                        $user_image_jpg = 'employee_user_image.jpg';
+                                                                    }elseif($toLower_userType == 'student'){
+                                                                        $user_image_jpg = 'student_user_image.jpg';
+                                                                    }else{
+                                                                        $user_image_jpg = 'disabled_user_image.jpg';
+                                                                    }
+                                                                    $user_image_src = asset('storage/svms/user_images/'.$user_image_jpg);
+                                                                }else{
+                                                                    $user_image_src = asset('storage/svms/user_images/no_student_image.jpg');
+                                                                }
+                                                                $user_image_alt = 'default user'.$sq.'s profile image';
+                                                            }
+                                                            // output user images
+                                                            $output .= '<img class="assignedUsersCirclesImgs2 F4F4F5_border" src="'.$user_image_src.'" alt="'.$user_image_alt.'" data-toggle="tooltip" data-placement="top" title="';if(auth()->user()->id === $display_13_stud_users->id){$output .='You';}else{ $output .= ''.$display_13_stud_users->user_fname . ' ' .$display_13_stud_users->user_lname. ' ';} $output .= '">';
                                                         }
                                                         $output .= '
                                                         <div class="moreImgsCounterDiv2" data-toggle="tooltip" data-placement="top" title="'.$more_stud_users_count.' more '; if($more_stud_users_count > 1){ $output .= 'users'; }else{ $output .= 'user'; } $output .='">
@@ -2040,9 +2136,32 @@ class UserManagementController extends Controller
                                                         </div>
                                                         ';
                                                     }else{
-                                                        $get_all_assigned_stud_users = Users::select('id', 'user_image', 'user_lname', 'user_fname')->where('user_role', $stud_type_role->uRole)->get();
+                                                        $get_all_assigned_stud_users = Users::select('id', 'user_status', 'user_type', 'user_image', 'user_lname', 'user_fname')->where('user_role', $stud_type_role->uRole)->get();
                                                         foreach($get_all_assigned_stud_users->sortBy('id') as $assigned_stud_user){
-                                                            $output .= '<img class="assignedUsersCirclesImgs2 F4F4F5_border" src="'.asset('storage/svms/user_images/'.$assigned_stud_user->user_image).'" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="';if(auth()->user()->id === $assigned_stud_user->id){$output .='You';}else{ $output .= ''.$assigned_stud_user->user_fname . ' ' .$assigned_stud_user->user_lname. ' ';} $output .= '">';
+                                                            // to lower case
+                                                            $toLower_userStatus = Str::lower($assigned_stud_user->user_status);
+                                                            $toLower_userType = Str::lower($assigned_stud_user->user_type);
+                                                            // users image
+                                                            if(!is_null($assigned_stud_user->user_image) OR !empty($assigned_stud_user->user_image)){
+                                                                $user_image_src = asset('storage/svms/user_images/'.$assigned_stud_user->user_image);
+                                                                $user_image_alt = $assigned_stud_user->user_fname . ' ' . $assigned_stud_user->user_lname.''.$sq.'s profile image';
+                                                            }else{
+                                                                if($toLower_userStatus == 'active'){
+                                                                    if($toLower_userType == 'employee'){
+                                                                        $user_image_jpg = 'employee_user_image.jpg';
+                                                                    }elseif($toLower_userType == 'student'){
+                                                                        $user_image_jpg = 'student_user_image.jpg';
+                                                                    }else{
+                                                                        $user_image_jpg = 'disabled_user_image.jpg';
+                                                                    }
+                                                                    $user_image_src = asset('storage/svms/user_images/'.$user_image_jpg);
+                                                                }else{
+                                                                    $user_image_src = asset('storage/svms/user_images/no_student_image.jpg');
+                                                                }
+                                                                $user_image_alt = 'default user'.$sq.'s profile image';
+                                                            }
+                                                            // output user images
+                                                            $output .= '<img class="assignedUsersCirclesImgs2 F4F4F5_border" src="'.$user_image_src.'" alt="'.$user_image_alt.'" data-toggle="tooltip" data-placement="top" title="';if(auth()->user()->id === $assigned_stud_user->id){$output .='You';}else{ $output .= ''.$assigned_stud_user->user_fname . ' ' .$assigned_stud_user->user_lname. ' ';} $output .= '">';
                                                         }
                                                     }
                                                 $output .= '
@@ -2058,7 +2177,7 @@ class UserManagementController extends Controller
                         </div>
                     </div>  
                 </div>
-                <form action="'.route('user_management.create_new_system_role').'" class="form" enctype="multipart/form-data" method="POST" onsubmit="submit_newSystemRole_btn.disabled = true; return true;">
+                <form id="form_addNewRoleModal" action="'.route('user_management.create_new_system_role').'" class="form" enctype="multipart/form-data" method="POST">
                     <div class="modal-body pb-0">
                         <div class="card-body lightBlue_cardBody shadow-none">
                             <label for="create_role_name">Role Name</label>
@@ -2130,8 +2249,8 @@ class UserManagementController extends Controller
                         <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
                         <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
                         <div class="btn-group" role="group" aria-label="Basic example">
-                            <button id="'.$get_prev_user_id.'" onclick="changeUserRole(this.id)" type="button" class="btn btn-round btn-success btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
-                            <button id="submit_newSystemRole_btn" type="submit" class="btn btn-round btn_svms_blue btn_show_icon m-0">Save New Role <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                            <button id="'.$get_prev_user_id.'" onclick="changeUserRole(this.id)" type="button" class="btn btn-round btn-success btn_show_icon m-0 cancel_newSystemRole_btn" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                            <button disabled id="submit_newSystemRole_btn" type="submit" class="btn btn-round btn_svms_blue btn_show_icon m-0"> Save New Role <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
                         </div>
                     </div>
                 </form>
@@ -2684,12 +2803,39 @@ class UserManagementController extends Controller
             $get_user_details_tbl = Users::where('id', $get_selected_user_id)->first();
             $get_user_email       = $get_user_details_tbl->email;
             $get_user_role        = $get_user_details_tbl->user_role;
+            $get_user_status      = $get_user_details_tbl->user_status;
             $get_user_type        = $get_user_details_tbl->user_type;
             $get_user_sdca_id     = $get_user_details_tbl->user_sdca_id;
             $get_user_image       = $get_user_details_tbl->user_image;
             $get_user_lname       = $get_user_details_tbl->user_lname;
             $get_user_fname       = $get_user_details_tbl->user_fname;
             $get_user_gender      = $get_user_details_tbl->user_gender;
+
+        // to lower case
+            $toLower_userStatus = Str::lower($get_user_status);
+            $toLower_userType = Str::lower($get_user_type);
+
+        // single quote
+               $sq = "'";
+        // user's image
+            if(!is_null($get_user_image) OR !empty($get_user_image)){
+                $user_image_src = asset('storage/svms/user_images/'.$get_user_image);
+                $user_image_alt = $get_user_fname . ' ' . $get_user_lname.''.$sq.'s profile image';
+            }else{
+                if($toLower_userStatus == 'active'){
+                    if($toLower_userType == 'employee'){
+                        $user_image_jpg = 'employee_user_image.jpg';
+                    }elseif($toLower_userType == 'student'){
+                        $user_image_jpg = 'student_user_image.jpg';
+                    }else{
+                        $user_image_jpg = 'disabled_user_image.jpg';
+                    }
+                    $user_image_src = asset('storage/svms/user_images/'.$user_image_jpg);
+                }else{
+                    $user_image_src = asset('storage/svms/user_images/no_student_image.jpg');
+                }
+                $user_image_alt = 'default user'.$sq.'s profile image';
+            }
 
         $output = '';
         $output .= '
@@ -2712,7 +2858,7 @@ class UserManagementController extends Controller
                                 <button class="btn btn-block custom2_btn_collapse d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#deactivateStudUserAccountCollapse_Div'.$get_selected_user_id.'" aria-expanded="true" aria-controls="deactivateStudUserAccountCollapse_Div'.$get_selected_user_id.'">
                                     <div class="d-flex justify-content-start align-items-center">
                                         <div class="display_user_image_div text-center">
-                                            <img class="display_user_image studImg_border shadow-sm" src="'.asset('storage/svms/user_images/'.$get_user_image).'" alt="student user profile">
+                                            <img class="display_user_image studImg_border shadow-sm" src="'.$user_image_src.'" alt="'.$user_image_alt.'">
                                         </div>
                                         <div class="information_div">
                                             <span class="li_info_title">'.$get_user_fname. ' ' .$get_user_lname.'</span>
@@ -2758,7 +2904,7 @@ class UserManagementController extends Controller
                                 <button class="btn btn-block custom2_btn_collapse d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#deactivateEmpUserAccountCollapse_Div'.$get_selected_user_id.'" aria-expanded="true" aria-controls="deactivateEmpUserAccountCollapse_Div'.$get_selected_user_id.'">
                                     <div class="d-flex justify-content-start align-items-center">
                                         <div class="display_user_image_div text-center">
-                                            <img class="display_user_image empImg_border shadow-sm" src="'.asset('storage/svms/user_images/'.$get_user_image).'" alt="student user profile">
+                                            <img class="display_user_image empImg_border shadow-sm" src="'.$user_image_src.'" alt="'.$user_image_alt.'">
                                         </div>
                                         <div class="information_div">
                                             <span class="li_info_title">'.$get_user_fname. ' ' .$get_user_lname.'</span>
@@ -2794,7 +2940,7 @@ class UserManagementController extends Controller
                     </div>
                 </div>
             </div>
-            <form action="'.route('user_management.process_deactivate_user_account').'" class="deacivateUserAccountConfirmationForm" method="POST">
+            <form id="form_deactivateUserAccount" action="'.route('user_management.process_deactivate_user_account').'" class="deacivateUserAccountConfirmationForm" method="POST">
                 <div class="modal-body pb-0">
                     <div class="card-body lightRed_cardBody shadow-none">
                         <span class="lightRed_cardBody_notice"><i class="fa fa-lock" aria-hidden="true"></i> <span class="font-weight-bold"> ' .$get_user_fname. ' ' .$get_user_lname. ' </span> will no longer be able to access the system effective immediately after account deactivation.</span>
@@ -2812,9 +2958,9 @@ class UserManagementController extends Controller
                     <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
                     <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
                     <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
-                    <div class="btn-group" role="group" aria-label="Basic example">
-                        <button type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
-                        <button type="submit" class="btn btn-round btn_svms_red btn_show_icon m-0">Deactivate this Account <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                    <div class="btn-group" role="group" aria-label="actions">
+                        <button id="cancel_deactivateUserAccountBtn" type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                        <button id="submit_deactivateUserAccountBtn" type="submit" class="btn btn-round btn_svms_red btn_show_icon m-0">Deactivate this Account <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
                     </div>
                 </div>
             </form>
@@ -2911,6 +3057,30 @@ class UserManagementController extends Controller
         // custom values
             $sq = "'";
 
+        // to lower case
+            $toLower_userStatus = Str::lower($get_user_status);
+            $toLower_userType = Str::lower($get_user_type);
+
+        // user's image
+            if(!is_null($get_user_image) OR !empty($get_user_image)){
+                $user_image_src = asset('storage/svms/user_images/'.$get_user_image);
+                $user_image_alt = $get_user_fname . ' ' . $get_user_lname.''.$sq.'s profile image';
+            }else{
+                if($toLower_userStatus == 'active'){
+                    if($toLower_userType == 'employee'){
+                        $user_image_jpg = 'employee_user_image.jpg';
+                    }elseif($toLower_userType == 'student'){
+                        $user_image_jpg = 'student_user_image.jpg';
+                    }else{
+                        $user_image_jpg = 'disabled_user_image.jpg';
+                    }
+                    $user_image_src = asset('storage/svms/user_images/'.$user_image_jpg);
+                }else{
+                    $user_image_src = asset('storage/svms/user_images/no_student_image.jpg');
+                }
+                $user_image_alt = 'default user'.$sq.'s profile image';
+            }
+
         $output = '';
         $output .= '
         <div class="modal-body border-0 p-0">
@@ -2932,7 +3102,7 @@ class UserManagementController extends Controller
                                 <button class="btn btn-block custom2_btn_collapse d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#activateStudUserAccountCollapse_Div'.$get_selected_user_id.'" aria-expanded="true" aria-controls="activateStudUserAccountCollapse_Div'.$get_selected_user_id.'">
                                     <div class="d-flex justify-content-start align-items-center">
                                         <div class="display_user_image_div text-center">
-                                            <img class="display_user_image studImg_border shadow-sm" src="'.asset('storage/svms/user_images/'.$get_user_image).'" alt="student user profile">
+                                            <img class="display_user_image studImg_border shadow-sm" src="'.$user_image_src.'" alt="'.$user_image_alt.'">
                                         </div>
                                         <div class="information_div">
                                             <span class="li_info_title">'.$get_user_fname. ' ' .$get_user_lname.'</span>
@@ -2978,7 +3148,7 @@ class UserManagementController extends Controller
                                 <button class="btn btn-block custom2_btn_collapse d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#activateEmpUserAccountCollapse_Div'.$get_selected_user_id.'" aria-expanded="true" aria-controls="activateEmpUserAccountCollapse_Div'.$get_selected_user_id.'">
                                     <div class="d-flex justify-content-start align-items-center">
                                         <div class="display_user_image_div text-center">
-                                            <img class="display_user_image empImg_border shadow-sm" src="'.asset('storage/svms/user_images/'.$get_user_image).'" alt="student user profile">
+                                            <img class="display_user_image empImg_border shadow-sm" src="'.$user_image_src.'" alt="'.$user_image_alt.'">
                                         </div>
                                         <div class="information_div">
                                             <span class="li_info_title">'.$get_user_fname. ' ' .$get_user_lname.'</span>

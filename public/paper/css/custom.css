@@ -1548,6 +1548,14 @@ a.text_svms_gray:hover {
   padding: 0 !important;
   margin: 0;
 }
+.cust_accordion_div2:first-child{
+  border-top-left-radius: 12px !important;
+  border-top-right-radius: 12px !important;
+}
+.cust_accordion_div2:last-child{
+  border-bottom-left-radius: 12px !important;
+  border-bottom-right-radius: 12px !important;
+}
 .custom_accordion_card{
   border-bottom: 1px solid #F8F9FA !important;
   margin: 0;

@@ -185,7 +185,21 @@
                         Student Violation Management System: {{ $query_sel_user->user_fname }} {{ $query_sel_user->user_lname}}'s Logs History
                     </td>
                     <td class="_page">
-                        Page <span class="_current_page"></span> of <span class="_total_page"></span> 
+                        {{-- Page <span class="_current_page"></span> of <span class="_total_page"></span>  --}}
+                        <script type="text/php">
+                            if (isset($pdf)) {
+                                $x = 511;
+                                $y = 821;
+                                $text = "Page {PAGE_NUM} of {PAGE_COUNT}";
+                                $font = null;
+                                $size = 9;
+                                $color = array(248,231,231);
+                                $word_space = 0.0;  //  default
+                                $char_space = 0.0;  //  default
+                                $angle = 0.0;   //  default
+                                $pdf->page_text($x, $y, $text, $font, $size, $color, $word_space, $char_space, $angle);
+                            }
+                        </script>
                     </td>
                 </tr>
             </table>
@@ -252,8 +266,10 @@
 
             <br>
 
-            <p class="notice">Below records are {{ $query_sel_user->user_fname }} {{ $query_sel_user->user_lname}}'s Activity Logs from accessing the Student Violation Management System.</p>
+            <p class="notice">Below records are {{ $query_sel_user->user_fname }} {{ $query_sel_user->user_lname}}'s Activity Logs retrieved from the Student Violation Management System.</p>
 
+            <br>
+            
             <table id="contentsData_table">
                 <thead>
                     <tr>
