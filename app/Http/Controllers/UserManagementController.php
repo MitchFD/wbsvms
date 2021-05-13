@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Mail\Mailable;
 use PDF;
+use Dompdf;
 
 class UserManagementController extends Controller
 {
@@ -235,10 +236,15 @@ class UserManagementController extends Controller
     // generate PDF = user's logs 
     public function pdf_user_logs($ual_user_id, $ual_rangefrom, $ual_rangeTo, $ual_category){
         // custom values
+        $now_timestamp = now();
         $output = '';
         // to lower values
         $toLower_category = Str::lower($ual_category);
-        // query
+        // query selected user's info
+        $query_sel_user = Users::select('user_role','user_lname', 'user_fname')->where('id', $ual_user_id)->first();
+        // query responsible user info
+        $query_respo_user = Users::select('user_role','user_lname', 'user_fname')->where('id', auth()->user()->id)->first();
+        // query user's activity logs
         $query_user_logs = Useractivites::where('act_respo_user_id', $ual_user_id)
                     ->where(function($query) use ($ual_rangefrom, $ual_rangeTo, $ual_category, $toLower_category){
                         if($ual_category != 0 OR !empty($ual_category)){
@@ -252,23 +258,44 @@ class UserManagementController extends Controller
                     ->get();
         // count query
         $count_query_user_logs = count($query_user_logs);
-        if($count_query_user_logs > 0){
-            foreach($query_user_logs as $this_logs){
-                $output .= ''.$this_logs.'<br/>';
-            }
+        // display categories
+        if($ual_category != 0 OR !empty($ual_category)){
+            $display_category = ucwords($ual_category) . ' Histories.';
         }else{
-            $output .= 'No Records Found!';
+            $query_SelCategories = Useractivites::select('act_type')->where('act_respo_user_id', $ual_user_id)->groupBy('act_type')->get();
+            $this_categoryArray = array();
+            $count_displayCategory = count($query_SelCategories);
+            $i = 0;
+            foreach($query_SelCategories as $this_category){
+                $this_categoryArray[] = ucwords($this_category->act_type);
+                $i++;
+            }
+            if($i === $count_displayCategory) {
+                $addTxt = 'Histories.';
+            }
+            $display_category =  implode(', ', $this_categoryArray) . ' ' . $addTxt;
         }
-        // $output .= 'user id: ' . $ual_user_id . ' <br/>';
-        // $output .= 'range from: ' . $ual_rangefrom . ' <br/>';
-        // $output .= 'range to: ' . $ual_rangeTo . ' <br/>';
-        // $output .= 'category: ' . $ual_category . ' <br/>';
+        // display date range
+        if($ual_rangefrom != 0 AND $ual_rangeTo != 0){
+            $display_date_range1 = date('F d, Y', strtotime($ual_rangefrom));
+            $display_date_range2 = date('(D - g:i A)', strtotime($ual_rangefrom));
+            $display_date_range3 = date('F d, Y', strtotime($ual_rangeTo));
+            $display_date_range4 = date('(D - g:i A)', strtotime($ual_rangeTo));
+        }else{
+            // get user's first and latest record
+            $user_first_record = Useractivites::where('act_respo_user_id', $ual_user_id)->first();
+            $user_latest_record = Useractivites::where('act_respo_user_id', $ual_user_id)->latest()->first();
+            $display_date_range1 = date('F d, Y', strtotime($user_first_record->created_at));
+            $display_date_range2 = date('(D - g:i A)', strtotime($user_first_record->created_at));
+            $display_date_range3 = date('F d, Y', strtotime($user_latest_record->created_at));
+            $display_date_range4 = date('(D - g:i A)', strtotime($user_latest_record->created_at));
+        }
         // generate pdf
         $pdf = \App::make('dompdf.wrapper');
         // $pdf->loadHTML($output);
-        $show = $query_user_logs;
-        $pdf = PDF::loadView('pdfs/user_logs_pdf', compact('show'));
-        return $pdf->stream('pdfs/user_logs_pdf');
+        $pdf = PDF::loadView('pdfs/user_logs_pdf', compact('query_user_logs', 'now_timestamp', 'query_respo_user', 'query_sel_user', 'display_category', 'display_date_range1', 'display_date_range2', 'display_date_range3', 'display_date_range4'));
+        $pdf->setPaper('A4');
+        return $pdf->stream('pdfs/user_logs_pdf.pdf');
     }
 
     // live search filter for system users table

@@ -787,6 +787,7 @@
                             <div class="col-lg-12 col-md-12 col-sm-12">
                                 <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray2">
                                     <div class="card-body">
+                                        @csrf
                                         <div class="row">
                                             @php
                                                 // date formats for #userActLogsFiltr_datepickerRange placeholder
@@ -877,7 +878,7 @@
                             <div class="col-lg-6 col-md-6 col-sm-12 d-flex justify-content-end align-items-center">
                                 @csrf
                                 <input type="hidden" name="ual_dateRangePicker_minDate" id="ual_dateRangePicker_minDate" value="{{$user_first_record_date}}">
-                                <input type="hidden" name="ual_dateRangePicker_maxDate" id="ual_dateRangePicker_maxDate" value="{{$user_latest_record_date}}">
+                                <input type="hidden" name="ual_dateRangePicker_maxDate" id="ual_dateRangePicker_maxDate" value="{{$user_latest_record->created_at}}">
                                 <input type="hidden" name="ual_hidden_page" id="ual_hidden_page" value="1" />
                                 <input type="hidden" name="ual_user_id" id="ual_user_id" value="{{$user_data->id}}" />
                                 <div id="ual_tablePagination">
@@ -1492,12 +1493,12 @@
                         $('#uac_hiddenTotalData_found').val(ual_data.ual_total_data_found);
 
                         // for disabling/ enabling generate report button
-                        // var violationRecs_totalData = document.getElementById("al_hiddenTotalData_found").value;
-                        // if(violationRecs_totalData > 0){
-                        //     $('#generateViolationRecs_btn').prop('disabled', false);
-                        // }else{
-                        //     $('#generateViolationRecs_btn').prop('disabled', true);
-                        // }
+                        var val_hiddenTotalData_found = document.getElementById("uac_hiddenTotalData_found").value;
+                        if(val_hiddenTotalData_found > 0){
+                            $('#generateActLogs_btn').prop('disabled', false);
+                        }else{
+                            $('#generateActLogs_btn').prop('disabled', true);
+                        }
                     }
                 });
 
@@ -1511,16 +1512,16 @@
 
             // daterange picker
                 var ualMinDate = document.getElementById("ual_dateRangePicker_minDate").value;
-                var vMaxDate = document.getElementById("ual_dateRangePicker_maxDate").value;
-                // console.log(ualMinDate);
-                // console.log(vMaxDate);
+                var ualMaxDate = document.getElementById("ual_dateRangePicker_maxDate").value;
+                console.log(ualMinDate);
+                console.log(ualMaxDate);
                 $('#userActLogsFiltr_datepickerRange').daterangepicker({
                     timePicker: true,
                     showDropdowns: true,
+                    minDate: ualMinDate,
+                    maxDate: new Date(),
                     minYear: ualMinDate,
                     maxYear: parseInt(moment().format('YYYY'),10),
-                    maxDate: vMaxDate,
-                    minDate: ualMinDate,
                     drops: 'down',
                     opens: 'right',
                     autoUpdateInput: false,
