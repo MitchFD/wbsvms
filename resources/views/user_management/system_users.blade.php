@@ -413,7 +413,8 @@
                                                                                     $user_imgJpgFile = 'disabled_user_image.jpg';
                                                                                 }
                                                                             }
-                                                                            ?><img class="assignedUsersCirclesImgs2 whiteImg_border1" src="{{asset('storage/svms/user_images/'.$user_imgJpgFile)}}" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="@if(auth()->user()->id === $display_8userImgs->id) You @else {{$display_8userImgs->user_fname. ' ' .$display_8userImgs->user_lname}} @endif"> <?php
+                                                                            
+                                                                            ?><img id="{{$display_8userImgs->id}}" class="assignedUsersCirclesImgs2 whiteImg_border1 cursor_pointer" src="{{asset('storage/svms/user_images/'.$user_imgJpgFile)}}" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="@if(auth()->user()->id === $display_8userImgs->id) You @else {{$display_8userImgs->user_fname. ' ' .$display_8userImgs->user_lname}} @endif"> <?php
                                                                         }
                                                                         ?>
                                                                         <div class="moreImgsCounterDiv2" data-toggle="tooltip" data-placement="top" title="{{$more_count}} more @if($more_count > 1) users @else user @endif">
@@ -437,7 +438,13 @@
                                                                                     $user_imgJpgFile = 'disabled_user_image.jpg';
                                                                                 }
                                                                             }
-                                                                            ?> <img class="assignedUsersCirclesImgs2 whiteImg_border1" src="{{asset('storage/svms/user_images/'.$user_imgJpgFile)}}" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="@if(auth()->user()->id === $assigned_user->id) You @else {{$assigned_user->user_fname. ' ' .$assigned_user->user_lname}} @endif"> <?php
+                                                                            // onclick functions to view user's profiles
+                                                                            if(auth()->user()->id == $assigned_user->id){
+                                                                                $onClickFunct = 'onclick="viewMyProfile(this.id)"';
+                                                                            }else{
+                                                                                $onClickFunct = 'onclick="viewMyUserProfile(this.id)"';
+                                                                            }
+                                                                            ?> <img id="{{$assigned_user->id}}" {{ $onClickFunct }} class="assignedUsersCirclesImgs2 whiteImg_border1 cursor_pointer" src="{{asset('storage/svms/user_images/'.$user_imgJpgFile)}}" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="@if(auth()->user()->id === $assigned_user->id) You @else {{$assigned_user->user_fname. ' ' .$assigned_user->user_lname}} @endif"> <?php
                                                                         }
                                                                     }
                                                                 ?>
@@ -682,6 +689,8 @@
         });
     </script> --}}
 {{-- live search users end --}}
+    
+{{-- filter system users table --}}
     <script>
         $(document).ready(function(){
             load_systemUsers_table();
@@ -733,39 +742,39 @@
             }
 
             // function for ajax table pagination
-            $(window).on('hashchange', function() {
-                if (window.location.hash) {
-                    var page = window.location.hash.replace('#', '');
-                    if (page == Number.NaN || page <= 0) {
-                        return false;
-                    }else{
-                        getData(page);
+                $(window).on('hashchange', function() {
+                    if (window.location.hash) {
+                        var page = window.location.hash.replace('#', '');
+                        if (page == Number.NaN || page <= 0) {
+                            return false;
+                        }else{
+                            getData(page);
+                        }
                     }
-                }
-            });
-            $(document).on('click', '.pagination a', function(event){
-                event.preventDefault();
-                
-                var page = $(this).attr('href').split('page=')[1];
-                $('#su_hidden_page').val(page);
-
-                load_systemUsers_table();
-                getData(page);
-                $('li.page-item').removeClass('active');
-                $(this).parent('li.page-item').addClass('active');
-            });
-            function getData(page){
-                $.ajax(
-                {
-                    url: '?page=' + page,
-                    type: "get",
-                    datatype: "html"
-                }).done(function(data){
-                    location.hash = page;
-                }).fail(function(jqXHR, ajaxOptions, thrownError){
-                    alert('No response from server');
                 });
-            }
+                $(document).on('click', '.pagination a', function(event){
+                    event.preventDefault();
+                    
+                    var page = $(this).attr('href').split('page=')[1];
+                    $('#su_hidden_page').val(page);
+
+                    load_systemUsers_table();
+                    getData(page);
+                    $('li.page-item').removeClass('active');
+                    $(this).parent('li.page-item').addClass('active');
+                });
+                function getData(page){
+                    $.ajax(
+                    {
+                        url: '?page=' + page,
+                        type: "get",
+                        datatype: "html"
+                    }).done(function(data){
+                        location.hash = page;
+                    }).fail(function(jqXHR, ajaxOptions, thrownError){
+                        alert('No response from server');
+                    });
+                }
             // function for ajax table pagination end
 
             // live search
@@ -920,7 +929,22 @@
     </script>
 {{-- filter system users table --}}
 
-{{-- filter system users table --}}
+{{-- view user's profile thru image circles --}}
+    {{-- OWN PROFILE --}}
+    <script>
+        function viewMyProfile(view_my_user_id){
+            var view_my_user_id = view_my_user_id;
+            alert(view_my_user_id);
+        }
+    </script>
+    {{-- USER's PROFILE --}}
+    <script>
+        function viewMyUserProfile(view_user_id){
+            var view_user_id = view_user_id;
+            alert(view_user_id);
+        }
+    </script>
+{{-- view user's profile thru image circles end --}}
 
 {{-- on dropdown change --}}
     <script>

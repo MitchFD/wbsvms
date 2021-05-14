@@ -718,7 +718,7 @@
                 {{-- has offenses found end --}}
                 @else
                 {{-- no offenses found --}}
-                    <div class="row">
+                    <div class="row mb-1">
                         <div class="col-lg-12 col-md-12 col-sm-12">
                             <div class="card card_gbr card_ofh shadow-none cb_p25 card_body_bg_gray" style="margin-bottom: -25px;">
                                 <div class="no_data_div3 d-flex justify-content-center align-items-center text-center flex-column">
@@ -728,6 +728,7 @@
                             </div>
                         </div>
                     </div>
+                    <br>
                 {{-- no offenses found end --}}
                 @endif
 

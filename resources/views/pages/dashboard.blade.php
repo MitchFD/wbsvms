@@ -18,6 +18,56 @@
                 </div>
             </div>
 
+            @php
+                $yearly_offenses = App\Models\Violations::selectRaw('year(recorded_at) year')
+                                                ->groupBy('year')
+                                                ->orderBy('year', 'desc')
+                                                ->get();
+                $count_yearly_offenses = count($yearly_offenses);
+                $yearly_ViolationsArray = array();
+            @endphp
+
+            @if ($count_yearly_offenses > 0)
+                @foreach ($yearly_offenses as $this_year)
+                    @php
+                        $this_yearVal_t = str_replace(array( '{', '}', '"', ':', 'year' ), '', $this_year);
+                        
+                        $this_monthly_offenses = App\Models\Violations::selectRaw('month(recorded_at) month')
+                                                            ->whereYear('recorded_at', $this_yearVal_t)
+                                                            ->groupBy('month')
+                                                            ->orderBy('month', 'desc')
+                                                            ->get();
+                        $count_monthly_offenses = count($this_monthly_offenses); 
+                        $yearly_ViolationsArray[] = $this_yearVal_t;
+                    @endphp
+                    {{$this_yearVal_t}} <br>
+
+                    @if ($count_monthly_offenses > 0)
+                        @php
+                            $monthly_ViolationsArray = array();
+                        @endphp
+                        @foreach ($this_monthly_offenses as $this_month)
+                            @php
+                                $yearly_monthlyVal_t = str_replace(array( '{', '}', '"', ':', 'month' ), '', $this_month);
+                                $dateObj   = DateTime::createFromFormat('!m', $yearly_monthlyVal_t);
+                                $monthName = $dateObj->format('F');
+                                $monthly_ViolationsArray[] = $monthName;
+                            @endphp
+                            {{$monthName}} <br>
+                        @endforeach
+                    @endif
+                @endforeach
+                @php
+                    $toJson_arrayYearlyViolations = json_encode($monthly_ViolationsArray);
+                    $ext_toJson_arrayYearlyViolations = str_replace(array('"'), '', $toJson_arrayYearlyViolations);
+
+                    $toJson_arrayMonthlyViolations = json_encode($yearly_ViolationsArray);
+                    $ext_toJson_arrayMonthlyViolations = str_replace(array('"'), '', $toJson_arrayMonthlyViolations);
+                @endphp
+            @endif
+            {{$ext_toJson_arrayYearlyViolations}}
+            {{$ext_toJson_arrayMonthlyViolations}}
+
             {{-- schools violators counts --}}
             <div class="row">
                 <div class="col-lg-3 col-md-3 col-sm-6">
@@ -26,11 +76,11 @@
                             <img class="dash_cards_img" src="{{asset('storage/svms/sdca_images/schools_logos/sbcs.jpg')}}" alt="SBCS Logo">
                             <div class="dash_cards_text_div">
                                 <span class="dash_card_title">SBCS</span>
-                                <span class="dash_card_count">20</span>
+                                <span class="dash_card_count" id="sbcsViolatorsCount"></span>
                             </div>
                         </div>
                         <div class="card-footer dash_card_footer align-items-center">
-                            <i class="fa fa-user mr-1"></i> 20 violators found
+                            <i class="fa fa-user-o mr-1"></i> <span id="sbcsInfo"></span>
                         </div>
                     </div>
                 </div>
@@ -40,11 +90,11 @@
                             <img class="dash_cards_img" src="{{asset('storage/svms/sdca_images/schools_logos/shsp.jpg')}}" alt="SHSP Logo">
                             <div class="dash_cards_text_div">
                                 <span class="dash_card_title">SHSP</span>
-                                <span class="dash_card_count">32</span>
+                                <span class="dash_card_count" id="shspViolatorsCount"></span>
                             </div>
                         </div>
                         <div class="card-footer dash_card_footer align-items-center">
-                            <i class="fa fa-user mr-1"></i> 31 violators found
+                            <i class="fa fa-user-o mr-1"></i> <span id="shspInfo"></span>
                         </div>
                     </div>
                 </div>
@@ -54,11 +104,11 @@
                             <img class="dash_cards_img" src="{{asset('storage/svms/sdca_images/schools_logos/sihtm.jpg')}}" alt="SIHTM Logo">
                             <div class="dash_cards_text_div">
                                 <span class="dash_card_title">SIHTM</span>
-                                <span class="dash_card_count">15</span>
+                                <span class="dash_card_count" id="sihtmViolatorsCount"></span>
                             </div>
                         </div>
                         <div class="card-footer dash_card_footer align-items-center">
-                            <i class="fa fa-user mr-1"></i> 15 violators found
+                            <i class="fa fa-user-o mr-1"></i> <span id="sihtmInfo"></span>
                         </div>
                     </div>
                 </div>
@@ -68,11 +118,11 @@
                             <img class="dash_cards_img" src="{{asset('storage/svms/sdca_images/schools_logos/sase.jpg')}}" alt="SASE Logo">
                             <div class="dash_cards_text_div">
                                 <span class="dash_card_title">SASE</span>
-                                <span class="dash_card_count">8</span>
+                                <span class="dash_card_count" id="saseViolatorsCount"></span>
                             </div>
                         </div>
                         <div class="card-footer dash_card_footer align-items-center">
-                            <i class="fa fa-user mr-1"></i> 8 violators found
+                            <i class="fa fa-user-o mr-1"></i> <span id="saseInfo"></span>
                         </div>
                     </div>
                 </div>
@@ -85,8 +135,8 @@
                             <div class="card-header p-0" id="schoolsViolatorsGraphCollapseHeading">
                                 <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#schoolsViolatorsGraphCollapseDiv" aria-expanded="true" aria-controls="schoolsViolatorsGraphCollapseDiv">
                                     <div>
-                                        <span class="card_body_title">Statistical Graph</span>
-                                        <span class="card_body_subtitle">View statistical graph of violators per schools.</span>
+                                        <span class="card_body_title">Monthly Violators</span>
+                                        <span class="card_body_subtitle">Monthly Violators Count per School.</span>
                                     </div>
                                     <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
                                 </button>
@@ -97,13 +147,13 @@
                                         <div class="card card_gbr card_ofh shadow">
                                             <div class="card-body">
                                                 <div class="chart-container cust_chart_cointainer">
-                                                    <canvas id="shoolsViolatorsChart" height="80">
+                                                    <canvas id="shoolsViolatorsChart" height="90" style="margin-top: 20px;">
 
                                                     </canvas>
                                                 </div>
                                             </div>
                                             <div class="card-footer dash_card_footer align-items-center">
-                                                <i class="fa fa-user mr-1"></i> 31 violators found
+                                                <i class="fa fa-user-o mr-1"></i> <span id="totalInfo"></span>
                                             </div>
                                         </div>
                                     </div>
@@ -407,70 +457,119 @@
             demo.initChartsPages();
         });
     </script> --}}
-    {{-- schools violators chart --}}
-    <script>    
-        let shoolsViolatorsChart = document.getElementById('shoolsViolatorsChart').getContext('2d');
-        let massPopChart = new Chart(shoolsViolatorsChart, {
-            type: 'line',
-            data: {
-                labels: [
-                    'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'
-                ],
-                datasets: [
-                    {
-                        label: 'SBCS',
-                        data: [0, 15, 18, 20],
-                        fill: true,
-                        backgroundColor: 'rgb(114, 114, 114, 0.04)',
-                        borderColor: '#727272',
-                        hoverBackgroundColor: 'rgb(114, 114, 114, 0.9)',
-                        borderWidth: 2,
-                        Color: '#727272'
-                    },
-                    {
-                        label: 'SHSP',
-                        data: [0, 8, 5, 12],
-                        fill: true,
-                        backgroundColor: 'rgb(0, 113, 58, 0.04)',
-                        borderColor: '#00713A',
-                        hoverBackgroundColor: 'rgb(0, 113, 58, 0.9)',
-                        borderWidth: 2,
-                        Color: '#00713A'
-                    },
-                    {
-                        label: 'SIHTM',
-                        data: [1, 3, 8, 3],
-                        fill: true,
-                        backgroundColor: 'rgb(234, 64, 33, 0.04)',
-                        borderColor: '#EA4021',
-                        hoverBackgroundColor: 'rgb(234, 64, 33, 0.9)',
-                        borderWidth: 2,
-                        Color: '#EA4021'
-                    },
-                    {
-                        label: 'SASE',
-                        data: [20, 6, 19, 5],
-                        fill: true,
-                        backgroundColor: 'rgb(153, 51, 101, 0.04)',
-                        borderColor: '#993365',
-                        hoverBackgroundColor: 'rgb(153, 51, 101, 0.9)',
-                        borderWidth: 2,
-                        Color: '#993365'
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                legend: {
-                    display: true,
-                    labels: {
-                        usePointStyle: true
-                    }
-                },
-                onHover: (event, shoolsViolatorsChart) => {
-                    event.target.style.cursor = shoolsViolatorsChart[0] ? 'pointer' : 'pointer';
+
+    {{-- LOAD DASHBOARD PAGE --}}
+        <script>
+            $(document).ready(function(){
+                load_dashboard_contents();
+
+                function load_dashboard_contents(){
+                    $.ajax({
+                        url:"{{ route('dashboard.load_contents') }}",
+                        method:"GET",
+                        dataType:'json',
+                        success:function(data){
+                            $('#sbcsViolatorsCount').html(data.sbcs_violators_count);
+                            $('#sbcsInfo').html(data.sbcs_S);
+
+                            $('#shspViolatorsCount').html(data.shsp_violators_count);
+                            $('#shspInfo').html(data.shsp_S);
+
+                            $('#sihtmViolatorsCount').html(data.sihtm_violators_count);
+                            $('#sihtmInfo').html(data.sihtm_S);
+
+                            $('#saseViolatorsCount').html(data.sase_violators_count);
+                            $('#saseInfo').html(data.sase_S);
+
+                            $('#totalInfo').html(data.total_S);
+
+                            // console.log(data.sbcs_violators_count);
+                            // console.log(data.shsp_violators_count);
+                            // console.log(data.sihtm_violators_count);
+                            // console.log(data.sase_violators_count);
+
+                            console.log(data.years);
+                            console.log(data.months);
+
+                            // chart
+                            let shoolsViolatorsChart = document.getElementById('shoolsViolatorsChart').getContext('2d');
+                            let massPopChart = new Chart(shoolsViolatorsChart, {
+                                type: 'line',
+                                data: {
+                                    labels: [
+                                        // 'April 2020', 'January 2021', 'February 2021', 'March 2021', 'April 2021', 'May 2021'
+                                        data.months
+                                    ],
+                                    datasets: [
+                                        {
+                                            label: 'SBCS',
+                                            data: [1, 15, 18, 20, 10, 1],
+                                            fill: true,
+                                            backgroundColor: 'rgb(114, 114, 114, 0.04)',
+                                            borderColor: '#727272',
+                                            hoverBackgroundColor: 'rgb(114, 114, 114, 0.9)',
+                                            borderWidth: 2,
+                                            Color: '#727272'
+                                        },
+                                        {
+                                            label: 'SHSP',
+                                            data: [0, 8, 5, 12, 5, 8],
+                                            fill: true,
+                                            backgroundColor: 'rgb(0, 113, 58, 0.04)',
+                                            borderColor: '#00713A',
+                                            hoverBackgroundColor: 'rgb(0, 113, 58, 0.9)',
+                                            borderWidth: 2,
+                                            Color: '#00713A'
+                                        },
+                                        {
+                                            label: 'SIHTM',
+                                            data: [0, 3, 8, 3, 2, 9],
+                                            fill: true,
+                                            backgroundColor: 'rgb(234, 64, 33, 0.04)',
+                                            borderColor: '#EA4021',
+                                            hoverBackgroundColor: 'rgb(234, 64, 33, 0.9)',
+                                            borderWidth: 2,
+                                            Color: '#EA4021'
+                                        },
+                                        {
+                                            label: 'SASE',
+                                            data: [0, 6, 19, 5, 15, 5],
+                                            fill: true,
+                                            backgroundColor: 'rgb(153, 51, 101, 0.04)',
+                                            borderColor: '#993365',
+                                            hoverBackgroundColor: 'rgb(153, 51, 101, 0.9)',
+                                            borderWidth: 2,
+                                            Color: '#993365'
+                                        }
+                                    ]
+                                },
+                                options: {
+                                    responsive: true,
+                                    legend: {
+                                        position: 'bottom',
+                                        display: true,
+                                        labels: {
+                                            usePointStyle: true,
+                                            padding: 30 
+                                        }
+                                    },
+                                    onHover: (event, shoolsViolatorsChart) => {
+                                        event.target.style.cursor = shoolsViolatorsChart[0] ? 'pointer' : 'pointer';
+                                    }
+                                }
+                            });
+                        }
+                        // ,
+                        // complete:function(data){
+                        //     setTimeout(load_dashboard_contents,30000);
+                        // }
+                    });
                 }
-            }
-        });
-    </script>
+                $(document).ready(function(){
+                    setInterval(load_dashboard_contents,30000);
+                });
+            });
+        </script>
+    {{-- LOAD DASHBOARD PAGE end --}}
+
 @endpush

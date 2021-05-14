@@ -29,6 +29,7 @@
   font-size: 13px !important;
 }
 
+
 /* login page */
 .login_bg{
   background-repeat: no-repeat !important;
@@ -3116,9 +3117,13 @@ select.drpdwn_arrow2:focus {
 /* chart customization */
 .cust_chart_cointainer{
   /* position: relative; */
-  height: 50vh;
+  /* height: 50vh;
   width: 79vw;
-  padding: 0;
+  padding: 0; */
+  height: auto !important;
+  width: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 /* custom tag inputs */

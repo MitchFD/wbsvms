@@ -204,8 +204,10 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('student_handbook/index', ['as' => 'student_handbook.index', 'uses' => 'App\Http\Controllers\StudentHandbookController@index']);
 });
 
+// pages
 Route::group(['middleware' => 'auth'], function () {
 	Route::get('{page}', ['as' => 'page.index', 'uses' => 'App\Http\Controllers\PageController@index']);
+	Route::get('dashboard/load_contents', ['as' => 'dashboard.load_contents', 'uses' => 'App\Http\Controllers\PageController@load_contents']);
 });
 
 
