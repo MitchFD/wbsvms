@@ -85,6 +85,11 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('user_management/activate_user_account_modal', 'App\Http\Controllers\UserManagementController@activate_user_account_modal')->name('user_management.activate_user_account_modal');
 	Route::post('user_management/process_activate_user_account', 'App\Http\Controllers\UserManagementController@process_activate_user_account')->name('user_management.process_activate_user_account');
 
+	// deleting user accounts
+	Route::get('user_management/temporary_delete_user_account_modal', 'App\Http\Controllers\UserManagementController@temporary_delete_user_account_modal')->name('user_management.temporary_delete_user_account_modal');
+
+	// load system users table
+	Route::get('user_management/load_system_users_table', 'App\Http\Controllers\UserManagementController@load_system_users_table')->name('user_management.load_system_users_table');
 	// live search filter for (system users)'s table
 	Route::get('user_management/live_search_users_filter', 'App\Http\Controllers\UserManagementController@live_search_users_filter')->name('user_management.live_search_users_filter');
 

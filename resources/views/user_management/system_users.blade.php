@@ -59,7 +59,7 @@
             <div class="col-lg-9 col-md-8 col-sm-12">
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12">
-                        <div class="accordion" id="systemUsersCollapseParent">
+                        <div class="accordion gCardAccordions" id="systemUsersCollapseParent">
                             <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray">
                                 <div class="card-header p-0" id="systemUsersCollapseHeading">
                                     <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#systemUsersCollapseDiv" aria-expanded="true" aria-controls="systemUsersCollapseDiv">
@@ -70,72 +70,77 @@
                                         <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
                                     </button>
                                 </div>
-                                <div id="systemUsersCollapseDiv" class="collapse show cb_t0b15x25" aria-labelledby="systemUsersCollapseHeading" data-parent="#systemUsersCollapseParent">
+                                <div id="systemUsersCollapseDiv" class="collapse gCardAccordions_collapse show cb_t0b15x25" aria-labelledby="systemUsersCollapseHeading" data-parent="#systemUsersCollapseParent">
                                     <div class="row mb-3">
-                                        <div class="col-lg-5 col-md-5 col-sm-12">
-                                            <div class="input-group cust_srchInpt_div">
-                                                <input id="search_user" name="search_user" type="text" class="form-control cust_srchUsersInpt_box" placeholder="Search User" />
-                                                <i class="nc-icon nc-zoom-split" aria-hidden="true"></i>    
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div class="card card_gbr card_ofh shadow-none p-0 m-0 card_body_bg_gray2">
+                                                @csrf
+                                                <div class="card-body">
+                                                    <div class="row mb-3">
+                                                        <div class="col-lg-3 col-md-3 col-sm-6">
+                                                            <div class="form-group m-0 cust_inputDiv_wIconv1">
+                                                                <select id="systemUsersFiltr_userRoles" class="form-control cust_selectDropdownBox1 drpdwn_arrow">
+                                                                    <option value="0" data-default-role="all_roles" selected>All Roles</option>
+                                                                    @php
+                                                                        $query_all_roles = App\Models\Userroles::select('uRole_type', 'uRole')->get();
+                                                                        $count_queryAllRoles = count($query_all_roles);
+                                                                    @endphp
+                                                                    @if($count_queryAllRoles > 0)
+                                                                        @foreach($query_all_roles as $role_option)
+                                                                            <option value="{{Str::lower($role_option->uRole)}}" data-role-type="{{Str::lower($role_option->uRole_type)}}">{{ucwords($role_option->uRole)}}</option>
+                                                                        @endforeach
+                                                                    @endif
+                                                                </select>
+                                                                <i class="nc-icon nc-badge" aria-hidden="true"></i>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-3 col-md-3 col-sm-6">
+                                                            <div class="form-group m-0 cust_inputDiv_wIconv1">
+                                                                <select id="systemUsersFiltr_userTypes" class="form-control cust_selectDropdownBox1 drpdwn_arrow">
+                                                                    <option value="0" selected>All User Types</option>
+                                                                    <option value="employee">Employee Type Users</option>
+                                                                    <option value="student">Student Type Users</option>
+                                                                </select>
+                                                                <i class="nc-icon nc-circle-10" aria-hidden="true"></i>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-3 col-md-3 col-sm-6">
+                                                            <div class="form-group m-0 cust_inputDiv_wIconv1">
+                                                                <select id="systemUsersFiltr_userGenders" class="form-control cust_selectDropdownBox1 drpdwn_arrow">
+                                                                    <option value="0" selected>All Genders</option>
+                                                                    <option value="male">Male</option>
+                                                                    <option value="female">Female</option>
+                                                                </select>
+                                                                <i class="nc-icon nc-single-02" aria-hidden="true"></i>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-3 col-md-3 col-sm-6">
+                                                            <div class="form-group m-0 cust_inputDiv_wIconv1">
+                                                                <select id="systemUsersFiltr_userStatus" class="form-control cust_selectDropdownBox1 drpdwn_arrow">
+                                                                    <option value="0" selected>All Status</option>
+                                                                    <option value="active">Active</option>
+                                                                    <option value="deactivated">Deactivated</option>
+                                                                    <option value="pending">Pending</option>
+                                                                    <option value="deleted">Deleted</option>
+                                                                </select>
+                                                                <i class="fa fa-toggle-off" aria-hidden="true"></i>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-1">
+                                                        <div class="col-lg-5 col-md-5 col-sm-12">
+                                                            <div class="input-group cust_srchInpt_div">
+                                                                <input id="search_user" name="search_user" type="text" class="form-control cust_srchUsersInpt_box" placeholder="Search User" />
+                                                                <i class="nc-icon nc-zoom-split" aria-hidden="true"></i>    
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-7 col-md-7 col-sm-12 d-flex justify-content-end align-items-end">
+                                                            <a href="{{ route('user_management.create_users', 'create_users') }}" class="btn btn-success cust_bt_links shadow" role="button"><i class="nc-icon nc-simple-add mr-1" aria-hidden="true"></i> Create New User</a>
+                                                            <button type="button" id="resetsystemUsersFilter_btn" class="btn btn_svms_blue cust_bt_links shadow ml-1" disabled><i class="fa fa-refresh mr-1" aria-hidden="true"></i> Reset</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-lg-7 col-md-7 col-sm-12 d-flex align-items-center">
-                                            {{-- <span class="usrts_span" id="matched_searches"> </span> --}}
-                                            {{-- <span>Total Data: <span class="font-weight-bold font-italic" id="total_users"> </span> </span> --}}
-        
-                                            {{-- <div class="row">
-                                                <div class="col-lg-3 col-md-3 col-sm-6 pr-0">
-                                                    <div class="form-group cust_fltr_dropdowns_div w-100">
-                                                        @if($count_total_roles > 0)
-                                                            @php
-                                                                $select_sysRoles = App\Models\Userroles::select('uRole_id', 'uRole', 'assUsers_count')->get();
-                                                            @endphp
-                                                            <select class="form-control cust_fltr_dropdowns drpdwn_arrow br_lft_sde">
-                                                                <option selected="all_roles">All Roles</option>
-                                                                @foreach ($select_sysRoles as $option_sysRoles)
-                                                                    <option value="employee_users">{{ucwords($option_sysRoles->uRole)}}@if($option_sysRoles->assUsers_count > 1)s @endif</option>
-                                                                @endforeach
-                                                            </select>
-                                                        @else
-                                                            <select class="form-control cust_fltr_dropdowns drpdwn_arrow br_lft_sde shadow" disabled>
-                                                                <option selected="all">No Roles Found</option>
-                                                            </select>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-3 col-md-3 col-sm-6 px-1">
-                                                    <div class="form-group cust_fltr_dropdowns_div w-100">
-                                                        <select class="form-control cust_fltr_dropdowns drpdwn_arrow">
-                                                            <option selected="all_user_types">All User Types</option>
-                                                            @if($count_employee_users > 0)
-                                                                <option value="employee_users">Employee User<span>@if($count_employee_users > 1)s @endif</span></option>
-                                                            @endif
-                                                            @if($count_student_users > 0)
-                                                                <option value="student_users">Student User<span>@if($count_student_users > 1)s @endif</span></option>
-                                                            @endif
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-3 col-md-3 col-sm-6 pl-0 pr-1">
-                                                    <div class="form-group cust_fltr_dropdowns_div w-100">
-                                                        <select class="form-control cust_fltr_dropdowns drpdwn_arrow">
-                                                            <option selected="all">All Genders</option>
-                                                            <option>Male</option>
-                                                            <option>Female</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-3 col-md-3 col-sm-6 pl-0">
-                                                    <div class="form-group cust_fltr_dropdowns_div w-100">
-                                                        <select class="form-control cust_fltr_dropdowns drpdwn_arrow br_rgt_sde">
-                                                            <option selected="all">All Status</option>
-                                                            <option>Active</option>
-                                                            <option>Deactivated</option>
-                                                            <option>Deleted</option>
-                                                            <option>Pending</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div> --}}
                                         </div>
                                     </div>
                                     <div class="row">
@@ -163,7 +168,12 @@
                                             <span>Total Data: <span class="font-weight-bold" id="total_data_count"> </span> </span>
                                         </div>
                                         <div class="col-lg-6 col-md-6 col-sm-12 d-flex justify-content-end align-items-end">
-                                            <a href="{{ route('user_management.create_users', 'create_users') }}" class="btn btn-success cust_bt_links shadow" role="button"><i class="nc-icon nc-simple-add mr-1" aria-hidden="true"></i> Create New User</a>
+                                            {{-- <a href="{{ route('user_management.create_users', 'create_users') }}" class="btn btn-success cust_bt_links shadow" role="button"><i class="nc-icon nc-simple-add mr-1" aria-hidden="true"></i> Create New User</a> --}}
+                                            @csrf
+                                            <input type="hidden" name="su_hidden_page" id="su_hidden_page" value="1" />
+                                            <div id="su_tablePagination">
+
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -198,7 +208,7 @@
             {{-- mini dash count for users --}}
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12">
-                        <div class="accordion" id="userStatusDisplayCollapseParent">
+                        <div class="accordion gCardAccordions" id="userStatusDisplayCollapseParent">
                             <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray">
                                 <div class="card-header p-0" id="userStatusDisplayCollapseHeading">
                                     <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#userStatusDisplayCollapseDiv" aria-expanded="true" aria-controls="userStatusDisplayCollapseDiv">
@@ -209,7 +219,7 @@
                                         <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
                                     </button>
                                 </div>
-                                <div id="userStatusDisplayCollapseDiv" class="collapse show cb_t0b15x25" aria-labelledby="userStatusDisplayCollapseHeading" data-parent="#userStatusDisplayCollapseParent">
+                                <div id="userStatusDisplayCollapseDiv" class="collapse gCardAccordions_collapse show cb_t0b15x25" aria-labelledby="userStatusDisplayCollapseHeading" data-parent="#userStatusDisplayCollapseParent">
                                     <div class="row mb-2">
                                         <div class="col-lg-12 col-md-12 col-sm-12">
                                             <span class="cust_status_title mb-2">User Types <i class="fa fa-info-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="This system only has two user types: Employee and Student Type Users."></i></span>
@@ -316,11 +326,27 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row mt-3">
-                                        <div class="col-lg-12 col-md-12 col-sm-12">
-                                            <span class="cust_info_txtwicon"><i class="nc-icon nc-circle-10 mr-1" aria-hidden="true"></i> {{ $count_registered_users }} Registered @if($count_registered_users > 1) Users @else User @endif found.</span>
+                                </div>
+                                <div class="card-footer cb_t0b15x25">
+                                    {{-- bottom line --}}
+                                        <div class="row mt-2">
+                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                                <span class="cust_info_txtwicon font-weight-bold"><i class="nc-icon nc-circle-10 mr-1" aria-hidden="true"></i> {{ $count_registered_users }} Registered @if($count_registered_users > 1) Users @else User @endif found.</span>
+                                                @if($count_active_users > 0)
+                                                    <span class="cust_info_txtwicon"><i class="fa fa-toggle-on mr-1" aria-hidden="true"></i> {{ $count_active_users }} Active @if($count_active_users > 1) Users @else User @endif found.</span>
+                                                @endif
+                                                @if($count_deactivated_users > 0)
+                                                    <span class="cust_info_txtwicon"><i class="fa fa-toggle-off mr-1" aria-hidden="true"></i> {{ $count_deactivated_users }} Deactivated @if($count_deactivated_users > 1) Users @else User @endif found.</span>
+                                                @endif
+                                                @if($count_pending_users > 0)
+                                                    <span class="cust_info_txtwicon"><i class="fa fa fa-clock-o mr-1" aria-hidden="true"></i> {{ $count_pending_users }} Pending @if($count_pending_users > 1) Users @else User @endif found.</span>
+                                                @endif
+                                                @if($count_deleted_users > 0)
+                                                    <span class="cust_info_txtwicon"><i class="fa fa-trash-o mr-1" aria-hidden="true"></i> {{ $count_deleted_users }} Deleted @if($count_deleted_users > 1) Users @else User @endif found.</span>
+                                                @endif
+                                            </div>
                                         </div>
-                                    </div>
+                                    {{-- bottom line end --}}
                                 </div>
                             </div>
                         </div>
@@ -330,7 +356,7 @@
             {{-- system roles display --}}
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12">
-                        <div class="accordion" id="systemRolesDisplayCollapseParent">
+                        <div class="accordion gCardAccordions" id="systemRolesDisplayCollapseParent">
                             <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray">
                                 <div class="card-header p-0" id="systemRolesDisplayCollapseHeading">
                                     <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#systemRolesDisplayCollapseDiv" aria-expanded="true" aria-controls="systemRolesDisplayCollapseDiv">
@@ -341,7 +367,7 @@
                                         <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
                                     </button>
                                 </div>
-                                <div id="systemRolesDisplayCollapseDiv" class="collapse show cb_t0b15x25" aria-labelledby="systemRolesDisplayCollapseHeading" data-parent="#systemRolesDisplayCollapseParent">
+                                <div id="systemRolesDisplayCollapseDiv" class="collapse gCardAccordions_collapse show cb_t0b15x25" aria-labelledby="systemRolesDisplayCollapseHeading" data-parent="#systemRolesDisplayCollapseParent">
                                     <div class="row mb-2">
                                         <div class="col-lg-12 col-md-12 col-sm-12">
                                             <span class="cust_status_title">Active System Roles <i class="fa fa-info-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Below System Roles are assigned to specific users for access controls."></i></span>
@@ -609,13 +635,32 @@
         </div>
     {{-- deactivate user account modal end --}}
 
+    {{-- temporary delete user account modal --}}
+        <div class="modal fade" id="temporaryDeleteUserAccountModal" tabindex="-1" role="dialog" aria-labelledby="temporaryDeleteUserAccountModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="temporaryDeleteUserAccountModalLabel">Delete User Account?</span>
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="temporaryDeleteUserAccountModalHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{-- temporary delete user account modal end --}}
+
 @endsection
 
 @push('scripts')
 {{-- live search users --}}
-    <script>
+    {{-- <script>
         $(document).ready(function(){
             fetch_searchUsers_results();
+
             function fetch_searchUsers_results(users_query = ''){
                 $.ajax({
                     url:"{{ route('user_management.live_search_users_filter') }}",
@@ -635,8 +680,247 @@
                 fetch_searchUsers_results(user_query);
             });
         });
-    </script>
+    </script> --}}
 {{-- live search users end --}}
+    <script>
+        $(document).ready(function(){
+            load_systemUsers_table();
+
+            function load_systemUsers_table(){
+                // get all filtered values
+                var su_search = document.getElementById('search_user').value;
+                var su_role = document.getElementById('systemUsersFiltr_userRoles').value;
+                var su_type = document.getElementById('systemUsersFiltr_userTypes').value;
+                var su_gender = document.getElementById('systemUsersFiltr_userGenders').value;
+                var su_status = document.getElementById('systemUsersFiltr_userStatus').value;
+                var page = document.getElementById("su_hidden_page").value;
+
+                console.log('---------------------------');
+                console.log('live search: ' + su_search);
+                console.log('filter Role: ' + su_role);
+                console.log('filter Type: ' + su_type);
+                console.log('filter Gender: ' + su_gender);
+                console.log('filter Status: ' + su_status);
+                console.log('page: ' + page);
+
+                $.ajax({
+                    url:"{{ route('user_management.load_system_users_table') }}",
+                    method:"GET",
+                    data:{
+                        su_search:su_search,
+                        su_role:su_role,
+                        su_type:su_type,
+                        su_gender:su_gender,
+                        su_status:su_status,
+                        page:page
+                    },
+                    dataType:'json',
+                    success:function(data){
+                        $('#sys_users_tbl').html(data.sys_users_tbl_data);
+                        $('#su_tablePagination').html(data.paginate);
+                        $('#total_data_count').text(data.total_data_count);
+                        $('#search_query').text(data.search_query);
+                        $('#matched_searches').text(data.matched_searches);
+                    }
+                });
+
+                // for disabling/ enabling reset filter button
+                if(su_search != '' || su_role != 0 || su_type != 0 || su_gender != 0 || su_status != 0){
+                    $('#resetsystemUsersFilter_btn').prop('disabled', false);
+                }else{
+                    $('#resetsystemUsersFilter_btn').prop('disabled', true);
+                }
+            }
+
+            // function for ajax table pagination
+            $(window).on('hashchange', function() {
+                if (window.location.hash) {
+                    var page = window.location.hash.replace('#', '');
+                    if (page == Number.NaN || page <= 0) {
+                        return false;
+                    }else{
+                        getData(page);
+                    }
+                }
+            });
+            $(document).on('click', '.pagination a', function(event){
+                event.preventDefault();
+                
+                var page = $(this).attr('href').split('page=')[1];
+                $('#su_hidden_page').val(page);
+
+                load_systemUsers_table();
+                getData(page);
+                $('li.page-item').removeClass('active');
+                $(this).parent('li.page-item').addClass('active');
+            });
+            function getData(page){
+                $.ajax(
+                {
+                    url: '?page=' + page,
+                    type: "get",
+                    datatype: "html"
+                }).done(function(data){
+                    location.hash = page;
+                }).fail(function(jqXHR, ajaxOptions, thrownError){
+                    alert('No response from server');
+                });
+            }
+            // function for ajax table pagination end
+
+            // live search
+                $('#search_user').on('keyup', function(){
+                    var liveSearchSystemUsers = $(this).val();
+                    // add style to this input
+                    if(liveSearchSystemUsers != ""){
+                        $(this).addClass('cust_input_hasvalue');
+                    }else{
+                        $(this).removeClass('cust_input_hasvalue');
+                    }
+                    // table paginatin set to 1
+                    $('#su_hidden_page').val(1);
+                    // call load_systemUsers_table()
+                    load_systemUsers_table();
+                });
+            // live search end
+
+            // role filter
+                $('#systemUsersFiltr_userRoles').on('change paste keyup', function(){
+                    var selecteduRole = $(this).val();
+                    // custom var
+                    var employee = 'employee';
+                    var student = 'student';
+                    if(selecteduRole != 0){
+                        $(this).addClass('cust_input_hasvalue');
+                        // hide/show user type filter options based on selected role's uRole_type (employee or student)
+                        var selectedData = $(this).find(':selected').attr('data-role-type');
+                        if(selectedData === employee){
+                            $('#systemUsersFiltr_userTypes').val(employee);
+                        }else if(selectedData === student){
+                            $('#systemUsersFiltr_userTypes').val(student);
+                        }else{
+                            $('#systemUsersFiltr_userTypes').val(0);
+                        }
+                        $('#systemUsersFiltr_userTypes').addClass('cust_input_hasvalue');
+                    }else{
+                        $(this).removeClass('cust_input_hasvalue');
+                        $('#systemUsersFiltr_userTypes').removeClass('cust_input_hasvalue');
+                        $('#systemUsersFiltr_userTypes').val(0);
+                    }
+                    // table paginatin set to 1
+                    $('#su_hidden_page').val(1);
+                    // call load_systemUsers_table()
+                    load_systemUsers_table();
+                });
+            // role filter end
+
+            // user types filter
+                $('#systemUsersFiltr_userTypes').on('change paste keyup', function(){
+                    var selecteduType = $(this).val();
+                    // custom var
+                    var all_roles = 'all_roles';
+                    var employee = 'employee';
+                    var student = 'student';
+                    if(selecteduType != 0){
+                        $(this).addClass('cust_input_hasvalue');
+                        // hide/show user roles filter options based on selected user's uRole_type (employee or student)
+                        if(selecteduType === employee){
+                            $('#systemUsersFiltr_userRoles option[data-role-type="' + employee + '"]').show();
+                            $('#systemUsersFiltr_userRoles option[data-role-type="' + student + '"]').hide();
+                            $('#systemUsersFiltr_userRoles option[data-default-role="' + all_roles + '"]').html('All Employee Type Roles');
+                            $('#systemUsersFiltr_userRoles').val(0);
+                        }else if(selecteduType === student){
+                            $('#systemUsersFiltr_userRoles option[data-role-type="' + employee + '"]').hide();
+                            $('#systemUsersFiltr_userRoles option[data-role-type="' + student + '"]').show();
+                            $('#systemUsersFiltr_userRoles option[data-default-role="' + all_roles + '"]').html('All Student Type Roles');
+                            $('#systemUsersFiltr_userRoles').val(0);
+                        }else{
+                            $('#systemUsersFiltr_userRoles option[data-role-type="' + employee + '"]').hide();
+                            $('#systemUsersFiltr_userRoles option[data-role-type="' + student + '"]').hide();
+                            $('#systemUsersFiltr_userRoles option[data-default-role="' + all_roles + '"]').html('Select User Type');
+                            $('#systemUsersFiltr_userRoles').val(0);
+                        }
+                        $('#systemUsersFiltr_userRoles').addClass('cust_input_hasvalue');
+                    }else{
+                        $(this).removeClass('cust_input_hasvalue');
+                        $('#systemUsersFiltr_userRoles').removeClass('cust_input_hasvalue');
+                        $('#systemUsersFiltr_userRoles').val(0);
+                        $('#systemUsersFiltr_userRoles option[data-default-role="' + all_roles + '"]').html('All Roles');
+                        $('#systemUsersFiltr_userRoles option[data-role-type="' + employee + '"]').show();
+                        $('#systemUsersFiltr_userRoles option[data-role-type="' + student + '"]').show();
+                    }
+                    // table paginatin set to 1
+                    $('#su_hidden_page').val(1);
+                    // call load_systemUsers_table()
+                    load_systemUsers_table();
+                });
+            // user types filter end
+
+            // gender filter
+                $('#systemUsersFiltr_userGenders').on('change paste keyup', function(){
+                    var selectedGender = $(this).val();
+                    if(selectedGender != 0){
+                        $(this).addClass('cust_input_hasvalue');
+                    }else{
+                        $(this).removeClass('cust_input_hasvalue');
+                    }
+                    // table paginatin set to 1
+                    $('#su_hidden_page').val(1);
+                    // call load_systemUsers_table()
+                    load_systemUsers_table();
+                });
+            // gender filter end
+
+            // user status filter
+                $('#systemUsersFiltr_userStatus').on('change paste keyup', function(){
+                    var selecteduStatus = $(this).val();
+                    if(selecteduStatus != 0){
+                        $(this).addClass('cust_input_hasvalue');
+                    }else{
+                        $(this).removeClass('cust_input_hasvalue');
+                    }
+                    // table paginatin set to 1
+                    $('#su_hidden_page').val(1);
+                    // call load_systemUsers_table()
+                    load_systemUsers_table();
+                });
+            // user status filter end
+
+            // reset filter
+                $('#resetsystemUsersFilter_btn').on('click', function(){
+                    var employee = 'employee';
+                    var student = 'student';
+                    var all_roles = 'all_roles';
+                    // table paginatin set to 1
+                    $('#su_hidden_page').val(1);
+                    // set value to search input = ''
+                    document.getElementById("search_user").value = '';
+                    document.getElementById("search_user").classList.remove("cust_input_hasvalue");
+                    // Roles Filter
+                    $('#systemUsersFiltr_userRoles').removeClass('cust_input_hasvalue');
+                    $('#systemUsersFiltr_userRoles').val(0);
+                    $('#systemUsersFiltr_userRoles option[data-default-role="' + all_roles + '"]').html('All Roles');
+                    $('#systemUsersFiltr_userRoles option[data-role-type="' + employee + '"]').show();
+                    $('#systemUsersFiltr_userRoles option[data-role-type="' + student + '"]').show();
+                    // Types Filter
+                    $('#systemUsersFiltr_userTypes').removeClass('cust_input_hasvalue');
+                    $('#systemUsersFiltr_userTypes').val(0);
+                    // Genders Filter
+                    $('#systemUsersFiltr_userGenders').removeClass('cust_input_hasvalue');
+                    $('#systemUsersFiltr_userGenders').val(0);
+                    // Status Filter
+                    $('#systemUsersFiltr_userStatus').removeClass('cust_input_hasvalue');
+                    $('#systemUsersFiltr_userStatus').val(0);
+                    // #resetsystemUsersFilter_btn
+                    $(this).prop('disabled', true);
+                    load_systemUsers_table();
+                });
+            // reset filter end
+        });
+    </script>
+{{-- filter system users table --}}
+
+{{-- filter system users table --}}
 
 {{-- on dropdown change --}}
     <script>
@@ -647,6 +931,24 @@
         });
     </script>
 {{-- on dropdown change end --}}
+
+{{-- delete user account open modal for confirmation --}}
+    <script>
+        function tempDeleteUserAccount(delete_user_id){
+            var delete_user_id = delete_user_id;
+            var _token = $('input[name="_token"]').val();
+            $.ajax({
+                url:"{{ route('user_management.temporary_delete_user_account_modal') }}",
+                method:"GET",
+                data:{delete_user_id:delete_user_id, _token:_token},
+                success: function(data){
+                    $('#temporaryDeleteUserAccountModalHtmlData').html(data); 
+                    $('#temporaryDeleteUserAccountModal').modal('show');
+                }
+            });
+        }
+    </script>
+{{-- delete user account open modal for confirmation --}}
 
 {{-- activate/deactivate user account open modal for confirmation --}}
     <script>

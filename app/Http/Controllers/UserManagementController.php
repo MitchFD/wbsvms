@@ -326,66 +326,68 @@ class UserManagementController extends Controller
                 // output matching users found and total data count
                 if($total_row > 1){
                     $matched_results  = $total_row . ' Match Found for <span class="font-weight-bold font-italic"> ' .$users_query.'...</span>';
-                    $total_data_count = $total_row . ' rows';
+                    $total_data_count = $total_row . ' Users';
                 }else{
                     $matched_results  = $total_row . ' Match Found  for <span class="font-weight-bold font-italic"> ' .$users_query.'...</span>';
-                    $total_data_count = $total_row . ' row';
+                    $total_data_count = $total_row . ' User';
                 }
 
                 // output results
                 foreach($data as $row){
                     // custom classes
                     $apost = "'";
+                    // tolower case user_type
+                    $tolower_uType = Str::lower($row->user_type);
+                    $tolower_uStatus = Str::lower($row->user_status);
+                    $tolower_uRoleStatus = Str::lower($row->user_role_status);
                     // row text filter
-                    if($row->user_status === 'active' AND $row->user_role_status === 'active'){
+                    if($tolower_uStatus === 'active' AND $tolower_uRoleStatus === 'active'){
                         $tr_gray_stat    = '';
-                        $img_rslts_deact = '';
                         $stat_txt_filter = 'text-success';
                         $stat_txt_alt    = 'active';
+                        if($tolower_uType === 'employee'){
+                            $uImg_fltr = 'rslts_emp';
+                        }elseif($tolower_uType === 'student'){
+                            $uImg_fltr = 'rslts_stud';
+                        }else{
+                            $uImg_fltr = 'rslts_unknown';
+                        }
                     }else{
-                        if($row->user_status === 'deactivated' OR $row->user_role_status === 'deactivated'){
+                        if($tolower_uStatus === 'deactivated' OR $tolower_uRoleStatus === 'deactivated'){
                             $tr_gray_stat    = 'gry_stat';
-                            $img_rslts_deact = 'rslts_deact';
                             $stat_txt_filter = 'text_svms_red';
                             $stat_txt_alt    = 'deactivated';
+                            $uImg_fltr       = 'rslts_dele';
                         }else{
-                            if($row->user_role_status === 'deleted'){
+                            if($tolower_uRoleStatus === 'deleted'){
                                 $tr_gray_stat    = 'gry_stat';
-                                $img_rslts_deact = 'rslts_deact';
                                 $stat_txt_filter = 'text_svms_red';
                                 $stat_txt_alt    = 'deleted';
+                                $uImg_fltr       = 'rslts_dele';
                             }else{
                                 $tr_gray_stat    = 'gry_stat';
-                                $img_rslts_deact = 'rslts_deact';
                                 $stat_txt_filter = '';
                                 $stat_txt_alt    = 'pending';
+                                $uImg_fltr       = 'rslts_deact';
                             }
                         }
                     }
-
-                    // tolower case user_type
-                    $tolower_uType = Str::lower($row->user_type);
 
                     // user image handler
                     if(!is_null($row->user_image) OR !empty($row->user_image)){
                         $user_imgJpgFile = $row->user_image;
                     }else{
-                        if($tolower_uType === 'employee'){
-                            $user_imgJpgFile = 'employee_user_image.jpg';
-                        }elseif($tolower_uType === 'student'){
-                            $user_imgJpgFile = 'student_user_image.jpg';
+                        if($tolower_uStatus === 'active'){
+                            if($tolower_uType === 'employee'){
+                                $user_imgJpgFile = 'employee_user_image.jpg';
+                            }elseif($tolower_uType === 'student'){
+                                $user_imgJpgFile = 'student_user_image.jpg';
+                            }else{
+                                $user_imgJpgFile = 'disabled_user_image.jpg';
+                            }
                         }else{
-                            $user_imgJpgFile = 'disabled_user_image.jpg';
+                            $user_imgJpgFile = 'no_student_image.jpg';
                         }
-                    }
-
-                    // user type image filter
-                    if($tolower_uType === 'employee'){
-                        $uImg_fltr = 'rslts_emp';
-                    }elseif($tolower_uType === 'student'){
-                        $uImg_fltr = 'rslts_stud';
-                    }else{
-                        $uImg_fltr = 'rslts_unknown';
                     }
 
                     // custom texts
@@ -394,7 +396,7 @@ class UserManagementController extends Controller
                     $output .='
                         <tr class="'.$tr_gray_stat.'">
                             <td class="pl12">
-                                <img class="rslts_userImgs '.$uImg_fltr.' '.$img_rslts_deact.'" src="'.asset('storage/svms/user_images/'.$user_imgJpgFile).'" alt="'.$row->user_fname . ' ' . $row->user_lname.''.$apost.'s profile image">
+                                <img class="rslts_userImgs ' . $uImg_fltr.'" src="'.asset('storage/svms/user_images/'.$user_imgJpgFile).'" alt="'.$row->user_fname . ' ' . $row->user_lname.''.$apost.'s profile image">
                                 <span class="ml-3">'.preg_replace('/('.$users_query.')/i','<span class="grn_highlight">$1</span>', $row->user_fname). ' ' .preg_replace('/('.$users_query.')/i','<span class="grn_highlight">$1</span>', $row->user_lname).'</span>
                             </td>
                             <td>'.preg_replace('/('.$users_query.')/i','<span class="grn_highlight">$1</span>', ucwords($row->user_sdca_id)).'</td>
@@ -408,24 +410,24 @@ class UserManagementController extends Controller
                                 $output .= '<a href="'. route('profile.index', 'profile') .'" class="btn cust_btn_smcircle3 pt7" data-toggle="tooltip" data-placement="top" title="View Your Profile?"><i class="fa fa-eye" aria-hidden="true"></i></a>';
                             }else{
                                 $output .= '<a href="'. route('user_management.user_profile', $row->id, 'user_profile') .'" class="btn cust_btn_smcircle3 pt7" data-toggle="tooltip" data-placement="top" title="View '.$row->user_fname . ' ' . $row->user_lname.''.$apost.'s Profile?"><i class="fa fa-eye" aria-hidden="true"></i></a>';
-                                if($row->user_role_status === 'active'){
-                                    if($row->user_status === 'active'){
+                                if($tolower_uRoleStatus === 'active'){
+                                    if($tolower_uStatus === 'active'){
                                         $output .= '<button id="'.$row->id.'" class="btn cust_btn_smcircle3" onclick="deactivateUserAccount(this.id)" data-toggle="tooltip" data-placement="top" title="Deactivate '.$row->user_fname . ' ' . $row->user_lname.''.$apost.'s Account"><i class="fa fa-toggle-on" aria-hidden="true"></i></button>';
                                     }else{
-                                        if($row->user_status === 'deactivated'){
+                                        if($tolower_uStatus === 'deactivated'){
                                             $output .= '<button id="'.$row->id.'" class="btn cust_btn_smcircle3" onclick="activateUserAccount(this.id)" data-toggle="tooltip" data-placement="top" title="Activate '.$row->user_fname . ' ' . $row->user_lname.''.$apost.'s Account"><i class="fa fa-toggle-off" aria-hidden="true"></i></button>';
                                         }else{
                                             $output .= '';
                                         }
                                     }
                                 }else{
-                                    if($row->user_role_status === 'deactivated'){
+                                    if($tolower_uRoleStatus === 'deactivated'){
                                         $output .= '<button id="'.$row->id.'" class="btn cust_btn_smcircle3" onclick="activateUserAccount(this.id)" data-toggle="tooltip" data-placement="top" title="Activate '.$row->user_fname . ' ' . $row->user_lname.''.$apost.'s Account"><i class="fa fa-toggle-off" aria-hidden="true"></i></button>';
                                     }else{
                                         $output .= '';
                                     }   
                                 }
-                                $output .= '<button id="'.$row->id.'" class="btn cust_btn_smcircle3" data-toggle="tooltip" data-placement="top" title="Delete '.$row->user_fname . ' ' . $row->user_lname.''.$apost.'s Account"><i class="fa fa-trash" aria-hidden="true"></i></button>';
+                                $output .= '<button id="'.$row->id.'" class="btn cust_btn_smcircle3" onclick="tempDeleteUserAccount(this.id)" data-toggle="tooltip" data-placement="top" title="Delete '.$row->user_fname . ' ' . $row->user_lname.''.$apost.'s Account"><i class="fa fa-trash" aria-hidden="true"></i></button>';
                             }
                             
 
@@ -436,7 +438,7 @@ class UserManagementController extends Controller
                 }
             }else{
                 // output total matched results and total data count
-                $total_data_count = $total_row . ' users';
+                $total_data_count = $total_row . ' Users';
                 $matched_results = 'No Match found for '.$users_query.'...';
                 $output .='
                     <tr class="no_data_row">
@@ -457,6 +459,225 @@ class UserManagementController extends Controller
                );
          
             echo json_encode($data);
+        }
+    }
+    // load system users table
+    public function load_system_users_table(Request $request){
+        if($request->ajax()){
+            // custom values
+            $output    = '';
+            $paginate = '';
+            // get all request
+            $su_search = $request->get('su_search');
+            $su_role   = $request->get('su_role');
+            $su_type   = $request->get('su_type');
+            $su_gender = $request->get('su_gender');
+            $su_status = $request->get('su_status');
+            $page      = $request->get('page');
+
+            if($su_search != ''){
+                $filter_system_users_table = Users::select('id', 'user_role', 'user_status', 'user_role_status', 'user_type', 'user_sdca_id', 'user_image', 'user_lname', 'user_fname', 'user_gender')
+                        ->where(function($query) use ($su_search){
+                            $query->where('user_role', 'like', '%'.$su_search.'%')
+                                ->orWhere('user_status', 'like', '%'.$su_search.'%')
+                                ->orWhere('user_type', 'like', '%'.$su_search.'%')
+                                ->orWhere('user_sdca_id', 'like', '%'.$su_search.'%')
+                                ->orWhere('user_lname', 'like', '%'.$su_search.'%')
+                                ->orWhere('user_fname', 'like', '%'.$su_search.'%')
+                                ->orWhere('user_gender', 'like', '%'.$su_search.'%');
+                        })->where(function($query) use($su_role, $su_type, $su_gender, $su_status){
+                            if($su_role != 0 OR !empty($su_role)){
+                                $query->where('user_role', '=', $su_role);
+                            }
+                            if($su_type != 0 OR !empty($su_type)){
+                                $query->where('user_type', '=', $su_type);
+                            }
+                            if($su_gender != 0 OR !empty($su_gender)){
+                                $query->where('user_gender', '=', $su_gender);
+                            }
+                            if($su_status != 0 OR !empty($su_status)){
+                                $query->where('user_status', '=', $su_status);
+                            }
+                        })
+                        ->orderBy('id', 'asc')
+                        ->paginate(10);
+                $matched_result_txt = ' Matched Record';    
+            }else{
+                $filter_system_users_table = Users::select('id', 'user_role', 'user_status', 'user_role_status', 'user_type', 'user_sdca_id', 'user_image', 'user_lname', 'user_fname', 'user_gender')
+                        ->where(function($query) use($su_role, $su_type, $su_gender, $su_status){
+                            if($su_role != 0 OR !empty($su_role)){
+                                $query->where('user_role', '=', $su_role);
+                            }
+                            if($su_type != 0 OR !empty($su_type)){
+                                $query->where('user_type', '=', $su_type);
+                            }
+                            if($su_gender != 0 OR !empty($su_gender)){
+                                $query->where('user_gender', '=', $su_gender);
+                            }
+                            if($su_status != 0 OR !empty($su_status)){
+                                $query->where('user_status', '=', $su_status);
+                            }
+                        })
+                        ->orderBy('id', 'asc')
+                        ->paginate(10);
+                $matched_result_txt = ' Record';
+            }
+            // total filtered date
+            $count_filtered_result = count($filter_system_users_table);
+            $total_filtered_result = $filter_system_users_table->total();
+            // plural text
+            if($total_filtered_result > 0){
+                if($total_filtered_result > 1){
+                    $s = 's';
+                }else{
+                    $s = '';
+                }
+                $total_matched_results = $filter_system_users_table->firstItem() . ' - ' . $filter_system_users_table->lastItem() . ' of ' . $total_filtered_result . ' ' . $matched_result_txt.''.$s;
+            }else{
+                $s = '';
+                $total_matched_results = 'No Records Found';
+            }
+            $total_row  = $filter_system_users_table->count();
+            if($total_row > 0){
+                // output matching users found and total data count
+                if($total_row > 1){
+                    $matched_results  = $total_row . ' Match Found for <span class="font-weight-bold font-italic"> ' .$su_search    .'...</span>';
+                    $total_data_count = $total_row . ' Users';
+                }else{
+                    $matched_results  = $total_row . ' Match Found  for <span class="font-weight-bold font-italic"> ' .$su_search   .'...</span>';
+                    $total_data_count = $total_row . ' User';
+                }
+
+                // output results
+                foreach($filter_system_users_table as $row){
+                    // custom classes
+                    $apost = "'";
+                    // tolower case user_type
+                    $tolower_uType = Str::lower($row->user_type);
+                    $tolower_uStatus = Str::lower($row->user_status);
+                    $tolower_uRoleStatus = Str::lower($row->user_role_status);
+                    // row text filter
+                    if($tolower_uStatus === 'active' AND $tolower_uRoleStatus === 'active'){
+                        $tr_gray_stat    = '';
+                        $stat_txt_filter = 'text-success';
+                        $stat_txt_alt    = 'active';
+                        if($tolower_uType === 'employee'){
+                            $uImg_fltr = 'rslts_emp';
+                        }elseif($tolower_uType === 'student'){
+                            $uImg_fltr = 'rslts_stud';
+                        }else{
+                            $uImg_fltr = 'rslts_unknown';
+                        }
+                    }else{
+                        if($tolower_uStatus === 'deactivated' OR $tolower_uRoleStatus === 'deactivated'){
+                            $tr_gray_stat    = 'gry_stat';
+                            $stat_txt_filter = 'text_svms_red';
+                            $stat_txt_alt    = 'deactivated';
+                            $uImg_fltr       = 'rslts_dele';
+                        }else{
+                            if($tolower_uRoleStatus === 'deleted'){
+                                $tr_gray_stat    = 'gry_stat';
+                                $stat_txt_filter = 'text_svms_red';
+                                $stat_txt_alt    = 'deleted';
+                                $uImg_fltr       = 'rslts_dele';
+                            }else{
+                                $tr_gray_stat    = 'gry_stat';
+                                $stat_txt_filter = '';
+                                $stat_txt_alt    = 'pending';
+                                $uImg_fltr       = 'rslts_deact';
+                            }
+                        }
+                    }
+                    // user image handler
+                    if(!is_null($row->user_image) OR !empty($row->user_image)){
+                        $user_imgJpgFile = $row->user_image;
+                    }else{
+                        if($tolower_uStatus === 'active'){
+                            if($tolower_uType === 'employee'){
+                                $user_imgJpgFile = 'employee_user_image.jpg';
+                            }elseif($tolower_uType === 'student'){
+                                $user_imgJpgFile = 'student_user_image.jpg';
+                            }else{
+                                $user_imgJpgFile = 'disabled_user_image.jpg';
+                            }
+                        }else{
+                            $user_imgJpgFile = 'no_student_image.jpg';
+                        }
+                    }
+
+                    // custom texts
+                    $deactivated_txt = 'deactivated';
+
+                    $output .='
+                        <tr class="'.$tr_gray_stat.'">
+                            <td class="pl12">
+                                <img class="rslts_userImgs ' . $uImg_fltr.'" src="'.asset('storage/svms/user_images/'.$user_imgJpgFile).'" alt="'.$row->user_fname . ' ' . $row->user_lname.''.$apost.'s profile image">
+                                <span class="ml-3">'.preg_replace('/('.$su_search.')/i','<span class="grn_highlight">$1</span>', $row->user_fname). ' ' .preg_replace('/('.$su_search.')/i','<span class="grn_highlight">$1</span>', $row->user_lname).'</span>
+                            </td>
+                            <td>'.preg_replace('/('.$su_search.')/i','<span class="grn_highlight">$1</span>', ucwords($row->user_sdca_id)).'</td>
+                            <td>'.preg_replace('/('.$su_search.')/i','<span class="grn_highlight">$1</span>', ucwords($row->user_role)).'</td>
+                            <td>'.preg_replace('/('.$su_search.')/i','<span class="grn_highlight">$1</span>', ucwords($row->user_type)).'</td>
+                            <td>'.preg_replace('/('.$su_search.')/i','<span class="grn_highlight">$1</span>', ucwords($row->user_gender)).'</td>
+                            <td class="'.$stat_txt_filter.' font-weight-bold">'.preg_replace('/('.$su_search.')/i','<span class="grn_highlight">$1</span>', ucwords($stat_txt_alt)).'</td>
+                            <td class="text-center pr12">';
+                            // actions
+                            if(auth()->user()->id === $row->id){
+                                $output .= '<a href="'. route('profile.index', 'profile') .'" class="btn cust_btn_smcircle3 pt7" data-toggle="tooltip" data-placement="top" title="View Your Profile?"><i class="fa fa-eye" aria-hidden="true"></i></a>';
+                            }else{
+                                $output .= '<a href="'. route('user_management.user_profile', $row->id, 'user_profile') .'" class="btn cust_btn_smcircle3 pt7" data-toggle="tooltip" data-placement="top" title="View '.$row->user_fname . ' ' . $row->user_lname.''.$apost.'s Profile?"><i class="fa fa-eye" aria-hidden="true"></i></a>';
+                                if($tolower_uRoleStatus === 'active'){
+                                    if($tolower_uStatus === 'active'){
+                                        $output .= '<button id="'.$row->id.'" class="btn cust_btn_smcircle3" onclick="deactivateUserAccount(this.id)" data-toggle="tooltip" data-placement="top" title="Deactivate '.$row->user_fname . ' ' . $row->user_lname.''.$apost.'s Account"><i class="fa fa-toggle-on" aria-hidden="true"></i></button>';
+                                    }else{
+                                        if($tolower_uStatus === 'deactivated'){
+                                            $output .= '<button id="'.$row->id.'" class="btn cust_btn_smcircle3" onclick="activateUserAccount(this.id)" data-toggle="tooltip" data-placement="top" title="Activate '.$row->user_fname . ' ' . $row->user_lname.''.$apost.'s Account"><i class="fa fa-toggle-off" aria-hidden="true"></i></button>';
+                                        }else{
+                                            $output .= '';
+                                        }
+                                    }
+                                }else{
+                                    if($tolower_uRoleStatus === 'deactivated'){
+                                        $output .= '<button id="'.$row->id.'" class="btn cust_btn_smcircle3" onclick="activateUserAccount(this.id)" data-toggle="tooltip" data-placement="top" title="Activate '.$row->user_fname . ' ' . $row->user_lname.''.$apost.'s Account"><i class="fa fa-toggle-off" aria-hidden="true"></i></button>';
+                                    }else{
+                                        $output .= '';
+                                    }   
+                                }
+                                $output .= '<button id="'.$row->id.'" class="btn cust_btn_smcircle3" onclick="tempDeleteUserAccount(this.id)" data-toggle="tooltip" data-placement="top" title="Delete '.$row->user_fname . ' ' . $row->user_lname.''.$apost.'s Account"><i class="fa fa-trash" aria-hidden="true"></i></button>';
+                            }
+                            
+
+                            $output .='
+                            </td>
+                        </tr>
+                    ';
+                }
+            }else{
+                // output total matched results and total data count
+                $total_data_count = $total_row . ' Users';
+                $matched_results = 'No Match found for '.$su_search.'...';
+                $output .='
+                    <tr class="no_data_row">
+                        <td align="center" colspan="7">
+                            <div class="no_data_div d-flex justify-content-center align-items-center text-center flex-column">
+                                <img class="illustration_svg" src="'. asset('storage/svms/illustrations/no_matching_users_found.svg') .'" alt="no matching users found">
+                                <span class="font-italic">No Matching Users Found for <span class="font-weight-bold"> ' .$su_search.'...</span></span>
+                            </div>
+                        </td>
+                    </tr>
+                ';
+            }
+            $paginate .= $filter_system_users_table->links('pagination::bootstrap-4');
+            $data = array(
+                'sys_users_tbl_data' => $output,
+                'paginate'           => $paginate,
+                'total_data_count'   => $total_matched_results,
+                'matched_searches'   => $matched_results,
+                'search_query'       => $su_search
+               );
+         
+            echo json_encode($data);
+        }else{
+            return view('user_management.system_users');
         }
     }
 
@@ -526,7 +747,7 @@ class UserManagementController extends Controller
                                             })
                                             ->orderBy('users_activity_tbl.created_at', 'DESC')
                                             ->paginate(10);
-                    $matched_result_txt = ' Matched Records';
+                    $matched_result_txt = ' Matched Record';
                 }else{
                     $filter_user_logs_table = DB::table('users_activity_tbl')
                                             ->join('users', 'users_activity_tbl.act_respo_user_id', '=', 'users.id')
@@ -3069,13 +3290,21 @@ class UserManagementController extends Controller
                 if($toLower_userStatus == 'active'){
                     if($toLower_userType == 'employee'){
                         $user_image_jpg = 'employee_user_image.jpg';
+                        $img_BorderFilter = 'empImg_border';
                     }elseif($toLower_userType == 'student'){
                         $user_image_jpg = 'student_user_image.jpg';
+                        $img_BorderFilter = 'studImg_border';
                     }else{
                         $user_image_jpg = 'disabled_user_image.jpg';
+                        $img_BorderFilter = 'grayImg_border';
                     }
                     $user_image_src = asset('storage/svms/user_images/'.$user_image_jpg);
                 }else{
+                    if($toLower_userStatus == 'deactivated'){
+                        $img_BorderFilter = 'redImg_border';
+                    }else{
+                        $img_BorderFilter = 'grayImg_border';
+                    }
                     $user_image_src = asset('storage/svms/user_images/no_student_image.jpg');
                 }
                 $user_image_alt = 'default user'.$sq.'s profile image';
@@ -3102,7 +3331,7 @@ class UserManagementController extends Controller
                                 <button class="btn btn-block custom2_btn_collapse d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#activateStudUserAccountCollapse_Div'.$get_selected_user_id.'" aria-expanded="true" aria-controls="activateStudUserAccountCollapse_Div'.$get_selected_user_id.'">
                                     <div class="d-flex justify-content-start align-items-center">
                                         <div class="display_user_image_div text-center">
-                                            <img class="display_user_image studImg_border shadow-sm" src="'.$user_image_src.'" alt="'.$user_image_alt.'">
+                                            <img class="display_user_image ' . $img_BorderFilter . ' shadow-sm" src="'.$user_image_src.'" alt="'.$user_image_alt.'">
                                         </div>
                                         <div class="information_div">
                                             <span class="li_info_title">'.$get_user_fname. ' ' .$get_user_lname.'</span>
@@ -3148,7 +3377,7 @@ class UserManagementController extends Controller
                                 <button class="btn btn-block custom2_btn_collapse d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#activateEmpUserAccountCollapse_Div'.$get_selected_user_id.'" aria-expanded="true" aria-controls="activateEmpUserAccountCollapse_Div'.$get_selected_user_id.'">
                                     <div class="d-flex justify-content-start align-items-center">
                                         <div class="display_user_image_div text-center">
-                                            <img class="display_user_image empImg_border shadow-sm" src="'.$user_image_src.'" alt="'.$user_image_alt.'">
+                                            <img class="display_user_image ' . $img_BorderFilter . ' shadow-sm" src="'.$user_image_src.'" alt="'.$user_image_alt.'">
                                         </div>
                                         <div class="information_div">
                                             <span class="li_info_title">'.$get_user_fname. ' ' .$get_user_lname.'</span>
@@ -3335,6 +3564,186 @@ class UserManagementController extends Controller
         }else{
             return back()->withFailedStatus($get_user_fname. ' ' .$get_user_lname.''.$sq.'s Account Activation Failed! try again later.');
         }
+    }
+    // temporary delete user account modal confirmation
+    public function temporary_delete_user_account_modal(Request $request){
+        // get request
+        $get_selected_user_id = $request->get('delete_user_id');
+        // get user's details from users table
+            $get_user_details_tbl = Users::where('id', $get_selected_user_id)->first();
+            $get_user_email       = $get_user_details_tbl->email;
+            $get_user_role        = $get_user_details_tbl->user_role;
+            $get_user_status      = $get_user_details_tbl->user_status;
+            $get_user_role_status = $get_user_details_tbl->user_role_status;
+            $get_user_type        = $get_user_details_tbl->user_type;
+            $get_user_sdca_id     = $get_user_details_tbl->user_sdca_id;
+            $get_user_image       = $get_user_details_tbl->user_image;
+            $get_user_lname       = $get_user_details_tbl->user_lname;
+            $get_user_fname       = $get_user_details_tbl->user_fname;
+            $get_user_gender      = $get_user_details_tbl->user_gender;
+
+        // his/her txt based on user's gender
+            if($get_user_gender === 'male'){
+                $gender_txt = 'his';
+            }elseif($get_user_gender === 'female'){
+                $gender_txt = 'her';
+            }else{
+                $gender_txt = 'his/her';
+            }
+        
+        // custom values
+            $sq = "'";
+
+        // to lower case
+            $toLower_userStatus = Str::lower($get_user_status);
+            $toLower_userType = Str::lower($get_user_type);
+
+        // user's image
+            if(!is_null($get_user_image) OR !empty($get_user_image)){
+                $user_image_src = asset('storage/svms/user_images/'.$get_user_image);
+                $user_image_alt = $get_user_fname . ' ' . $get_user_lname.''.$sq.'s profile image';
+            }else{
+                if($toLower_userStatus == 'active'){
+                    if($toLower_userType == 'employee'){
+                        $user_image_jpg = 'employee_user_image.jpg';
+                        $img_BorderFilter = 'empImg_border';
+                    }elseif($toLower_userType == 'student'){
+                        $user_image_jpg = 'student_user_image.jpg';
+                        $img_BorderFilter = 'studImg_border';
+                    }else{
+                        $user_image_jpg = 'disabled_user_image.jpg';
+                        $img_BorderFilter = 'grayImg_border';
+                    }
+                    $user_image_src = asset('storage/svms/user_images/'.$user_image_jpg);
+                }else{
+                    if($toLower_userStatus == 'deactivated'){
+                        $img_BorderFilter = 'redImg_border';
+                    }else{
+                        $img_BorderFilter = 'grayImg_border';
+                    }
+                    $user_image_src = asset('storage/svms/user_images/no_student_image.jpg');
+                }
+                $user_image_alt = 'default user'.$sq.'s profile image';
+            }
+
+        // output
+            $output = '';
+            $output .= '
+            <div class="modal-body border-0 p-0">
+                <div class="cust_modal_body_gray">
+                    <div class="accordion shadow cust_accordion_div" id="tempDeleteUserAccountModalAccordion_Parent'.$get_selected_user_id.'">
+                        <div class="card custom_accordion_card">';
+                        if($get_user_type === 'student'){
+                            // get student information from user_students_tbl
+                            $get_stud_info_tbl = Userstudents::where('uStud_num', $get_user_sdca_id)->first();
+                            $get_uStud_school  = $get_stud_info_tbl->uStud_school;
+                            $get_uStud_program = $get_stud_info_tbl->uStud_program;
+                            $get_uStud_yearlvl = $get_stud_info_tbl->uStud_yearlvl;
+                            $get_uStud_section = $get_stud_info_tbl->uStud_section;
+                            $get_uStud_phnum  = $get_stud_info_tbl->uStud_phnum;
+                            // display user's info
+                            $output .= '
+                            <div class="card-header p-0" id="tempDeleteStudUserAccountCollapse_heading'.$get_selected_user_id.'">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-block custom2_btn_collapse d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#tempDeleteStudUserAccountCollapse_Div'.$get_selected_user_id.'" aria-expanded="true" aria-controls="tempDeleteStudUserAccountCollapse_Div'.$get_selected_user_id.'">
+                                        <div class="d-flex justify-content-start align-items-center">
+                                            <div class="display_user_image_div text-center">
+                                                <img class="display_user_image ' . $img_BorderFilter . ' shadow-sm" src="'.$user_image_src.'" alt="'.$user_image_alt.'">
+                                            </div>
+                                            <div class="information_div">
+                                                <span class="li_info_title">'.$get_user_fname. ' ' .$get_user_lname.'</span>
+                                                <span class="li_info_subtitle">'.ucwords($get_user_role).'</span>
+                                            </div>
+                                        </div>
+                                        <i class="nc-icon nc-minimal-down custom2_btn_collapse_icon"></i>
+                                    </button>
+                                </h2>
+                            </div>
+                            <div id="tempDeleteStudUserAccountCollapse_Div'.$get_selected_user_id.'" class="collapse cust_collapse_active cb_t0b12y20" aria-labelledby="tempDeleteStudUserAccountCollapse_heading'.$get_selected_user_id.'" data-parent="#tempDeleteUserAccountModalAccordion_Parent'.$get_selected_user_id.'">
+                                <div class="card-body lightGreen_cardBody mb-2">
+                                    <span class="lightGreen_cardBody_greenTitle m-0">Student Number:</span>
+                                    <span class="lightGreen_cardBody_list mb-1">'.$get_user_sdca_id.'</span>
+                                    <span class="lightGreen_cardBody_greenTitle m-0">School</span>
+                                    <span class="lightGreen_cardBody_list mb-1">'.$get_uStud_school.'</span>
+                                    <span class="lightGreen_cardBody_greenTitle m-0">Year Level</span>
+                                    <span class="lightGreen_cardBody_list mb-1">'.$get_uStud_yearlvl.'</span>
+                                    <span class="lightGreen_cardBody_greenTitle m-0">Program/Year/Section</span>
+                                    <span class="lightGreen_cardBody_list mb-3">'.$get_uStud_program. ' ' .$get_uStud_section.'</span>
+                                    <span class="lightGreen_cardBody_greenTitle m-0">Email Address</span>
+                                    <span class="lightGreen_cardBody_list mb-1">'.$get_user_email.'</span>';
+                                    if(!is_null($get_uStud_phnum)){
+                                        $output .= '
+                                        <span class="lightGreen_cardBody_greenTitle m-0">Phone Number</span>
+                                        <span class="lightGreen_cardBody_list">'.$get_uStud_phnum.'</span>
+                                        ';
+                                    }
+                                    $output .= '
+                                </div>
+                            </div>
+                            ';
+                        }else{
+                            // get employee information from user_employees_tbl
+                            $get_emp_info_tbl = Useremployees::where('uEmp_id', $get_user_sdca_id)->first();
+                            $get_uEmp_job_desc = $get_emp_info_tbl->uEmp_job_desc;
+                            $get_uEmp_dept = $get_emp_info_tbl->uEmp_dept;
+                            $get_uEmp_phnum = $get_emp_info_tbl->uEmp_phnum;
+                            // display user's info
+                            $output .= '
+                            <div class="card-header p-0" id="tempDeleteEmpUserAccountCollapse_heading'.$get_selected_user_id.'">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-block custom2_btn_collapse d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#tempDeleteEmpUserAccountCollapse_Div'.$get_selected_user_id.'" aria-expanded="true" aria-controls="tempDeleteEmpUserAccountCollapse_Div'.$get_selected_user_id.'">
+                                        <div class="d-flex justify-content-start align-items-center">
+                                            <div class="display_user_image_div text-center">
+                                                <img class="display_user_image ' . $img_BorderFilter . ' shadow-sm" src="'.$user_image_src.'" alt="'.$user_image_alt.'">
+                                            </div>
+                                            <div class="information_div">
+                                                <span class="li_info_title">'.$get_user_fname. ' ' .$get_user_lname.'</span>
+                                                <span class="li_info_subtitle">'.ucwords($get_user_role).'</span>
+                                            </div>
+                                        </div>
+                                        <i class="nc-icon nc-minimal-down custom2_btn_collapse_icon"></i>
+                                    </button>
+                                </h2>
+                            </div>
+                            <div id="tempDeleteEmpUserAccountCollapse_Div'.$get_selected_user_id.'" class="collapse cust_collapse_active cb_t0b12y20" aria-labelledby="tempDeleteEmpUserAccountCollapse_heading'.$get_selected_user_id.'" data-parent="#tempDeleteUserAccountModalAccordion_Parent'.$get_selected_user_id.'">
+                                <div class="card-body lightBlue_cardBody mb-2">
+                                    <span class="lightBlue_cardBody_blueTitle m-0">Employee ID:</span>
+                                    <span class="lightBlue_cardBody_list mb-1">'.$get_user_sdca_id.'</span>
+                                    <span class="lightBlue_cardBody_blueTitle m-0">Job Title</span>
+                                    <span class="lightBlue_cardBody_list mb-1">'.$get_uEmp_job_desc.'</span>
+                                    <span class="lightBlue_cardBody_blueTitle m-0">Department</span>
+                                    <span class="lightBlue_cardBody_list mb-3">'.$get_uEmp_dept.'</span>
+                                    <span class="lightBlue_cardBody_blueTitle m-0">Email Address</span>
+                                    <span class="lightBlue_cardBody_list mb-1">'.$get_user_email.'</span>';
+                                    if(!is_null($get_uEmp_phnum)){
+                                        $output .= '
+                                        <span class="lightBlue_cardBody_blueTitle m-0">Phone Number</span>
+                                        <span class="lightBlue_cardBody_list">'.$get_uEmp_phnum.'</span>
+                                        ';
+                                    }
+                                    $output .= '
+                                </div>
+                            </div>
+                            ';
+                        }
+                        $output .= '
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body pb-0">
+                    ';
+                    // check if user has records on users_activity_tbl
+                    $count_has_activity_logs = Useractivites::where('act_respo_user_id', $get_selected_user_id)->count();
+                    if($count_has_activity_logs > 0){
+                        $output .= 'Has Activity Logs';
+                    }else{
+                        $output .= 'No Activity Logs';
+                    }
+                    $output .= '
+                </div>
+            </div>
+            ';
+            return $output;
     }
 
     // FUNCTIONS FOR USER LOGS MODULE
