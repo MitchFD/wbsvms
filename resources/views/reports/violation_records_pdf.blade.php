@@ -110,7 +110,17 @@
                 text-align: center !important;
                 text-transform: capitalize !important;
             }
+            .h4_title{
+                font-weight: bold !important;
+                text-align: center !important;
+                text-transform: capitalize !important;
+            }
             .h3_title{
+                font-weight: bold !important;
+                text-align: center !important;
+                text-transform: capitalize !important;
+            }
+            .h2_title{
                 font-weight: bold !important;
                 text-align: center !important;
                 text-transform: capitalize !important;
@@ -246,8 +256,11 @@
         <div class="content_body">
             <h5 class="h5_title">DEPARTMENT OF STUDENT AFFAIRS AND SERVICES</h5>
             <h5 class="h5_subTitle">STUDENT DISCIPLINE UNIT</h5>
-            <h3 class="h3_title">VIOLATION RECORDS REPORT</h3>
+            <br>
+            <h3 class="h3_title m_0">VIOLATION RECORDS REPORT</h3>
+            <h5 class="h5_subTitle">STUDENT VIOLATION MANAGEMENT SYSTEM</h5>
 
+            <br>
             <br>
 
             <table id="contentsInfo_table">
@@ -261,7 +274,7 @@
                         <td class="txt_right">
                             <span class="font-weight-bold">Date Printed: </span> 
                             {{ date('F d, Y', strtotime($now_timestamp))}} 
-                            <span class="cg">{{ date('(D - g:i A)', strtotime($now_timestamp))}}</span>
+                            <span class="cg">{{ date('(l - g:i A)', strtotime($now_timestamp))}}</span>
                         </td>
                     </tr>
                     <tr>
@@ -304,7 +317,7 @@
                             <span class="font-weight-bold">Year Levels: </span> {{ $txt_YearLevels }}
                         </td>
                         <td>
-
+                            <span class="font-weight-bold">Order By: </span> Date Recorded <span class="cg"> (Ascending) </span>
                         </td>
                     </tr>
                     <tr>
@@ -313,7 +326,7 @@
                         </td>
                         @if($filter_SearchInput != '' OR !empty($filter_SearchInput))
                             <td class="br_1">
-                                <span class="font-weight-bold">Search Filter: </span>
+                                <span class="font-weight-bold">Search Filter: </span> <em>{{ $filter_SearchInput }}...</em>
                             </td>
                         @else
                             <td>
@@ -325,7 +338,7 @@
                         <td class="br_1 pb_10" style="padding-bottom: 15px !important;">
                             <span class="font-weight-bold">Age Range: </span> {{ $txt_AgeRange }}
                         </td>
-                        @if($filter_SearchInput != '' OR !empty($filter_SearchInput))
+                        {{-- @if($filter_SearchInput != '' OR !empty($filter_SearchInput))
                             <td class="br_1" style="padding-bottom: 15px !important;">
                                 <em>{{ $filter_SearchInput }}...</em>
                             </td>
@@ -333,7 +346,10 @@
                             <td style="padding-bottom: 15px !important;">
 
                             </td>
-                        @endif
+                        @endif --}}
+                        <td style="padding-bottom: 15px !important;">
+
+                        </td>
                     </tr>
                     <tr class="tr_bg_DDD">
                         <td class="b_1" colspan="2">

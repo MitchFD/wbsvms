@@ -65,8 +65,8 @@
                     $ext_toJson_arrayMonthlyViolations = str_replace(array('"'), '', $toJson_arrayMonthlyViolations);
                 @endphp
             @endif
-            {{$ext_toJson_arrayYearlyViolations}}
-            {{$ext_toJson_arrayMonthlyViolations}}
+            {{-- {{$ext_toJson_arrayYearlyViolations}}
+            {{$ext_toJson_arrayMonthlyViolations}} --}}
 
             {{-- schools violators counts --}}
             <div class="row">

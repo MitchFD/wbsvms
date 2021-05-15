@@ -3511,3 +3511,47 @@ hr.hr_grn{
 hr.hr_gry{
   border-color: #f5f5f5 !important;
 }
+
+
+/* custom radio button */
+.cust_btn_radio{
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: normal;
+  padding: 10px; 
+  margin: 0;
+  border: none;
+  box-shadow: none;
+  color: #66615b;
+  height: 45px !important;
+  transition: all 0.2s ease-in-out;
+}
+.cust_btn_radio:hover,
+.cust_btn_radio:focus,
+.cust_btn_radio:visited,
+.cust_btn_radio:active{
+  background-color: #242333 !important;
+  color: #fff !important;
+}
+.cust_btn_radio:not(:active){
+  background-color: #fff;
+  color: #66615b;
+}
+.cust_btn_radio:not(:active):hover,
+.cust_btn_radio:not(:active):focus,
+.cust_btn_radio:not(:active):visited,
+.cust_btn_radio:not(:active):active{
+  background-color: #242333 !important;
+  color: #fff !important;
+}
+.cust_btn_radio.active,
+.cust_btn_radio:active{
+  background-color: #242333 !important;
+  color: #fff !important;
+}
+.cbr_i{
+  margin-top: 6px !important;
+}
+.cbr_p{
+  padding: 10px 18.5px !important;
+}

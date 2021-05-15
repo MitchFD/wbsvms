@@ -131,6 +131,14 @@
                         </div>
                     </li>
                 @endif
+                @if(in_array('sanctions', $get_uRole_access))
+                    <li class="{{ $elementActive == 'sanctions' ? 'active' : '' }}">
+                        <a href="{{ route('sanctions.index', 'sanctions') }}">
+                            <i class="nc-icon nc-layout-11"></i>
+                            <p>{{ __('Sanctions') }}</p>
+                        </a>
+                    </li>
+                @endif
                 @if(in_array('student handbook', $get_uRole_access))
                     <li class="{{ $elementActive == 'student_handbook' ? 'active' : '' }}">
                         <a href="{{ route('student_handbook.index', 'student_handbook') }}">
@@ -164,24 +172,24 @@
                         </ul>
                     </div>
                 </li> --}}
-                <li class="{{ $elementActive == 'icons' ? 'active' : '' }}">
+                {{-- <li class="{{ $elementActive == 'icons' ? 'active' : '' }}">
                     <a href="{{ route('page.index', 'icons') }}">
                         <i class="nc-icon nc-diamond"></i>
                         <p>{{ __('Icons') }}</p>
                     </a>
-                </li>
+                </li> --}}
                 {{-- <li class="{{ $elementActive == 'map' ? 'active' : '' }}">
                     <a href="{{ route('page.index', 'map') }}">
                         <i class="nc-icon nc-pin-3"></i>
                         <p>{{ __('Maps') }}</p>
                     </a>
                 </li> --}}
-                <li class="{{ $elementActive == 'notifications' ? 'active' : '' }}">
+                {{-- <li class="{{ $elementActive == 'notifications' ? 'active' : '' }}">
                     <a href="{{ route('page.index', 'notifications') }}">
                         <i class="nc-icon nc-bell-55"></i>
                         <p>{{ __('Notifications') }}</p>
                     </a>
-                </li>
+                </li> --}}
                 {{-- <li class="{{ $elementActive == 'tables' ? 'active' : '' }}">
                     <a href="{{ route('page.index', 'tables') }}">
                         <i class="nc-icon nc-tile-56"></i>

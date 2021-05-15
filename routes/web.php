@@ -207,6 +207,11 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::post('violation_records/report_violations_records', 'App\Http\Controllers\ViolationRecordsController@report_violations_records')->name('violation_records.report_violations_records');
 });
 
+// sanctions
+Route::group(['middleware' => 'auth'], function () {
+	Route::get('sanctions/index', ['as' => 'sanctions.index', 'uses' => 'App\Http\Controllers\SanctionsController@index']);
+});
+
 // student handbook
 Route::group(['middleware' => 'auth'], function () {
 	Route::get('student_handbook/index', ['as' => 'student_handbook.index', 'uses' => 'App\Http\Controllers\StudentHandbookController@index']);

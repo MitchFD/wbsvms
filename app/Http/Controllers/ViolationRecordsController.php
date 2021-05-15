@@ -89,7 +89,7 @@ class ViolationRecordsController extends Controller
                                         }
                                     })
                                     ->orderBy('violations_tbl.recorded_at', 'DESC')
-                                    ->paginate($vr_numRows);
+                                    ->paginate(intval($vr_numRows));
                     $matched_result_txt = ' Matched Records';
                 }else{
                     $fltr_VR_tbl = DB::table('violations_tbl')
@@ -121,7 +121,7 @@ class ViolationRecordsController extends Controller
                                         }
                                     })
                                     ->orderBy('violations_tbl.recorded_at', 'DESC')
-                                    ->paginate($vr_numRows);
+                                    ->paginate(intval($vr_numRows));
                     $matched_result_txt = ' Record';
                 }
                 // total filtered date
@@ -258,7 +258,7 @@ class ViolationRecordsController extends Controller
                         </tr>
                     ';
                 }
-                $vr_paginate .= $fltr_VR_tbl->links('pagination::bootstrap-4');
+                $vr_paginate .= $fltr_VR_tbl->render('pagination::bootstrap-4');
                 $vr_data = array(
                     'vr_table'            => $vr_output,
                     'vr_table_paginate'   => $vr_paginate,

@@ -189,7 +189,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
+                                <div class="row mb-1">
                                     <div class="col-lg-12 col-md-12 col-sm-12">
                                         <input id="violationRecFltr_datepickerRange" name="violationRecFltr_datepickerRange" type="text" class="form-control cust_input" placeholder="Select Date Range" readonly />
                                         <input type="hidden" name="violationRecFltr_hidden_dateRangeFrom" id="violationRecFltr_hidden_dateRangeFrom">
@@ -198,6 +198,28 @@
                                             $count_actLogs = App\Models\Useractivites::all()->count();
                                         @endphp --}}
                                         <input type="hidden" name="vr_hiddenTotalData_found" id="vr_hiddenTotalData_found">
+                                    </div>
+                                </div>
+                                <span class="cust_status_title mt-3 mb-2">Order By: </span>
+                                <div class="row">
+                                    <div class="col-lg-8 col-md-8 col-sm-12 pr-0">
+                                        <div class="form-group">
+                                            <select id="violationRecFltr_orderBy" name="violationRecFltr_orderBy" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
+                                                <option value="0" selected>Date Recorded</option>
+                                                <option value="not cleared">Student Number</option>
+                                                <option value="cleared">Offense Count</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-12 pl-0 d-flex justify-content-end">
+                                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                            <label class="btn btn_svms_blue cust_btn_radio cbr_p" data-toggle="tooltip" data-placement="top" title="Ascending Order?">
+                                                <input class="m-0 p-0" type="radio" name="options" id="option1" autocomplete="off" checked> <i class="fa fa-sort-amount-asc cbr_i" aria-hidden="true"></i>
+                                            </label>
+                                            <label class="btn btn_svms_blue cust_btn_radio cbr_p active" data-toggle="tooltip" data-placement="top" title="Descending Order?">
+                                                <input class="m-0 p-0" type="radio" name="options" id="option2" autocomplete="off"> <i class="fa fa-sort-amount-desc cbr_i" aria-hidden="true"></i>
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row mt-3">
@@ -224,7 +246,7 @@
                         <div class="col-lg-7 col-md-4 col-sm-2 d-flex justify-content-end align-items-center">
                             <span class="custom_label_subv1 mr-3">Number of Rows </span>
                             <div class="form-group m-0" style="width:80px;">
-                                <select id="actLogsFiltr_numOfRows" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
+                                <select id="violationRecsFiltr_numOfRows" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
                                     <option value="5">5</option>
                                     <option value="10" selected>10</option>
                                     <option value="25">25</option>
@@ -235,6 +257,15 @@
                                     <option value="500">500</option>
                                 </select>
                             </div>
+
+                            {{-- <div class="btn-group btn-group-toggle ml-3" data-toggle="buttons">
+                                <label class="btn btn_svms_blue active">
+                                    <input type="radio" name="options" id="option1" autocomplete="off" checked> <i class="fa fa-sort-amount-asc" aria-hidden="true"></i>
+                                </label>
+                                <label class="btn btn_svms_blue">
+                                    <input type="radio" name="options" id="option2" autocomplete="off"> <i class="fa fa-sort-amount-desc" aria-hidden="true"></i>
+                                </label>
+                            </div> --}}
                         </div>
                     </div>
                     <div class="row mt-3">
@@ -323,7 +354,7 @@
                         var vr_status = document.getElementById('violationRecFltr_violationStat').value;
                         var vr_rangefrom = document.getElementById("violationRecFltr_hidden_dateRangeFrom").value;
                         var vr_rangeTo = document.getElementById("violationRecFltr_hidden_dateRangeTo").value;
-                        var vr_numRows = document.getElementById("actLogsFiltr_numOfRows").value;
+                        var vr_numRows = document.getElementById("violationRecsFiltr_numOfRows").value;
                         var page = document.getElementById("vr_hidden_page").value;
                         
                         // update age range label
@@ -332,6 +363,8 @@
                         }else{
                             $('#filter_ageRange_label').html(vr_minAgeRange + ' to ' + vr_maxAgeRange + ' Year Olds');
                         }
+
+                        vr_numRows = parseInt(vr_numRows);
 
                         console.log('_____________________________');
                         console.log('search_filter: ' + vr_search);
@@ -424,8 +457,10 @@
                             datatype: "html"
                         }).done(function(data){
                             location.hash = page;
-                        }).fail(function(jqXHR, ajaxOptions, thrownError){
-                            alert('No response from server');
+                        })
+                        .fail(function(jqXHR, ajaxOptions, thrownError){
+                            // alert('No response from server');
+                            location.hash = page;
                         });
                     }
                 // function for ajax table pagination end
@@ -471,7 +506,7 @@
                 // daterange picker end
 
                 // number of rows
-                    $('#actLogsFiltr_numOfRows').on('change paste keyup', function(){
+                    $('#violationRecsFiltr_numOfRows').on('change paste keyup', function(){
                         var selectedNumRows = $(this).val();
                         if(selectedNumRows != 10){
                             $(this).addClass('cust_input_hasvalue');
