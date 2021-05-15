@@ -197,6 +197,14 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('violation_records/recover_all_deleted_violation_form', 'App\Http\Controllers\ViolationRecordsController@recover_all_deleted_violation_form')->name('violation_records.recover_all_deleted_violation_form');
 	// process recover deleted violation
 	Route::post('violation_records/recover_deleted_violation', 'App\Http\Controllers\ViolationRecordsController@recover_deleted_violation')->name('violation_records.recover_deleted_violation');
+
+	// GENERATE REPORTS
+	// generate violations records confiration modal
+	Route::get('violation_records/generate_violation_records_confirmation_modal', 'App\Http\Controllers\ViolationRecordsController@generate_violation_records_confirmation_modal')->name('violation_records.generate_violation_records_confirmation_modal'); 
+	// process violations records report - PDF
+	Route::post('violation_records/violation_records_pdf', 'App\Http\Controllers\ViolationRecordsController@violation_records_pdf')->name('violation_records.violation_records_pdf'); 
+	// generate violation records report
+	Route::post('violation_records/report_violations_records', 'App\Http\Controllers\ViolationRecordsController@report_violations_records')->name('violation_records.report_violations_records');
 });
 
 // student handbook

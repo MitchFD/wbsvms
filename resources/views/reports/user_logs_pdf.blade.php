@@ -92,7 +92,7 @@
                 font-size: 13px;
             }
             #contentsInfo_table tbody tr td{
-                padding: 5px;
+                padding: 6px 15px;
             }
 
             /* notice */

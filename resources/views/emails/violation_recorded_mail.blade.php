@@ -82,7 +82,7 @@
             <tr style="line-height: 12px; margin: 7px 0 !important; background-color: #FBF1F1;">
                 <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
                     <p style="margin: 10px 15px 5px 15px !important;"><strong>Date Recorded</strong></p>
-                    <p style="margin: 4px 15px 10px 15px !important;">{{ date('F d, Y', strtotime($details['date_recorded'])) }} -  {{ date('D', strtotime($details['date_recorded'])) }} at {{ date('g:i A', strtotime($details['date_recorded'])) }}</p>
+                    <p style="margin: 4px 15px 10px 15px !important;">{{ date('F d, Y', strtotime($details['date_recorded'])) }} ~  {{ date('l', strtotime($details['date_recorded'])) }} at {{ date('g:i A', strtotime($details['date_recorded'])) }}</p>
                 </td>
             </tr>
         </tbody>

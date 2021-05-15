@@ -3771,7 +3771,6 @@ class UserManagementController extends Controller
     // generate users activity logs confirmation on modal
     public function generate_act_logs_confirmation_modal(Request $request){
         // get all request
-        // values
         $logs_search    = $request->get('logs_search');
         $logs_userTypes = $request->get('logs_userTypes');
         $logs_userRoles = $request->get('logs_userRoles');
@@ -3950,5 +3949,5 @@ class UserManagementController extends Controller
         // return back()->withSuccessStatus('Report has been generated successfully.');
         $pdf = PDF::loadView('user_management.report_viewer', compact('filter_user_logs_table'));
         return $pdf->stream('Activity-Logs.pdf');
-    }
+    } 
 }

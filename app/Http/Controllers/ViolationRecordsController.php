@@ -14,6 +14,9 @@ use App\Models\Users;
 use App\Models\Userroles;
 use App\Models\Useractivites;
 use Illuminate\Mail\Mailable;
+use Illuminate\Pagination\Paginator;
+use PDF;
+use Dompdf;
 
 class ViolationRecordsController extends Controller
 {
@@ -42,7 +45,8 @@ class ViolationRecordsController extends Controller
                 $vr_rangeTo     = $request->get('vr_rangeTo');
                 $df_minAgeRange = $request->get('df_minAgeRange');
                 $df_maxAgeRange = $request->get('df_maxAgeRange');
-                $page = $request->get('page');
+                $vr_numRows     = $request->get('vr_numRows');
+                $page           = $request->get('page');
     
                 if($vr_search != ''){
                     $fltr_VR_tbl = DB::table('violations_tbl')
@@ -85,7 +89,7 @@ class ViolationRecordsController extends Controller
                                         }
                                     })
                                     ->orderBy('violations_tbl.recorded_at', 'DESC')
-                                    ->paginate(10);
+                                    ->paginate($vr_numRows);
                     $matched_result_txt = ' Matched Records';
                 }else{
                     $fltr_VR_tbl = DB::table('violations_tbl')
@@ -117,7 +121,7 @@ class ViolationRecordsController extends Controller
                                         }
                                     })
                                     ->orderBy('violations_tbl.recorded_at', 'DESC')
-                                    ->paginate(10);
+                                    ->paginate($vr_numRows);
                     $matched_result_txt = ' Record';
                 }
                 // total filtered date
@@ -4334,4 +4338,399 @@ class ViolationRecordsController extends Controller
         }
     }
 
+    // GENERATE VIOLATIONS RECORDS REPORT
+    // confirm ~ generate violations records report
+    public function generate_violation_records_confirmation_modal(Request $request){
+        // get all filtered data
+            $filtered_SearchInput = $request->get('fvr_search');
+            $filtered_SchoolNames = $request->get('fvr_schools');
+            $filtered_Programs = $request->get('fvr_programs');
+            $filtered_YearLevels = $request->get('fvr_yearlvls');
+            $filtered_Genders = $request->get('fvr_genders');
+            $filtered_MinAgeRange = $request->get('fvr_minAgeRange');
+            $filtered_MaxAgeRange = $request->get('fvr_maxAgeRange');
+            $deafult_MinAgeRange = $request->get('df_minAgeRange');
+            $deafult_MaxAgeRange = $request->get('df_maxAgeRange');
+            $filtered_ViolationStatus = $request->get('fvr_status');
+            $filtered_ViolationDateFrom = $request->get('fvr_rangefrom');
+            $filtered_ViolationDateTo = $request->get('fvr_rangeTo');
+            $filtered_TotalRecords = $request->get('fvr_totalRecords');
+
+        // custom values
+            // School Names
+            if($filtered_SchoolNames != 0 OR !empty($filtered_SchoolNames)){
+                $txt_SchoolNames = $filtered_SchoolNames;
+            }else{
+                $txt_SchoolNames = 'All Schools';
+            }
+        // Programs
+            if($filtered_Programs != 0 OR !empty($filtered_Programs)){
+                $txt_Programs = $filtered_Programs;
+            }else{
+                $txt_Programs = 'All Programs';
+            }
+        // Year Levels
+            if($filtered_YearLevels != 0 OR !empty($filtered_YearLevels)){
+                if($filtered_YearLevels == 1){
+                    $txt_YearLevels = 'First Year Levels';
+                }else if($filtered_YearLevels == 2){
+                    $txt_YearLevels = 'Second Year Levels';
+                }else if($filtered_YearLevels == 3){
+                    $txt_YearLevels = 'Third Year Levels';
+                }else if($filtered_YearLevels == 4){
+                    $txt_YearLevels = 'Fourth Year Levels';
+                }else if($filtered_YearLevels == 5){
+                    $txt_YearLevels = 'Fifth Year Levels';
+                }else{
+                    $txt_YearLevels = $filtered_YearLevels . ' Year Levels';
+                }
+            }else{
+                $txt_YearLevels = 'All Year Levels';
+            }
+        // Gender
+            if($filtered_Genders != 0 OR !empty($filtered_Genders)){
+                $txt_Gender = $filtered_Genders;
+            }else{
+                $txt_Gender = 'All Genders';
+            }
+        // Age 
+            if($filtered_MinAgeRange != 0 OR !empty($filtered_MinAgeRange) OR $filtered_MaxAgeRange != 0 OR !empty($filtered_MaxAgeRange)){
+                if($filtered_MinAgeRange != $filtered_MaxAgeRange){
+                    $txt_AgeRange = 'Ages ' . $filtered_MinAgeRange . ' to ' . $filtered_MaxAgeRange . ' Year Olds';
+                }else{
+                    $txt_AgeRange = 'Ages ' . $filtered_MinAgeRange . ' Year Olds';
+                }
+            }else{
+                $txt_AgeRange = 'All Ages';
+            }
+        // Violatin Status
+            if($filtered_ViolationStatus != 0 OR !empty($filtered_ViolationStatus)){
+                $txt_ViolationStatus = ''.ucwords($filtered_ViolationStatus) . ' Violations';
+            }else{
+                $txt_ViolationStatus = 'Cleared & Not Cleared Violations';
+            }
+        // Date Range
+            if($filtered_ViolationDateFrom != 0 OR !empty($filtered_ViolationDateFrom) OR $filtered_ViolationDateTo != 0 OR !empty($filtered_ViolationDateTo)){
+                $format_ViolationDateFrom = date('F d, Y (l ~ g:i A)', strtotime($filtered_ViolationDateFrom));
+                $format_ViolationDateTo = date('F d, Y (l ~ g:i A)', strtotime($filtered_ViolationDateTo));
+                $txt_DateRange = 'From ' . $format_ViolationDateFrom . ' to ' . $format_ViolationDateTo.'';
+            }else{
+                $txt_DateRange = 'All Recorded Violations';
+            }
+        // Total Records
+            if($filtered_TotalRecords > 0){
+                if($filtered_TotalRecords > 1){
+                    $txt_TotalRecords = ''.$filtered_TotalRecords . ' Records Found.';
+                }else{
+                    $txt_TotalRecords = ''.$filtered_TotalRecords . ' Record Found.';
+                }
+                $disablePrintButton = '';
+            }else{
+                $txt_TotalRecords = 'No Records Found.';
+                $disablePrintButton = 'disabled';
+            }
+
+        // output
+        $output = '';
+        $output .= '
+            <div class="modal-body border-0 py-0">
+                <div class="card-body lightBlue_cardBody shadow-none">
+                    <span class="lightBlue_cardBody_blueTitle">Report Content:</span>
+                    <span class="lightBlue_cardBody_notice">The system will generate a report based on the filters you have applied as shown below.</span>
+                </div>
+                <div class="card-body lightBlue_cardBody shadow-none mt-2">
+                    <span class="lightBlue_cardBody_blueTitle">Students Filters:</span>
+                    <span class="lightBlue_cardBody_notice"><i class="fa fa-check-square-o text-success mr-1" aria-hidden="true"></i> Schools: <span class="font-weight-bold"> '.$txt_SchoolNames.' </span> </span>
+                    <span class="lightBlue_cardBody_notice"><i class="fa fa-check-square-o text-success mr-1" aria-hidden="true"></i> Programs: <span class="font-weight-bold"> '.$txt_Programs.' </span> </span>
+                    <span class="lightBlue_cardBody_notice"><i class="fa fa-check-square-o text-success mr-1" aria-hidden="true"></i> Year Levels: <span class="font-weight-bold"> '.$txt_YearLevels.' </span> </span>
+                    <span class="lightBlue_cardBody_notice"><i class="fa fa-check-square-o text-success mr-1" aria-hidden="true"></i> Gender: <span class="font-weight-bold"> '.$txt_Gender.' </span> </span>
+                    <span class="lightBlue_cardBody_notice"><i class="fa fa-check-square-o text-success mr-1" aria-hidden="true"></i> Age Range: <span class="font-weight-bold"> '.$txt_AgeRange.' </span> </span>
+                    
+                    <span class="lightBlue_cardBody_blueTitle mt-3">Violations Filters:</span>
+                    <span class="lightBlue_cardBody_notice"><i class="fa fa-check-square-o text-success mr-1" aria-hidden="true"></i> Vioaltion Status: <span class="font-weight-bold"> ' . $txt_ViolationStatus . ' </span> </span>
+                    <span class="lightBlue_cardBody_notice"><i class="fa fa-calendar-check-o text-success mr-1" aria-hidden="true"></i> Date Range: <span class="font-weight-bold"> ' . $txt_DateRange . ' </span> </span>
+
+                    ';
+                    if(!empty($filtered_SearchInput) OR $filtered_SearchInput != 0 OR !is_null($filtered_SearchInput)){
+                        $output .= '
+                        <span class="lightBlue_cardBody_blueTitle mt-3">Search Filter:</span>
+                        <span class="lightBlue_cardBody_notice"><i class="fa fa-search text-success mr-1" aria-hidden="true"></i> <span class="font-weight-bold"> ' . $filtered_SearchInput . ' ... </span> </span>
+                        ';
+                    }
+                    $output .= '
+                </div>
+                <div class="card-body lightBlue_cardBody shadow-none mt-2">
+                    <span class="lightBlue_cardBody_blueTitle">Total Data:</span>
+                    <span class="lightBlue_cardBody_notice"><i class="fa fa-check-square-o text-success mr-1" aria-hidden="true"></i> ' . $txt_TotalRecords . '</span>
+                </div>
+            </div>
+            <form id="form_confirmGenerateViolationRecReport" action="'.route('violation_records.violation_records_pdf').'" method="POST" enctype="multipart/form-data">
+                <div class="modal-footer border-0">
+                    <input type="hidden" name="_token" value="'.csrf_token().'">
+                    <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
+                    <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
+                    <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
+
+                    <input type="hidden" name="val_search_fltr" value="'.$filtered_SearchInput.'">
+                    <input type="hidden" name="val_schools_fltr" value="'.$filtered_SchoolNames.'">
+                    <input type="hidden" name="val_programs_fltr" value="'.$filtered_Programs.'">
+                    <input type="hidden" name="val_year_levels_fltr" value="'.$filtered_YearLevels.'">
+                    <input type="hidden" name="val_genders_fltr" value="'.$filtered_Genders.'">
+                    <input type="hidden" name="val_min_age_fltr" value="'.$filtered_MinAgeRange.'">
+                    <input type="hidden" name="val_max_age_fltr" value="'.$filtered_MaxAgeRange.'">
+                    <input type="hidden" name="val_violation_status_fltr" value="'.$filtered_ViolationStatus.'">
+                    <input type="hidden" name="val_date_from_fltr" value="'.$filtered_ViolationDateFrom.'">
+                    <input type="hidden" name="val_date_to_fltr" value="'.$filtered_ViolationDateTo.'">
+                    <input type="hidden" name="val_total_records_fltr" value="'.$filtered_TotalRecords.'">
+
+                    <input type="hidden" name="val_df_min_age_range" value="'.$deafult_MinAgeRange.'">
+                    <input type="hidden" name="val_df_max_age_range" value="'.$deafult_MaxAgeRange.'">
+
+                    <div class="btn-group" role="group" aria-label="Basic example">
+                        <button id="cancel_GenerateViolationRecordsReport_btn" type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                        <button id="process_GenerateViolationRecordsReport_btn" type="submit" class="btn btn-round btn-success btn_show_icon m-0" ' . $disablePrintButton . '>Generate Report <i class="nc-icon nc-single-copy-04 btn_icon_show_right" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+            </form>
+        ';
+        echo $output;
+    }
+    // process ~ generate violatins records report - PDF
+    public function violation_records_pdf(Request $request){
+        // now timestamp
+            $now_timestamp        = now();
+        // get all request
+            $respo_user_id        = $request->get('respo_user_id');
+            $respo_user_lname     = $request->get('respo_user_lname');
+            $respo_user_fname     = $request->get('respo_user_fname');  
+
+            $filter_SearchInput   = $request->get('val_search_fltr');
+            $filter_SchoolName    = $request->get('val_schools_fltr');
+            $filter_Programs      = $request->get('val_programs_fltr');
+            $filter_YearLevels    = $request->get('val_year_levels_fltr');
+            $filter_Genders       = $request->get('val_genders_fltr');
+            $filter_MinAgeRange   = $request->get('val_min_age_fltr');
+            $filter_MaxAgeRange   = $request->get('val_max_age_fltr');
+            $default_MinAgeRange  = $request->get('val_df_min_age_range');
+            $default_MaxAgeRange  = $request->get('val_df_max_age_range');
+            $filter_ViolationStat = $request->get('val_violation_status_fltr');
+            $filter_FromDateRange = $request->get('val_date_from_fltr');
+            $filter_ToDateRange   = $request->get('val_date_to_fltr');
+            $filter_TotalRecords  = $request->get('val_total_records_fltr');
+
+        // try
+            // echo 'Search Filter: ' . $filter_SearchInput . ' <br>';
+            // echo 'School Name: ' . $filter_SchoolName . ' <br>';
+            // echo 'Programs: ' . $filter_Programs . ' <br>';
+            // echo 'Year levels: ' . $filter_YearLevels . ' <br>';
+            // echo 'Genders: ' . $filter_Genders . ' <br>';
+            // echo 'Min Age Range: ' . $filter_MinAgeRange . ' <br>';
+            // echo 'Max Age Range: ' . $filter_MaxAgeRange . ' <br>';
+            // echo 'Violation Status: ' . $filter_ViolationStat . ' <br>';
+            // echo 'From: ' . $filter_FromDateRange . ' <br>';
+            // echo 'To: ' . $filter_ToDateRange . ' <br>';
+            // echo 'Total Records: ' . $filter_TotalRecords . ' <br>';
+
+        // 
+
+        // custom values
+            // School Names
+            if($filter_SchoolName != 0 OR !empty($filter_SchoolName)){
+                $txt_SchoolNames = $filter_SchoolName;
+            }else{
+                $txt_SchoolNames = 'All Schools';
+            }
+        // Programs
+            if($filter_Programs != 0 OR !empty($filter_Programs)){
+                $txt_Programs = $filter_Programs;
+            }else{
+                $txt_Programs = 'All Programs';
+            }
+        // Year Levels
+            if($filter_YearLevels != 0 OR !empty($filter_YearLevels)){
+                if($filter_YearLevels == 1){
+                    $txt_YearLevels = 'First Year Levels';
+                }else if($filter_YearLevels == 2){
+                    $txt_YearLevels = 'Second Year Levels';
+                }else if($filter_YearLevels == 3){
+                    $txt_YearLevels = 'Third Year Levels';
+                }else if($filter_YearLevels == 4){
+                    $txt_YearLevels = 'Fourth Year Levels';
+                }else if($filter_YearLevels == 5){
+                    $txt_YearLevels = 'Fifth Year Levels';
+                }else{
+                    $txt_YearLevels = $filter_YearLevels . ' Year Levels';
+                }
+            }else{
+                $txt_YearLevels = 'All Year Levels';
+            }
+        // Gender
+            if($filter_Genders != 0 OR !empty($filter_Genders)){
+                $txt_Gender = ' '.$filter_Genders . ' ';
+            }else{
+                $txt_Gender = 'All Genders';
+            }
+        // Age 
+            if($filter_MinAgeRange != 0 OR !empty($filter_MinAgeRange) OR $filter_MaxAgeRange != 0 OR !empty($filter_MaxAgeRange)){
+                if($filter_MinAgeRange != $filter_MaxAgeRange){
+                    $txt_AgeRange = 'Ages ' . $filter_MinAgeRange . ' to ' . $filter_MaxAgeRange . ' Year Olds';
+                }else{
+                    $txt_AgeRange = 'Ages ' . $filter_MinAgeRange . ' Year Olds';
+                }
+            }else{
+                $txt_AgeRange = 'All Ages';
+            }
+        // Violatin Status
+            if($filter_ViolationStat != 0 OR !empty($filter_ViolationStat)){
+                $txt_ViolationStatus = ''.ucwords($filter_ViolationStat) . ' Violations';
+            }else{
+                $txt_ViolationStatus = 'Cleared & Not Cleared Violations';
+            }
+        // Date Range
+            if($filter_FromDateRange != 0 OR !empty($filter_FromDateRange) OR $filter_ToDateRange != 0 OR !empty($filter_ToDateRange)){
+                $format_ViolationDateFrom = date('F d, Y (l ~ g:i A)', strtotime($filter_FromDateRange));
+                $format_ViolationDateTo = date('F d, Y (l ~ g:i A)', strtotime($filter_ToDateRange));
+                $txt_DateRange = 'From ' . $format_ViolationDateFrom . ' to ' . $format_ViolationDateTo.'';
+            }else{
+                $txt_DateRange = 'All Recorded Violations';
+            }
+        // Total Records
+            if($filter_TotalRecords > 0){
+                if($filter_TotalRecords > 1){
+                    $txt_TotalRecords = ''.$filter_TotalRecords . ' Records Found.';
+                }else{
+                    $txt_TotalRecords = ''.$filter_TotalRecords . ' Record Found.';
+                }
+                $disablePrintButton = '';
+            }else{
+                $txt_TotalRecords = 'No Records Found.';
+                $disablePrintButton = 'disabled';
+            }
+
+        // query responsible user's info
+            $query_respo_user = Users::select('user_role','user_lname', 'user_fname')->where('id', $respo_user_id)->first();
+
+        // query
+            if($filter_SearchInput != ''){
+                $query_violation_records = DB::table('violations_tbl')
+                                ->join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
+                                ->select('violations_tbl.*', 'students_tbl.*')
+                                ->where(function($vrQuery) use ($filter_SearchInput) {
+                                    $vrQuery->orWhere('students_tbl.Student_Number', 'like', '%'.$filter_SearchInput.'%')
+                                                ->orWhere('students_tbl.First_Name', 'like', '%'.$filter_SearchInput.'%')
+                                                ->orWhere('students_tbl.Middle_Name', 'like', '%'.$filter_SearchInput.'%')
+                                                ->orWhere('students_tbl.Last_Name', 'like', '%'.$filter_SearchInput.'%')
+                                                ->orWhere('students_tbl.Gender', 'like', '%'.$filter_SearchInput.'%')
+                                                ->orWhere('students_tbl.School_Name', 'like', '%'.$filter_SearchInput.'%')
+                                                ->orWhere('students_tbl.YearLevel', 'like', '%'.$filter_SearchInput.'%')
+                                                ->orWhere('students_tbl.Course', 'like', '%'.$filter_SearchInput.'%')
+                                                ->orWhere('violations_tbl.stud_num', 'like', '%'.$filter_SearchInput.'%');
+                                })
+                                ->where(function($vrQuery) use ($filter_SchoolName, $filter_Programs, $filter_YearLevels, $filter_Genders, $filter_MinAgeRange, $filter_MaxAgeRange, $default_MinAgeRange, $default_MaxAgeRange, $filter_ViolationStat, $filter_FromDateRange, $filter_ToDateRange){
+                                    if($filter_SchoolName != 0 OR !empty($filter_SchoolName)){
+                                        $vrQuery->where('students_tbl.School_Name', '=', $filter_SchoolName);
+                                    }
+                                    if($filter_Programs != 0 OR !empty($filter_Programs)){
+                                        $vrQuery->where('students_tbl.Course', '=', $filter_Programs);
+                                    }
+                                    if($filter_YearLevels != 0 OR !empty($filter_YearLevels)){
+                                        $vrQuery->where('students_tbl.YearLevel', '=', $filter_YearLevels);
+                                    }
+                                    if($filter_Genders != 0 OR !empty($filter_Genders)){
+                                        $lower_vr_gender = Str::lower($filter_Genders);
+                                        $vrQuery->where('students_tbl.Gender', '=', $lower_vr_gender);
+                                    }
+                                    if($filter_MinAgeRange != $default_MinAgeRange OR $filter_MaxAgeRange != $default_MaxAgeRange){
+                                        $vrQuery->whereBetween('students_tbl.Age', [$filter_MinAgeRange, $filter_MaxAgeRange]);
+                                    }
+                                    if($filter_ViolationStat != 0 OR !empty($filter_ViolationStat)){
+                                        $lower_filter_ViolationStat = Str::lower($filter_ViolationStat);
+                                        $vrQuery->where('violations_tbl.violation_status', '=', $lower_filter_ViolationStat);
+                                    }
+                                    if($filter_FromDateRange != 0 OR !empty($filter_FromDateRange) AND $filter_ToDateRange != 0 OR !empty($filter_ToDateRange)){
+                                        $vrQuery->whereBetween('violations_tbl.recorded_at', [$filter_FromDateRange, $filter_ToDateRange]);
+                                    }
+                                })
+                                ->orderBy('violations_tbl.recorded_at', 'DESC')
+                                ->get();
+            }else{
+                $query_violation_records = DB::table('violations_tbl')
+                                ->join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
+                                ->select('violations_tbl.*', 'students_tbl.*')
+                                ->where(function($vrQuery) use ($filter_SchoolName, $filter_Programs, $filter_YearLevels, $filter_Genders, $filter_MinAgeRange, $filter_MaxAgeRange, $default_MinAgeRange, $default_MaxAgeRange, $filter_ViolationStat, $filter_FromDateRange, $filter_ToDateRange){
+                                    if($filter_SchoolName != 0 OR !empty($filter_SchoolName)){
+                                        $vrQuery->where('students_tbl.School_Name', '=', $filter_SchoolName);
+                                    }
+                                    if($filter_Programs != 0 OR !empty($filter_Programs)){
+                                        $vrQuery->where('students_tbl.Course', '=', $filter_Programs);
+                                    }
+                                    if($filter_YearLevels != 0 OR !empty($filter_YearLevels)){
+                                        $vrQuery->where('students_tbl.YearLevel', '=', $filter_YearLevels);
+                                    }
+                                    if($filter_Genders != 0 OR !empty($filter_Genders)){
+                                        $lower_vr_gender = Str::lower($filter_Genders);
+                                        $vrQuery->where('students_tbl.Gender', '=', $lower_vr_gender);
+                                    }
+                                    if($filter_MinAgeRange != $default_MinAgeRange OR $filter_MaxAgeRange != $default_MaxAgeRange){
+                                        $vrQuery->whereBetween('students_tbl.Age', [$filter_MinAgeRange, $filter_MaxAgeRange]);
+                                    }
+                                    if($filter_ViolationStat != 0 OR !empty($filter_ViolationStat)){
+                                        $lower_filter_ViolationStat = Str::lower($filter_ViolationStat);
+                                        $vrQuery->where('violations_tbl.violation_status', '=', $lower_filter_ViolationStat);
+                                    }
+                                    if($filter_FromDateRange != 0 OR !empty($filter_FromDateRange) AND $filter_ToDateRange != 0 OR !empty($filter_ToDateRange)){
+                                        $vrQuery->whereBetween('violations_tbl.recorded_at', [$filter_FromDateRange, $filter_ToDateRange]);
+                                    }
+                                })
+                                ->orderBy('violations_tbl.recorded_at', 'DESC')
+                                ->get();
+            }
+            // Total Records
+            $total_query_violation_records = count($query_violation_records);
+            if($total_query_violation_records > 0){
+                if($total_query_violation_records > 1){
+                    $txt_TotalQueryRecords = ''.$total_query_violation_records . ' Records Found.';
+                }else{
+                    $txt_TotalQueryRecords = ''.$total_query_violation_records . ' Record Found.';
+                }
+                $disablePrintButton = '';
+            }else{
+                $txt_TotalQueryRecords = 'No Records Found.';
+                $disablePrintButton = 'disabled';
+            }
+        
+        // Generate PDF
+            $pdf = \App::make('dompdf.wrapper');
+            // $pdf->loadHTML($output);
+            $pdf = PDF::loadView('reports/violation_records_pdf', compact('query_violation_records', 'now_timestamp', 'query_respo_user', 'txt_SchoolNames', 'txt_Programs', 'txt_YearLevels', 'txt_Gender', 'txt_AgeRange', 'txt_ViolationStatus', 'txt_DateRange', 'txt_TotalRecords', 'filter_SearchInput', 'txt_TotalQueryRecords'));
+            $pdf->setPaper('A4');
+            $pdf->getDomPDF()->set_option("enable_php", true);
+            return $pdf->stream('reports/violation_records_pdf.pdf');
+    }
+
+    public function report_violations_records(Request $request){
+        // now timestamp
+            $now_timestamp        = now();
+        // get all request
+            $filter_SchoolName    = $request->get('violationRecFltr_schools');
+            $filter_Programs      = $request->get('violationRecFltr_programs');
+            $filter_YearLevels    = $request->get('violationRecFltr_yearLvls');
+            $filter_Genders       = $request->get('violationRecFltr_genders');
+            $filter_MinAgeRange   = $request->get('violationRecFltr_minAge');
+            $filter_MaxAgeRange   = $request->get('violationRecFltr_maxAge');
+            $filter_ViolationStat = $request->get('violationRecFltr_violationStat');
+            $filter_FromDateRange = $request->get('violationRecFltr_hidden_dateRangeFrom');
+            $filter_ToDateRange   = $request->get('violationRecFltr_hidden_dateRangeTo');
+
+        // try
+            echo 'School Name: ' . $filter_SchoolName . ' <br>';
+            echo 'Programs: ' . $filter_Programs . ' <br>';
+            echo 'Year levels: ' . $filter_YearLevels . ' <br>';
+            echo 'Genders: ' . $filter_Genders . ' <br>';
+            echo 'Min Age Range: ' . $filter_MinAgeRange . ' <br>';
+            echo 'Max Age Range: ' . $filter_MaxAgeRange . ' <br>';
+            echo 'Violation Status: ' . $filter_ViolationStat . ' <br>';
+            echo 'From: ' . $filter_FromDateRange . ' <br>';
+            echo 'To: ' . $filter_ToDateRange . ' <br>';
+    }
 }

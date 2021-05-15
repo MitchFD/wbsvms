@@ -32,7 +32,7 @@
                 @if(in_array('dashboard', $get_uRole_access))
                     <li class="{{ $elementActive == 'dashboard' ? 'active' : '' }}">
                         <a href="{{ route('page.index', 'dashboard') }}">
-                            <i class="nc-icon nc-bank"></i>
+                            <i class="nc-icon nc-layout-11"></i>
                             <p>{{ __('Dashboard') }}</p>
                         </a>
                     </li>

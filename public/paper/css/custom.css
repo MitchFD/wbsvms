@@ -1211,6 +1211,14 @@ a.text_svms_gray:hover {
   margin-top: 10px !important;
   color: var(--svms_light_blue) !important;
 }
+.custom_label_subv1{
+  display: inline-block;
+  font-weight: normal !important;
+  font-size: 14px !important;
+  margin: 0;
+  color: var(--svms_light_blue) !important;
+}
+
 
 /* inputs customizations */
 .input-group-prepend .is_invalid{
