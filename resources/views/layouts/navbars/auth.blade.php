@@ -134,7 +134,7 @@
                 @if(in_array('sanctions', $get_uRole_access))
                     <li class="{{ $elementActive == 'sanctions' ? 'active' : '' }}">
                         <a href="{{ route('sanctions.index', 'sanctions') }}">
-                            <i class="nc-icon nc-layout-11"></i>
+                            <i class="nc-icon nc-bullet-list-67"></i>
                             <p>{{ __('Sanctions') }}</p>
                         </a>
                     </li>

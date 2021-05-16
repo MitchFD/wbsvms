@@ -33,20 +33,45 @@ class ViolationRecordsController extends Controller
                 $vr_total_matched_results = '';
                 $vr_total_filtered_result = '';
                 // get all request
-                $vr_search      = $request->get('vr_search');
-                $vr_schools     = $request->get('vr_schools');
-                $vr_programs    = $request->get('vr_programs');
-                $vr_yearlvls    = $request->get('vr_yearlvls');
-                $vr_genders     = $request->get('vr_genders');
-                $vr_minAgeRange = $request->get('vr_minAgeRange');
-                $vr_maxAgeRange = $request->get('vr_maxAgeRange');
-                $vr_status      = $request->get('vr_status');
-                $vr_rangefrom   = $request->get('vr_rangefrom');
-                $vr_rangeTo     = $request->get('vr_rangeTo');
-                $df_minAgeRange = $request->get('df_minAgeRange');
-                $df_maxAgeRange = $request->get('df_maxAgeRange');
-                $vr_numRows     = $request->get('vr_numRows');
-                $page           = $request->get('page');
+                $vr_search            = $request->get('vr_search');
+                $vr_schools           = $request->get('vr_schools');
+                $vr_programs          = $request->get('vr_programs');
+                $vr_yearlvls          = $request->get('vr_yearlvls');
+                $vr_genders           = $request->get('vr_genders');
+                $vr_minAgeRange       = $request->get('vr_minAgeRange');
+                $vr_maxAgeRange       = $request->get('vr_maxAgeRange');
+                $vr_status            = $request->get('vr_status');
+                $vr_rangefrom         = $request->get('vr_rangefrom');
+                $vr_rangeTo           = $request->get('vr_rangeTo');
+                $df_minAgeRange       = $request->get('df_minAgeRange');
+                $df_maxAgeRange       = $request->get('df_maxAgeRange');
+                $vr_orderBy           = $request->get('vr_orderBy');
+                $selectedOrderByRange = $request->get('selectedOrderByRange');
+                $vr_numRows           = $request->get('vr_numRows');
+                $page                 = $request->get('page');
+
+                // order by 
+                if($vr_orderBy != 0 OR !empty($vr_orderBy)){
+                    if($vr_orderBy == 1){
+                        $orderBy_filterVal = 'stud_num';
+                    }elseif($vr_orderBy == 2){
+                        $orderBy_filterVal = 'offense_count';
+                    }else{
+                        $orderBy_filterVal = 'recorded_at';
+                    }
+                }else{
+                    $orderBy_filterVal = 'recorded_at';
+                }
+                // order by range
+                if(!empty($selectedOrderByRange) OR $selectedOrderByRange != 0){
+                    if($selectedOrderByRange === 'asc'){
+                        $orderByRange_filterVal = 'ASC';
+                    }else{
+                        $orderByRange_filterVal = 'DESC';
+                    }
+                }else{
+                    $orderByRange_filterVal = 'DESC';
+                }
     
                 if($vr_search != ''){
                     $fltr_VR_tbl = DB::table('violations_tbl')
@@ -88,7 +113,7 @@ class ViolationRecordsController extends Controller
                                             $vrQuery->whereBetween('violations_tbl.recorded_at', [$vr_rangefrom, $vr_rangeTo]);
                                         }
                                     })
-                                    ->orderBy('violations_tbl.recorded_at', 'DESC')
+                                    ->orderBy('violations_tbl.'.$orderBy_filterVal, $orderByRange_filterVal)
                                     ->paginate(intval($vr_numRows));
                     $matched_result_txt = ' Matched Records';
                 }else{
@@ -120,7 +145,7 @@ class ViolationRecordsController extends Controller
                                             $vrQuery->whereBetween('violations_tbl.recorded_at', [$vr_rangefrom, $vr_rangeTo]);
                                         }
                                     })
-                                    ->orderBy('violations_tbl.recorded_at', 'DESC')
+                                    ->orderBy('violations_tbl.'.$orderBy_filterVal, $orderByRange_filterVal)
                                     ->paginate(intval($vr_numRows));
                     $matched_result_txt = ' Record';
                 }
@@ -4342,19 +4367,21 @@ class ViolationRecordsController extends Controller
     // confirm ~ generate violations records report
     public function generate_violation_records_confirmation_modal(Request $request){
         // get all filtered data
-            $filtered_SearchInput = $request->get('fvr_search');
-            $filtered_SchoolNames = $request->get('fvr_schools');
-            $filtered_Programs = $request->get('fvr_programs');
-            $filtered_YearLevels = $request->get('fvr_yearlvls');
-            $filtered_Genders = $request->get('fvr_genders');
-            $filtered_MinAgeRange = $request->get('fvr_minAgeRange');
-            $filtered_MaxAgeRange = $request->get('fvr_maxAgeRange');
-            $deafult_MinAgeRange = $request->get('df_minAgeRange');
-            $deafult_MaxAgeRange = $request->get('df_maxAgeRange');
-            $filtered_ViolationStatus = $request->get('fvr_status');
-            $filtered_ViolationDateFrom = $request->get('fvr_rangefrom');
-            $filtered_ViolationDateTo = $request->get('fvr_rangeTo');
-            $filtered_TotalRecords = $request->get('fvr_totalRecords');
+            $filtered_SearchInput           = $request->get('fvr_search');
+            $filtered_SchoolNames           = $request->get('fvr_schools');
+            $filtered_Programs              = $request->get('fvr_programs');
+            $filtered_YearLevels            = $request->get('fvr_yearlvls');
+            $filtered_Genders               = $request->get('fvr_genders');
+            $filtered_MinAgeRange           = $request->get('fvr_minAgeRange');
+            $filtered_MaxAgeRange           = $request->get('fvr_maxAgeRange');
+            $deafult_MinAgeRange            = $request->get('df_minAgeRange');
+            $deafult_MaxAgeRange            = $request->get('df_maxAgeRange');
+            $filtered_ViolationStatus       = $request->get('fvr_status');
+            $filtered_ViolationDateFrom     = $request->get('fvr_rangefrom');
+            $filtered_ViolationDateTo       = $request->get('fvr_rangeTo');
+            $filtered_ViolationOrderBy      = $request->get('vr_orderBy');
+            $filtered_ViolationOrderByRange = $request->get('selectedOrderByRange');
+            $filtered_TotalRecords          = $request->get('fvr_totalRecords');
 
         // custom values
             // School Names
@@ -4429,6 +4456,28 @@ class ViolationRecordsController extends Controller
                 $txt_TotalRecords = 'No Records Found.';
                 $disablePrintButton = 'disabled';
             }
+        // order by 
+            if($filtered_ViolationOrderBy != 0 OR !empty($filtered_ViolationOrderBy)){
+                if($filtered_ViolationOrderBy == 1){
+                    $orderBy_filterVal = 'Student Number';
+                }elseif($filtered_ViolationOrderBy == 2){
+                    $orderBy_filterVal = 'Offense Count';
+                }else{
+                    $orderBy_filterVal = 'Recorded at';
+                }
+            }else{
+                $orderBy_filterVal = 'Recorded at';
+            }
+        // order by range
+            if(!empty($filtered_ViolationOrderByRange) OR $filtered_ViolationOrderByRange != 0){
+                if($filtered_ViolationOrderByRange === 'asc'){
+                    $orderByRange_filterVal = '(Ascending)';
+                }else{
+                    $orderByRange_filterVal = '(Descending)';
+                }
+            }else{
+                $orderByRange_filterVal = '(Descending)';
+            }
 
         // output
         $output = '';
@@ -4448,6 +4497,7 @@ class ViolationRecordsController extends Controller
                     
                     <span class="lightBlue_cardBody_blueTitle mt-3">Violations Filters:</span>
                     <span class="lightBlue_cardBody_notice"><i class="fa fa-check-square-o text-success mr-1" aria-hidden="true"></i> Vioaltion Status: <span class="font-weight-bold"> ' . $txt_ViolationStatus . ' </span> </span>
+                    <span class="lightBlue_cardBody_notice"><i class="fa fa-check-square-o text-success mr-1" aria-hidden="true"></i> Order By: <span class="font-weight-bold"> ' . $orderBy_filterVal . ' </span> <span class="font-italic"> '.$orderByRange_filterVal.'</span> </span>
                     <span class="lightBlue_cardBody_notice"><i class="fa fa-calendar-check-o text-success mr-1" aria-hidden="true"></i> Date Range: <span class="font-weight-bold"> ' . $txt_DateRange . ' </span> </span>
 
                     ';
@@ -4464,7 +4514,7 @@ class ViolationRecordsController extends Controller
                     <span class="lightBlue_cardBody_notice"><i class="fa fa-check-square-o text-success mr-1" aria-hidden="true"></i> ' . $txt_TotalRecords . '</span>
                 </div>
             </div>
-            <form id="form_confirmGenerateViolationRecReport" action="'.route('violation_records.violation_records_pdf').'" method="POST" enctype="multipart/form-data">
+            <form id="form_confirmGenerateViolationRecReport" target="_blank" action="'.route('violation_records.violation_records_pdf').'" method="POST" enctype="multipart/form-data">
                 <div class="modal-footer border-0">
                     <input type="hidden" name="_token" value="'.csrf_token().'">
                     <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
@@ -4481,6 +4531,8 @@ class ViolationRecordsController extends Controller
                     <input type="hidden" name="val_violation_status_fltr" value="'.$filtered_ViolationStatus.'">
                     <input type="hidden" name="val_date_from_fltr" value="'.$filtered_ViolationDateFrom.'">
                     <input type="hidden" name="val_date_to_fltr" value="'.$filtered_ViolationDateTo.'">
+                    <input type="hidden" name="val_order_by" value="'.$filtered_ViolationOrderBy.'">
+                    <input type="hidden" name="val_order_by_range" value="'.$filtered_ViolationOrderByRange.'">
                     <input type="hidden" name="val_total_records_fltr" value="'.$filtered_TotalRecords.'">
 
                     <input type="hidden" name="val_df_min_age_range" value="'.$deafult_MinAgeRange.'">
@@ -4516,6 +4568,8 @@ class ViolationRecordsController extends Controller
             $filter_ViolationStat = $request->get('val_violation_status_fltr');
             $filter_FromDateRange = $request->get('val_date_from_fltr');
             $filter_ToDateRange   = $request->get('val_date_to_fltr');
+            $filter_OrderBy       = $request->get('val_order_by');
+            $filter_OrderByRange  = $request->get('val_order_by_range');
             $filter_TotalRecords  = $request->get('val_total_records_fltr');
 
         // try
@@ -4594,6 +4648,28 @@ class ViolationRecordsController extends Controller
             }else{
                 $txt_DateRange = 'All Recorded Violations';
             }
+        // order by 
+            if($filter_OrderBy != 0 OR !empty($filter_OrderBy)){
+                if($filter_OrderBy == 1){
+                    $orderBy_filterVal = 'stud_num';
+                }elseif($filter_OrderBy == 2){
+                    $orderBy_filterVal = 'offense_count';
+                }else{
+                    $orderBy_filterVal = 'recorded_at';
+                }
+            }else{
+                $orderBy_filterVal = 'recorded_at';
+            }
+        // order by range
+            if(!empty($filter_OrderByRange) OR $filter_OrderByRange != 0){
+                if($filter_OrderByRange === 'asc'){
+                    $orderByRange_filterVal = 'ASC';
+                }else{
+                    $orderByRange_filterVal = 'DESC';
+                }
+            }else{
+                $orderByRange_filterVal = 'DESC';
+            }
         // Total Records
             if($filter_TotalRecords > 0){
                 if($filter_TotalRecords > 1){
@@ -4651,7 +4727,7 @@ class ViolationRecordsController extends Controller
                                         $vrQuery->whereBetween('violations_tbl.recorded_at', [$filter_FromDateRange, $filter_ToDateRange]);
                                     }
                                 })
-                                ->orderBy('violations_tbl.recorded_at', 'DESC')
+                                ->orderBy('violations_tbl.'.$orderBy_filterVal, $orderByRange_filterVal)
                                 ->get();
             }else{
                 $query_violation_records = DB::table('violations_tbl')
@@ -4682,7 +4758,7 @@ class ViolationRecordsController extends Controller
                                         $vrQuery->whereBetween('violations_tbl.recorded_at', [$filter_FromDateRange, $filter_ToDateRange]);
                                     }
                                 })
-                                ->orderBy('violations_tbl.recorded_at', 'DESC')
+                                ->orderBy('violations_tbl.'.$orderBy_filterVal, $orderByRange_filterVal)
                                 ->get();
             }
             // Total Records
@@ -4702,7 +4778,7 @@ class ViolationRecordsController extends Controller
         // Generate PDF
             $pdf = \App::make('dompdf.wrapper');
             // $pdf->loadHTML($output);
-            $pdf = PDF::loadView('reports/violation_records_pdf', compact('query_violation_records', 'now_timestamp', 'query_respo_user', 'txt_SchoolNames', 'txt_Programs', 'txt_YearLevels', 'txt_Gender', 'txt_AgeRange', 'txt_ViolationStatus', 'txt_DateRange', 'txt_TotalRecords', 'filter_SearchInput', 'txt_TotalQueryRecords'));
+            $pdf = PDF::loadView('reports/violation_records_pdf', compact('query_violation_records', 'now_timestamp', 'query_respo_user', 'txt_SchoolNames', 'txt_Programs', 'txt_YearLevels', 'txt_Gender', 'txt_AgeRange', 'txt_ViolationStatus', 'txt_DateRange', 'txt_TotalRecords', 'filter_SearchInput', 'filter_OrderBy', 'filter_OrderByRange', 'txt_TotalQueryRecords', 'filter_TotalRecords'));
             $pdf->setPaper('A4');
             $pdf->getDomPDF()->set_option("enable_php", true);
             return $pdf->stream('reports/violation_records_pdf.pdf');

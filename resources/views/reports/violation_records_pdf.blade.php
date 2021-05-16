@@ -142,6 +142,13 @@
                 font-size: 14px;
             }
 
+            /* end text for tables */
+            .notice_1{
+                font-size: 13px !important;
+                font-style: italic !important;
+                text-align: center !important;
+            }
+
             /* contents data table */
             #contentsData_table{
                 font-family: Arial, Helvetica, sans-serif;
@@ -286,6 +293,39 @@
 
             <br>
 
+            @php
+                // order by 
+                    if($filter_OrderBy != 0 OR !empty($filter_OrderBy)){
+                        if($filter_OrderBy == 1){
+                            $orderBy_filterVal = 'Student Number';
+                        }elseif($filter_OrderBy == 2){
+                            $orderBy_filterVal = 'Offense Count';
+                        }else{
+                            $orderBy_filterVal = 'Recorded At';
+                        }
+                    }else{
+                        $orderBy_filterVal = 'Recorded At';
+                    }
+                // order by range
+                    if(!empty($filter_OrderByRange) OR $filter_OrderByRange != 0){
+                        if($filter_OrderByRange === 'asc'){
+                            $orderByRange_filterVal = '(Ascending)';
+                        }else{
+                            $orderByRange_filterVal = '(Descending)';
+                        }
+                    }else{
+                        $orderByRange_filterVal = '(Descending)';
+                    }
+                // is/are and s texts based on filter_TotalRecords
+                if($filter_TotalRecords > 1){
+                    $is_are = 'are';
+                    $_s     = 's';
+                }else{
+                    $is_are = 'is';
+                    $_s     = '';
+                }
+            @endphp 
+
             <table id="contentsInfo_table">
                 <tbody>
                     <tr class="tr_bg_DDD">
@@ -317,7 +357,7 @@
                             <span class="font-weight-bold">Year Levels: </span> {{ $txt_YearLevels }}
                         </td>
                         <td>
-                            <span class="font-weight-bold">Order By: </span> Date Recorded <span class="cg"> (Ascending) </span>
+                            <span class="font-weight-bold">Order By: </span> {{ $orderBy_filterVal }} <span class="cg"> {{ $orderByRange_filterVal }} </span>
                         </td>
                     </tr>
                     <tr>
@@ -361,7 +401,7 @@
 
             <br>
 
-            <p class="notice">Below are the Recorded Violations retrieved from the Student Violation Management System.</p>
+            <p class="notice">Below {{ $is_are }} the Recorded Violation{{$_s }} retrieved from the Student Violation Management System generated with custom filters as shown above.</p>
 
             <br>
             
@@ -418,16 +458,44 @@
                                 $toJson = json_encode($to_array_allOffenses);
                                 $count_allOffenses = json_encode(count($to_array_allOffenses));
                                 $o_x = 0;
+
+                                // course trunc
+                                if(!is_null($violator->Course) OR !empty($violator->Course)){
+                                    if($violator->Course === 'BS Radiologic Technology'){
+                                        $violator_Course = 'BS Rad. Tech.';
+                                    }elseif($violator->Course === 'BS Biology'){
+                                        $violator_Course = 'BS Bio.';
+                                    }elseif($violator->Course === 'BS Pharmacy'){
+                                        $violator_Course = 'BS Pharma.';
+                                    }elseif($violator->Course === 'BS Physical Therapy'){
+                                        $violator_Course = 'BS Phy. Th.';
+                                    }elseif($violator->Course === 'BS Medical Technology'){
+                                        $violator_Course = 'BS Med. Tech.';
+                                    }elseif($violator->Course === 'BA Communication'){
+                                        $violator_Course = 'BA Comm.';
+                                    }elseif($violator->Course === 'BS Psychology'){
+                                        $violator_Course = 'BS Psych.';
+                                    }elseif($violator->Course === 'BS Education'){
+                                        $violator_Course = 'BS Educ.';
+                                    }else{
+                                        $violator_Course = ''.$violator->Course.'';
+                                    }
+                                }else{
+                                    $violator_Course = 'NO COURSE';
+                                }
+
                             @endphp
                             <tr>
-                                <td class="row_count" width="5%">
+                                <td class="row_count" style="width: 2% !important;">
                                     {{$rowCount}}.
                                 </td>
-                                <td width="45%">
+                                <td style="width: 45% !important;">
                                     <p class="m_0">{{$violator->First_Name }} {{ $violator->Middle_Name }} {{ $violator->Last_Name }}</p>
-                                    <p class="m_0 cg">{{$violator->Student_Number }} | {{ $violator->School_Name }} | {{ $violator->Course }} | {{ $violator->YearLevel}}-Y | {{ $violator->Gender }}</p>
+                                    <p class="m_0 cg">{{$violator->Student_Number }} | {{ $violator->School_Name }} | 
+                                        {{ $violator_Course}} 
+                                        | {{ $violator->YearLevel}}-Y | {{ $violator->Gender }}</p>
                                 </td>
-                                <td width="50%">
+                                <td style="width: 53% !important;">
                                     <p class="m_0">{{date('F d, Y', strtotime($violator->recorded_at)) }} <span class="cg"> {{ date('(D - g:i A)', strtotime($violator->recorded_at))}} </span> <span class="{{$class_ViolationStatus}}"> {{ $txt_ViolationStatus }}</span> </p>
                                     <p class="m_0">{{$violator->offense_count }} Offense{{$oc_s}}: 
                                         <span class="cg">
@@ -458,7 +526,7 @@
             </table>
 
             <br>
-            <br>
+            <p class="notice_1">-- end of table <span class="cg"> (Recorded Violations Table) </span> --</p>
             <br>
 
             <table id="contentsInfo_table">
@@ -492,7 +560,7 @@
                             <span class="font-weight-bold">Year Levels: </span> {{ $txt_YearLevels }}
                         </td>
                         <td>
-
+                            <span class="font-weight-bold">Order By: </span> {{ $orderBy_filterVal }} <span class="cg"> {{ $orderByRange_filterVal }} </span>
                         </td>
                     </tr>
                     <tr>
@@ -501,7 +569,7 @@
                         </td>
                         @if($filter_SearchInput != '' OR !empty($filter_SearchInput))
                             <td class="br_1">
-                                <span class="font-weight-bold">Search Filter: </span>
+                                <span class="font-weight-bold">Search Filter: </span> <em>{{ $filter_SearchInput }}...</em>
                             </td>
                         @else
                             <td>
@@ -513,7 +581,7 @@
                         <td class="br_1 pb_10" style="padding-bottom: 15px !important;">
                             <span class="font-weight-bold">Age Range: </span> {{ $txt_AgeRange }}
                         </td>
-                        @if($filter_SearchInput != '' OR !empty($filter_SearchInput))
+                        {{-- @if($filter_SearchInput != '' OR !empty($filter_SearchInput))
                             <td class="br_1" style="padding-bottom: 15px !important;">
                                 <em>{{ $filter_SearchInput }}...</em>
                             </td>
@@ -521,7 +589,10 @@
                             <td style="padding-bottom: 15px !important;">
 
                             </td>
-                        @endif
+                        @endif --}}
+                        <td style="padding-bottom: 15px !important;">
+
+                        </td>
                     </tr>
                     <tr class="tr_bg_DDD">
                         <td class="b_1" colspan="2">

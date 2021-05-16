@@ -18,6 +18,22 @@
                 </div>
             </div>
 
+            {{-- card intro --}}
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <div class="card card_gbr shadow">
+                        <div class="card-body card_intro">
+                            <div class="page_intro">
+                                <span class="page_intro_title">Sanctions</span>
+                                <span class="page_intro_subtitle">Create Sanctions as default options to ease your task for adding corresponding sanctions to recorded violations. You will be able to Add new Sanctions, Edit Existing Sanctions, and/or delete created sanctions.</span>
+                            </div>
+                            <div class="page_illustration">
+                                <img class="illustration_svg" src="{{ asset('storage/svms/illustrations/violation_records_illustration.svg') }}" alt="...">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
         @else
 

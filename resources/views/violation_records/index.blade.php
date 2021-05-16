@@ -54,6 +54,7 @@
                 </div>
             </div>
         </div>
+
         {{-- filter options --}}
         <div class="row">
             <div class="col-lg-3 col-md-4 col-sm-12">
@@ -206,18 +207,18 @@
                                         <div class="form-group">
                                             <select id="violationRecFltr_orderBy" name="violationRecFltr_orderBy" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
                                                 <option value="0" selected>Date Recorded</option>
-                                                <option value="not cleared">Student Number</option>
-                                                <option value="cleared">Offense Count</option>
+                                                <option value="1">Student Number</option>
+                                                <option value="2">Offense Count</option>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-lg-4 col-md-4 col-sm-12 pl-0 d-flex justify-content-end">
                                         <div class="btn-group btn-group-toggle" data-toggle="buttons">
                                             <label class="btn btn_svms_blue cust_btn_radio cbr_p" data-toggle="tooltip" data-placement="top" title="Ascending Order?">
-                                                <input class="m-0 p-0" type="radio" name="options" id="option1" autocomplete="off" checked> <i class="fa fa-sort-amount-asc cbr_i" aria-hidden="true"></i>
+                                                <input class="m-0 p-0" type="radio" name="violationRecFltr_orderByRange" id="violationRecFltr_orderByRange_ASC" value="asc" autocomplete="off"> <i class="fa fa-sort-amount-asc cbr_i" aria-hidden="true"></i>
                                             </label>
                                             <label class="btn btn_svms_blue cust_btn_radio cbr_p active" data-toggle="tooltip" data-placement="top" title="Descending Order?">
-                                                <input class="m-0 p-0" type="radio" name="options" id="option2" autocomplete="off"> <i class="fa fa-sort-amount-desc cbr_i" aria-hidden="true"></i>
+                                                <input class="m-0 p-0" type="radio" name="violationRecFltr_orderByRange" id="violationRecFltr_orderByRange_DESC" value="desc" autocomplete="off" checked> <i class="fa fa-sort-amount-desc cbr_i" aria-hidden="true"></i>
                                             </label>
                                         </div>
                                     </div>
@@ -354,6 +355,8 @@
                         var vr_status = document.getElementById('violationRecFltr_violationStat').value;
                         var vr_rangefrom = document.getElementById("violationRecFltr_hidden_dateRangeFrom").value;
                         var vr_rangeTo = document.getElementById("violationRecFltr_hidden_dateRangeTo").value;
+                        var vr_orderBy = document.getElementById("violationRecFltr_orderBy").value;
+                        var selectedOrderByRange = document.querySelector('input[type=radio][name=violationRecFltr_orderByRange]:checked').value;  
                         var vr_numRows = document.getElementById("violationRecsFiltr_numOfRows").value;
                         var page = document.getElementById("vr_hidden_page").value;
                         
@@ -377,6 +380,8 @@
                         console.log('violation_status_filter: ' + vr_status);
                         console.log('date_from_filter: ' + vr_rangefrom);
                         console.log('date_filter: ' + vr_rangeTo);
+                        console.log('order by: ' + vr_orderBy);
+                        console.log('order by Range: ' + selectedOrderByRange);
                         console.log('number of rows: ' + vr_numRows);
                         console.log('current_page: ' + page);
                         console.log('');
@@ -397,6 +402,8 @@
                                 vr_status:vr_status,
                                 vr_rangefrom:vr_rangefrom,
                                 vr_rangeTo:vr_rangeTo,
+                                vr_orderBy:vr_orderBy,
+                                selectedOrderByRange:selectedOrderByRange,
                                 vr_numRows:vr_numRows,
                                 page:page
                                 },
@@ -736,6 +743,29 @@
                     });
                 // filter violation status end 
 
+                // filter order by
+                    $('#violationRecFltr_orderBy').on('change paste keyup', function(){
+                        var selectedOrderBy = $(this).val();
+                        if(selectedOrderBy != 0){
+                            $(this).addClass('cust_input_hasvalue');
+                        }else{
+                            $(this).removeClass('cust_input_hasvalue');
+                        }
+                        // table paginatin set to 1
+                        $('#vr_hidden_page').val(1);
+                        load_violationRec_table();
+                    });
+                // filter order by end 
+
+                // filter ASC/DESC order
+                    $('input[type=radio][name=violationRecFltr_orderByRange]').change(function() {
+                        // var selectedOrderByRange = $(this).val();
+                        // table paginatin set to 1
+                        $('#vr_hidden_page').val(1);
+                        load_violationRec_table();
+                    });
+                // filter ASC/DESC order end
+
                 // reset filter
                     $('#resetViolationRecsFilter_btn').on('click', function(){
                         // disable reset button
@@ -812,6 +842,8 @@
                     var fvr_status = document.getElementById('violationRecFltr_violationStat').value;
                     var fvr_rangefrom = document.getElementById("violationRecFltr_hidden_dateRangeFrom").value;
                     var fvr_rangeTo = document.getElementById("violationRecFltr_hidden_dateRangeTo").value;
+                    var vr_orderBy = document.getElementById("violationRecFltr_orderBy").value;
+                    var selectedOrderByRange = document.querySelector('input[type=radio][name=violationRecFltr_orderByRange]:checked').value;  
                     var fvr_totalRecords = document.getElementById("vr_hiddenTotalData_found").value;
                     var _token = $('input[name="_token"]').val();
 
@@ -827,6 +859,8 @@
                     console.log('violation_status_filter: ' + fvr_status);
                     console.log('date_from_filter: ' + fvr_rangefrom);
                     console.log('date_filter: ' + fvr_rangeTo);
+                    console.log('order by: ' + vr_orderBy);
+                    console.log('order by Range: ' + selectedOrderByRange);
                     console.log('Total Records found: ' + fvr_totalRecords);
                     console.log('');
 
@@ -847,6 +881,8 @@
                             fvr_status:fvr_status,
                             fvr_rangefrom:fvr_rangefrom,
                             fvr_rangeTo:fvr_rangeTo,
+                            vr_orderBy:vr_orderBy,
+                            selectedOrderByRange:selectedOrderByRange,
                             fvr_totalRecords:fvr_totalRecords,
                             _token:_token
                             },
@@ -867,6 +903,7 @@
                 $(form_confirmGenerateViolationRecReport).submit(function(){
                     cancel_GenerateViolationRecordsReport_btn.disabled = true;
                     process_GenerateViolationRecordsReport_btn.disabled = true;
+                    $('#generateViolationsRecordsConfirmationModal').modal('hide');
                     return true;
                 });
             });
