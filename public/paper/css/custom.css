@@ -668,7 +668,11 @@ fieldset[disabled] .btn_svms_blue.active {
 }
 
 .py10l15r10{
-  padding: 10px 10px 10px 15px !important
+  padding: 10px 10px 10px 15px !important;
+}
+
+.py12l12r7{
+  padding: 12px 7px 12px 12px !important
 }
 
 /* margin customizations */
@@ -876,6 +880,25 @@ fieldset[disabled] .btn_svms_blue.active {
   border-radius: 12px !important;
   margin: 0;
 }
+.th_checkbox{
+  display: block;
+  font-size: 14px !important;
+  text-transform: none !important;
+  font-weight: bold !important;
+  color: #fff !important;
+  margin: 0 !important;
+  padding: 3px 0 0 0 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease-in-out;
+}
+.th_checkbox:hover{
+  color: #F4F4F5 !important;
+  font-weight: bold !important;
+}
+/* blue checkbox */
+/* input[type=checkbox]:checked + .th_checkbox{
+  font-weight: bold !important;
+} */
 /* light blue card body */
 .lightBlue_cardBody{
   display: block;

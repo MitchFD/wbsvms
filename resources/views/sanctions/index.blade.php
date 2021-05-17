@@ -5,6 +5,32 @@
 
 @section('content')
     <div class="content">
+    {{-- notifications --}}
+    @if (session('success_status'))
+        <div class="row d-flex justify-content-center">
+            <div class="col-lg-12 col-md-12 col-sm-12 align-items-center mx-auto">
+                <div class="alert alert-success alert-dismissible login_alert fade show" role="alert">
+                    <button type="button" aria-hidden="true" class="close" data-dismiss="alert" aria-label="Close">
+                        <i class="nc-icon nc-simple-remove"></i>
+                    </button>
+                    {{ session('success_status') }}
+                </div>
+            </div>
+        </div>
+    @endif
+    @if (session('failed_status'))
+        <div class="row d-flex justify-content-center">
+            <div class="col-lg-12 col-md-12 col-sm-12 align-items-center mx-auto">
+                <div class="alert alert_smvs_danger alert-dismissible login_alert fade show" role="alert">
+                    <button type="button" aria-hidden="true" class="close" data-dismiss="alert" aria-label="Close">
+                        <i class="nc-icon nc-simple-remove"></i>
+                    </button>
+                    {{ session('failed_status') }}
+                </div>
+            </div>
+        </div>
+    @endif
+
     @if(auth()->user()->user_status == 'active')
         @php
             $get_user_role_info = App\Models\Userroles::select('uRole_id', 'uRole', 'uRole_access')->where('uRole', auth()->user()->user_role)->first();
@@ -37,7 +63,7 @@
 
             {{-- cards --}}
             <div class="row">
-                <div class="col-lg-8 col-md-8 col-sm-12">
+                <div class="col-lg-7 col-md-7 col-sm-12">
                     <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12">
                             <div class="accordion gCardAccordions" id="createdSanctionsCollapseParent">
@@ -65,8 +91,8 @@
                                                                 </div>
                                                             </div>
                                                             <div class="col-lg-7 col-md-7 col-sm-12 d-flex justify-content-end align-items-end">
-                                                                <button type="button" id="editSelectedSanctions_btn" class="btn btn-success cust_bt_links shadow ml-1" disabled data-toggle="tooltip" data-placement="top" title="Edit Selected Sanctions?"><i class="fa fa-pencil-square-o mr-1" aria-hidden="true"></i> Edit</button>
-                                                                <button type="button" id="deleteSelectedSanctions_btn" class="btn btn_svms_red cust_bt_links shadow ml-1" disabled data-toggle="tooltip" data-placement="top" title="Delete Selected Sanctions?"><i class="fa fa-trash mr-1" aria-hidden="true"></i> Delete</button>
+                                                                <button type="button" id="editSelectedSanctions_btn" onclick="edit_SelectedSanctions()" class="btn btn-success cust_bt_links shadow ml-1" disabled data-toggle="tooltip" data-placement="top" title="Edit Selected Sanctions?"><i class="fa fa-pencil-square-o mr-1" aria-hidden="true"></i> Edit</button>
+                                                                <button type="button" id="deleteSelectedSanctions_btn" onclick="delete_SelectedSanctions()" class="btn btn_svms_red cust_bt_links shadow ml-1" disabled data-toggle="tooltip" data-placement="top" title="Delete Selected Sanctions?"><i class="fa fa-trash mr-1" aria-hidden="true"></i> Delete</button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -78,12 +104,16 @@
                                                 <table class="table table-hover cust_table shadow">
                                                     <thead class="thead_svms_blue">
                                                         <tr>
-                                                            <th class="pl12"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></th>
-                                                            <th class="pl12">#</th>
-                                                            <th>Sanction</th>
+                                                            <th class="pl12" width="5%">#</th>
+                                                            <th> 
+                                                                <div class="custom-control custom-checkbox align-items-center">
+                                                                    <input type="checkbox" name="select_all_sanctions" value="all" class="custom-control-input cursor_pointer" id="markAllSanctions">
+                                                                    <label class="custom-control-label th_checkbox" for="markAllSanctions" disabled data-toggle="tooltip" data-placement="top" title="Mark All Sanctions?"> Sanctions</label>
+                                                                </div>
+                                                            </th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody class="tbody_svms_white" id="sys_users_tbl">
+                                                    <tbody class="tbody_svms_white" id="cs_tableTbody">
                                                         {{-- ajax data table --}}
                                                     </tbody>
                                                 </table>
@@ -91,13 +121,13 @@
                                         </div>
                                         <div class="row d-flex justify-content-center align-items-center">
                                             <div class="col-lg-6 col-md-6 col-sm-12">
-                                                <span>Total Data: <span class="font-weight-bold" id="total_data_count"> </span> </span>
+                                                <span>Total Data: <span class="font-weight-bold" id="cs_totalDataCount"> </span> </span>
                                             </div>
                                             <div class="col-lg-6 col-md-6 col-sm-12 d-flex justify-content-end align-items-end">
                                                 {{-- <a href="{{ route('user_management.create_users', 'create_users') }}" class="btn btn-success cust_bt_links shadow" role="button"><i class="nc-icon nc-simple-add mr-1" aria-hidden="true"></i> Create New User</a> --}}
                                                 @csrf
-                                                <input type="hidden" name="su_hidden_page" id="su_hidden_page" value="1" />
-                                                <div id="su_tablePagination">
+                                                <input type="hidden" name="cs_hidden_page" id="cs_hidden_page" value="1" />
+                                                <div id="cs_tablePagination">
     
                                                 </div>
                                             </div>
@@ -130,7 +160,7 @@
                     </div>
                 </div>
             
-                <div class="col-lg-4 col-md-4 col-sm-12">
+                <div class="col-lg-5 col-md-5 col-sm-12">
                     <div class="accordion gCardAccordions" id="createNewSanctionsCollapseParent">
                         <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray">
                             <div class="card-header p-0" id="createNewSanctionsCollapseHeading">
@@ -144,15 +174,18 @@
                             </div>
                             <div id="createNewSanctionsCollapseDiv" class="collapse gCardAccordions_collapse show cb_t0b15x25" aria-labelledby="createNewSanctionsCollapseHeading" data-parent="#createNewSanctionsCollapseParent">
                                 <div class="card card_gbr shadow">
-                                    <div class="card-body cb_p15x25">
-                                        <form id="form_registerNewSanctions" action="{{route('user_management.create_new_system_role')}}" class="createSystemRoleForm" method="POST">
+                                    <div class="card-body cb_p25">
+                                        <form id="form_registerNewSanctions" action="{{route('sanctions.register_new_sanctions')}}" method="POST">
                                             @csrf
+                                            <div class="card-body lightGreen_cardBody shadow-none mb-4">
+                                                <span class="lightGreen_cardBody_notice"><i class="fa fa-unlock-alt" aria-hidden="true"></i> Created Sanction/s will be displayed as default options when adding sanction/s to recorded violations.</span>
+                                            </div>
                                             <span class="lightGreen_cardBody_greenTitle">Type Sanctions:</span>
                                             <div class="input-group mb-2">
                                                 <div class="input-group-append">
                                                     <span class="input-group-text txt_iptgrp_append font-weight-bold">1. </span>
                                                 </div>
-                                                <input type="text" id="newSanction_firstField_input" name="register_new_sanctions[]" class="form-control input_grpInpt3" placeholder="Type New Sanction" aria-label="Type New Sanction" aria-describedby="other-offenses-input">
+                                                <input type="text" id="newSanction_firstField_input" name="add_new_sanctions[]" class="form-control input_grpInpt3" placeholder="Type New Sanction" aria-label="Type New Sanction" aria-describedby="new-sanctions-input" required>
                                                 <div class="input-group-append">
                                                     <button class="btn btn-success m-0" id="btn_addAnother_input" type="button" disabled><i class="nc-icon nc-simple-add font-weight-bold" aria-hidden="true"></i></button>
                                                 </div>
@@ -167,7 +200,7 @@
                                                     <input type="hidden" name="respo_user_lname" value="{{auth()->user()->user_lname}}">
                                                     <input type="hidden" name="respo_user_fname" value="{{auth()->user()->user_fname}}">
 
-                                                    <button type="submit" id="save_NewSanctions_btn" class="btn btn_svms_blue btn-round btn_show_icon" disabled>{{ __('Register New Sanction/s') }}<i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                                                    <button type="submit" id="save_NewSanctions_btn" class="btn btn_svms_blue btn-round btn_show_icon mb-0" disabled>{{ __('Register New Sanction/s') }}<i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
                                                 </div>
                                             </div>
                                         </form>
@@ -186,9 +219,172 @@
         
     @endif
     </div>
+
+    {{-- modals --}}
+    {{-- edit selected sanctions on modal --}}
+        <div class="modal fade" id="editSelectedSanctionsModal" tabindex="-1" role="dialog" aria-labelledby="editSelectedSanctionsModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="editSelectedSanctionsModalLabel">Edit Selected Sanctions?</span>
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="editSelectedSanctionsModalHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{-- edit selected sanctions on modal end --}}
 @endsection
 
 @push('scripts')
+    {{-- created sanctions table --}}
+        {{-- ajax load table --}}
+            <script>
+                $(document).ready(function(){
+                    load_createdSanctions_table();
+
+                    // function for ajax table pagination
+                    $(window).on('hashchange', function() {
+                            if (window.location.hash) {
+                                var page = window.location.hash.replace('#', '');
+                                if (page == Number.NaN || page <= 0) {
+                                    return false;
+                                }else{
+                                    getcsTPage(page);
+                                }
+                            }
+                        });
+                        $(document).on('click', '.pagination a', function(event){
+                            event.preventDefault();
+                            var page = $(this).attr('href').split('page=')[1];
+                            $('#cs_hidden_page').val(page);
+                            
+                            load_createdSanctions_table();
+                            getcsTPage(page);
+                            $('li.page-item').removeClass('active');
+                            $(this).parent('li.page-item').addClass('active');
+                        });
+                        function getcsTPage(page){
+                            $.ajax({
+                                url: '?page=' + page,
+                                type: "get",
+                                datatype: "html"
+                            }).done(function(data){
+                                location.hash = page;
+                            }).fail(function(jqXHR, ajaxOptions, thrownError){
+                                alert('No response from server');
+                            });
+                        }
+                    // function for ajax table pagination end
+
+                    function load_createdSanctions_table(){
+                        // get all filtered values
+                        var search_sanctions = document.getElementById('search_sanctions').value;
+                        var page = document.getElementById("cs_hidden_page").value;
+
+                        $.ajax({
+                            url:"{{ route('sanctions.index') }}",
+                            method:"GET",
+                            data:{
+                                search_sanctions:search_sanctions,
+                                page:page
+                                },
+                            dataType:'json',
+                            success:function(data){
+                                $('#cs_tableTbody').html(data.cs_tbl_data);
+                                $('#cs_tablePagination').html(data.cs_paginate);
+                                $('#cs_totalDataCount').html(data.cs_total_data_count);
+
+                                // mark sanctions for edit/delete 
+                                $("#markAllSanctions").click(function(){
+                                    if(this.checked){
+                                        $(".mark_thisSanction").each(function(){
+                                            this.checked=true;
+                                            editSelectedSanctions_btn.disabled = false;
+                                            deleteSelectedSanctions_btn.disabled = false;
+                                        });              
+                                    }else{
+                                        $(".mark_thisSanction").each(function(){
+                                            this.checked=false;
+                                            editSelectedSanctions_btn.disabled = true;
+                                            deleteSelectedSanctions_btn.disabled = true;
+                                        });              
+                                    }
+                                });
+                                $(".mark_thisSanction").change(function(){
+                                    if ($('.mark_thisSanction:checked').length == $('.mark_thisSanction').length) {
+                                        $("#markAllSanctions").prop("checked", true);
+                                    }else{
+                                        $("#markAllSanctions").prop("checked", false);
+                                    }
+                                    
+                                    // disable/enable edit and delete sanctions buttons
+                                    var editSelectedSanctions_btn = document.querySelector("#editSelectedSanctions_btn");
+                                    var deleteSelectedSanctions_btn = document.querySelector("#deleteSelectedSanctions_btn");
+                                    if($('.mark_thisSanction:checked').length > 0 || $('.mark_thisSanction:checked').length == $('.mark_thisSanction').length){
+                                        editSelectedSanctions_btn.disabled = false;
+                                        deleteSelectedSanctions_btn.disabled = false;
+                                    }else{
+                                        editSelectedSanctions_btn.disabled = true;
+                                        deleteSelectedSanctions_btn.disabled = true;
+                                    }
+                                });
+                            }
+                        });
+                    }
+
+                    // live search
+                        $('#search_sanctions').on('keyup', function(){
+                            var liveSearchcreatedSanctions = $(this).val();
+                            // add style to this input
+                            if(liveSearchcreatedSanctions != ""){
+                                $(this).addClass('cust_input_hasvalue');
+                            }else{
+                                $(this).removeClass('cust_input_hasvalue');
+                            }
+                            // table paginatin set to 1
+                            $('#cs_hidden_page').val(1);
+                            // call load_systemUsers_table()
+                            load_createdSanctions_table();
+                        });
+                    // live search end
+                });
+            </script>
+        {{-- ajax load table end --}}
+        {{-- edit selected sanctions --}}
+            <script>
+                function edit_SelectedSanctions(){
+                    var sel_sanctions = [];
+                    $('.mark_thisSanction:checkbox:checked').each(function(){
+                        sel_sanctions.push($(this).val());
+                    });
+                    var _token = $('input[name="_token"]').val();
+                    // console.log(sel_sanctions);
+                    $.ajax({
+                        url:"{{ route('sanctions.edit_sanctions_form') }}",
+                        method:"GET",
+                        data:{sel_sanctions:sel_sanctions, _token:_token},
+                        success: function(data){
+                            $('#editSelectedSanctionsModalHtmlData').html(data); 
+                            $('#editSelectedSanctionsModal').modal('show');
+                        }
+                    });
+                }
+            </script>
+        {{-- edit selected sanctions end --}}
+        {{-- delete selected sanctions --}}
+            <script>
+                function delete_SelectedSanctions(){
+                    console.log('delete');
+                }
+            </script>
+        {{-- delete selected sanctions end --}}
+    {{-- created sanctions table end --}}
+ 
     {{-- Sanction Registration form --}}
         <script>
             // adding new input for Other Offenses
@@ -197,7 +393,6 @@
                 var SanctionsAdd_Btn = document.querySelector("#btn_addAnother_input");
                 var form_registerNewSanctions  = document.querySelector("#form_registerNewSanctions");
                 var save_NewSanctions_btn = document.querySelector("#save_NewSanctions_btn");
-                var cancel_violationForm_btn = document.querySelector("#cancel_violationForm_btn");
                 var addedOtherSanctions_field = $('.addedOtherSanctions_field').filter(function() {
                     return this.value != '';
                 });
@@ -229,7 +424,7 @@
                                             '<div class="input-group-append"> ' +
                                                 '<span class="input-group-text txt_iptgrp_append addOtherSanctionIndex font-weight-bold">1. </span> ' +
                                             '</div> ' +
-                                            '<input type="text" name="register_new_sanctions[]" class="form-control input_grpInpt3 addedOtherSanctions_field" placeholder="Type New Sanction" aria-label="Type New Sanction" aria-describedby="other-offenses-input" required /> ' +
+                                            '<input type="text" name="add_new_sanctions[]" class="form-control input_grpInpt3 addedOtherSanctions_field" placeholder="Type New Sanction" aria-label="Type New Sanction" aria-describedby="new-sanctions-input" required /> ' +
                                             '<div class="input-group-append"> ' +
                                                 '<button class="btn btn_svms_blue m-0 btn_deleteAnother_input" type="button"><i class="nc-icon nc-simple-remove font-weight-bold" aria-hidden="true"></i></button> ' +
                                             '</div> ' +
@@ -239,7 +434,6 @@
                         if(x < maxField){
                             x++;
                             $(addedInputFields_div).append(newInputField);
-                            // console.log(x);
                         }
                         addOtherSanctionIndexing();
                     });
@@ -248,12 +442,10 @@
                         $(this).closest('.input_grpInpt3').value = '';
                         $(this).closest('.input-group').last().remove();
                         x--;
-                        // console.log('click');
                         addOtherSanctionIndexing();
                     });
             // disable cancel and sibmit button on submit
                 $(form_registerNewSanctions).submit(function(){
-                    cancel_violationForm_btn.disabled = true;
                     save_NewSanctions_btn.disabled = true;
                     return true;
                 });

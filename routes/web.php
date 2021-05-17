@@ -210,6 +210,10 @@ Route::group(['middleware' => 'auth'], function () {
 // sanctions
 Route::group(['middleware' => 'auth'], function () {
 	Route::get('sanctions/index', ['as' => 'sanctions.index', 'uses' => 'App\Http\Controllers\SanctionsController@index']);
+	// register sanctions
+	Route::post('sanctions/register_new_sanctions', 'App\Http\Controllers\SanctionsController@register_new_sanctions')->name('sanctions.register_new_sanctions');
+	// open edit sanctions form
+	Route::get('sanctions/edit_sanctions_form', 'App\Http\Controllers\SanctionsController@edit_sanctions_form')->name('sanctions.edit_sanctions_form');
 });
 
 // student handbook
