@@ -214,6 +214,8 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::post('sanctions/register_new_sanctions', 'App\Http\Controllers\SanctionsController@register_new_sanctions')->name('sanctions.register_new_sanctions');
 	// open edit sanctions form
 	Route::get('sanctions/edit_sanctions_form', 'App\Http\Controllers\SanctionsController@edit_sanctions_form')->name('sanctions.edit_sanctions_form');
+	// process update of selected sanctions
+	Route::post('sanctions/process_update_selected_sanctions', 'App\Http\Controllers\SanctionsController@process_update_selected_sanctions')->name('sanctions.process_update_selected_sanctions');
 });
 
 // student handbook

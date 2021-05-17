@@ -193,15 +193,17 @@ class SanctionsController extends Controller
             }
             $output .= '
             <div class="modal-body">
-                <form id="form_updateCreatedSanctions" action="'.route('user_management.process_deactivate_user_account').'" class="deacivateUserAccountConfirmationForm" method="POST">
+                <form id="form_updateCreatedSanctions" action="'.route('sanctions.process_update_selected_sanctions').'" class="deacivateUserAccountConfirmationForm" method="POST">
                     <div class="card-body lightGreen_cardBody">
                         <span class="lightGreen_cardBody_greenTitle mb-1">Selected Sanctions:</span>
                         ';
                         foreach($sel_sanctions as $sel_crSanct_id){
                             $query_selected_sanction = CreatedSanctions::select('crSanct_id','crSanct_details')->where('crSanct_id', $sel_crSanct_id)->first();
+                            $sel_crSanct_id      = $query_selected_sanction->crSanct_id;
                             $sel_crSanct_details = $query_selected_sanction->crSanct_details;
                             $index++;
                             $output .= '
+                            <input type="hidden" name="update_sel_crSanct_ids[]" value="'.$sel_crSanct_id.'">
                             <div class="input-group mt-1 mb-2">
                                 <div class="input-group-append">
                                     <span class="input-group-text txt_iptgrp_append font-weight-bold">'.$index.'.</span>
@@ -226,13 +228,12 @@ class SanctionsController extends Controller
                     </div>
                     <div class="modal-footer border-0 px-0 pb-0">
                         <input type="hidden" name="_token" value="'.csrf_token().'">
-                        <input type="hidden" name="update_sel_sanctions" value="'.json_encode($sel_sanctions).'">
                         <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
                         <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
                         <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
                         <div class="btn-group" role="group" aria-label="actions">
                             <button id="cancel_updateCreatedSanctionsBtn" type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
-                            <button id="submit_updateCreatedSanctionsBtn" type="submit" class="btn btn-round btn-success btn_show_icon m-0">Save Changes <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                            <button id="submit_updateCreatedSanctionsBtn" type="submit" class="btn btn-round btn-success btn_show_icon m-0" disabled>Save Changes <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
                         </div>
                     </div>
                 </form>
@@ -249,5 +250,47 @@ class SanctionsController extends Controller
             ';
         }
         echo $output;
+    }
+    // process update of selected sanctions
+    public function process_update_selected_sanctions(Request $request){
+        // get all request
+        $get_respo_user_id      = $request->get('respo_user_id');
+        $get_respo_user_lname   = $request->get('respo_user_lname');
+        $get_respo_user_fname   = $request->get('respo_user_fname');  
+        $update_sel_crSanct_ids = json_decode(json_encode($request->get('update_sel_crSanct_ids')), true);
+        $get_selected_sanctions = json_decode(json_encode($request->get('update_selected_sanctions')), true);
+
+        // count sanctions
+        $count_sel_crSanct_ids = count($update_sel_crSanct_ids);
+
+        // update
+        if($count_sel_crSanct_ids > 0){
+            // merge selected crSanct_ids and crSanct_details
+            $merge_sel_crSancts = array_merge($update_sel_crSanct_ids,$get_selected_sanctions);
+            // try  
+            foreach($merge_sel_crSancts as $update_this_crSanct){
+                echo ''.$update_this_crSanct . '<br>';
+            }
+            // foreach($get_selected_sanctions as $update_this_crSanct_details){
+            //     echo ''.$update_this_crSanct_details . '<br>';
+            // }
+
+
+            // custom values
+            // $now_timestamp = now();
+            // $sq = "'";
+
+            // update query
+            // foreach($get_selected_sanctions as $update_this_sanction){
+            //     $update_created_sanctions_tbl = DB::table('created_sanctions_tbl')
+            //             ->where('crSanct_id', $update_this_sanction)
+            //             ->update([
+            //                 'crSanct_details' => $deactivated_txt,
+            //                 'updated_at'  => $now_timestamp
+            //             ]);
+            // }
+        }else{
+            return back()->withFailedStatus('There are no selected Sanctions! please close this modal and select sanctions to Edit.');
+        }
     }
 }

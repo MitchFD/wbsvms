@@ -356,6 +356,7 @@
             </script>
         {{-- ajax load table end --}}
         {{-- edit selected sanctions --}}
+            {{-- open modal --}}
             <script>
                 function edit_SelectedSanctions(){
                     var sel_sanctions = [];
@@ -374,6 +375,25 @@
                         }
                     });
                 }
+            </script>
+            {{-- on modal --}}
+            <script>
+                $('#editSelectedSanctionsModal').on('show.bs.modal', function () {
+                    var form_updateCreatedSanctions  = document.querySelector("#form_updateCreatedSanctions");
+                    var submit_updateCreatedSanctionsBtn = document.querySelector("#submit_updateCreatedSanctionsBtn");
+                    var cancel_updateCreatedSanctionsBtn = document.querySelector("#cancel_updateCreatedSanctionsBtn");
+                    $('#form_updateCreatedSanctions').each(function(){
+                        $(this).data('serialized', $(this).serialize())
+                    }).on('change input', function(){
+                        $(this).find('#submit_updateCreatedSanctionsBtn').prop('disabled', $(this).serialize() == $(this).data('serialized'));
+                    }).find('#submit_updateCreatedSanctionsBtn').prop('disabled', true);
+                    // disable cancel and sibmit button on submit
+                    $('#form_updateCreatedSanctions').submit(function(){
+                        submit_updateCreatedSanctionsBtn.disabled = true;
+                        cancel_updateCreatedSanctionsBtn.disabled = true;
+                        return true;
+                    });
+                });
             </script>
         {{-- edit selected sanctions end --}}
         {{-- delete selected sanctions --}}
