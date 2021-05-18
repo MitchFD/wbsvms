@@ -54,7 +54,7 @@
                                 <span class="page_intro_subtitle">Create Sanctions as default options to ease your task for adding corresponding sanctions to recorded violations. You will be able to Add new Sanctions, Edit Existing Sanctions, and/or delete created sanctions.</span>
                             </div>
                             <div class="page_illustration">
-                                <img class="illustration_svg" src="{{ asset('storage/svms/illustrations/violation_records_illustration.svg') }}" alt="...">
+                                <img class="illustration_svg" src="{{ asset('storage/svms/illustrations/sanctions_illustration.svg') }}" alt="...">
                             </div>
                         </div>
                     </div>
