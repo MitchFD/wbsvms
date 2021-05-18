@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Students;
 use App\Models\Violations;
 use App\Models\Deletedviolations;
+use App\Models\CreatedSanctions;
 use App\Models\Sanctions;
 use App\Models\Deletedsanctions;
 use App\Models\Users;
@@ -681,12 +682,30 @@ class ViolationRecordsController extends Controller
                     <form id="form_addSanctions" action="'.route('violation_records.submit_sanction_form').'" class="form" enctype="multipart/form-data" method="POST">
                         <div class="modal-body pb-0">
                             <div class="card-body lightGreen_cardBody mb-2">
-                                <span class="lightGreen_cardBody_greenTitle mb-1">Sanctions:</span>
+                                <span class="lightGreen_cardBody_greenTitle mb-1">Select Sanctions:</span>
+                            ';
+                            // check if there are created sanctions from created_sanctions_tbl
+                            $query_crSanctions = CreatedSanctions::select('crSanct_id', 'crSanct_details')->get();
+                            $count_query_crSanctions = count($query_crSanctions);
+                            if($count_query_crSanctions > 0){
+                                foreach($query_crSanctions as $crSanction_option){
+                                    $output .= '
+                                    <div class="form-group mx-0 mt-0 mb-1">
+                                        <div class="custom-control custom-checkbox align-items-center">
+                                            <input type="checkbox" name="sanctions[]" value="'.$crSanction_option->crSanct_details.'" class="custom-control-input cursor_pointer sanctMarkSingle" id="'.$crSanction_option->crSanct_id.'_selectThisCrSanct_id" >
+                                            <label class="custom-control-label lightGreen_cardBody_chckboxLabel" for="'.$crSanction_option->crSanct_id.'_selectThisCrSanct_id">'.$crSanction_option->crSanct_details.'</label>
+                                        </div>
+                                    </div>
+                                    ';
+                                }
+                            }
+                            $output .= '
+                                <span class="lightGreen_cardBody_greenTitle mb-1 mt-3">Or Type New Sanctions:</span>
                                 <div class="input-group mb-2">
                                     <div class="input-group-append">
                                         <span class="input-group-text txt_iptgrp_append font-weight-bold">1. </span>
                                     </div>
-                                    <input type="text" id="addSanctions_input" name="sanctions[]" class="form-control input_grpInpt3" placeholder="Type Sanction" aria-label="Type Sanction" aria-describedby="add-sanctions-input" required />
+                                    <input type="text" id="addSanctions_input" name="sanctions[]" class="form-control input_grpInpt3" placeholder="Type Sanction" aria-label="Type Sanction" aria-describedby="add-sanctions-input" />
                                     <div class="input-group-append">
                                         <button class="btn btn-success m-0" id="btn_addAnother_input" type="button" disabled><i class="nc-icon nc-simple-add font-weight-bold" aria-hidden="true"></i></button>
                                     </div>
@@ -779,15 +798,19 @@ class ViolationRecordsController extends Controller
                 $yearLevel_txt = $sel_stud_YearLevel . ' Year';
             }
         // save requests to sanctions_tbl
+            $new_hasSanctCount = 0;
             if($count_sanctions > 0){
                 foreach($get_sanctions as $sanction){
-                    $record_sanctions = new Sanctions;
-                    $record_sanctions->stud_num      = $get_sel_stud_num;
-                    $record_sanctions->for_viola_id  = $get_for_viola_id;
-                    $record_sanctions->sanct_details = $sanction;
-                    $record_sanctions->respo_user_id = $get_respo_user_id;
-                    $record_sanctions->created_at    = $now_timestamp;
-                    $record_sanctions->save();
+                    if(!is_null($sanction) OR !empty($sanction)){
+                        $record_sanctions = new Sanctions;
+                        $record_sanctions->stud_num      = $get_sel_stud_num;
+                        $record_sanctions->for_viola_id  = $get_for_viola_id;
+                        $record_sanctions->sanct_details = $sanction;
+                        $record_sanctions->respo_user_id = $get_respo_user_id;
+                        $record_sanctions->created_at    = $now_timestamp;
+                        $record_sanctions->save();
+                        $new_hasSanctCount++;
+                    }
                 }
             }
             if($record_sanctions){
@@ -798,7 +821,7 @@ class ViolationRecordsController extends Controller
                                                     ->where('for_viola_id', $get_for_viola_id)
                                                     ->where('respo_user_id', $get_respo_user_id)
                                                     ->offset(0)
-                                                    ->limit($count_sanctions)
+                                                    ->limit($new_hasSanctCount)
                                                     ->get();
                 if(count($get_all_processed_sanctions) > 0){
                     foreach($get_all_processed_sanctions as $sanction_ids){
@@ -812,7 +835,7 @@ class ViolationRecordsController extends Controller
                     ->where('viola_id', $get_for_viola_id)
                     ->update([
                         'has_sanction'    => 1,
-                        'has_sanct_count' => $count_sanctions,
+                        'has_sanct_count' => $new_hasSanctCount,
                         'updated_at'      => $now_timestamp
                         ]);
             // record activity
@@ -822,7 +845,7 @@ class ViolationRecordsController extends Controller
                 $record_act->act_respo_users_lname  = $get_respo_user_lname;
                 $record_act->act_respo_users_fname  = $get_respo_user_fname;
                 $record_act->act_type               = 'sanction entry';
-                $record_act->act_details            = 'Added ' . $count_sanctions . ' Sanction'.$sc_s . ' for the ' . $sel_viola_offense_count . ' Offense'.$vc_s . ' made by ' . $yearLevel_txt . ' ' . $sel_stud_Course . ' student: ' . $sel_stud_Fname . ' ' . $sel_stud_Mname . ' ' . $sel_stud_Lname . ' on ' . date('F d, Y', strtotime($sel_viola_recorded_at)).'.';
+                $record_act->act_details            = 'Added ' . $new_hasSanctCount . ' Sanction'.$sc_s . ' for the ' . $sel_viola_offense_count . ' Offense'.$vc_s . ' made by ' . $yearLevel_txt . ' ' . $sel_stud_Course . ' student: ' . $sel_stud_Fname . ' ' . $sel_stud_Mname . ' ' . $sel_stud_Lname . ' on ' . date('F d, Y', strtotime($sel_viola_recorded_at)).'.';
                 $record_act->act_affected_sanct_ids = $ext_jsonSanct_ids;
                 $record_act->save();
             }else{
@@ -851,6 +874,7 @@ class ViolationRecordsController extends Controller
             $get_viola_has_sanction     = $get_viola_info->has_sanction;
             $get_viola_has_sanct_count  = $get_viola_info->has_sanct_count;
             $get_viola_respo_user_id    = $get_viola_info->respo_user_id;
+            $get_viola_cleared_at       = $get_viola_info->cleared_at;
         // get violator's info
             $get_violator_info = Students::select('Last_Name', 'Gender')->where('Student_Number', $sel_stud_num)->first();
             $violator_Lname    = $get_violator_info->Last_Name;
@@ -871,14 +895,31 @@ class ViolationRecordsController extends Controller
             }else{
                 $oC_s = '';
             }
+            // dates
+            $date_recorded = date('F d, Y ~ l - g:i A', strtotime($get_viola_recorded_at));
+            // violator's last name and Mr./Mrs
+            $query_violator_info = Students::select('Last_Name', 'Gender')
+                                            ->where('Student_Number', $sel_stud_num)
+                                            ->first();
+            $get_violator_lname = $query_violator_info->Last_Name;
+            $get_violator_gender = strtolower($query_violator_info->Gender);
+            if($get_violator_gender === 'male'){
+                $vmr_ms = 'Mr.';
+            }elseif($get_violator_gender === 'female'){
+                $vmr_ms = 'Ms.';
+            }else{
+                $vmr_ms = 'Mr./Ms.';
+            }
             // responsible user
             if($get_viola_respo_user_id == auth()->user()->id){
                 $recBy = 'Recorded by you.';
+                $recByTooltip = 'This Violation was recorded by you on ' . $date_recorded.'.';
             }else{
                 $get_recBy_info = Users::select('id', 'user_role', 'user_lname')
                                         ->where('id', $get_viola_respo_user_id)
                                         ->first();
                 $recBy = ucwords($get_recBy_info->user_role).': ' . $get_recBy_info->user_lname;
+                $recByTooltip = 'This Violation was recorded by ' . ucwords($get_recBy_info->user_role).': ' . $get_recBy_info->user_fname . ' ' . $get_recBy_info->user_lname . ' on ' . $date_recorded.'.';
             }
             // cleared/uncleared classes
             if($get_viola_status === 'cleared'){
@@ -961,9 +1002,74 @@ class ViolationRecordsController extends Controller
                                             ';
                                         }
                                     }
+                                    if($get_viola_has_sanction > 0){
+                                        // get all sanctions 
+                                        $get_all_sanctions = Sanctions::select('sanct_status', 'sanct_details')
+                                                                            ->where('stud_num', $sel_stud_num)
+                                                                            ->where('for_viola_id', $sel_viola_id)
+                                                                            ->orderBy('created_at', 'asc')
+                                                                            ->offset(0)
+                                                                            ->limit($get_viola_has_sanct_count)
+                                                                            ->get();
+                                        $count_completed_sanction = Sanctions::where('stud_num', $sel_stud_num)
+                                                                            ->where('for_viola_id', $sel_viola_id)
+                                                                            ->where('sanct_status', '=', 'completed')
+                                                                            ->offset(0)
+                                                                            ->limit($get_viola_has_sanct_count)
+                                                                            ->count();
+                                        $count_all_sanctions = count($get_all_sanctions);
+                                        if($count_all_sanctions > 1){
+                                            $sc_s = 's';
+                                        }else{
+                                            $sc_s = '';
+                                        }
+                                        $output .= '
+                                        <div class="card-body lightGreen_cardBody mb-2">
+                                            <div class="d-flex justify-content-between">
+                                                <span class="lightGreen_cardBody_greenTitle mb-1">Sanctions:</span>
+                                            </div>
+                                            ';
+                                            foreach($get_all_sanctions as $this_vrSanction){
+                                                if($this_vrSanction->sanct_status === 'completed'){
+                                                    $sanct_icon = 'fa fa-check-square-o';
+                                                }else{
+                                                    $sanct_icon = 'fa fa-square-o';
+                                                }
+                                                $output .= '<span class="lightGreen_cardBody_list"><i class="'.$sanct_icon . ' mr-1 font-weight-bold" aria-hidden="true"></i> ' . $this_vrSanction->sanct_details.'</span>';
+                                            }
+                                            $output .= '
+                                        </div>
+                                        ';
+                                    }
+                                    if($get_viola_has_sanction > 0){
+                                        // date completed
+                                        $date_completed = date('F d, Y ~ l - g:i A', strtotime($get_viola_cleared_at));
+                                        if ($count_completed_sanction == count($get_all_sanctions)) {
+                                            $info_icon1Class = 'fa fa-check-square-o';
+                                            $sancStatusTooltip = $count_all_sanctions . ' corresponding Sanction'.$sc_s . ' for this violation has been completed by ' . $vmr_ms . ' ' . $get_violator_lname . ' on ' . $date_completed.'.';
+                                        }else{
+                                            $info_icon1Class = 'fa fa-list-ul';
+                                            $sancStatusTooltip = $count_all_sanctions . ' corresponding Sanction'.$sc_s . ' for ' . $get_viola_offense_count . ' Offense'.$oC_s.' committed by ' . $vmr_ms . ' ' . $get_violator_lname . ' on ' . $date_recorded.'.';
+                                        }
+                                        $output .= '
+                                        <div class="row mt-3 cursor_pointer" data-toggle="tooltip" data-placement="top" title="' . $sancStatusTooltip . '">
+                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                            ';
+                                            $output .= '
+                                                <span class="cust_info_txtwicon4 font-weight-bold"><i class="'.$info_icon1Class . ' mr-1" aria-hidden="true"></i> ' . $get_viola_has_sanct_count . ' Sanction'.$sc_s.'</span>  
+                                            ';
+                                            if($get_viola_status === 'cleared'){
+                                                $output .= '<span class="cust_info_txtwicon"><i class="fa fa-calendar-check-o mr-1" aria-hidden="true"></i> ' . date('F d, Y ~ l - g:i A', strtotime($get_viola_cleared_at)) . '</span> ';
+                                            }
+                                            $output .= '
+                                            </div>
+                                        </div>
+                                        <hr class="hr_gry">
+                                        ';
+                                    }
                                     $output .='
                                     <div class="row mt-3">
-                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <div class="col-lg-12 col-md-12 col-sm-12" data-toggle="tooltip" data-placement="top" title="' . $recByTooltip . '">
                                             <span class="' .$info_textClass . ' font-weight-bold"><i class="' .$info_iconClass . ' mr-1" aria-hidden="true"></i> ' .$get_viola_offense_count. ' Offense' .$oC_s. '</span>  
                                             <span class="cust_info_txtwicon"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> ' . $recBy . '</span>  
                                         </div>
@@ -986,6 +1092,8 @@ class ViolationRecordsController extends Controller
                         </ul>
                         <div class="tab-content" id="editSanctionPills_tabContent">
                             ';
+                            // to array all registered sanctions
+                            $toArray_regSanctionDetails = array();
                             // get all sanctions
                             $get_all_sanctions = Sanctions::select('sanct_id', 'sanct_status', 'sanct_details')
                                                         ->where('stud_num', $sel_stud_num)
@@ -1004,11 +1112,22 @@ class ViolationRecordsController extends Controller
                                                         ->limit($get_viola_has_sanct_count)
                                                         ->count();
                             // custom values
-                            if($count_all_sanctions > 1){
-                                $cas_s = 's';
+                            if($count_all_sanctions > 0){
+                                // to array all registered sanctions
+                                foreach($get_all_sanctions as $this_registered_sanct){
+                                    array_push($toArray_regSanctionDetails, $this_registered_sanct->sanct_details);
+                                }
+
+                                // plural
+                                if($count_all_sanctions > 1){
+                                    $cas_s = 's';
+                                }else{
+                                    $cas_s = '';
+                                }
                             }else{
                                 $cas_s = '';
                             }
+                            
                             if($count_completed_sanct == $count_all_sanctions){
                                 $icon_infoClass1 = 'fa fa-check-square-o';
                                 $text_infoClass1 = 'All ('.$count_all_sanctions.') Sanction'.$cas_s . ' have been completed.';
@@ -1044,6 +1163,7 @@ class ViolationRecordsController extends Controller
                                                 if($count_all_sanctions > 1){
                                                     $cls_s = 's';
                                                     $output .= '
+                                                    <hr class="hr_grn">
                                                         <div class="form-group mx-0 mt-0 mb-1">
                                                             <div class="custom-control custom-checkbox align-items-center">
                                                                 <input type="checkbox" name="mark_all_sanctions" value="mark_all_sanctions" class="custom-control-input cursor_pointer" id="sanctMarkAll" '; if($count_completed_sanct == $count_all_sanctions){ $output .= 'checked'; } $output .= '>
@@ -1090,7 +1210,7 @@ class ViolationRecordsController extends Controller
                             <div class="tab-pane fade" id="add_sanctions_tabContent" role="tabpanel" aria-labelledby="add_sanctions_tab">
                                 <form id="form_addNewSanctions" action="'.route('violation_records.add_new_sanctions').'" class="form" enctype="multipart/form-data" method="POST">    
                                     <div class="card-body lightGreen_cardBody">
-                                        <span class="lightGreen_cardBody_greenTitle mb-1">Add New Sanctions:</span>
+                                        <span class="lightGreen_cardBody_greenTitle mb-1">Registered Sanctions:</span>
                                         ';
                                         $txt_iptgrp_append_count = $count_all_sanctions + 1;
                                         $txt_allowed_append_count = 10 - $count_all_sanctions;
@@ -1106,11 +1226,33 @@ class ViolationRecordsController extends Controller
                                             $output .= '<span class="lightGreen_cardBody_list"><span class="font-weight-bold mr-1">'. $add_x++ .'.</span> '. $this_addSanction->sanct_details .'</span>';
                                         }
                                         $output .= '
+                                        <hr class="hr_grn">
+                                        <span class="lightGreen_cardBody_greenTitle mb-1">Add New Sanctions:</span>
+                                        ';
+                                        // check if there are created sanctions from created_sanctions_tbl
+                                        $query_crSanctions = CreatedSanctions::select('crSanct_id', 'crSanct_details')->get();
+                                        $count_query_crSanctions = count($query_crSanctions);
+                                        if($count_query_crSanctions > 0){
+                                            foreach($query_crSanctions as $crSanction_option){
+                                                if(!in_array($crSanction_option->crSanct_details, json_decode(json_encode($toArray_regSanctionDetails)))){
+                                                    $output .= '
+                                                    <div class="form-group mx-0 mt-0 mb-1">
+                                                        <div class="custom-control custom-checkbox align-items-center">
+                                                            <input type="checkbox" name="new_sanctions[]" value="'.$crSanction_option->crSanct_details.'" class="custom-control-input cursor_pointer markAddThis_NewSanction" id="'.$crSanction_option->crSanct_id.'_addThisCrSanct_id" >
+                                                            <label class="custom-control-label lightGreen_cardBody_chckboxLabel" for="'.$crSanction_option->crSanct_id.'_addThisCrSanct_id">'.$crSanction_option->crSanct_details.'</label>
+                                                        </div>
+                                                    </div>
+                                                    ';
+                                                }
+                                            }
+                                        }
+                                        // <div class="input-group-append">
+                                        //         <span class="input-group-text txt_iptgrp_append font-weight-bold">'.$txt_iptgrp_append_count.'. </span>
+                                        //     </div>
+                                        $output .= '
+                                        <span class="lightGreen_cardBody_greenTitle mb-1 mt-3">Or Type New Sanctions:</span>
                                         <div class="input-group mt-1 mb-2">
-                                            <div class="input-group-append">
-                                                <span class="input-group-text txt_iptgrp_append font-weight-bold">'.$txt_iptgrp_append_count.'. </span>
-                                            </div>
-                                            <input type="text" id="addNewSanction_input" name="new_sanctions[]" class="form-control input_grpInpt3v1" placeholder="Type New Sanction" aria-label="Type New Sanction" aria-describedby="add-new-sanctions-input" required />
+                                            <input type="text" id="addNewSanction_input" name="new_sanctions[]" class="form-control input_grpInpt3v1" placeholder="Type New Sanction" aria-label="Type New Sanction" aria-describedby="add-new-sanctions-input"  />
                                             <div class="input-group-append">
                                                 <button class="btn btn-success btn_iptgrp_append m-0" id="btn_addNewSanct_input" type="button" disabled><i class="nc-icon nc-simple-add font-weight-bold" aria-hidden="true"></i></button>
                                             </div>
@@ -1118,7 +1260,8 @@ class ViolationRecordsController extends Controller
                                         <div class="addedSanctInputFields_div">
 
                                         </div>
-                                        <div class="row">
+                                        <hr class="hr_grn">
+                                        <div class="row mt-3">
                                             <div class="col-lg-12 col-md-12 col-sm-12">
                                                 <span class="cust_info_txtwicon4v1"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i> You can now only add ' . $txt_allowed_append_count . ' Sanction'.$aSC_s.'.</span>
                                             </div>
@@ -1130,6 +1273,7 @@ class ViolationRecordsController extends Controller
                                         <input type="hidden" name="sel_stud_num" value="'.$sel_stud_num.'">
                                         <input type="hidden" name="prev_sanct_count" id="prev_sanct_count" value="'.$count_all_sanctions.'">
                                         <input type="hidden" name="append_new_index" id="append_new_index" value="'.$txt_iptgrp_append_count.'">
+                                        <input type="hidden" name="allowed_sanctions_count" id="allowed_sanctions_count" value="'.$txt_allowed_append_count.'">
                                         <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
                                         <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
                                         <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
@@ -1176,6 +1320,7 @@ class ViolationRecordsController extends Controller
                                                     $cls_s = '';
                                                 }
                                                 $output .= '
+                                                <hr class="hr_grn">
                                                 <span class="cust_info_txtwicon4v1 font-weight-bold"><i class="fa fa-list-ul mr-1" aria-hidden="true"></i> ' . $count_all_sanctions . ' Sanction'.$cls_s . ' for the above offenses.</span>
                                                 ';
                                             }
@@ -1444,13 +1589,15 @@ class ViolationRecordsController extends Controller
         // process adding new sanctions
             if($count_new_sanctions > 0){
                 foreach($get_new_sanctions as $new_sanction){
-                    $record_new_sanctions = new Sanctions;
-                    $record_new_sanctions->stud_num      = $get_sel_stud_num;
-                    $record_new_sanctions->for_viola_id  = $get_for_viola_id;
-                    $record_new_sanctions->sanct_details = $new_sanction;
-                    $record_new_sanctions->respo_user_id = $get_respo_user_id;
-                    $record_new_sanctions->created_at    = $now_timestamp;
-                    $record_new_sanctions->save();
+                    if(!is_null($new_sanction) OR !empty($sanction)){
+                        $record_new_sanctions = new Sanctions;
+                        $record_new_sanctions->stud_num      = $get_sel_stud_num;
+                        $record_new_sanctions->for_viola_id  = $get_for_viola_id;
+                        $record_new_sanctions->sanct_details = $new_sanction;
+                        $record_new_sanctions->respo_user_id = $get_respo_user_id;
+                        $record_new_sanctions->created_at    = $now_timestamp;
+                        $record_new_sanctions->save();
+                    }
                 }
             }
             if($record_new_sanctions){

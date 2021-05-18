@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Users;
 use App\Models\Userroles;
 use App\Models\Useractivites;
+use App\Models\Violations;
+use App\Models\Sanctions;
 use App\Models\CreatedSanctions;
 use Illuminate\Mail\Mailable;
 
@@ -76,7 +78,7 @@ class SanctionsController extends Controller
                             <td class="py12l12r7 font-weight-bold">'.$_i.'</td>
                             <td>
                                 <div class="custom-control custom-checkbox align-items-center">
-                                    <input type="checkbox" name="marked_created_sanctions[]" value="'.$row->crSanct_id.'" class="custom-control-input cursor_pointer mark_thisSanction" id="'.$row->crSanct_id.'">
+                                    <input type="checkbox" name="marked_created_sanctions[]" value="'.$row->crSanct_id.'" class="custom-control-input cursor_pointer mark_thisSanction" id="'.$row->crSanct_id.'" '; $output .= '>
                                     <label class="custom-control-label lightBlue_cardBody_chckboxLabel" for="'.$row->crSanct_id.'">'.preg_replace('/('.$search_sanctions.')/i','<span class="grn_highlight">$1</span>', $row->crSanct_details).'</label>
                                 </div>
                             </td>
@@ -186,14 +188,9 @@ class SanctionsController extends Controller
         $index = 0;
         $output = '';
         if($count_sel_sanctions > 0){
-            if($count_sel_sanctions > 1){
-
-            }else{
-                
-            }
             $output .= '
             <div class="modal-body">
-                <form id="form_updateCreatedSanctions" action="'.route('sanctions.process_update_selected_sanctions').'" class="deacivateUserAccountConfirmationForm" method="POST">
+                <form id="form_updateCreatedSanctions" action="'.route('sanctions.process_update_selected_sanctions').'" method="POST">
                     <div class="card-body lightGreen_cardBody">
                         <span class="lightGreen_cardBody_greenTitle mb-1">Selected Sanctions:</span>
                         ';
@@ -213,6 +210,7 @@ class SanctionsController extends Controller
                             ';
                         }
                         $output .= '
+                        <hr class="hr_grn">
                         <div class="row mt-3">
                             <div class="col-lg-12 col-md-12 col-sm-12">
                                 <span class="cust_info_txtwicon4"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i> Click the "Save Changes" Button to Update the selected Sanctions.</span>
@@ -245,7 +243,7 @@ class SanctionsController extends Controller
                 <div class="card-body lightRed_cardBody shadow-none">
                     <span class="lightRed_cardBody_notice"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> There are no Sanctions Selected, Please close this modal and select Sanctions to Edit. </span>
                 </div>
-                <button id="cancel_deactivateUserAccountBtn" type="button" class="btn btn-round btn_svms_blue btn_show_icon mt-3 mb-3 mx-0 float-right" data-dismiss="modal">OK <i class="fa fa-thumbs-o-up btn_icon_show_right" aria-hidden="true"></i></button>
+                <button type="button" class="btn btn-round btn_svms_blue btn_show_icon mt-3 mb-3 mx-0 float-right" data-dismiss="modal">OK <i class="fa fa-thumbs-o-up btn_icon_show_right" aria-hidden="true"></i></button>
             </div>
             ';
         }
@@ -266,31 +264,286 @@ class SanctionsController extends Controller
         // update
         if($count_sel_crSanct_ids > 0){
             // merge selected crSanct_ids and crSanct_details
-            $merge_sel_crSancts = array_merge($update_sel_crSanct_ids,$get_selected_sanctions);
+            $merge_sel_crSancts = array_combine($update_sel_crSanct_ids, $get_selected_sanctions);
             // try  
-            foreach($merge_sel_crSancts as $update_this_crSanct){
-                echo ''.$update_this_crSanct . '<br>';
-            }
-            // foreach($get_selected_sanctions as $update_this_crSanct_details){
-            //     echo ''.$update_this_crSanct_details . '<br>';
+            // foreach($merge_sel_crSancts as $selSanct_id =>  $selSanct_details){
+            //     echo ''.$selSanct_id.': ' .$selSanct_details.'<br>';
             // }
-
 
             // custom values
-            // $now_timestamp = now();
-            // $sq = "'";
+            $now_timestamp = now();
+            $sq = "'";
 
-            // update query
-            // foreach($get_selected_sanctions as $update_this_sanction){
-            //     $update_created_sanctions_tbl = DB::table('created_sanctions_tbl')
-            //             ->where('crSanct_id', $update_this_sanction)
-            //             ->update([
-            //                 'crSanct_details' => $deactivated_txt,
-            //                 'updated_at'  => $now_timestamp
-            //             ]);
-            // }
+            // plural
+            if($count_sel_crSanct_ids > 1){
+                $ss_S = 's';
+            }else{
+                $ss_S = '';
+            }
+
+            // query original SAnction Details
+            $to_org_sanctDetails = array();
+            foreach($update_sel_crSanct_ids as $sel_crSanct_ids){
+                $query_org_crSanct_details = CreatedSanctions::select('crSanct_id', 'crSanct_details')
+                                            ->where("crSanct_id", $sel_crSanct_ids)
+                                            ->first();
+                array_push($to_org_sanctDetails, $query_org_crSanct_details->crSanct_details);
+            }   
+            $index_org_sanctDetails = 0;
+            $count_onlyUpdated_sanctDetails = 0;
+
+            // process update
+            foreach($merge_sel_crSancts as $selSanct_id =>  $selSanct_details){
+                // update created_sanctions_tbl
+                $update_created_sanctions_tbl = CreatedSanctions::where('crSanct_id', $selSanct_id)
+                                                    ->update([
+                                                        'crSanct_details' => $selSanct_details,
+                                                        'updated_at'      => $now_timestamp
+                                                    ]);
+                
+                // if updating created sanctions was a success
+                if($to_org_sanctDetails[$index_org_sanctDetails] != $selSanct_details){
+                    // record activity
+                    $record_act = new Useractivites;
+                    $record_act->created_at             = $now_timestamp;
+                    $record_act->act_respo_user_id      = $get_respo_user_id;
+                    $record_act->act_respo_users_lname  = $get_respo_user_lname;
+                    $record_act->act_respo_users_fname  = $get_respo_user_fname;
+                    $record_act->act_type               = 'sanction update';
+                    $record_act->act_details            = 'Updated ' . $to_org_sanctDetails[$index_org_sanctDetails]. ' Sanction to ' . $selSanct_details.'.';
+                    $record_act->act_affected_id        = $selSanct_id;
+                    $record_act->save();
+
+                    // update sanctions_tbl
+                    $update_sanctions_tbl = Sanctions::where('sanct_details', 'like', '%'.$to_org_sanctDetails[$index_org_sanctDetails].'%')
+                                            ->update([
+                                                'sanct_details' => $selSanct_details,
+                                                'updated_at'    => $now_timestamp
+                                            ]);
+                    $index_org_sanctDetails++;
+                    $count_onlyUpdated_sanctDetails++;
+                }else{
+                    $index_org_sanctDetails++;
+                }
+            }
+
+            if($update_created_sanctions_tbl){
+                if($update_sanctions_tbl){
+                    // get updted count of sanctions that has been updted only
+                    if($count_onlyUpdated_sanctDetails > 0){
+                        if($count_onlyUpdated_sanctDetails > 1){
+                            $cOpS_s = 's';
+                        }
+                        else{
+                            $cOpS_s = '';
+                        }
+                    }else{
+                        $cOpS_s = '';
+                    }
+                    return back()->withSuccessStatus($count_onlyUpdated_sanctDetails. ' Sanction'.$cOpS_s.' was Updated Successfully.');
+                }else{
+                    return back()->withFailedStatus('Corresponding Sanctions Update has failed! please try again.');
+                }
+            }else{
+                return back()->withFailedStatus('Created Sanctions Update has failed! please try again.');
+            }
         }else{
             return back()->withFailedStatus('There are no selected Sanctions! please close this modal and select sanctions to Edit.');
         }
     }
+
+    // delete created sanctions confirmation on modal
+    public function delete_sanctions_confirmation_form(Request $request){
+        // get all request
+        $sel_sanctions = json_decode(json_encode($request->get('sel_sanctions')));
+        $count_sel_sanctions = count($sel_sanctions);
+        $index = 0;
+        $output = '';
+        if($count_sel_sanctions > 0){
+            $output .= '
+            <div class="modal-body">
+                <form id="form_deleteCreatedSanctions" action="'.route('sanctions.process_delete_selected_sanctions').'" method="POST">
+                    <div class="card-body lightRed_cardBody">
+                        <span class="lightRed_cardBody_redTitle mb-1">Select Sanctions To Delete:</span>
+                        ';
+                        foreach($sel_sanctions as $sel_crSanct_id){
+                            $query_selected_sanction = CreatedSanctions::select('crSanct_id','crSanct_details')->where('crSanct_id', $sel_crSanct_id)->first();
+                            $sel_crSanct_id      = $query_selected_sanction->crSanct_id;
+                            $sel_crSanct_details = $query_selected_sanction->crSanct_details;
+                            $index++;
+                            $output .= '
+                            <div class="form-group mx-0 mt-0 mb-1">
+                                <div class="custom-control custom-checkbox align-items-center">
+                                    <input type="checkbox" name="delete_selected_sanctions[]" value="'.$sel_crSanct_details.'" class="custom-control-input cursor_pointer sanctDeleteSinglecrSanct" id="'.$sel_crSanct_id.'_deleteThisCrSanct_id" checked>
+                                    <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="'.$sel_crSanct_id.'_deleteThisCrSanct_id">'.$sel_crSanct_details.'</label>
+                                </div>
+                            </div>
+                            ';
+                        }
+                        if($count_sel_sanctions > 1){
+                            $ssD_s = 's';
+                            $output .= '
+                            <hr class="hr_red">
+                            <div class="form-group mx-0 mt-0 mb-1">
+                                <div class="custom-control custom-checkbox align-items-center">
+                                    <input type="checkbox" name="delete_all_created_sanctions" value="delete_all_created_sanctions" class="custom-control-input cursor_pointer" id="sanctDeleteAllcrSanct" checked>
+                                    <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="sanctDeleteAllcrSanct">Delete All ('.$count_sel_sanctions.') Sanction'.$ssD_s.'</label>
+                                </div>
+                            </div>
+                            ';
+                        }else{
+                            $ssD_s = '';
+                        }
+                        $output .= '
+                        <hr class="hr_red">
+                        <div class="row mt-3">
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                            <span class="cust_info_txtwicon3"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i> Deleteing the Selected Sanctions will also delete the "Corresponding Sanctions" that has been applied to "Recorded Violations". You will never be able to recover deleted Sanctions.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 px-0 pb-0">
+                        <input type="hidden" name="_token" value="'.csrf_token().'">
+                        <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
+                        <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
+                        <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
+                        <div class="btn-group" role="group" aria-label="actions">
+                            <button id="cancel_deleteCreatedSanctionsBtn" type="button" class="btn btn-round btn-success btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                            <button id="submit_deleteCreatedSanctionsBtn" type="submit" class="btn btn-round btn_svms_red btn_show_icon m-0">Delete Sanctions <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            ';
+        }else{
+            $output .= '
+            <div class="modal-body">
+                <div class="card-body lightRed_cardBody shadow-none">
+                    <span class="lightRed_cardBody_notice"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> There are no Sanctions Selected, Please close this modal and select Sanctions to Delete. </span>
+                </div>
+                <button type="button" class="btn btn-round btn_svms_blue btn_show_icon mt-3 mb-3 mx-0 float-right" data-dismiss="modal">OK <i class="fa fa-thumbs-o-up btn_icon_show_right" aria-hidden="true"></i></button>
+            </div>
+            ';
+        }
+        echo $output;
+    }
+    // process deletion of selected created sanctions
+    public function process_delete_selected_sanctions(Request $request){
+        // get all request
+        $get_respo_user_id      = $request->get('respo_user_id');
+        $get_respo_user_lname   = $request->get('respo_user_lname');
+        $get_respo_user_fname   = $request->get('respo_user_fname'); 
+        $get_selected_sanctions = json_decode(json_encode($request->get('delete_selected_sanctions')), true);
+
+        // count sanctions
+        $count_sel_crSanct_ids = count($get_selected_sanctions);
+
+        // delete
+        if($count_sel_crSanct_ids > 0){
+            // custom values
+            $now_timestamp = now();
+            $sq = "'";
+
+            // plural
+            if($count_sel_crSanct_ids > 1){
+                $ss_S = 's';
+            }else{
+                $ss_S = '';
+            }
+
+            // process delete
+            foreach($get_selected_sanctions as $selSanct_details){
+                // update created_sanctions_tbl
+                $delete_created_sanctions_tbl = CreatedSanctions::where('crSanct_details', 'like', '%'.$selSanct_details.'%')->delete();
+                
+                // if deleting created sanctions was a success
+                if($delete_created_sanctions_tbl){
+                    // record activity
+                    $record_act = new Useractivites;
+                    $record_act->created_at             = $now_timestamp;
+                    $record_act->act_respo_user_id      = $get_respo_user_id;
+                    $record_act->act_respo_users_lname  = $get_respo_user_lname;
+                    $record_act->act_respo_users_fname  = $get_respo_user_fname;
+                    $record_act->act_type               = 'sanction deletion';
+                    $record_act->act_details            = 'deleted Sanction: ' . $selSanct_details.'.';
+                    $record_act->act_affected_id        = 0;
+                    $record_act->save();
+
+                    // update sanctions_tbl
+                    $checkExist_sanctions_tbl = Sanctions::where('sanct_details', 'like', '%'.$selSanct_details.'%')->count();
+                    if($checkExist_sanctions_tbl > 0){
+                        // queries from violations_tbl & sanctions_tbl
+                        $query_from_sanctions_tbl = Sanctions::select('sanct_id', 'stud_num', 'for_viola_id')->where('sanct_details', 'like', '%'.$selSanct_details.'%')->first();
+                        $fromSanct_studNum        = $query_from_sanctions_tbl->stud_num;
+                        $fromSanct_forViolaId     = $query_from_sanctions_tbl->for_viola_id;
+
+                        $query_from_violations_tbl = Violations::where('viola_id', $fromSanct_forViolaId)
+                                                        ->where('stud_num', $fromSanct_studNum)->count();
+                        
+                        // update violations_tbl
+                        if($query_from_violations_tbl > 0){
+                            $query_from_violations_tbl = Violations::select('violation_status', 'has_sanction', 'has_sanct_count')
+                                                        ->where('viola_id', $fromSanct_forViolaId)
+                                                        ->where('stud_num', $fromSanct_studNum)
+                                                        ->first();
+                            $fromViola_violaStatus   = $query_from_violations_tbl->violation_status;
+                            $fromViola_hasSanct      = $query_from_violations_tbl->has_sanction;
+                            $fromViola_hasSanctCount = $query_from_violations_tbl->has_sanct_count;
+
+                            if($fromViola_hasSanctCount > 0){
+                                $forViolaNew_hasSanctCount = $fromViola_hasSanctCount--;
+                            }else{
+                                $forViolaNew_hasSanctCount = $fromViola_hasSanctCount;
+                            }
+
+                            if($forViolaNew_hasSanctCount != 0){
+                                $update_violations_tbl = Violations::where('viola_id', $fromSanct_forViolaId)
+                                                        ->where('stud_num', $fromSanct_studNum)
+                                                        ->update([
+                                                            'violation_status' => $fromViola_violaStatus,
+                                                            'has_sanction'     => $fromViola_hasSanct,
+                                                            'has_sanct_count'  => $forViolaNew_hasSanctCount,
+                                                            'updated_at'       => $now_timestamp
+                                                        ]);
+                            }else{
+                                $update_violations_tbl = Violations::where('viola_id', $fromSanct_forViolaId)
+                                                        ->where('stud_num', $fromSanct_studNum)
+                                                        ->update([
+                                                            'violation_status' => 'not cleared',
+                                                            'has_sanction'    => 0,
+                                                            'has_sanct_count' => 0,
+                                                            'updated_at'      => $now_timestamp
+                                                        ]);
+                            }
+                        }
+                        // update sanctions_tbl
+                        if($update_violations_tbl){
+                            $checkExist_sanctions_tbl = Sanctions::where('sanct_details', 'like', '%'.$selSanct_details.'%')->count();
+                            if($checkExist_sanctions_tbl > 0){
+                                $update_sanctions_tbl = Sanctions::where('sanct_details', 'like', '%'.$selSanct_details.'%')->delete();
+                            }
+                        }
+                    }
+                }else{
+                    return back()->withFailedStatus('Sanction'.$ss_S . ' Deletion has failed! please try again later.');
+                }
+            }
+            if($delete_created_sanctions_tbl){
+                if($record_act){
+                    // if($update_sanctions_tbl){
+                        return back()->withSuccessStatus($count_sel_crSanct_ids. ' Sanction'.$ss_S.' was Deleted Successfully.');
+                    // }else{
+                    //     return back()->withFailedStatus('Deleting Corresponding Sanction'.$ss_S . ' has failed! please try again later..');
+                    // }
+                }else{
+                    return back()->withFailedStatus('Recording Activity: Sanction deletion, has failed! please try again later..');
+                }
+            }else{
+                return back()->withFailedStatus('Sanction'.$ss_S . ' Deletion has failed! please try again later..');
+            }
+        }else{
+            return back()->withFailedStatus('There are no selected Sanctions! please close this modal and select sanctions to Delete.');
+        }
+    }
+
 }

@@ -238,6 +238,23 @@
             </div>
         </div>
     {{-- edit selected sanctions on modal end --}}
+    {{-- edit selected sanctions on modal --}}
+    <div class="modal fade" id="deleteSelectedSanctionsModal" tabindex="-1" role="dialog" aria-labelledby="deleteSelectedSanctionsModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content cust_modal">
+                <div class="modal-header border-0">
+                    <span class="modal-title cust_modal_title" id="deleteSelectedSanctionsModalLabel">Delete Selected Sanctions?</span>
+                    <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div id="deleteSelectedSanctionsModalHtmlData">
+                
+                </div>
+            </div>
+        </div>
+    </div>
+{{-- edit selected sanctions on modal end --}}
 @endsection
 
 @push('scripts')
@@ -382,6 +399,7 @@
                     var form_updateCreatedSanctions  = document.querySelector("#form_updateCreatedSanctions");
                     var submit_updateCreatedSanctionsBtn = document.querySelector("#submit_updateCreatedSanctionsBtn");
                     var cancel_updateCreatedSanctionsBtn = document.querySelector("#cancel_updateCreatedSanctionsBtn");
+                    // serialized form
                     $('#form_updateCreatedSanctions').each(function(){
                         $(this).data('serialized', $(this).serialize())
                     }).on('change input', function(){
@@ -399,8 +417,67 @@
         {{-- delete selected sanctions --}}
             <script>
                 function delete_SelectedSanctions(){
-                    console.log('delete');
+                    var sel_sanctions = [];
+                    $('.mark_thisSanction:checkbox:checked').each(function(){
+                        sel_sanctions.push($(this).val());
+                    });
+                    var _token = $('input[name="_token"]').val();
+                    // console.log(sel_sanctions);
+                    $.ajax({
+                        url:"{{ route('sanctions.delete_sanctions_confirmation_form') }}",
+                        method:"GET",
+                        data:{sel_sanctions:sel_sanctions, _token:_token},
+                        success: function(data){
+                            $('#deleteSelectedSanctionsModalHtmlData').html(data); 
+                            $('#deleteSelectedSanctionsModal').modal('show');
+                        }
+                    });
                 }
+            </script>
+            <script>
+                $('#deleteSelectedSanctionsModal').on('show.bs.modal', function () {
+                    var form_deleteCreatedSanctions  = document.querySelector("#form_deleteCreatedSanctions");
+                    var submit_deleteCreatedSanctionsBtn = document.querySelector("#submit_deleteCreatedSanctionsBtn");
+                    var cancel_deleteCreatedSanctionsBtn = document.querySelector("#cancel_deleteCreatedSanctionsBtn");
+                    // disable cancel and sibmit button on submit
+                    $('#form_deleteCreatedSanctions').submit(function(){
+                        submit_deleteCreatedSanctionsBtn.disabled = true;
+                        cancel_deleteCreatedSanctionsBtn.disabled = true;
+                        return true;
+                    });
+                    // mark sanctions for edit/delete 
+                    $("#sanctDeleteAllcrSanct").click(function(){
+                        if(this.checked){
+                            $(".sanctDeleteSinglecrSanct").each(function(){
+                                this.checked=true;
+                                editSelectedSanctions_btn.disabled = false;
+                                deleteSelectedSanctions_btn.disabled = false;
+                            });              
+                        }else{
+                            $(".sanctDeleteSinglecrSanct").each(function(){
+                                this.checked=false;
+                                editSelectedSanctions_btn.disabled = true;
+                                deleteSelectedSanctions_btn.disabled = true;
+                            });              
+                        }
+                    });
+                    $(".sanctDeleteSinglecrSanct").change(function(){
+                        if ($('.sanctDeleteSinglecrSanct:checked').length == $('.sanctDeleteSinglecrSanct').length) {
+                            $("#sanctDeleteAllcrSanct").prop("checked", true);
+                        }else{
+                            $("#sanctDeleteAllcrSanct").prop("checked", false);
+                        }
+                        
+                        // disable/enable edit and delete sanctions buttons
+                        if($('.sanctDeleteSinglecrSanct:checked').length <= 0){
+                            submit_deleteCreatedSanctionsBtn.disabled = true;
+                            cancel_deleteCreatedSanctionsBtn.disabled = true;
+                        }else{
+                            submit_deleteCreatedSanctionsBtn.disabled = false;
+                            cancel_deleteCreatedSanctionsBtn.disabled = false;
+                        }
+                    });
+                });
             </script>
         {{-- delete selected sanctions end --}}
     {{-- created sanctions table end --}}

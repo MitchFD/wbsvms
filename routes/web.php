@@ -212,10 +212,14 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('sanctions/index', ['as' => 'sanctions.index', 'uses' => 'App\Http\Controllers\SanctionsController@index']);
 	// register sanctions
 	Route::post('sanctions/register_new_sanctions', 'App\Http\Controllers\SanctionsController@register_new_sanctions')->name('sanctions.register_new_sanctions');
-	// open edit sanctions form
+	// open edit sanctions form on modal
 	Route::get('sanctions/edit_sanctions_form', 'App\Http\Controllers\SanctionsController@edit_sanctions_form')->name('sanctions.edit_sanctions_form');
 	// process update of selected sanctions
 	Route::post('sanctions/process_update_selected_sanctions', 'App\Http\Controllers\SanctionsController@process_update_selected_sanctions')->name('sanctions.process_update_selected_sanctions');
+	// open delete sanctions form confirmation on modal
+	Route::get('sanctions/delete_sanctions_confirmation_form', 'App\Http\Controllers\SanctionsController@delete_sanctions_confirmation_form')->name('sanctions.delete_sanctions_confirmation_form');
+	// process deletion of selected sanctions
+	Route::post('sanctions/process_delete_selected_sanctions', 'App\Http\Controllers\SanctionsController@process_delete_selected_sanctions')->name('sanctions.process_delete_selected_sanctions');
 });
 
 // student handbook

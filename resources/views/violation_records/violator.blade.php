@@ -204,7 +204,7 @@
                                 </div>
                             </div>
                             {{-- check if all offenses has corresponding sanctions to notify the violator --}}
-                            @if($offenses_count > 0)
+                            {{-- @if($offenses_count > 0)
                                 @if(!is_null($violator_info->Email) OR !empty($violator_info->Email))
                                     @php
                                         $count_allRecViola = App\Models\Violations::where('stud_num', $violator_info->Student_Number)->count();
@@ -240,7 +240,7 @@
                                         </div>
                                     @endif
                                 @endif
-                            @endif
+                            @endif --}}
                         </div>
                     </div>
                 </div>
@@ -611,12 +611,14 @@
                                                                                                     {{-- custom values for sanctions --}}
                                                                                                     @php
                                                                                                         if($this_vrSanction->sanct_status === 'completed'){
-                                                                                                            $sanct_icon = 'fa fa-check-square-o';
+                                                                                                            $sanct_icon    = 'fa fa-check-square-o';
+                                                                                                            $sanct_tooltip = 'Completed';
                                                                                                         }else{
-                                                                                                            $sanct_icon = 'fa fa-square-o';
+                                                                                                            $sanct_icon    = 'fa fa-square-o';
+                                                                                                            $sanct_tooltip = 'Not Completed';
                                                                                                         }
                                                                                                     @endphp
-                                                                                                    <span class="lightGreen_cardBody_list"><i class="{{$sanct_icon }} mr-1 font-weight-bold" aria-hidden="true"></i> {{ $this_vrSanction->sanct_details}}</span>
+                                                                                                    <span class="lightGreen_cardBody_list" data-toggle="tooltip" data-placement="top" title="{{$this_vrSanction->sanct_details}}: {{ $sanct_tooltip}}"><i class="{{$sanct_icon }} mr-1 font-weight-bold" aria-hidden="true"></i> {{ $this_vrSanction->sanct_details}}</span>
                                                                                                 @endforeach
                                                                                                 {{-- <hr class="hr_grn">
                                                                                                 <div class="row">
@@ -944,12 +946,14 @@
                                                                             @foreach($get_all_sanctions as $this_vrSanction)
                                                                                 @php
                                                                                     if($this_vrSanction->del_sanct_status === $completed_txt){
-                                                                                        $sanct_icon = 'fa fa-check-square-o';
+                                                                                        $sanct_icon    = 'fa fa-check-square-o';
+                                                                                        $sanct_tooltip = 'Completed';
                                                                                     }else{
-                                                                                        $sanct_icon = 'fa fa-square-o';
+                                                                                        $sanct_icon    = 'fa fa-square-o';
+                                                                                        $sanct_tooltip = 'Not Completed';
                                                                                     }
                                                                                 @endphp
-                                                                                <span class="lightGreen_cardBody_list"><i class="{{$sanct_icon }} mr-1 font-weight-bold" aria-hidden="true"></i> {{ $this_vrSanction->del_sanct_details}}</span>
+                                                                                <span class="lightGreen_cardBody_list" data-toggle="tooltip" data-placement="top" title="{{$sanct_tooltip}}"><i class="{{$sanct_icon }} mr-1 font-weight-bold" aria-hidden="true"></i> {{ $this_vrSanction->del_sanct_details}}</span>
                                                                             @endforeach
                                                                         </div>
                                                                     @endif
@@ -1386,6 +1390,12 @@
             var btn_addAnother_input = document.querySelector("#btn_addAnother_input");
             var btn_submitAddSanction = document.querySelector("#submit_addSanctionsBtn");
             var btn_cancelAddSanction = document.querySelector("#cancel_addSanctionsBtn");
+            // serialized form
+            $(addSanctions_form).each(function(){
+                $(this).data('serialized', $(this).serialize())
+            }).on('change input', function(){
+                $(this).find(btn_submitAddSanction).prop('disabled', $(this).serialize() == $(this).data('serialized'));
+            }).find(btn_submitAddSanction).prop('disabled', true);
             // disable add another input field and submit button if first input is empty
             $(addSanctions_input).keyup(function(){
                 if(addSanctions_input.value !== ""){
@@ -1457,6 +1467,13 @@
                     $(this).find('#submit_markSanctionsBtn').prop('disabled', $(this).serialize() == $(this).data('serialized'));
                 }).find('#submit_markSanctionsBtn').prop('disabled', true);
 
+                // add sanctions form serialized
+                $('#form_addNewSanctions').each(function(){
+                    $(this).data('serialized', $(this).serialize())
+                }).on('change input', function(){
+                    $(this).find('#submit_addNewSanctionsBtn').prop('disabled', $(this).serialize() == $(this).data('serialized'));
+                }).find('#submit_addNewSanctionsBtn').prop('disabled', true);
+
                 // delete sanctions form serialized
                 $('#form_deleteSanctions').each(function(){
                     $(this).data('serialized', $(this).serialize())
@@ -1524,6 +1541,7 @@
                     return true;
                 });
                 // initialize appending new input field
+                var allowed_sanctions_count = document.getElementById("allowed_sanctions_count").value;
                 var append_new_index = document.getElementById("append_new_index").value;
                 var addedSanctInputFields_div = document.querySelector('.addedSanctInputFields_div');
                 var newSanct_maxField = 10 - append_new_index;
@@ -1540,12 +1558,12 @@
                     if(x <= newSanct_maxField){
                         x++;
                         var newInputField = '<div class="input-group mt-1 mb-2"> ' +
-                                        '<div class="input-group-append"> ' +
-                                            '<span class="input-group-text txt_iptgrp_append addNewSanctIndex font-weight-bold"></span> ' +
-                                        '</div> ' +
+                                        // '<div class="input-group-append"> ' +
+                                        //     '<span class="input-group-text txt_iptgrp_append addNewSanctIndex font-weight-bold"></span> ' +
+                                        // '</div> ' +
                                         '<input type="text" name="new_sanctions[]" class="form-control input_grpInpt3v1" placeholder="Type New Sanction" aria-label="Type New Sanction" aria-describedby="added-new-sanctions-input" required /> ' +
                                         '<div class="input-group-append"> ' +
-                                            '<button class="btn btn_svms_red btn_iptgrp_append btn_deleteAddedNewSanct_input m-0" id="btn_addNewSanct_input" type="button"><i class="nc-icon nc-simple-remove font-weight-bold" aria-hidden="true"></i></button> ' +
+                                            '<button class="btn btn_svms_red btn_iptgrp_append btn_deleteAddedNewSanct_input m-0" type="button"><i class="nc-icon nc-simple-remove font-weight-bold" aria-hidden="true"></i></button> ' +
                                         '</div> ' +
                                     '</div>';
                         $(addedSanctInputFields_div).append(newInputField);
@@ -1559,6 +1577,33 @@
                     x--;
                     addNewSanctIndexing();
                 });
+
+                // limit checkbox selection
+                // $(".markAddThis_NewSanction").change(function(){
+                //     var ans_s = '';
+                //     if(allowed_sanctions_count > 0){
+                //         if(allowed_sanctions_count > 1){
+                //             ans_s = 's';
+                //         }else{
+                //             ans_s = '';
+                //         }
+                //     }else{
+                //         ans_s = '';
+                //     }
+                //     if($('.markAddThis_NewSanction:checked').length > allowed_sanctions_count){
+                //         alert('Sanction Selection Limit Reached: You can only Add ' + allowed_sanctions_count + ' New Sanction'+ans_s+'.');
+                //         this.checked = false;
+                //     }else{
+                //         console.log('select more');
+                //         this.checked = true;
+                //     }
+                //     if($('.markAddThis_NewSanction:checked').length == allowed_sanctions_count){
+                //         $(addNewSanction_input).prop('readonly', true);
+                //     }else{
+                //         $(addNewSanction_input).prop('readonly', false);
+                //     }
+                // });
+
             // adding new sanctions form end
 
             // deleting sanctions form

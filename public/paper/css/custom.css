@@ -3531,6 +3531,9 @@ fieldset[disabled] .applyBtn.active {
 hr.hr_grn{
   border-color: #cde7db !important;
 }
+hr.hr_red{
+  border-color: #ffd5d6 !important;
+}
 hr.hr_gry{
   border-color: #f5f5f5 !important;
 }
