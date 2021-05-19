@@ -204,7 +204,7 @@
                                 </div>
                             </div>
                             {{-- check if all offenses has corresponding sanctions to notify the violator --}}
-                            {{-- @if($offenses_count > 0)
+                            @if($offenses_count > 0)
                                 @if(!is_null($violator_info->Email) OR !empty($violator_info->Email))
                                     @php
                                         $count_allRecViola = App\Models\Violations::where('stud_num', $violator_info->Student_Number)->count();
@@ -234,13 +234,23 @@
                                                                 <button id="{{$violator_info->Student_Number}}" onclick="notifyViolator(this.id)" type="submit" class="btn btn_svms_blue btn-round btn_show_icon1 shadow" data-toggle="tooltip" data-placement="top" title="Notify {{ $vMr_Ms }} {{ $violator_info->Last_Name }} of {{ $all_txt }} {{ $total_notCleared_off }} Uncleared Offense{{$tUoc_s }} {{ $vHe_She }} has committed and its corresponding sanctions?">Notify Student<i class="nc-icon nc-send btn_icon_show_right1" aria-hidden="true"></i></button>
                                                             </div>
                                                         </div>
+                                                        <div class="row">
+                                                            <div class="col-lg-12 col-md-12 col-sm-12 d-flex justify-content-center">
+                                                                <span>or</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-lg-12 col-md-12 col-sm-11 d-flex justify-content-center">
+                                                                <button id="{{$violator_info->Student_Number}}" onclick="violaotrReport(this.id)" type="submit" class="btn btn-success btn-round btn_show_icon1 shadow" data-toggle="tooltip" data-placement="top" title="Generate a PDF report of {{ $all_txt }} {{ $total_notCleared_off }} Offense{{$tUoc_s }} {{ $vHe_She }} has committed and its corresponding sanctions?">Generate Report<i class="nc-icon nc-single-copy-04 btn_icon_show_right1" aria-hidden="true"></i></button>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     @endif
                                 @endif
-                            @endif --}}
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -1225,6 +1235,24 @@
         </div>
     {{-- recover delete violation on modal end --}}
 
+    {{-- generate violator's recorded offenses --}}
+        <div class="modal fade" id="generateViolatorReportModal" tabindex="-1" role="dialog" aria-labelledby="generateViolatorReportModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="generateViolatorReportModalLabel">Generate Report?</span>
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="generateViolatorReportModalHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{-- generate violator's recorded offenses end --}}
+
 @endsection
 
 @push('scripts')
@@ -1248,6 +1276,37 @@
         }
     </script>
 {{-- notify violator end --}}
+{{-- generrate violator's records report --}}
+    <script>
+        function violaotrReport(sel_Student_Number){
+            var sel_Student_Number = sel_Student_Number;
+            var _token = $('input[name="_token"]').val();
+            $.ajax({
+                url:"{{ route('violation_records.violator_offenses_report_confirmation_modal') }}",
+                method:"GET",
+                data:{sel_Student_Number:sel_Student_Number, _token:_token},
+                success: function(data){
+                    $('#generateViolatorReportModalHtmlData').html(data);
+                    $('#generateViolatorReportModal').modal('show');
+                }
+            });
+        }
+    </script>
+    <script>
+        $('#generateViolatorReportModal').on('show.bs.modal', function () {
+            var form_confirmGenerateViolatorOffensesReport  = document.querySelector("#form_confirmGenerateViolatorOffensesReport");
+            var cancel_GenerateViolatorOffensesReport_btn = document.querySelector("#cancel_GenerateViolatorOffensesReport_btn");
+            var process_GenerateViolatorOffensesReport_btn = document.querySelector("#process_GenerateViolatorOffensesReport_btn");
+            // disable cancel and sibmit button on submit
+            $(form_confirmGenerateViolatorOffensesReport).submit(function(){
+                process_GenerateViolatorOffensesReport_btn.disabled = true;
+                cancel_GenerateViolatorOffensesReport_btn.disabled = true;
+                $('#generateViolatorReportModal').modal('hide');
+                return true;
+            });
+        });
+    </script>
+{{-- generrate violator's records report end --}}
 
 {{-- recording new offenses for the student --}}
     <script>
