@@ -228,21 +228,19 @@
                                                     <div class="card-body lightBlue_cardBody">
                                                         <span class="cust_info_txtwicon2 text-justify">Corresponding Sanctions have been aplied to {{ $all_txt }} {{ $total_notCleared_off }} Uncleared Offense{{$tUoc_s }} made by {{ $violator_info->First_Name }}  {{ $violator_info->Middle_Name }} {{ $violator_info->Last_Name}}.</span>
                                                     </div>
-                                                    @if(!is_null($violator_info->Email) OR !empty($violator_info->Email))
-                                                        <div class="row mt-1">
-                                                            <div class="col-lg-12 col-md-12 col-sm-11 d-flex justify-content-center">
-                                                                <button id="{{$violator_info->Student_Number}}" onclick="notifyViolator(this.id)" type="submit" class="btn btn_svms_blue btn-round btn_show_icon1 shadow" data-toggle="tooltip" data-placement="top" title="Notify {{ $vMr_Ms }} {{ $violator_info->Last_Name }} of {{ $all_txt }} {{ $total_notCleared_off }} Uncleared Offense{{$tUoc_s }} {{ $vHe_She }} has committed and its corresponding sanctions?">Notify Student<i class="nc-icon nc-send btn_icon_show_right1" aria-hidden="true"></i></button>
-                                                            </div>
+                                                    <div class="row mt-1">
+                                                        <div class="col-lg-12 col-md-12 col-sm-11 d-flex justify-content-center">
+                                                            <button id="{{$violator_info->Student_Number}}" onclick="notifyViolator(this.id)" type="submit" class="btn btn_svms_blue btn-round btn_show_icon1 shadow" data-toggle="tooltip" data-placement="top" title="Notify {{ $vMr_Ms }} {{ $violator_info->Last_Name }} of {{ $all_txt }} {{ $total_notCleared_off }} Uncleared Offense{{$tUoc_s }} {{ $vHe_She }} has committed and its corresponding sanctions?">Notify Student<i class="nc-icon nc-send btn_icon_show_right1" aria-hidden="true"></i></button>
                                                         </div>
-                                                        <div class="row">
-                                                            <div class="col-lg-12 col-md-12 col-sm-12 d-flex justify-content-center">
-                                                                <span>or</span>
-                                                            </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-lg-12 col-md-12 col-sm-12 d-flex justify-content-center">
+                                                            <span>or</span>
                                                         </div>
-                                                    @endif
+                                                    </div>
                                                     <div class="row">
                                                         <div class="col-lg-12 col-md-12 col-sm-11 d-flex justify-content-center">
-                                                            <button id="{{$violator_info->Student_Number}}" onclick="violaotrReport(this.id)" type="submit" class="btn btn-success btn-round btn_show_icon1 shadow" data-toggle="tooltip" data-placement="top" title="Generate a PDF report of {{ $all_txt }} {{ $total_notCleared_off }} Offense{{$tUoc_s }} {{ $vHe_She }} has committed and its corresponding sanctions?">Generate Report<i class="nc-icon nc-single-copy-04 btn_icon_show_right1" aria-hidden="true"></i></button>
+                                                            <button id="{{$violator_info->Student_Number}}" onclick="violaotrReport(this.id)" type="submit" class="btn btn-success btn-round btn_show_icon1 shadow" data-toggle="tooltip" data-placement="bottom" title="Generate a PDF report of {{ $all_txt }} {{ $total_notCleared_off }} Offense{{$tUoc_s }} {{ $vHe_She }} has committed and its corresponding sanctions?">Generate Report<i class="nc-icon nc-single-copy-04 btn_icon_show_right1" aria-hidden="true"></i></button>
                                                         </div>
                                                     </div>
                                                 </div>
