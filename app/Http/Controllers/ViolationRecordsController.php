@@ -5643,5 +5643,278 @@ class ViolationRecordsController extends Controller
         return $pdf->stream('reports/violator_records_pdf.pdf');
     }
 
+    // NOTIFY VIOLATOR
+    public function notify_violator_confirmation_modal(Request $request){
+        // get all request
+        $sel_Student_Number = $request->get('sel_Student_Number');
+        
+        // custom values
+        $output = '';
+        $sq = "'";
+
+        // get selected student's information
+        $query_selViolator_info = Students::where('Student_Number', $sel_Student_Number)->first();
+
+        // check if student have recorded violations
+        $studHas_Recorded_offenses = Violations::where('stud_num', $sel_Student_Number)->count();
+
+        // conditions
+        if($studHas_Recorded_offenses > 0){
+            // check if student has (Cleared, Uncleared Offenses, and corresponding sanctions)
+            $count_all_offenses = Violations::where('stud_num', $sel_Student_Number)->sum('offense_count');
+            if($count_all_offenses > 0){
+                if($count_all_offenses > 1){
+                    $caF_s = 's';
+                }else{
+                    $caF_s = '';
+                }
+            }else{
+                $caF_s = '';
+            }
+            $studHas_Uncleared_offenses = Violations::where('stud_num', $sel_Student_Number)->where('violation_status', '!=', 'cleared')->count();
+            $studHas_Cleared_offenses = Violations::where('stud_num', $sel_Student_Number)->where('violation_status', '=', 'cleared')->count();
+            $studHas_Corresponding_sanctions = Violations::where('stud_num', $sel_Student_Number)->where('has_sanction', '=', 1)->count();
+            
+            // student's image handler
+            if(!is_null($query_selViolator_info->Student_Image) OR !empty($query_selViolator_info->Student_Image)){
+                $studImage_file = $query_selViolator_info->Student_Image;
+                if($studHas_Recorded_offenses == $studHas_Cleared_offenses){
+                    $studImge_borderClass = 'display_violator_image3';
+                }else{
+                    $studImge_borderClass = 'display_violator_image2';
+                }
+            }else{
+                if($studHas_Recorded_offenses == $studHas_Cleared_offenses){
+                    $studImage_file = 'default_cleared_student_img.jpg';
+                    $studImge_borderClass = 'display_violator_image3';
+                }else{
+                    $studImage_file = 'default_student_img.jpg';
+                    $studImge_borderClass = 'display_violator_image2';
+                }
+            }
+
+            // student's gender handler (Mr. / Ms.)
+            if(!is_null($query_selViolator_info->Gender)){
+                if($query_selViolator_info->Gender === 'Male'){
+                    $Vmr_ms = 'Mr.';
+                    $Vhis_her = 'his';
+                }elseif($query_selViolator_info->Gender === 'Female'){
+                    $Vmr_ms = 'Ms.';
+                    $Vhis_her = 'her';
+                }else{
+                    $Vmr_ms = 'Mr./Ms.';
+                    $Vhis_her = 'his/her';
+                }
+            }else{
+                $Vmr_ms = 'Mr./Ms.';
+                $Vhis_her = 'his/her';
+            }
+
+            // if student has registered email address
+            if(!is_null($query_selViolator_info->Email) or !empty($query_selViolator_info->Email)){
+                $txt_ViolatorEmail = ': '.$query_selViolator_info->Email.'';
+            }else{
+                $txt_ViolatorEmail = '.';
+            }
+
+            // output
+            $output .= '
+            <div class="cust_modal_body_gray">
+                <div class="row mb-2">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <span class="cust_status_title">Violator'.$sq.'s Information: </span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12 m-0">
+                        <div class="violators_cards_div d-flex justify-content-start align-items-center">
+                            <div class="display_user_image_div text-center">
+                                <img class="'.$studImge_borderClass . ' shadow-sm" src="'.asset('storage/svms/sdca_images/registered_students_imgs/'.$studImage_file).'" alt="violator'.$sq.'s image">
+                            </div>
+                            <div class="information_div">
+                                <span class="li_info_title">'.$query_selViolator_info->First_Name . ' ' . $query_selViolator_info->Middle_Name . ' ' . $query_selViolator_info->Last_Name.'</span>
+                                <span class="li_info_subtitle2"><span class="font-weight-bold">'.$query_selViolator_info->Student_Number.' </span> | ' . $query_selViolator_info->School_Name . ' | ' . $query_selViolator_info->Course . ' ~ ' . $query_selViolator_info->YearLevel.'-Y | ' . ucwords($query_selViolator_info->Gender).'</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body border-0 pb-0">
+                <div class="card-body lightBlue_cardBody shadow-none">
+                    <span class="lightBlue_cardBody_blueTitle">Email Content:</span>
+                    <span class="lightBlue_cardBody_notice">The system will send an email notification of all the Recorded Offenses made by ' . $Vmr_ms . ' '.$query_selViolator_info->First_Name . ' ' . $query_selViolator_info->Middle_Name . ' ' . $query_selViolator_info->Last_Name . ' and it'.$sq.'s Corresponding Sanctions thru ' . $Vhis_her . ' registered email address<span class="font-weight-bold">'.$txt_ViolatorEmail . ' </span> </span>
+                </div>
+                <div class="card-body lightBlue_cardBody shadow-none mt-2">
+                    <span class="lightBlue_cardBody_blueTitle">Offenses Details:</span>
+                    ';
+                    // offenses details
+                    // cleared offenses
+                    if($studHas_Cleared_offenses > 0){
+                        // sum of all cleared offenses
+                        $sumAll_Cleared_offenses = Violations::where('stud_num', $sel_Student_Number)->where('violation_status', '=', 'cleared')->sum('offense_count');
+                        if($sumAll_Cleared_offenses > 1){
+                            $caCF_s = 's';
+                        }else{
+                            $caCF_s = '';
+                        }
+                        $output .= '<span class="lightBlue_cardBody_notice"><i class="fa fa-check-square-o text-success mr-1" aria-hidden="true"></i> '.$sumAll_Cleared_offenses . ' Cleared Offense'.$caCF_s.' </span>';
+                    }
+                    // uncleared offenses
+                    if($studHas_Uncleared_offenses > 0){
+                        // sum of all cleared offenses
+                        $sumAll_Uncleared_offenses = Violations::where('stud_num', $sel_Student_Number)->where('violation_status', '!=', 'cleared')->sum('offense_count');
+                        if($sumAll_Uncleared_offenses > 1){
+                            $caUF_s = 's';
+                        }else{
+                            $caUF_s = '';
+                        }
+                        $output .= '<span class="lightBlue_cardBody_notice"><i class="fa fa-exclamation-circle text_svms_red mr-1" aria-hidden="true"></i> '.$sumAll_Uncleared_offenses . ' Uncleared Offense'.$caUF_s.' </span>';
+                    }
+                    // total offenses count
+                    if($count_all_offenses > 0){
+                        $output .= '<span class="lightBlue_cardBody_notice"><i class="fa  fa-list-ul text_svms_blue mr-1" aria-hidden="true"></i> Total of ' . $count_all_offenses . ' Offense'.$caF_s.' </span>';
+                    }else{
+                        $output .= '<span class="lightBlue_cardBody_notice"><i class="fa fa-check-square-o text-success mr-1" aria-hidden="true"></i> No Offenses Found. </span>';
+                    }
+
+                    $output .= '<span class="lightBlue_cardBody_blueTitle mt-3">Sanctions Details:</span>';
+                    // sanctions details
+                    if($studHas_Corresponding_sanctions > 0){
+                        // sum all sanctions
+                        $sumAll_Sanctions = Violations::where('stud_num', $sel_Student_Number)->sum('has_sanct_count');
+                        // sum of all completed sanctions
+                        $sumAll_Completed_sanctions = Sanctions::where('stud_num', $sel_Student_Number)->where('sanct_status', '=', 'completed')->count();
+                        if($sumAll_Completed_sanctions > 0){
+                            if($sumAll_Completed_sanctions > 1){
+                                $caCS_s = 's';
+                            }else{
+                                $caCS_s = '';
+                            }
+                            $output .= '<span class="lightBlue_cardBody_notice"><i class="fa fa-check-square-o text-success mr-1" aria-hidden="true"></i> '.$sumAll_Completed_sanctions . ' Completed Sanction'.$caCS_s.' </span>';
+                        }
+                        // sum of all not completed sanctions
+                        $sumAll_NotCompleted_sanctions = Sanctions::where('stud_num', $sel_Student_Number)->where('sanct_status', '!=', 'completed')->count();
+                        if($sumAll_NotCompleted_sanctions > 0){
+                            if($sumAll_NotCompleted_sanctions > 1){
+                                $caNCS_s = 's';
+                            }else{
+                                $caNCS_s = '';
+                            }
+                            $output .= '<span class="lightBlue_cardBody_notice"><i class="fa fa-exclamation-circle text_svms_red mr-1" aria-hidden="true"></i> '.$sumAll_NotCompleted_sanctions . ' Not Completed Sanction'.$caNCS_s.' </span>';
+                        }
+                        // total sum of all corresponding sanctions
+                        if($sumAll_Sanctions > 1){
+                            $caS_s = 's';
+                        }else{
+                            $caS_s = '';
+                        }
+                        $output .= '<span class="lightBlue_cardBody_notice"><i class="fa fa-list-ul text_svms_blue mr-1" aria-hidden="true"></i> Total of ' . $sumAll_Sanctions . ' Corresponding Sanction'.$caS_s.' </span>';
+                    }else{
+                        $output .= '<span class="lightRed_cardBody_notice"><i class="fa fa-exclamation-circle text_svms_red mr-1" aria-hidden="true"></i> There are No Corresponding Sanctions found!</span>';
+                    }
+                    $output .= '
+                </div>
+            </div>
+            ';
+            if($studHas_Corresponding_sanctions > 0){
+                $output .= '
+                <form id="form_confirmNotifyViolator" action="'.route('violation_records.process_send_notification_to_violator').'" method="POST" enctype="multipart/form-data">
+                ';
+                    if(!is_null($query_selViolator_info->Email) or !empty($query_selViolator_info->Email)){
+                        $disable_btn = 'disabled';
+                        $output .= '
+                        <div class="modal-body border-0 pb-0">
+                            <div class="card-body lightBlue_cardBody shadow-none">
+                                <span class="lightBlue_cardBody_blueTitle">Type Violator'.$sq.'s Email:</span>
+                                <span class="lightBlue_cardBody_notice">'.$Vmr_ms . ' '.$query_selViolator_info->First_Name . ' ' . $query_selViolator_info->Middle_Name . ' ' . $query_selViolator_info->Last_Name . ' has no registered Emaiil address, please type ' . $Vhis_her . ' email.</span>
+                                <div class="input-group mt-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <i class="nc-icon nc-badge"></i>
+                                        </span>
+                                    </div>
+                                    <input id="violator_email" name="violator_email" type="email" class="form-control" placeholder="Type Violator'.$sq.'s email address" required>
+                                </div>
+                            </div>
+                        </div>
+                        ';
+                    }else{
+                        $disable_btn = 'disabled';
+                    }
+                $output .= '
+                    <div class="modal-footer border-0">
+                        <input type="hidden" name="_token" value="'.csrf_token().'">
+                        <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
+                        <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
+                        <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
+
+                        <input type="hidden" name="sel_Student_Number" value="'.$sel_Student_Number.'">
+
+                        <div class="btn-group" role="group" aria-label="Notify Violator Action Buttons">
+                            <button id="cancel_notifyViolator_btn" type="button" class="btn btn-round btn-success btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                            <button id="process_notifyViolator_btn" type="submit" class="btn btn-round btn_svms_blue btn_show_icon m-0" ' . $disable_btn . '>Send Notification <i class="nc-icon nc-send btn_icon_show_right" aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                </form>
+                ';
+            }else{
+                $output .= '
+                <div class="modal-footer border-0 pb-0">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <div class="card-body lightRed_cardBody shadow-none">
+                                <span class="lightRed_cardBody_notice"><i class="fa fa-exclamation-circle text_svms_red mr-1" aria-hidden="true"></i> There are No Corresponding Sanctions found for all ' . $count_all_offenses . ' Recorded Offense'.$caF_s . '. Please close this modal and assign Sanctions to Send a Report Notification.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <button id="cancel_GenerateViolatorOffensesReport_btn" type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal">OK <i class="fa fa-thumbs-o-up btn_icon_show_right" aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                </div>
+                ';
+            }
+        }else{
+            // no offenses found
+        }
+
+        echo $output;
+    }
+    // process sending notification to violator
+    public function process_send_notification_to_violator(Request $request){
+        // get all request
+        $sel_Student_Number = $request->get('sel_Student_Number');
+        $sel_Student_Email  = $request->get('violator_email');
+
+        $respo_user_id      = $request->get('respo_user_id');
+        $respo_user_lname   = $request->get('respo_user_lname');
+        $respo_user_fname   = $request->get('respo_user_fname');  
+
+        // query responsible user's info
+        $query_respo_user = Users::select('user_role','user_lname', 'user_fname')->where('id', $respo_user_id)->first();
+        
+        // custom values
+        $now_timestamp = now();
+        $output = '';
+        $sq = "'";
+
+        // cviolator's email handler
+        if(!is_null($query_respo_user->Email) OR !empty($query_respo_user->Email)){
+            $send_to = $query_respo_user->Email;
+        }else{
+            if(!is_null($sel_Student_Email) OR !empty($sel_Student_Email)){
+                $send_to = $sel_Student_Email;
+            }else{
+                $send_to = 'No email found';
+            }
+        }
+
+        echo 'student number: ' . $sel_Student_Number . '<br>';
+        echo 'send to: ' . $send_to . '<br>';
+    }
+
 
 }

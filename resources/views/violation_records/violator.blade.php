@@ -1235,6 +1235,23 @@
         </div>
     {{-- recover delete violation on modal end --}}
 
+    {{-- notify violator of all recorded offenses --}}
+        <div class="modal fade" id="notifyViolatorModal" tabindex="-1" role="dialog" aria-labelledby="notifyViolatorModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="notifyViolatorModalLabel">Notify Violator?</span>
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="notifyViolatorModalHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{-- notify violator of all recorded offenses end --}}
     {{-- generate violator's recorded offenses --}}
         <div class="modal fade" id="generateViolatorReportModal" tabindex="-1" role="dialog" aria-labelledby="generateViolatorReportModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -1272,8 +1289,40 @@
 {{-- notify violator --}}
     <script>
         function notifyViolator(sel_Student_Number){
-            alert(sel_Student_Number);
+            var sel_Student_Number = sel_Student_Number;
+            var _token = $('input[name="_token"]').val();
+            $.ajax({
+                url:"{{ route('violation_records.notify_violator_confirmation_modal') }}",
+                method:"GET",
+                data:{sel_Student_Number:sel_Student_Number, _token:_token},
+                success: function(data){
+                    $('#notifyViolatorModalHtmlData').html(data);
+                    $('#notifyViolatorModal').modal('show');
+                }
+            });
         }
+    </script>
+    <script>
+        $('#notifyViolatorModal').on('show.bs.modal', function () {
+            var form_confirmNotifyViolator = document.querySelector("#form_confirmNotifyViolator");
+            var cancel_notifyViolator_btn = document.querySelector("#cancel_notifyViolator_btn");
+            var process_notifyViolator_btn = document.querySelector("#process_notifyViolator_btn");
+            // if input is not empty
+            $('#violator_email').on('keyup', function(){
+                var input_violator_email = $(this).val();
+                if(input_violator_email != ""){
+                    process_notifyViolator_btn.disabled = false;
+                }else{
+                    process_notifyViolator_btn.disabled = true;
+                }
+            });
+            // disable cancel and sibmit button on submit
+            $(form_confirmNotifyViolator).submit(function(){
+                process_notifyViolator_btn.disabled = true;
+                cancel_notifyViolator_btn.disabled = true;
+                return true;
+            });
+        });
     </script>
 {{-- notify violator end --}}
 {{-- generrate violator's records report --}}

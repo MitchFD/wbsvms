@@ -216,6 +216,12 @@ Route::group(['middleware' => 'auth'], function () {
 	// process permanent delete of all recently deleted violations
 	Route::post('violation_records/process_permanent_delete_all_violations', 'App\Http\Controllers\ViolationRecordsController@process_permanent_delete_all_violations')->name('violation_records.process_permanent_delete_all_violations');
 
+	// NOTIFY VIOLATO OF ALL RECORDED OFFENSES
+	// notify violator confirmation on modal
+	Route::get('violation_records/notify_violator_confirmation_modal', 'App\Http\Controllers\ViolationRecordsController@notify_violator_confirmation_modal')->name('violation_records.notify_violator_confirmation_modal'); 
+	// process sending notification to violator
+	Route::post('violation_records/process_send_notification_to_violator', 'App\Http\Controllers\ViolationRecordsController@process_send_notification_to_violator')->name('violation_records.process_send_notification_to_violator'); 
+
 });
 
 // sanctions
