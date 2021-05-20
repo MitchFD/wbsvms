@@ -1758,12 +1758,12 @@ class ViolationRecordsController extends Controller
                                                             <label class="custom-control-label lightGreen_cardBody_chckboxLabel" for="sanctDeleteAll">Delete All ('.$count_all_sanctions.') Sanction'.$cls_s.'</label>
                                                         </div>
                                                     </div>
+                                                    <hr class="hr_grn">
                                                     ';
                                                 }else{
                                                     $cls_s = '';
                                                 }
                                                 $output .= '
-                                                <hr class="hr_grn">
                                                 <span class="cust_info_txtwicon4v1 font-weight-bold"><i class="fa fa-list-ul mr-1" aria-hidden="true"></i> ' . $count_all_sanctions . ' Sanction'.$cls_s . ' for the above offenses.</span>
                                                 ';
                                             }
@@ -5627,12 +5627,17 @@ class ViolationRecordsController extends Controller
         $query_selViolator_info = Students::where('Student_Number', $sel_Student_Number)->first();
 
         // query all recorded violations
-        $query_selViolator_Offenses = Violations::where('stud_num', $sel_Student_Number)->get();
+        $query_selViolator_Offenses = Violations::where('stud_num', $sel_Student_Number)->orderBy('recorded_at', 'DESC')->get();
+
+        // counts
+        $countAll_Uncleared_offenses = Violations::where('stud_num', $sel_Student_Number)->where('violation_status', '!=', 'cleared')->sum('offense_count');
+        $countAll_Cleared_offenses = Violations::where('stud_num', $sel_Student_Number)->where('violation_status', '=', 'cleared')->sum('offense_count');
+        $countTotal_offenses = Violations::where('stud_num', $sel_Student_Number)->sum('offense_count');
 
         // Generate PDF
         $pdf = \App::make('dompdf.wrapper');
         // $pdf->loadHTML($output);
-        $pdf = PDF::loadView('reports/violator_records_pdf', compact('now_timestamp', 'query_respo_user', 'query_selViolator_info', 'query_selViolator_Offenses'));
+        $pdf = PDF::loadView('reports/violator_records_pdf', compact('now_timestamp', 'query_respo_user', 'query_selViolator_info', 'query_selViolator_Offenses', 'countAll_Uncleared_offenses', 'countAll_Cleared_offenses', 'countTotal_offenses'));
         $pdf->setPaper('A4');
         $pdf->getDomPDF()->set_option("enable_php", true);
         return $pdf->stream('reports/violator_records_pdf.pdf');

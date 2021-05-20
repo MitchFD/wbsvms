@@ -3,9 +3,6 @@
     <head>
         <meta charset="UTF-8">
         <title>{{$query_selViolator_info->First_Name }} {{ $query_selViolator_info->Middle_Name }} {{ $query_selViolator_info->Last_Name}}'s Violation Records</title>
-
-        <!--     Fonts and icons     -->
-        <link href="{{public_path('https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css')}}" rel="stylesheet">
         
         <style type="text/css">
             @page {
@@ -25,6 +22,27 @@
             /* .txt_right{
                 text-align: right !important;
             } */
+
+            /* miscellaneous symbols  https://en.wikipedia.org/wiki/Miscellaneous_Symbols */
+            .ms {
+                display: inline;
+                font-style: normal;
+                font-variant: normal;
+                font-weight: normal;
+                font-size: 1.125rem;
+                line-height: .7 !important;
+                font-family: DejaVu Sans, sans-serif;
+            }
+            .ms-check-square-o:before{
+                font-family: DejaVu Sans, sans-serif;
+                content: "\2611";
+                font-size:1.125rem;
+            }
+            .ms-square-o:before{
+                font-family: DejaVu Sans, sans-serif;
+                content: "\2610";
+                font-size:1.125rem;
+            }
 
             /* custom borders */
             .b_1{
@@ -357,7 +375,87 @@
 
             <br>
 
-            <table id="contentsInfo_table" class="b_1">
+            @php
+                    // counts
+                    // uncleared offenses count
+                    if($countAll_Uncleared_offenses > 0){
+                        $UC_offCount = $countAll_Uncleared_offenses;
+                        if($countAll_Uncleared_offenses > 1){
+                            $UC_s = 's';
+                        }else{
+                            $UC_s = '';
+                        }
+                    }else{
+                        $UC_offCount = 0 ;
+                        $UC_s = '';
+                    }
+                    // cleared offenses count
+                    if($countAll_Cleared_offenses > 0){
+                        $C_offCount = $countAll_Cleared_offenses;
+                        if($countAll_Cleared_offenses > 1){
+                            $C_s = 's';
+                        }else{
+                            $C_s = '';
+                        }
+                    }else{
+                        $C_offCount = 0 ;
+                        $C_s = '';
+                    }
+                    // total offenses count
+                    if($countTotal_offenses > 0){
+                        $T_offCount = $countTotal_offenses;
+                        if($countTotal_offenses > 1){
+                            $TO_s = 's';
+                        }else{
+                            $TO_s = '';
+                        }
+                    }else{
+                        $T_offCount = 0 ;
+                        $TO_s = '';
+                    }
+
+                    // sacntions
+                    // count al corresponding sanctions
+                    $countAll_Sanctions = App\Models\Sanctions::where('stud_num', '=', $query_selViolator_info->Student_Number)->count();
+                    // count all completed sanctions
+                    $countAll_CompletedSanctions = App\Models\Sanctions::where('stud_num', '=', $query_selViolator_info->Student_Number)
+                                                        ->where('sanct_status', '=', 'completed')
+                                                        ->count();
+                    // count all not completed sanctions
+                    $countAll_NotCompletedSanctions = App\Models\Sanctions::where('stud_num', '=', $query_selViolator_info->Student_Number)
+                                                        ->where('sanct_status', '!=', 'completed')
+                                                        ->count();
+                    // plurals
+                    if($countAll_Sanctions > 0){
+                        if($countAll_Sanctions > 1){
+                            $TS_s = 's';
+                        }else{
+                            $TS_s = '';
+                        }
+                    }else{
+                        $TS_s = '';
+                    }
+                    if($countAll_CompletedSanctions > 0){
+                        if($countAll_CompletedSanctions > 1){
+                            $CS_s = 's';
+                        }else{
+                            $CS_s = '';
+                        }
+                    }else{
+                        $CS_s = '';
+                    }
+                    if($countAll_NotCompletedSanctions > 0){
+                        if($countAll_NotCompletedSanctions > 1){
+                            $NCS_s = 's';
+                        }else{
+                            $NCS_s = '';
+                        }
+                    }else{
+                        $NCS_s = '';
+                    }
+                @endphp  
+
+            <table id="contentsInfo_table" class="b_1">   
                 <tbody>
                     <tr class="tr_bg_DDD">
                         <td colspan="2"><span class="font-weight-bold">Violator's Information: </span></td>
@@ -387,16 +485,16 @@
                         <td><span class="font-weight-bold">Sanctions Details: </span></td>
                     </tr>
                     <tr>
-                        <td class="bb_1"><span class="font-weight-bold">Cleared Offenses: </span> 1</td>
-                        <td class="bb_1"><span class="font-weight-bold">Completed Sanctions: </span> 1</td>
+                        <td class="bb_1"><span class="font-weight-bold">Cleared Offense{{$C_s}}: </span> {{ $countAll_Cleared_offenses}}</td>
+                        <td class="bb_1"><span class="font-weight-bold">Completed Sanction{{$CS_s}}: </span> {{ $countAll_CompletedSanctions}}</td>
                     </tr>
                     <tr>
-                        <td class="bb_1"><span class="font-weight-bold">Uncleared Offenses: </span> 1</td>
-                        <td class="bb_1"><span class="font-weight-bold">Not Completed Sanctions: </span> 1</td>
+                        <td class="bb_1"><span class="font-weight-bold">Uncleared Offense{{$UC_s}}: </span> {{ $UC_offCount}}</td>
+                        <td class="bb_1"><span class="font-weight-bold">Not Completed Sanction{{$NCS_s}}: </span> {{ $countAll_NotCompletedSanctions}}</td>
                     </tr>
                     <tr>
-                        <td class="bb_1"><span class="font-weight-bold">Total Offenses: 1</span></td>
-                        <td class="bb_1"><span class="font-weight-bold">Total Sanctions: 1</span></td>
+                        <td class="bb_1"><span class="font-weight-bold">Total Offense{{$TO_s}}: {{ $countTotal_offenses}}</span></td>
+                        <td class="bb_1"><span class="font-weight-bold">Total Sanction{{$TS_s}}: {{ $countAll_Sanctions}}</span></td>
                     </tr>
                 </tbody>
             </table>
@@ -409,46 +507,214 @@
             
             <table id="contentsInfo_table">
                 <tbody>
-                    <tr>
-                        <td class="tr_bg_red txtRed_title">Offenses: May 12, 2021 (Sat ~ 12:00 PM)</td>
-                        <td class="tr_bg_grn txtGrn_title"></td>
-                    </tr>
-                    <tr class="va_top">
-                        <td class="tr_bg_red1">
-                            <span class="d-block mb_2 txtRed_title">Minor Offenses:</span>
-                            <span class="d-block mb_2"><span class="txtRed_title">1. </span> <span class="txtRed_subTitle">Not Wearing ID</span></span>
-                            <span class="d-block mb_2"><span class="txtRed_title">2. </span> <span class="txtRed_subTitle">Not Wearing Prescribed Uniform</span></span>
-                            <br>
-                            <span class="d-block mb_2 txtRed_title">Less Serious Offenses:</span>
-                            <span class="d-block mb_2 txtRed_title">Others:</span>
-                        </td>
-                        <td class="tr_bg_grn1">
-                            <span class="d-block mb_2"><span class="txtGrn_title">Sanctions: </span></span>
-                            <span class="d-block mb_2"><span class="txtGrn_title"><i class="fa fa-check-square-o" aria-hidden="true"></i> </span> <span class="txtGrn_subTitle">Relief Goods </span></span>
-                            <span class="d-block mb_2"><span class="txtGrn_title"><i class="fa fa-square-o" aria-hidden="true"></i> </span> <span class="txtGrn_subTitle">Community Service </span></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="tr_bg_red2"><span class="txtRed_title">Offense Status: </span> <span class="txtRed_subTitle">Not Cleared</span></td>
-                        <td class="tr_bg_grn2"><span class="txtGrn_title">Sanction Status: </span> <span class="txtGrn_subTitle">Not Completed</span></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                    </tr>
+                    @if(count($query_selViolator_Offenses) > 0)
+                        @foreach($query_selViolator_Offenses as $violator_Offense)
+                            @php
+                                // violatins status class
+                                if($violator_Offense->violation_status === 'cleared'){
+                                    $tr_bg         = 'tr_bg_grn';
+                                    $tr_bg1        = 'tr_bg_grn1';
+                                    $tr_bg2        = 'tr_bg_grn2';
+                                    $txt_title     = 'txtGrn_title';
+                                    $txt_subTitle  = 'txtGrn_subTitle';
+                                    $txt_clearedAt = ' ('.date('F d, Y ~ D - g:i A', strtotime($violator_Offense->cleared_at)).') ';
+                                }else{
+                                    $tr_bg         = 'tr_bg_red';
+                                    $tr_bg1        = 'tr_bg_red1';
+                                    $tr_bg2        = 'tr_bg_red2';
+                                    $txt_title     = 'txtRed_title';
+                                    $txt_subTitle  = 'txtRed_subTitle';
+                                    $txt_clearedAt = '';
+                                }
+
+                                // sanctions status class
+                                if($violator_Offense->has_sanction == 1){
+                                    $s_tr_bg             = 'tr_bg_grn';
+                                    $s_tr_bg1            = 'tr_bg_grn1';
+                                    $s_tr_bg2            = 'tr_bg_grn2';
+                                    $s_txt_title         = 'txtGrn_title';
+                                    $s_txt_subTitle      = 'txtGrn_title';
+                                    $s_txt_labelTitle    = 'Sanction Status:';
+                                    // count al corresponding sanctions
+                                    $countAll_CorrSanctions = App\Models\Sanctions::where('stud_num', '=', $query_selViolator_info->Student_Number)
+                                                                        ->where('for_viola_id', '=', $violator_Offense->viola_id)
+                                                                        ->offset(0)
+                                                                        ->limit($violator_Offense->has_sanct_count)
+                                                                        ->count();
+                                    // count all completed sanctions
+                                    $countAll_CompletedCorrSanctions = App\Models\Sanctions::where('stud_num', '=', $query_selViolator_info->Student_Number)
+                                                                        ->where('for_viola_id', '=', $violator_Offense->viola_id)
+                                                                        ->where('sanct_status', '=', 'completed')
+                                                                        ->offset(0)
+                                                                        ->limit($violator_Offense->has_sanct_count)
+                                                                        ->count();
+                                    if($countAll_CorrSanctions == $countAll_CompletedCorrSanctions){
+                                        $s_txt_labelsubTitle = 'Completed';
+                                    }else{
+                                        $s_txt_labelsubTitle = 'Not Completed';
+                                    }
+                                }else{
+                                    $s_tr_bg             = 'tr_bg_red';
+                                    $s_tr_bg1            = 'tr_bg_red1';
+                                    $s_tr_bg2            = 'tr_bg_red2';
+                                    $s_txt_title         = 'txtRed_title';
+                                    $s_txt_subTitle      = 'txtRed_subTitle';
+                                    $s_txt_labelTitle    = '';
+                                    $s_txt_labelsubTitle = 'No Corresponding Sanctions Found...';
+                                }
+                            @endphp
+                            <tr>
+                                <td class="{{ $tr_bg }} {{ $txt_title }}">Date Committed: {{ date('F d, Y (D - g:i A)', strtotime($violator_Offense->recorded_at))}}</td>
+                                <td class="{{ $s_tr_bg }} {{ $s_txt_title }}"></td>
+                            </tr>
+                            <tr class="va_top">
+                                {{-- offenses --}}
+                                <td class="{{$tr_bg1}}">
+                                    @if(!is_null($violator_Offense->minor_off) OR !empty($violator_Offense->minor_off))
+                                        @php
+                                            $mo_index = 0;
+                                        @endphp
+                                        <span class="d-block mb_2 {{ $txt_title }}">Minor Offenses:</span>
+                                        @foreach(json_decode(json_encode($violator_Offense->minor_off), true) as $vo_minorOff)
+                                            @php
+                                                $mo_index++;
+                                            @endphp
+                                            <span class="d-block mb_2"><span class="{{ $txt_title }}">{{$mo_index}}. </span> <span class="{{ $txt_subTitle }}">{{ $vo_minorOff}}</span></span>
+                                        @endforeach
+                                        <br>
+                                    @endif
+                                    @if(!is_null($violator_Offense->less_serious_off) OR !empty($violator_Offense->less_serious_off))
+                                        @php
+                                            $lso_index = 0;
+                                        @endphp
+                                        <span class="d-block mb_2 {{ $txt_title }}">Less Serious Offenses:</span>
+                                        @foreach(json_decode(json_encode($violator_Offense->less_serious_off), true) as $vo_lessSeriousOff)
+                                            @php
+                                                $lso_index++;
+                                            @endphp
+                                            <span class="d-block mb_2"><span class="{{ $txt_title }}">{{$lso_index}}. </span> <span class="{{ $txt_subTitle }}">{{ $vo_lessSeriousOff}}</span></span>
+                                        @endforeach
+                                        <br>
+                                    @endif
+                                    @if(!is_null($violator_Offense->other_off) OR !empty($violator_Offense->other_off))
+                                        @if(!in_array(null, json_decode(json_encode($violator_Offense->other_off), true)))
+                                            @php
+                                                $oo_index = 0;
+                                            @endphp
+                                            <span class="d-block mb_2 {{ $txt_title }}">Others:</span>
+                                            @foreach(json_decode(json_encode($violator_Offense->other_off), true) as $vo_othersOff)
+                                                @php
+                                                    $oo_index++;
+                                                @endphp
+                                                <span class="d-block mb_2"><span class="{{ $txt_title }}">{{$oo_index}}. </span> <span class="{{ $txt_subTitle }}">{{ $vo_othersOff}}</span></span>
+                                            @endforeach
+                                            <br>
+                                        @endif
+                                    @endif
+                                </td>
+                                {{-- sanctions --}}
+                                <td class="{{ $s_tr_bg1 }}">
+                                    <span class="d-block mb_2"><span class="{{ $s_txt_title }}">Sanctions: </span></span>
+                                    @if($violator_Offense->has_sanction == 1)
+                                        @php
+                                            // query corresponding sanctins
+                                            $query_CorrSanctions = App\Models\Sanctions::where('stud_num', '=', $query_selViolator_info->Student_Number)
+                                                                        ->where('for_viola_id', '=', $violator_Offense->viola_id)
+                                                                        ->orderBy('created_at', 'asc')
+                                                                        ->offset(0)
+                                                                        ->limit($violator_Offense->has_sanct_count)
+                                                                        ->get();
+                                        @endphp
+                                        @if (count($query_CorrSanctions) > 0)
+                                            @foreach ($query_CorrSanctions as $thisViola_CorrSanctions)
+                                            @php
+                                                // icons classes for sanction's status
+                                                if($thisViola_CorrSanctions->sanct_status === 'completed'){
+                                                    $sanct_icon = 'ms-check-square-o';
+                                                }else{
+                                                    $sanct_icon = 'ms-square-o';
+                                                }
+                                            @endphp
+                                            <span class="d-block mb_2"><span class="{{ $s_txt_title }}"><i class="ms {{ $sanct_icon }}" aria-hidden="true"></i> </span> <span class="{{ $s_txt_subTitle }}">{{ $thisViola_CorrSanctions->sanct_details}} </span></span> 
+                                            @endforeach
+                                        @else
+                                        <span class="d-block mb_2"><span class="{{ $s_txt_subTitle }}"> <em> No Registered Sanctions...</em> </span></span>
+                                        @endif
+                                    @else
+                                        <span class="d-block mb_2"><span class="{{ $s_txt_subTitle }}"> <em> No Registered Sanctions...</em> </span></span>
+                                    @endif
+                                </td>
+                            </tr>
+                            <tr>
+                                {{-- statuses --}}
+                                <td class="{{ $tr_bg2 }}"><span class="{{ $txt_title }}">Offense Status: </span> <span class="{{ $txt_subTitle }}">{{ucwords($violator_Offense->violation_status) }} {{ $txt_clearedAt }}</span></td>
+                                <td class="{{ $s_tr_bg2 }}"><span class="{{ $s_txt_title }}">{{$s_txt_labelTitle}} </span> <span class="{{ $s_txt_subTitle }}">{{ $s_txt_labelsubTitle }}</span></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        @endforeach
+                    @endif
                 </tbody>
             </table>
 
             <br>
             <p class="notice_1">-- end of table <span class="cg"> (Violator's Recorded Violations Table) </span> --</p>
+            <br>
+
+            <table id="contentsInfo_table" class="b_1">   
+                <tbody>
+                    <tr class="tr_bg_DDD">
+                        <td colspan="2"><span class="font-weight-bold">Violator's Information: </span></td>
+                    </tr>
+                    <tr>
+                        <td class="bb_1"><span class="font-weight-bold">Name: </span> {{ $query_selViolator_info->First_Name }} {{ $query_selViolator_info->Middle_Name }} {{ $query_selViolator_info->Last_Name}}</td>
+                        <td class="bb_1"><span class="font-weight-bold">Gender: </span> {{ $query_selViolator_info->Gender }}</td>
+                    </tr>
+                    <tr>
+                        <td class="bb_1"><span class="font-weight-bold">Student Number: </span> {{ $query_selViolator_info->Student_Number }}</td>
+                        <td class="bb_1"><span class="font-weight-bold">Age: </span> {{ $query_selViolator_info->Age }}</td>
+                    </tr>
+                    <tr>
+                        <td class="bb_1"><span class="font-weight-bold">School: </span> {{ $query_selViolator_info->School_Name }}</td>
+                        <td class="bb_1"><span class="font-weight-bold">Year Level: </span> {{ $query_selViolator_info->YearLevel }}</td>
+                    </tr>
+                    <tr>
+                        <td class="bb_1"><span class="font-weight-bold">Program: </span> {{ $query_selViolator_info->Course }}</td>
+                        <td class="bb_1"></td>
+                    </tr>
+                    <tr>
+                        <td class="b_0 p_x0y2"></td>
+                        <td class="b_0 p_x0y2"></td>
+                    </tr>
+                    <tr class="tr_bg_DDD">
+                        <td><span class="font-weight-bold">Offense Details: </span></td>
+                        <td><span class="font-weight-bold">Sanctions Details: </span></td>
+                    </tr>
+                    <tr>
+                        <td class="bb_1"><span class="font-weight-bold">Cleared Offense{{$C_s}}: </span> {{ $countAll_Cleared_offenses}}</td>
+                        <td class="bb_1"><span class="font-weight-bold">Completed Sanction{{$CS_s}}: </span> {{ $countAll_CompletedSanctions}}</td>
+                    </tr>
+                    <tr>
+                        <td class="bb_1"><span class="font-weight-bold">Uncleared Offense{{$UC_s}}: </span> {{ $UC_offCount}}</td>
+                        <td class="bb_1"><span class="font-weight-bold">Not Completed Sanction{{$NCS_s}}: </span> {{ $countAll_NotCompletedSanctions}}</td>
+                    </tr>
+                    <tr>
+                        <td class="bb_1"><span class="font-weight-bold">Total Offense{{$TO_s}}: {{ $countTotal_offenses}}</span></td>
+                        <td class="bb_1"><span class="font-weight-bold">Total Sanction{{$TS_s}}: {{ $countAll_Sanctions}}</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
             <br>
 
             <table id="contentsInfo_table" class="b_1">
