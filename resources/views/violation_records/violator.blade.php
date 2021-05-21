@@ -447,9 +447,13 @@
                                                                         ->whereYear('recorded_at', $this_yearVal_tc)
                                                                         ->whereMonth('recorded_at', $yearly_monthlyVal_tc)
                                                                         ->count();
-                                                                $countAll_RecViola_wNoSanct = App\Models\Violations::where('stud_num', $violator_info->Student_Number)
+                                                                $countAll_MonthlyRecViola_wNoSanct = App\Models\Violations::where('stud_num', $violator_info->Student_Number)
                                                                         ->whereYear('recorded_at', $this_yearVal_tc)
                                                                         ->whereMonth('recorded_at', $yearly_monthlyVal_tc)
+                                                                        ->where('has_sanction', '!=', 1)
+                                                                        ->count();
+                                                                $countAll_YearlyRecViola_wNoSanct = App\Models\Violations::where('stud_num', $violator_info->Student_Number)
+                                                                        ->whereYear('recorded_at', $this_yearVal_tc)
                                                                         ->where('has_sanction', '!=', 1)
                                                                         ->count();
                                                             @endphp
@@ -703,7 +707,7 @@
                                                                             @endif
                                                                         </div>
                                                                         <div class="d-flex align-items-end">
-                                                                            @if ($countAll_RecViola_wNoSanct > 0)
+                                                                            @if ($countAll_MonthlyRecViola_wNoSanct > 0)
                                                                                 <button id="{{$yearly_monthlyVal_tc}}" onclick="addSanctions_allMonthlyViolations(this.id, {{$this_yearVal_tc}})" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Add Sanctions to all recorded Offenses for the Month of {{ $monthName }} {{ $this_yearVal_tc }} with No Corresponding Sanctions?"><i class="fa fa-pencil" aria-hidden="true"></i></button>
                                                                             @endif
                                                                             <button id="{{$yearly_monthlyVal_tc}}" onclick="delete_allMonthlyViolations(this.id, {{$this_yearVal_tc}})" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Delete all recorded Offenses for the Month of {{ $monthName }} {{ $this_yearVal_tc}}?"><i class="fa fa-trash" aria-hidden="true"></i></button>
@@ -727,7 +731,9 @@
                                                         @endif
                                                     </div>
                                                     <div class="d-flex align-items-end">
-                                                        {{-- <button id="{{$yearly_monthlyVal_tc}}" onclick="addSanctions_allMonthlyViolations(this.id)" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Add Sanctions to all recorded Offenses for the Month of {{ $monthName }} 2021?"><i class="fa fa-pencil" aria-hidden="true"></i></button> --}}
+                                                        @if ($countAll_YearlyRecViola_wNoSanct > 0)
+                                                            <button id="{{$this_yearVal_tc}}" onclick="addSanctions_allYearlyViolations(this.id)" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Add Sanctions to all recorded Offenses for the Month of {{ $monthName }} {{ $this_yearVal_tc }} with No Corresponding Sanctions?"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+                                                        @endif
                                                         <button style="margin-right: 25px;" id="{{$this_yearVal_tc}}" onclick="delete_allYearlyViolations(this.id)" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Delete all recorded Offenses for the Year {{ $this_yearVal_tc}}?"><i class="fa fa-trash" aria-hidden="true"></i></button>
                                                     </div>
                                                 </div> 
@@ -1628,6 +1634,27 @@
         });
     </script>
 {{-- adding sanctions to all violations per month end --}}
+{{-- adding sanctions to all violations per Year --}}
+    <script>
+        function addSanctions_allYearlyViolations(sel_yearly_viola){
+            var sel_yearly_viola = sel_yearly_viola;
+            var sel_stud_num = document.getElementById("vp_hidden_stud_num").value;
+            var _token = $('input[name="_token"]').val();
+
+            console.log('Year: ' + sel_yearly_viola);
+            console.log('Student Number: ' + sel_stud_num);
+            $.ajax({
+                url:"{{ route('violation_records.add_sanction_all_yearly_violations_form') }}",
+                method:"GET",
+                data:{sel_yearly_viola:sel_yearly_viola, sel_stud_num:sel_stud_num, _token:_token},
+                success: function(data){
+                    $('#addSanctionsToAllMonthlyViolationModalHtmlData').html(data); 
+                    $('#addSanctionsToAllMonthlyViolationModal').modal('show');
+                }
+            });
+        }
+    </script>
+{{-- adding sanctions to all violations per Year end --}}
 
 {{-- edit sanctions on modal --}}
     <script>
