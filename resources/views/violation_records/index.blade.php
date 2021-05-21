@@ -190,6 +190,17 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <div class="form-group">
+                                            <select id="violationRecFltr_violationHasSanction" name="violationRecFltr_violationHasSanction" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
+                                                <option value="0" selected>w/ and w/o Sanctions</option>
+                                                <option value="1">With Sanctions</option>
+                                                <option value="2">Without Sanctions</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="row mb-1">
                                     <div class="col-lg-12 col-md-12 col-sm-12">
                                         <input id="violationRecFltr_datepickerRange" name="violationRecFltr_datepickerRange" type="text" class="form-control cust_input" placeholder="Select Date Range" readonly />
@@ -353,6 +364,7 @@
                         var df_minAgeRange = document.getElementById('violationRecFltr_hidden_minAgeRange').value;
                         var df_maxAgeRange = document.getElementById('violationRecFltr_hidden_maxAgeRange').value;
                         var vr_status = document.getElementById('violationRecFltr_violationStat').value;
+                        var vr_hasSanctions = document.getElementById('violationRecFltr_violationHasSanction').value;
                         var vr_rangefrom = document.getElementById("violationRecFltr_hidden_dateRangeFrom").value;
                         var vr_rangeTo = document.getElementById("violationRecFltr_hidden_dateRangeTo").value;
                         var vr_orderBy = document.getElementById("violationRecFltr_orderBy").value;
@@ -378,6 +390,7 @@
                         console.log('min_Age_filter: ' + vr_minAgeRange);
                         console.log('max_Age_filter: ' + vr_maxAgeRange);
                         console.log('violation_status_filter: ' + vr_status);
+                        console.log('w/ & w/o Sanctions: ' + vr_hasSanctions);
                         console.log('date_from_filter: ' + vr_rangefrom);
                         console.log('date_filter: ' + vr_rangeTo);
                         console.log('order by: ' + vr_orderBy);
@@ -400,6 +413,7 @@
                                 df_minAgeRange:df_minAgeRange,
                                 df_maxAgeRange:df_maxAgeRange,
                                 vr_status:vr_status,
+                                vr_hasSanctions:vr_hasSanctions,
                                 vr_rangefrom:vr_rangefrom,
                                 vr_rangeTo:vr_rangeTo,
                                 vr_orderBy:vr_orderBy,
@@ -425,7 +439,7 @@
                         });
 
                         // for disabling/ enabling reset filter button
-                        if(vr_schools != 0 || vr_programs != 0 || vr_yearlvls != 0 || vr_genders != 0 || vr_minAgeRange != df_minAgeRange || vr_maxAgeRange != df_maxAgeRange || vr_status != 0 || vr_rangefrom != '' || vr_rangeTo != ''){
+                        if(vr_schools != 0 || vr_programs != 0 || vr_yearlvls != 0 || vr_genders != 0 || vr_minAgeRange != df_minAgeRange || vr_maxAgeRange != df_maxAgeRange || vr_status != 0 || vr_hasSanctions != 0 || vr_rangefrom != '' || vr_rangeTo != ''){
                             $('#resetViolationRecsFilter_btn').prop('disabled', false);
                         }else{
                             $('#resetViolationRecsFilter_btn').prop('disabled', true);
@@ -743,6 +757,20 @@
                     });
                 // filter violation status end 
 
+                // filter violation with/without sanctions
+                    $('#violationRecFltr_violationHasSanction').on('change paste keyup', function(){
+                        var selectedViolatinHasSanction = $(this).val();
+                        if(selectedViolatinHasSanction != 0){
+                            $(this).addClass('cust_input_hasvalue');
+                        }else{
+                            $(this).removeClass('cust_input_hasvalue');
+                        }
+                        // table paginatin set to 1
+                        $('#vr_hidden_page').val(1);
+                        load_violationRec_table();
+                    });
+                // filter violation with/without sanctions end 
+
                 // filter order by
                     $('#violationRecFltr_orderBy').on('change paste keyup', function(){
                         var selectedOrderBy = $(this).val();
@@ -811,11 +839,16 @@
                         // violation status
                         document.getElementById("violationRecFltr_violationStat").classList.remove("cust_input_hasvalue");
                         $('#violationRecFltr_violationStat').val(0);
+                        // has sanction filter
+                        document.getElementById("violationRecFltr_violationHasSanction").classList.remove("cust_input_hasvalue");
+                        $('#violationRecFltr_violationHasSanction').val(0);
                         // date range
                         document.getElementById("violationRecFltr_datepickerRange").classList.remove("cust_input_hasvalue");
                         document.getElementById("violationRecFltr_datepickerRange").value = '';
                         document.getElementById("violationRecFltr_hidden_dateRangeFrom").value = '';
                         document.getElementById("violationRecFltr_hidden_dateRangeTo").value = '';
+                        // search input
+                        document.getElementById('violationRecsFiltr_liveSearch').value = '';
                         // table paginatin set to 1
                         $('#vr_hidden_page').val(1);
                         load_violationRec_table();
@@ -840,6 +873,7 @@
                     var df_minAgeRange = document.getElementById('violationRecFltr_hidden_minAgeRange').value;
                     var df_maxAgeRange = document.getElementById('violationRecFltr_hidden_maxAgeRange').value;
                     var fvr_status = document.getElementById('violationRecFltr_violationStat').value;
+                    var fvr_hasSanctions = document.getElementById('violationRecFltr_violationHasSanction').value;
                     var fvr_rangefrom = document.getElementById("violationRecFltr_hidden_dateRangeFrom").value;
                     var fvr_rangeTo = document.getElementById("violationRecFltr_hidden_dateRangeTo").value;
                     var vr_orderBy = document.getElementById("violationRecFltr_orderBy").value;
@@ -856,7 +890,8 @@
                     console.log('gender_filter: ' + fvr_genders);
                     console.log('min_Age_filter: ' + fvr_minAgeRange);
                     console.log('max_Age_filter: ' + fvr_maxAgeRange);
-                    console.log('violation_status_filter: ' + fvr_status);
+                    console.log('violation_status_filter: ' + fvr_hasSanctions);
+                    console.log('has sanction filter: ' + fvr_status);
                     console.log('date_from_filter: ' + fvr_rangefrom);
                     console.log('date_filter: ' + fvr_rangeTo);
                     console.log('order by: ' + vr_orderBy);
@@ -879,6 +914,7 @@
                             df_minAgeRange:df_minAgeRange,
                             df_maxAgeRange:df_maxAgeRange,
                             fvr_status:fvr_status,
+                            fvr_hasSanctions:fvr_hasSanctions,
                             fvr_rangefrom:fvr_rangefrom,
                             fvr_rangeTo:fvr_rangeTo,
                             vr_orderBy:vr_orderBy,

@@ -324,6 +324,18 @@
                     $is_are = 'is';
                     $_s     = '';
                 }
+                // has sanction filter
+                if($filter_ViolationSanct != 0){
+                    if($filter_ViolationSanct == 1){
+                        $txt_ViolationHasSanction = 'With Sanctions.';
+                    }elseif($filter_ViolationSanct == 2){
+                        $txt_ViolationHasSanction = 'Without Sanctions.';
+                    }else{
+                        $txt_ViolationHasSanction = 'With & Without Sanctions.';
+                    }
+                }else{
+                    $txt_ViolationHasSanction = 'With & Without Sanctions.';
+                }
             @endphp 
 
             <table id="contentsInfo_table">
@@ -349,47 +361,38 @@
                             <span class="font-weight-bold">Programs: </span> {{ $txt_Programs }}
                         </td>
                         <td class="br_1">
-                            <span class="font-weight-bold">Date Range: </span> {{ $txt_DateRange }}
+                            <span class="font-weight-bold">Corresponding Sanctions: </span> {{ $txt_ViolationHasSanction }}
                         </td>
                     </tr>
                     <tr>
                         <td class="br_1">
                             <span class="font-weight-bold">Year Levels: </span> {{ $txt_YearLevels }}
                         </td>
-                        <td>
-                            <span class="font-weight-bold">Order By: </span> {{ $orderBy_filterVal }} <span class="cg"> {{ $orderByRange_filterVal }} </span>
+                        <td class="br_1">
+                            <span class="font-weight-bold">Date Range: </span> {{ $txt_DateRange }}
                         </td>
                     </tr>
                     <tr>
                         <td class="br_1">
                             <span class="font-weight-bold">Gender: </span> {{ $txt_Gender }}
                         </td>
-                        @if($filter_SearchInput != '' OR !empty($filter_SearchInput))
-                            <td class="br_1">
-                                <span class="font-weight-bold">Search Filter: </span> <em>{{ $filter_SearchInput }}...</em>
-                            </td>
-                        @else
-                            <td>
-
-                            </td>
-                        @endif
+                        <td>
+                            <span class="font-weight-bold">Order By: </span> {{ $orderBy_filterVal }} <span class="cg"> {{ $orderByRange_filterVal }} </span>
+                        </td>
                     </tr>
                     <tr>
                         <td class="br_1 pb_10" style="padding-bottom: 15px !important;">
                             <span class="font-weight-bold">Age Range: </span> {{ $txt_AgeRange }}
                         </td>
-                        {{-- @if($filter_SearchInput != '' OR !empty($filter_SearchInput))
-                            <td class="br_1" style="padding-bottom: 15px !important;">
-                                <em>{{ $filter_SearchInput }}...</em>
+                        @if($filter_SearchInput != '' OR !empty($filter_SearchInput))
+                            <td class="br_1">
+                                <span class="font-weight-bold">Search Filter: </span> <em>{{ $filter_SearchInput }}...</em>
                             </td>
                         @else
                             <td style="padding-bottom: 15px !important;">
 
                             </td>
-                        @endif --}}
-                        <td style="padding-bottom: 15px !important;">
-
-                        </td>
+                        @endif
                     </tr>
                     <tr class="tr_bg_DDD">
                         <td class="b_1" colspan="2">
@@ -414,7 +417,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if(count($query_violation_records))
+                    @if(count($query_violation_records) > 0)
                         @php
                             $rowCount = 0;
                         @endphp
@@ -529,103 +532,105 @@
             <p class="notice_1">-- end of table <span class="cg"> (Recorded Violations Table) </span> --</p>
             <br>
 
-            <table id="contentsInfo_table">
-                <tbody>
-                    <tr class="tr_bg_DDD">
-                        <td class="b_1">
-                            <span class="font-weight-bold">Applied Filters (Student): </span>
-                        </td>
-                        <td class="b_1">
-                            <span class="font-weight-bold">Applied Filters (Violations): </span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="br_1 pt_15" style="padding-top: 15px !important;">
-                            <span class="font-weight-bold">Schools: </span> {{ $txt_SchoolNames }}
-                        </td>
-                        <td class="br_1 pt_15" style="padding-top: 15px !important;">
-                            <span class="font-weight-bold">Violation Status: </span> {{ $txt_ViolationStatus }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="br_1">
-                            <span class="font-weight-bold">Programs: </span> {{ $txt_Programs }}
-                        </td>
-                        <td class="br_1">
-                            <span class="font-weight-bold">Date Range: </span> {{ $txt_DateRange }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="br_1">
-                            <span class="font-weight-bold">Year Levels: </span> {{ $txt_YearLevels }}
-                        </td>
-                        <td>
-                            <span class="font-weight-bold">Order By: </span> {{ $orderBy_filterVal }} <span class="cg"> {{ $orderByRange_filterVal }} </span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="br_1">
-                            <span class="font-weight-bold">Gender: </span> {{ $txt_Gender }}
-                        </td>
-                        @if($filter_SearchInput != '' OR !empty($filter_SearchInput))
+            @if (count($query_violation_records) > 5)
+                <table id="contentsInfo_table">
+                    <tbody>
+                        <tr class="tr_bg_DDD">
+                            <td class="b_1">
+                                <span class="font-weight-bold">Applied Filters (Student): </span>
+                            </td>
+                            <td class="b_1">
+                                <span class="font-weight-bold">Applied Filters (Violations): </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="br_1 pt_15" style="padding-top: 15px !important;">
+                                <span class="font-weight-bold">Schools: </span> {{ $txt_SchoolNames }}
+                            </td>
+                            <td class="br_1 pt_15" style="padding-top: 15px !important;">
+                                <span class="font-weight-bold">Violation Status: </span> {{ $txt_ViolationStatus }}
+                            </td>
+                        </tr>
+                        <tr>
                             <td class="br_1">
-                                <span class="font-weight-bold">Search Filter: </span> <em>{{ $filter_SearchInput }}...</em>
+                                <span class="font-weight-bold">Programs: </span> {{ $txt_Programs }}
                             </td>
-                        @else
+                            <td class="br_1">
+                                <span class="font-weight-bold">Date Range: </span> {{ $txt_DateRange }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="br_1">
+                                <span class="font-weight-bold">Year Levels: </span> {{ $txt_YearLevels }}
+                            </td>
                             <td>
+                                <span class="font-weight-bold">Order By: </span> {{ $orderBy_filterVal }} <span class="cg"> {{ $orderByRange_filterVal }} </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="br_1">
+                                <span class="font-weight-bold">Gender: </span> {{ $txt_Gender }}
+                            </td>
+                            @if($filter_SearchInput != '' OR !empty($filter_SearchInput))
+                                <td class="br_1">
+                                    <span class="font-weight-bold">Search Filter: </span> <em>{{ $filter_SearchInput }}...</em>
+                                </td>
+                            @else
+                                <td>
 
+                                </td>
+                            @endif
+                        </tr>
+                        <tr>
+                            <td class="br_1 pb_10" style="padding-bottom: 15px !important;">
+                                <span class="font-weight-bold">Age Range: </span> {{ $txt_AgeRange }}
                             </td>
-                        @endif
-                    </tr>
-                    <tr>
-                        <td class="br_1 pb_10" style="padding-bottom: 15px !important;">
-                            <span class="font-weight-bold">Age Range: </span> {{ $txt_AgeRange }}
-                        </td>
-                        {{-- @if($filter_SearchInput != '' OR !empty($filter_SearchInput))
-                            <td class="br_1" style="padding-bottom: 15px !important;">
-                                <em>{{ $filter_SearchInput }}...</em>
-                            </td>
-                        @else
+                            {{-- @if($filter_SearchInput != '' OR !empty($filter_SearchInput))
+                                <td class="br_1" style="padding-bottom: 15px !important;">
+                                    <em>{{ $filter_SearchInput }}...</em>
+                                </td>
+                            @else
+                                <td style="padding-bottom: 15px !important;">
+
+                                </td>
+                            @endif --}}
                             <td style="padding-bottom: 15px !important;">
 
                             </td>
-                        @endif --}}
-                        <td style="padding-bottom: 15px !important;">
+                        </tr>
+                        <tr class="tr_bg_DDD">
+                            <td class="b_1" colspan="2">
+                                <span class="font-weight-bold">Total Rows: </span> {{ $txt_TotalQueryRecords }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
 
-                        </td>
-                    </tr>
-                    <tr class="tr_bg_DDD">
-                        <td class="b_1" colspan="2">
-                            <span class="font-weight-bold">Total Rows: </span> {{ $txt_TotalQueryRecords }}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                <br>
 
-            <br>
+                <table id="contentsInfo_table">
+                    <tbody>
+                        <tr>
+                            <td class="txt_right">
+                                <span class="font-weight-bold">Printed By: </span>
+                                {{ $query_respo_user->user_fname }} {{ $query_respo_user->user_lname }} 
+                                <span class="cg"> (System {{ ucwords($query_respo_user->user_role) }})</span>
+                            </td>
+                            <td class="txt_right">
+                                <span class="font-weight-bold">Date Printed: </span> 
+                                {{ date('F d, Y', strtotime($now_timestamp))}} 
+                                <span class="cg">{{ date('(D - g:i A)', strtotime($now_timestamp))}}</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="txt_right font-weight-bold">Signature:</td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
 
-            <table id="contentsInfo_table">
-                <tbody>
-                    <tr>
-                        <td class="txt_right">
-                            <span class="font-weight-bold">Printed By: </span>
-                            {{ $query_respo_user->user_fname }} {{ $query_respo_user->user_lname }} 
-                            <span class="cg"> (System {{ ucwords($query_respo_user->user_role) }})</span>
-                        </td>
-                        <td class="txt_right">
-                            <span class="font-weight-bold">Date Printed: </span> 
-                            {{ date('F d, Y', strtotime($now_timestamp))}} 
-                            <span class="cg">{{ date('(D - g:i A)', strtotime($now_timestamp))}}</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="txt_right font-weight-bold">Signature:</td>
-                        <td></td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <br>
+                <br>
+            @endif
 
         </div>
     </body>

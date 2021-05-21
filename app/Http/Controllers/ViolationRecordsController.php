@@ -42,6 +42,7 @@ class ViolationRecordsController extends Controller
                 $vr_minAgeRange       = $request->get('vr_minAgeRange');
                 $vr_maxAgeRange       = $request->get('vr_maxAgeRange');
                 $vr_status            = $request->get('vr_status');
+                $vr_hasSanctions      = $request->get('vr_hasSanctions');
                 $vr_rangefrom         = $request->get('vr_rangefrom');
                 $vr_rangeTo           = $request->get('vr_rangeTo');
                 $df_minAgeRange       = $request->get('df_minAgeRange');
@@ -89,7 +90,7 @@ class ViolationRecordsController extends Controller
                                                     ->orWhere('students_tbl.Course', 'like', '%'.$vr_search.'%')
                                                     ->orWhere('violations_tbl.stud_num', 'like', '%'.$vr_search.'%');
                                     })
-                                    ->where(function($vrQuery) use ($vr_schools, $vr_programs, $vr_yearlvls, $vr_genders, $vr_minAgeRange, $vr_maxAgeRange, $df_minAgeRange, $df_maxAgeRange, $vr_status, $vr_rangefrom, $vr_rangeTo){
+                                    ->where(function($vrQuery) use ($vr_schools, $vr_programs, $vr_yearlvls, $vr_genders, $vr_minAgeRange, $vr_maxAgeRange, $df_minAgeRange, $df_maxAgeRange, $vr_status, $vr_hasSanctions, $vr_rangefrom, $vr_rangeTo){
                                         if($vr_schools != 0 OR !empty($vr_schools)){
                                             $vrQuery->where('students_tbl.School_Name', '=', $vr_schools);
                                         }
@@ -109,6 +110,13 @@ class ViolationRecordsController extends Controller
                                         if($vr_status != 0 OR !empty($vr_status)){
                                             $lower_vr_status = Str::lower($vr_status);
                                             $vrQuery->where('violations_tbl.violation_status', '=', $lower_vr_status);
+                                        }
+                                        if($vr_hasSanctions != 0){
+                                            if($vr_hasSanctions == 1){
+                                                $vrQuery->where('violations_tbl.has_sanction', '=', 1);
+                                            }else{
+                                                $vrQuery->where('violations_tbl.has_sanction', '!=', 1);
+                                            }
                                         }
                                         if($vr_rangefrom != 0 OR !empty($vr_rangefrom) AND $vr_rangeTo != 0 OR !empty($vr_rangeTo)){
                                             $vrQuery->whereBetween('violations_tbl.recorded_at', [$vr_rangefrom, $vr_rangeTo]);
@@ -121,7 +129,7 @@ class ViolationRecordsController extends Controller
                     $fltr_VR_tbl = DB::table('violations_tbl')
                                     ->join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
                                     ->select('violations_tbl.*', 'students_tbl.*')
-                                    ->where(function($vrQuery) use ($vr_schools, $vr_programs, $vr_yearlvls, $vr_genders, $vr_minAgeRange, $vr_maxAgeRange, $df_minAgeRange, $df_maxAgeRange, $vr_status, $vr_rangefrom, $vr_rangeTo){
+                                    ->where(function($vrQuery) use ($vr_schools, $vr_programs, $vr_yearlvls, $vr_genders, $vr_minAgeRange, $vr_maxAgeRange, $df_minAgeRange, $df_maxAgeRange, $vr_status, $vr_hasSanctions, $vr_rangefrom, $vr_rangeTo){
                                         if($vr_schools != 0 OR !empty($vr_schools)){
                                             $vrQuery->where('students_tbl.School_Name', '=', $vr_schools);
                                         }
@@ -141,6 +149,13 @@ class ViolationRecordsController extends Controller
                                         if($vr_status != 0 OR !empty($vr_status)){
                                             $lower_vr_status = Str::lower($vr_status);
                                             $vrQuery->where('violations_tbl.violation_status', '=', $lower_vr_status);
+                                        }
+                                        if($vr_hasSanctions != 0){
+                                            if($vr_hasSanctions == 1){
+                                                $vrQuery->where('violations_tbl.has_sanction', '=', 1);
+                                            }else{
+                                                $vrQuery->where('violations_tbl.has_sanction', '!=', 1);
+                                            }
                                         }
                                         if($vr_rangefrom != 0 OR !empty($vr_rangefrom) AND $vr_rangeTo != 0 OR !empty($vr_rangeTo)){
                                             $vrQuery->whereBetween('violations_tbl.recorded_at', [$vr_rangefrom, $vr_rangeTo]);
@@ -5762,6 +5777,7 @@ class ViolationRecordsController extends Controller
             $deafult_MinAgeRange            = $request->get('df_minAgeRange');
             $deafult_MaxAgeRange            = $request->get('df_maxAgeRange');
             $filtered_ViolationStatus       = $request->get('fvr_status');
+            $filtered_ViolationHasSanction  = $request->get('fvr_hasSanctions');
             $filtered_ViolationDateFrom     = $request->get('fvr_rangefrom');
             $filtered_ViolationDateTo       = $request->get('fvr_rangeTo');
             $filtered_ViolationOrderBy      = $request->get('vr_orderBy');
@@ -5820,6 +5836,18 @@ class ViolationRecordsController extends Controller
                 $txt_ViolationStatus = ''.ucwords($filtered_ViolationStatus) . ' Violations';
             }else{
                 $txt_ViolationStatus = 'Cleared & Not Cleared Violations';
+            }
+        // has sanction filter
+            if($filtered_ViolationHasSanction != 0){
+                if($filtered_ViolationHasSanction == 1){
+                    $txt_ViolationHasSanction = 'With Sanctions.';
+                }elseif($filtered_ViolationHasSanction == 2){
+                    $txt_ViolationHasSanction = 'Without Sanctions.';
+                }else{
+                    $txt_ViolationHasSanction = 'With & Without Sanctions.';
+                }
+            }else{
+                $txt_ViolationHasSanction = 'With & Without Sanctions.';
             }
         // Date Range
             if($filtered_ViolationDateFrom != 0 OR !empty($filtered_ViolationDateFrom) OR $filtered_ViolationDateTo != 0 OR !empty($filtered_ViolationDateTo)){
@@ -5882,6 +5910,7 @@ class ViolationRecordsController extends Controller
                     
                     <span class="lightBlue_cardBody_blueTitle mt-3">Violations Filters:</span>
                     <span class="lightBlue_cardBody_notice"><i class="fa fa-check-square-o text-success mr-1" aria-hidden="true"></i> Violation Status: <span class="font-weight-bold"> ' . $txt_ViolationStatus . ' </span> </span>
+                    <span class="lightBlue_cardBody_notice"><i class="fa fa-check-square-o text-success mr-1" aria-hidden="true"></i> Corresponding Sanctions: <span class="font-weight-bold"> ' . $txt_ViolationHasSanction . ' </span> </span>
                     <span class="lightBlue_cardBody_notice"><i class="fa fa-check-square-o text-success mr-1" aria-hidden="true"></i> Order By: <span class="font-weight-bold"> ' . $orderBy_filterVal . ' </span> <span class="font-italic"> '.$orderByRange_filterVal.'</span> </span>
                     <span class="lightBlue_cardBody_notice"><i class="fa fa-calendar-check-o text-success mr-1" aria-hidden="true"></i> Date Range: <span class="font-weight-bold"> ' . $txt_DateRange . ' </span> </span>
 
@@ -5914,6 +5943,7 @@ class ViolationRecordsController extends Controller
                     <input type="hidden" name="val_min_age_fltr" value="'.$filtered_MinAgeRange.'">
                     <input type="hidden" name="val_max_age_fltr" value="'.$filtered_MaxAgeRange.'">
                     <input type="hidden" name="val_violation_status_fltr" value="'.$filtered_ViolationStatus.'">
+                    <input type="hidden" name="val_violation_sanctions_fltr" value="'.$filtered_ViolationHasSanction.'">
                     <input type="hidden" name="val_date_from_fltr" value="'.$filtered_ViolationDateFrom.'">
                     <input type="hidden" name="val_date_to_fltr" value="'.$filtered_ViolationDateTo.'">
                     <input type="hidden" name="val_order_by" value="'.$filtered_ViolationOrderBy.'">
@@ -5937,25 +5967,26 @@ class ViolationRecordsController extends Controller
         // now timestamp
             $now_timestamp        = now();
         // get all request
-            $respo_user_id        = $request->get('respo_user_id');
-            $respo_user_lname     = $request->get('respo_user_lname');
-            $respo_user_fname     = $request->get('respo_user_fname');  
+            $respo_user_id         = $request->get('respo_user_id');
+            $respo_user_lname      = $request->get('respo_user_lname');
+            $respo_user_fname      = $request->get('respo_user_fname');  
 
-            $filter_SearchInput   = $request->get('val_search_fltr');
-            $filter_SchoolName    = $request->get('val_schools_fltr');
-            $filter_Programs      = $request->get('val_programs_fltr');
-            $filter_YearLevels    = $request->get('val_year_levels_fltr');
-            $filter_Genders       = $request->get('val_genders_fltr');
-            $filter_MinAgeRange   = $request->get('val_min_age_fltr');
-            $filter_MaxAgeRange   = $request->get('val_max_age_fltr');
-            $default_MinAgeRange  = $request->get('val_df_min_age_range');
-            $default_MaxAgeRange  = $request->get('val_df_max_age_range');
-            $filter_ViolationStat = $request->get('val_violation_status_fltr');
-            $filter_FromDateRange = $request->get('val_date_from_fltr');
-            $filter_ToDateRange   = $request->get('val_date_to_fltr');
-            $filter_OrderBy       = $request->get('val_order_by');
-            $filter_OrderByRange  = $request->get('val_order_by_range');
-            $filter_TotalRecords  = $request->get('val_total_records_fltr');
+            $filter_SearchInput    = $request->get('val_search_fltr');
+            $filter_SchoolName     = $request->get('val_schools_fltr');
+            $filter_Programs       = $request->get('val_programs_fltr');
+            $filter_YearLevels     = $request->get('val_year_levels_fltr');
+            $filter_Genders        = $request->get('val_genders_fltr');
+            $filter_MinAgeRange    = $request->get('val_min_age_fltr');
+            $filter_MaxAgeRange    = $request->get('val_max_age_fltr');
+            $default_MinAgeRange   = $request->get('val_df_min_age_range');
+            $default_MaxAgeRange   = $request->get('val_df_max_age_range');
+            $filter_ViolationStat  = $request->get('val_violation_status_fltr');
+            $filter_ViolationSanct = $request->get('val_violation_sanctions_fltr');
+            $filter_FromDateRange  = $request->get('val_date_from_fltr');
+            $filter_ToDateRange    = $request->get('val_date_to_fltr');
+            $filter_OrderBy        = $request->get('val_order_by');
+            $filter_OrderByRange   = $request->get('val_order_by_range');
+            $filter_TotalRecords   = $request->get('val_total_records_fltr');
 
         // try
             // echo 'Search Filter: ' . $filter_SearchInput . ' <br>';
@@ -6087,7 +6118,7 @@ class ViolationRecordsController extends Controller
                                                 ->orWhere('students_tbl.Course', 'like', '%'.$filter_SearchInput.'%')
                                                 ->orWhere('violations_tbl.stud_num', 'like', '%'.$filter_SearchInput.'%');
                                 })
-                                ->where(function($vrQuery) use ($filter_SchoolName, $filter_Programs, $filter_YearLevels, $filter_Genders, $filter_MinAgeRange, $filter_MaxAgeRange, $default_MinAgeRange, $default_MaxAgeRange, $filter_ViolationStat, $filter_FromDateRange, $filter_ToDateRange){
+                                ->where(function($vrQuery) use ($filter_SchoolName, $filter_Programs, $filter_YearLevels, $filter_Genders, $filter_MinAgeRange, $filter_MaxAgeRange, $default_MinAgeRange, $default_MaxAgeRange, $filter_ViolationStat, $filter_ViolationSanct, $filter_FromDateRange, $filter_ToDateRange){
                                     if($filter_SchoolName != 0 OR !empty($filter_SchoolName)){
                                         $vrQuery->where('students_tbl.School_Name', '=', $filter_SchoolName);
                                     }
@@ -6107,6 +6138,13 @@ class ViolationRecordsController extends Controller
                                     if($filter_ViolationStat != 0 OR !empty($filter_ViolationStat)){
                                         $lower_filter_ViolationStat = Str::lower($filter_ViolationStat);
                                         $vrQuery->where('violations_tbl.violation_status', '=', $lower_filter_ViolationStat);
+                                    }
+                                    if($filter_ViolationSanct != 0){
+                                        if($filter_ViolationSanct == 1){
+                                            $vrQuery->where('violations_tbl.has_sanction', '=', 1);
+                                        }else{
+                                            $vrQuery->where('violations_tbl.has_sanction', '!=', 1);
+                                        }
                                     }
                                     if($filter_FromDateRange != 0 OR !empty($filter_FromDateRange) AND $filter_ToDateRange != 0 OR !empty($filter_ToDateRange)){
                                         $vrQuery->whereBetween('violations_tbl.recorded_at', [$filter_FromDateRange, $filter_ToDateRange]);
@@ -6118,7 +6156,7 @@ class ViolationRecordsController extends Controller
                 $query_violation_records = DB::table('violations_tbl')
                                 ->join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
                                 ->select('violations_tbl.*', 'students_tbl.*')
-                                ->where(function($vrQuery) use ($filter_SchoolName, $filter_Programs, $filter_YearLevels, $filter_Genders, $filter_MinAgeRange, $filter_MaxAgeRange, $default_MinAgeRange, $default_MaxAgeRange, $filter_ViolationStat, $filter_FromDateRange, $filter_ToDateRange){
+                                ->where(function($vrQuery) use ($filter_SchoolName, $filter_Programs, $filter_YearLevels, $filter_Genders, $filter_MinAgeRange, $filter_MaxAgeRange, $default_MinAgeRange, $default_MaxAgeRange, $filter_ViolationStat, $filter_ViolationSanct, $filter_FromDateRange, $filter_ToDateRange){
                                     if($filter_SchoolName != 0 OR !empty($filter_SchoolName)){
                                         $vrQuery->where('students_tbl.School_Name', '=', $filter_SchoolName);
                                     }
@@ -6138,6 +6176,13 @@ class ViolationRecordsController extends Controller
                                     if($filter_ViolationStat != 0 OR !empty($filter_ViolationStat)){
                                         $lower_filter_ViolationStat = Str::lower($filter_ViolationStat);
                                         $vrQuery->where('violations_tbl.violation_status', '=', $lower_filter_ViolationStat);
+                                    }
+                                    if($filter_ViolationSanct != 0){
+                                        if($filter_ViolationSanct == 1){
+                                            $vrQuery->where('violations_tbl.has_sanction', '=', 1);
+                                        }else{
+                                            $vrQuery->where('violations_tbl.has_sanction', '!=', 1);
+                                        }
                                     }
                                     if($filter_FromDateRange != 0 OR !empty($filter_FromDateRange) AND $filter_ToDateRange != 0 OR !empty($filter_ToDateRange)){
                                         $vrQuery->whereBetween('violations_tbl.recorded_at', [$filter_FromDateRange, $filter_ToDateRange]);
@@ -6163,7 +6208,7 @@ class ViolationRecordsController extends Controller
         // Generate PDF
             $pdf = \App::make('dompdf.wrapper');
             // $pdf->loadHTML($output);
-            $pdf = PDF::loadView('reports/violation_records_pdf', compact('query_violation_records', 'now_timestamp', 'query_respo_user', 'txt_SchoolNames', 'txt_Programs', 'txt_YearLevels', 'txt_Gender', 'txt_AgeRange', 'txt_ViolationStatus', 'txt_DateRange', 'txt_TotalRecords', 'filter_SearchInput', 'filter_OrderBy', 'filter_OrderByRange', 'txt_TotalQueryRecords', 'filter_TotalRecords'));
+            $pdf = PDF::loadView('reports/violation_records_pdf', compact('query_violation_records', 'now_timestamp', 'query_respo_user', 'txt_SchoolNames', 'txt_Programs', 'txt_YearLevels', 'txt_Gender', 'txt_AgeRange', 'txt_ViolationStatus', 'filter_ViolationSanct', 'txt_DateRange', 'txt_TotalRecords', 'filter_SearchInput', 'filter_OrderBy', 'filter_OrderByRange', 'txt_TotalQueryRecords', 'filter_TotalRecords'));
             $pdf->setPaper('A4');
             $pdf->getDomPDF()->set_option("enable_php", true);
             return $pdf->stream('reports/violation_records_pdf.pdf');
