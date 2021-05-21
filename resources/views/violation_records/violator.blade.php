@@ -60,7 +60,7 @@
         </div> --}}
     {{-- card intro --}}
     
-    {{-- violator's info --}}
+    {{-- Content --}}
         <div class="row">
         {{-- violator's profile card --}}
             {{-- custom values --}}
@@ -441,6 +441,17 @@
                                                                     }else{
                                                                         $tCO_s = '';
                                                                     }
+
+                                                                // count all violations for this month
+                                                                $countAll_RecViola = App\Models\Violations::where('stud_num', $violator_info->Student_Number)
+                                                                        ->whereYear('recorded_at', $this_yearVal_tc)
+                                                                        ->whereMonth('recorded_at', $yearly_monthlyVal_tc)
+                                                                        ->count();
+                                                                $countAll_RecViola_wNoSanct = App\Models\Violations::where('stud_num', $violator_info->Student_Number)
+                                                                        ->whereYear('recorded_at', $this_yearVal_tc)
+                                                                        ->whereMonth('recorded_at', $yearly_monthlyVal_tc)
+                                                                        ->where('has_sanction', '!=', 1)
+                                                                        ->count();
                                                             @endphp
                                                             <div class="tab-pane card_body_bg_gray2 card_bbr card_ofh cb_t20b20x25 fade" style="margin-right: -40px;" id="{{$yearly_monthlyVal_tc}}TabPanel" role="tabpanel" aria-labelledby="{{$yearly_monthlyVal_tc}}NavTab">
                                                                 <div class="row">
@@ -692,7 +703,9 @@
                                                                             @endif
                                                                         </div>
                                                                         <div class="d-flex align-items-end">
-                                                                            <button id="{{$yearly_monthlyVal_tc}}" onclick="addSanctions_allMonthlyViolations(this.id)" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Add Sanctions to all recorded Offenses for the Month of {{ $monthName }} {{ $this_yearVal_tc}}?"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+                                                                            @if ($countAll_RecViola_wNoSanct > 0)
+                                                                                <button id="{{$yearly_monthlyVal_tc}}" onclick="addSanctions_allMonthlyViolations(this.id, {{$this_yearVal_tc}})" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Add Sanctions to all recorded Offenses for the Month of {{ $monthName }} {{ $this_yearVal_tc }} with No Corresponding Sanctions?"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+                                                                            @endif
                                                                             <button id="{{$yearly_monthlyVal_tc}}" onclick="delete_allMonthlyViolations(this.id, {{$this_yearVal_tc}})" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Delete all recorded Offenses for the Month of {{ $monthName }} {{ $this_yearVal_tc}}?"><i class="fa fa-trash" aria-hidden="true"></i></button>
                                                                         </div>
                                                                     </div> 
@@ -1057,8 +1070,8 @@
             </div>
         {{-- offenses end --}}
         </div>
+    {{-- Content end --}}
     </div>
-    {{-- violator's info end --}}
 
     {{-- modals --}}
     {{-- new violation entry modal --}}
@@ -1095,6 +1108,23 @@
             </div>
         </div>
     {{-- add sanctions on modal end --}}
+    {{-- add sanctions to all Monthly violations on modal --}}
+        <div class="modal fade" id="addSanctionsToAllMonthlyViolationModal" tabindex="-1" role="dialog" aria-labelledby="addSanctionsToAllMonthlyViolationModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="addSanctionsToAllMonthlyViolationModalLabel">Add Sanctions To All?</span>
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="addSanctionsToAllMonthlyViolationModalHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{-- add sanctions to all Monthly violations on modal end --}}
     {{-- edit sanctions on modal --}}
         <div class="modal fade" id="editSanctionsModal" tabindex="-1" role="dialog" aria-labelledby="editSanctionsModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -1467,6 +1497,137 @@
         }
     </script>
 {{-- add sanctions on modal end --}}
+{{-- adding sanctions to all violations per month --}}
+    <script>
+        function addSanctions_allMonthlyViolations(sel_monthly_viola, sel_yearly_viola){
+            var sel_monthly_viola = sel_monthly_viola;
+            var sel_yearly_viola = sel_yearly_viola;
+            var sel_stud_num = document.getElementById("vp_hidden_stud_num").value;
+            var _token = $('input[name="_token"]').val();
+
+            // console.log('Month: ' + sel_monthly_viola);
+            // console.log('Year: ' + sel_yearly_viola);
+            // console.log('Student Number: ' + sel_stud_num);
+            $.ajax({
+                url:"{{ route('violation_records.add_sanction_all_monthly_violations_form') }}",
+                method:"GET",
+                data:{sel_monthly_viola:sel_monthly_viola, sel_yearly_viola:sel_yearly_viola, sel_stud_num:sel_stud_num, _token:_token},
+                success: function(data){
+                    $('#addSanctionsToAllMonthlyViolationModalHtmlData').html(data); 
+                    $('#addSanctionsToAllMonthlyViolationModal').modal('show');
+                }
+            });
+        }
+    </script>
+    <script>
+        $('#addSanctionsToAllMonthlyViolationModal').on('show.bs.modal', function () {
+            var form_addSanctionsAllMonthlyViolationRec  = document.querySelector("#form_addSanctionsAllMonthlyViolationRec");
+            var submit_addSanctionsAllMonthlyViolationRecBtn = document.querySelector("#submit_addSanctionsAllMonthlyViolationRecBtn");
+            var cancel_addSanctionsAllMonthlyViolationRecBtn = document.querySelector("#cancel_addSanctionsAllMonthlyViolationRecBtn");
+            var addSanctions_input  = document.querySelector("#addSanctions_input");
+            var btn_addAnother_input = document.querySelector("#btn_addAnother_input");
+            // disable /enable submit button
+            function dis_en_submit_addSanctionsAllMonthlyViolationRecBtn(){
+                var has_selViolMarkSingle = 0;
+                var has_selsanctMarkSingle = 0;
+                $(".selViolMarkSingle").each(function(){
+                    if(this.checked){
+                        has_selViolMarkSingle = 1;
+                    }
+                });
+                $(".sanctMarkSingle").each(function(){
+                    if(this.checked){
+                        has_selsanctMarkSingle = 1;
+                    }
+                });
+                if(addSanctions_input.value !== ""){
+                    btn_addAnother_input.disabled = false;
+                }else{
+                    btn_addAnother_input.disabled = true;
+                }
+                if(addSanctions_input.value !== "" || has_selViolMarkSingle != 0 && has_selsanctMarkSingle != 0){
+                    submit_addSanctionsAllMonthlyViolationRecBtn.disabled = false;
+                }else{
+                    submit_addSanctionsAllMonthlyViolationRecBtn.disabled = true;
+                }
+            }
+            // disable add another input field and submit button if first input is empty
+            $(addSanctions_input).keyup(function(){
+                dis_en_submit_addSanctionsAllMonthlyViolationRecBtn();
+            });
+            // adding new input field
+            function addSanctIndexing(){
+                i = 1;
+                $(".addSanctIndex").each(function(){
+                    $(this).html(i+1 + '.');
+                    i++;
+                });
+            }
+            var maxField = 10;
+            var addedInputFields_div = document.querySelector('.addedInputFields_div');
+            var newInputField = '<div class="input-group mb-2">' +
+                                    '<div class="input-group-append"> ' +
+                                       '<span class="input-group-text txt_iptgrp_append addSanctIndex font-weight-bold"></span> ' +
+                                    '</div>' +
+                                    '<input type="text" name="sanctions[]" class="form-control input_grpInpt3" placeholder="Type Sanction" aria-label="Type Sanction" aria-describedby="add-sanctions-input" required /> ' +
+                                    '<div class="input-group-append"> ' +
+                                        '<button class="btn btn_svms_red m-0 btn_deleteAddedSanction_input" type="button"><i class="nc-icon nc-simple-remove font-weight-bold" aria-hidden="true"></i></button> ' +
+                                    '</div> ' +
+                                '</div>';
+            var x = 1;
+            $(btn_addAnother_input).click(function(){
+                if(x < maxField){
+                    x++;
+                    $(addedInputFields_div).append(newInputField);
+                }
+                addSanctIndexing();
+            });
+            $(addedInputFields_div).on('click', '.btn_deleteAddedSanction_input', function(e){
+                e.preventDefault();
+                $(this).closest('.input_grpInpt3').value = '';
+                $(this).closest('.input-group').last().remove();
+                x--;
+                addSanctIndexing();
+            });
+            // selection of sanctions
+            $(".sanctMarkSingle").click(function () {
+                dis_en_submit_addSanctionsAllMonthlyViolationRecBtn();
+            });
+            // selection of violations for adding sanctions
+            $("#selViolMarkAll").change(function(){
+                if(this.checked){
+                $(".selViolMarkSingle").each(function(){
+                    this.checked=true;
+                })              
+                }else{
+                $(".selViolMarkSingle").each(function(){
+                    this.checked=false;
+                })              
+                }
+                dis_en_submit_addSanctionsAllMonthlyViolationRecBtn();
+            });
+            $(".selViolMarkSingle").click(function () {
+                if ($(this).is(":checked")){
+                var isDeleteAllChecked = 0;
+                $(".selViolMarkSingle").each(function(){
+                    if(!this.checked)
+                    isDeleteAllChecked = 1;
+                })              
+                if(isDeleteAllChecked == 0){ $("#selViolMarkAll").prop("checked", true); }     
+                }else {
+                $("#selViolMarkAll").prop("checked", false);
+                }
+                dis_en_submit_addSanctionsAllMonthlyViolationRecBtn();
+            });
+            // disable cancel and sibmit button on submit
+            $(form_addSanctionsAllMonthlyViolationRec).submit(function(){
+                cancel_addSanctionsAllMonthlyViolationRecBtn.disabled = true;
+                submit_addSanctionsAllMonthlyViolationRecBtn.disabled = true;
+                return true;
+            });
+        });
+    </script>
+{{-- adding sanctions to all violations per month end --}}
 
 {{-- edit sanctions on modal --}}
     <script>
@@ -2156,13 +2317,5 @@
         });
     </script>
 {{-- recover deleted violation end --}}
-
-{{-- adding sanctions to all violations per month --}}
-    <script>
-        function addSanctions_allMonthlyViolations(sel_monthly_viola){
-            alert(sel_monthly_viola);
-        }
-    </script>
-{{-- adding sanctions to all violations per month end --}}
 
 @endpush

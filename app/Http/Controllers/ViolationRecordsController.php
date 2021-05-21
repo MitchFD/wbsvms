@@ -2258,6 +2258,485 @@ class ViolationRecordsController extends Controller
                 return back()->withFailedStatus('No Sanctions were selected for deletion. try again.');
             }
     }
+    // add sanctions to all Monthly Violations ~ modal
+    public function add_sanction_all_monthly_violations_form(Request $request){
+        // get all request
+        $sel_monthly_viola = $request->get('sel_monthly_viola');
+        $sel_yearly_viola = $request->get('sel_yearly_viola');
+        $sel_stud_num = $request->get('sel_stud_num');
+
+        // try 
+        // echo 'Year: ' . $sel_yearly_viola . '<br>';
+        // echo 'Month: ' . $sel_monthly_viola . '<br>';
+        // echo 'Student Number: ' . $sel_stud_num . '<br>';
+
+        // get violator's info
+        $get_violator_info = Students::select('Last_Name', 'Gender')->where('Student_Number', $sel_stud_num)->first();
+        $violator_Lname    = $get_violator_info->Last_Name;
+        $violator_Gender   = $get_violator_info->Gender;
+        // Mr./Mrs format
+        $violator_gender = Str::lower($violator_Gender);
+        if($violator_gender == 'male'){
+            $vmr_ms = 'Mr.';
+        }elseif($violator_gender == 'female'){
+            $vmr_ms = 'Ms.';
+        }else{
+            $vmr_ms = 'Mr./Ms.';
+        }
+
+        // output
+        $output = '';
+        $output .= '
+            <div class="modal-body border-0 p-0">
+                <form id="form_addSanctionsAllMonthlyViolationRec" action="'.route('violation_records.process_adding_sanctions_all_monthly_violations').'" class="form" enctype="multipart/form-data" method="POST">
+                    <div class="cust_modal_body_gray">
+                    ';
+                    // query all violations for the selected month
+                    $query_all_viola_info = Violations::where('stud_num', $sel_stud_num)
+                    ->whereYear('recorded_at', $sel_yearly_viola)
+                    ->whereMonth('recorded_at', $sel_monthly_viola)
+                    ->where('has_sanction', '!=', 1)
+                    ->get();
+
+                    $count_sel_viola = count($query_all_viola_info);
+                    if($count_sel_viola > 0){
+                        $sum_all_offenses = 0;
+                        foreach($query_all_viola_info as $query_this_viola_info){
+                            // get violation info
+                            $get_viola_id               = $query_this_viola_info->viola_id;
+                            $get_viola_recorded_at      = $query_this_viola_info->recorded_at;
+                            $get_viola_status           = $query_this_viola_info->violation_status;
+                            $get_viola_offense_count    = $query_this_viola_info->offense_count;
+                            $get_viola_minor_off        = $query_this_viola_info->minor_off;
+                            $get_viola_less_serious_off = $query_this_viola_info->less_serious_off;
+                            $get_viola_other_off        = $query_this_viola_info->other_off;
+                            $get_viola_stud_num         = $query_this_viola_info->stud_num;
+                            $get_viola_has_sanction     = $query_this_viola_info->has_sanction;
+                            $get_viola_has_sanct_count  = $query_this_viola_info->has_sanct_count;
+                            $get_viola_respo_user_id    = $query_this_viola_info->respo_user_id;
+                            $get_viola_cleared_at       = $query_this_viola_info->cleared_at;
+
+                            // sum of all offenses
+                            $sum_all_offenses += $get_viola_offense_count;
+                            if($sum_all_offenses > 1){
+                                $sO_s = 's';
+                            }else{
+                                $sO_s = '';
+                            }
+
+                            // plural offense count each
+                            if($get_viola_offense_count > 1){
+                                $oC_s = 's';
+                            }else{
+                                $oC_s = '';
+                            }
+
+                            // dates
+                            $date_recorded = date('F d, Y ~ l - g:i A', strtotime($get_viola_recorded_at));
+                            $date_cleared = date('F d, Y ~ l - g:i A', strtotime($get_viola_cleared_at));
+                            
+                            // responsible user
+                            if($get_viola_respo_user_id == auth()->user()->id){
+                                $recBy = 'Recorded by you.';
+                                $recByTooltip = 'This Violation was recorded by you on ' . $date_recorded.'.';
+                            }else{
+                                $get_recBy_info = Users::select('id', 'user_role', 'user_lname', 'user_fname')
+                                            ->where('id', $get_viola_respo_user_id)
+                                            ->first();
+                                $recBy = ucwords($get_recBy_info->user_role).': ' . $get_recBy_info->user_lname;
+                                $recByTooltip = 'This Violation was recorded by ' . ucwords($get_recBy_info->user_role).': ' . $get_recBy_info->user_fname . ' ' . $get_recBy_info->user_lname . ' on ' . $date_recorded.'.';
+                            }
+
+                            // cleared/uncleared classes
+                            if($get_viola_status === 'cleared'){
+                                $light_cardBody       = 'lightGreen_cardBody';
+                                $light_cardBody_title = 'lightGreen_cardBody_greenTitle';
+                                $light_cardBody_list  = 'lightGreen_cardBody_list';
+                                $info_textClass       = 'cust_info_txtwicon4';
+                                $info_iconClass       = 'fa fa-check-square-o';
+                                $class_violationStat1 = 'text-success font-italic';
+                                $txt_violationStat1   = '~ Cleared';
+                            }else{
+                                $light_cardBody       = 'lightRed_cardBody';
+                                $light_cardBody_title = 'lightRed_cardBody_redTitle';
+                                $light_cardBody_list  = 'lightRed_cardBody_list';
+                                $info_textClass       = 'cust_info_txtwicon3';
+                                $info_iconClass       = 'fa fa-exclamation-circle';
+                                $class_violationStat1 = 'text_svms_red font-italic';
+                                $txt_violationStat1   = '~ Not Cleared';    
+                            }
+
+                            // ouput
+                            $output .= '
+                            <div class="accordion shadow-none cust_accordion_div1 mb-2" id="addSanctionsAllMonthlyViola_SelectOption_Parent'.$get_viola_id.'">
+                                <div class="card custom_accordion_card">
+                                    <div class="card-header py10l15r10 d-flex justify-content-between align-items-center" id="addSanctionsAllMonthlyViola_SelectOption_heading'.$get_viola_id.'">
+                                        <div class="form-group m-0">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" id="'.$get_viola_id.'_markThisViola_id" value="'.$get_viola_id.'" name="sel_all_viola_id[]" class="custom-control-input cust_checkbox_label selViolMarkSingle" checked>
+                                                <label class="custom-control-label cust_checkbox_label" for="'.$get_viola_id.'_markThisViola_id">
+                                                    <span class="li_info_title"> '.date('F d, Y', strtotime($get_viola_recorded_at)).' <span class="'.$class_violationStat1.'"> ' . $txt_violationStat1.'</span></span>
+                                                    <span class="li_info_subtitle">'.date('l - g:i A', strtotime($get_viola_recorded_at)).'</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <button class="btn cust_btn_smcircle3" type="button" data-toggle="collapse" data-target="#addSanctionsAllMonthlyViola_SelectOption'.$get_viola_id.'" aria-expanded="true" aria-controls="addSanctionsAllMonthlyViola_SelectOption'.$get_viola_id.'">
+                                            <i class="nc-icon nc-minimal-down"></i>
+                                        </button>
+                                    </div>
+                                    <div id="addSanctionsAllMonthlyViola_SelectOption'.$get_viola_id.'" class="collapse cust_collapse_active cb_t0b12y20" aria-labelledby="addSanctionsAllMonthlyViola_SelectOption_heading'.$get_viola_id.'" data-parent="#addSanctionsAllMonthlyViola_SelectOption_Parent'.$get_viola_id.'">
+                                    ';
+                                    if(!is_null(json_decode(json_encode($get_viola_minor_off), true)) OR !empty(json_decode(json_encode($get_viola_minor_off), true))){
+                                        $vmo_x = 1;
+                                        $output .= '
+                                        <div class="card-body '.  $light_cardBody  .' mb-2">
+                                            <span class="'. $light_cardBody_title  .' mb-1">Minor Offenses:</span>
+                                            ';
+                                            foreach(json_decode(json_encode($get_viola_minor_off), true) as $viola_minor_offenses){
+                                                $output .= '<span class="'. $light_cardBody_list  .'"><span class="font-weight-bold mr-1">'. $vmo_x++ .'.</span> '. $viola_minor_offenses .'</span>';
+                                            }
+                                            $output .='
+                                        </div>
+                                        ';
+                                    }
+                                    if(!is_null(json_decode(json_encode($get_viola_less_serious_off), true)) OR !empty(json_decode(json_encode($get_viola_less_serious_off), true))){
+                                        $vlso_x = 1;
+                                        $output .= '
+                                        <div class="card-body '.  $light_cardBody  .' mb-2">
+                                            <span class="'. $light_cardBody_title  .' mb-1">Less Serious Offenses:</span>
+                                            ';
+                                            foreach(json_decode(json_encode($get_viola_less_serious_off), true) as $viola_less_serious_offenses){
+                                                $output .= '<span class="'. $light_cardBody_list  .'"><span class="font-weight-bold mr-1">'. $vlso_x++ .'.</span> '. $viola_less_serious_offenses .'</span>';
+                                            }
+                                            $output .='
+                                        </div>
+                                        ';
+                                    }
+                                    if(!is_null(json_decode(json_encode($get_viola_other_off), true)) OR !empty(json_decode(json_encode($get_viola_other_off), true))){
+                                        if(!in_array(null, json_decode(json_encode($get_viola_other_off), true))){
+                                            $voo_x = 1;
+                                            $output .= '
+                                            <div class="card-body '.  $light_cardBody  .' mb-2">
+                                                <span class="'. $light_cardBody_title  .' mb-1">Other Offenses:</span>
+                                                ';
+                                                foreach(json_decode(json_encode($get_viola_other_off), true) as $viola_other_offenses){
+                                                    $output .= '<span class="'. $light_cardBody_list  .'"><span class="font-weight-bold mr-1">'. $voo_x++ .'.</span> '. $viola_other_offenses .'</span>';
+                                                }
+                                                $output .='
+                                            </div>
+                                            ';
+                                        }
+                                    }
+                                    if($get_viola_has_sanction > 0){
+                                        // get all sanctions 
+                                        $get_all_sanctions = Sanctions::select('sanct_status', 'sanct_details', 'completed_at')
+                                                                            ->where('stud_num', $get_viola_stud_num)
+                                                                            ->where('for_viola_id', $get_viola_id)
+                                                                            ->orderBy('created_at', 'asc')
+                                                                            ->offset(0)
+                                                                            ->limit($get_viola_has_sanct_count)
+                                                                            ->get();
+                                        $count_completed_sanction = Sanctions::where('stud_num', $get_viola_stud_num)
+                                                                            ->where('for_viola_id', $get_viola_id)
+                                                                            ->where('sanct_status', '=', 'completed')
+                                                                            ->offset(0)
+                                                                            ->limit($get_viola_has_sanct_count)
+                                                                            ->count();
+                                        $count_all_sanctions = count($get_all_sanctions);
+                                        if($count_all_sanctions > 1){
+                                            $sc_s = 's';
+                                        }else{
+                                            $sc_s = '';
+                                        }
+                                        $output .= '
+                                        <div class="card-body lightGreen_cardBody mb-2">
+                                            <div class="d-flex justify-content-between">
+                                                <span class="lightGreen_cardBody_greenTitle mb-1">Sanctions:</span>
+                                            </div>';
+
+                                            foreach($get_all_sanctions as $this_vrSanction){
+                                                if($this_vrSanction->sanct_status === 'completed'){
+                                                    $sanct_icon = 'fa fa-check-square-o';
+                                                }else{
+                                                    $sanct_icon = 'fa fa-square-o';
+                                                }
+                                                $output .= '<span class="lightGreen_cardBody_list"><i class="'.$sanct_icon . ' mr-1 font-weight-bold" aria-hidden="true"></i> ' . $this_vrSanction->sanct_details.'</span>';
+                                            }
+                                            $output .= '
+                                        </div>
+                                        ';
+                                    }
+                                    if($get_viola_has_sanction > 0){
+                                        // date completed
+                                        $date_completed = date('F d, Y ~ l - g:i A', strtotime($get_viola_cleared_at));
+                                        if ($count_completed_sanction == $count_all_sanctions) {
+                                            $info_icon1Class = 'fa fa-check-square-o';
+                                            $sancStatusTooltip = $count_all_sanctions . ' corresponding Sanction'.$sc_s . ' for this violation has been completed by ' . $vmr_ms . ' ' . $violator_Lname . ' on ' . $date_completed.'.';
+                                        }else{
+                                            $info_icon1Class = 'fa fa-list-ul';
+                                            $sancStatusTooltip = $count_all_sanctions . ' corresponding Sanction'.$sc_s . ' for ' . $get_viola_offense_count . ' Offense'.$oC_s.' committed by ' . $vmr_ms . ' ' . $violator_Lname . ' on ' . $date_recorded.'.';
+                                        }
+                                        $output .= '
+                                        <div class="row mt-3 cursor_pointer" data-toggle="tooltip" data-placement="top" title="' . $sancStatusTooltip . '">
+                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                                ';
+                                                $output .= '
+                                                    <span class="cust_info_txtwicon4 font-weight-bold"><i class="'.$info_icon1Class . ' mr-1" aria-hidden="true"></i> ' . $get_viola_has_sanct_count . ' Sanction'.$sc_s.'</span>  
+                                                ';
+                                                if($get_viola_status === 'cleared'){
+                                                    $output .= '<span class="cust_info_txtwicon"><i class="fa fa-calendar-check-o mr-1" aria-hidden="true"></i> ' . date('F d, Y ~ l - g:i A', strtotime($get_viola_cleared_at)) . '</span> ';
+                                                }
+                                                $output .= '
+                                            </div>
+                                        </div>
+                                        <hr class="hr_gry">
+                                        ';
+                                    }
+                                    $output .='
+                                        <div class="row mt-3 cursor_pointer" data-toggle="tooltip" data-placement="top" title="' . $recByTooltip . '">
+                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                                <span class="' .$info_textClass . ' font-weight-bold"><i class="' .$info_iconClass . ' mr-1" aria-hidden="true"></i> ' .$get_viola_offense_count. ' Offense' .$oC_s. '</span>
+                                                <span class="cust_info_txtwicon"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> ' . $recBy . '</span>  
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            ';
+                        }
+                    }
+                    $output .= '
+                    </div>
+                    <div class="modal-body pb-0">
+                        <div class="card-body lightGreen_cardBody shadow-none mb-2">
+                            <div class="row mb-2">
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <div class="form-group mx-0 mt-0 mb-1">
+                                        <div class="custom-control custom-checkbox align-items-center">
+                                            <input type="checkbox" name="select_all_violations" value="select_all_violations" class="custom-control-input cursor_pointer" id="selViolMarkAll" checked>
+                                            <label class="custom-control-label lightGreen_cardBody_chckboxLabel" for="selViolMarkAll">Select All ('.$sum_all_offenses.') Offense'.$sO_s.'.</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="lightGreen_cardBody_notice"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i> You can still edit added sanctions for specific recorded violations.</span>
+                        </div>
+                        <div class="card-body lightGreen_cardBody mb-2">
+                            <span class="lightGreen_cardBody_greenTitle mb-1">Select Sanctions:</span>
+                        ';
+                        // check if there are created sanctions from created_sanctions_tbl
+                        $query_crSanctions = CreatedSanctions::select('crSanct_id', 'crSanct_details')->get();
+                        $count_query_crSanctions = count($query_crSanctions);
+                        if($count_query_crSanctions > 0){
+                            foreach($query_crSanctions as $crSanction_option){
+                                $output .= '
+                                <div class="form-group mx-0 mt-0 mb-1">
+                                    <div class="custom-control custom-checkbox align-items-center">
+                                        <input type="checkbox" name="sanctions[]" value="'.$crSanction_option->crSanct_details.'" class="custom-control-input cursor_pointer sanctMarkSingle" id="'.$crSanction_option->crSanct_id.'_selectThisCrSanct_id" >
+                                        <label class="custom-control-label lightGreen_cardBody_chckboxLabel" for="'.$crSanction_option->crSanct_id.'_selectThisCrSanct_id">'.$crSanction_option->crSanct_details.'</label>
+                                    </div>
+                                </div>
+                                ';
+                            }
+                        }
+                        $output .= '
+                            <span class="lightGreen_cardBody_greenTitle mb-1 mt-3">Or Type New Sanctions:</span>
+                            <div class="input-group mb-2">
+                                <div class="input-group-append">
+                                    <span class="input-group-text txt_iptgrp_append font-weight-bold">1. </span>
+                                </div>
+                                <input type="text" id="addSanctions_input" name="sanctions[]" class="form-control input_grpInpt3" placeholder="Type Sanction" aria-label="Type Sanction" aria-describedby="add-sanctions-input" />
+                                <div class="input-group-append">
+                                    <button class="btn btn-success m-0" id="btn_addAnother_input" type="button" disabled><i class="nc-icon nc-simple-add font-weight-bold" aria-hidden="true"></i></button>
+                                </div>
+                            </div>
+                            <div class="addedInputFields_div">
+
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <span class="cust_info_txtwicon4v1"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i> You can only add a total of 10 Sanctions.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <input type="hidden" name="_token" value="'.csrf_token().'">
+                        <input type="hidden" name="sel_Year" value="'.$sel_yearly_viola.'">
+                        <input type="hidden" name="sel_Month" value="'.$sel_monthly_viola.'">
+                        <input type="hidden" name="sel_stud_num" value="'.$sel_stud_num.'">
+                        <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
+                        <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
+                        <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
+                        <div class="btn-group" role="group" aria-label="add sanctions actions">
+                            <button id="cancel_addSanctionsAllMonthlyViolationRecBtn" type="button" class="btn btn-round btn_svms_red btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                            <button id="submit_addSanctionsAllMonthlyViolationRecBtn" type="submit" class="btn btn-round btn-success btn_show_icon m-0" disabled> Register Sanctions <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        ';
+
+        echo $output;
+
+    }
+    // process adding sanctions to all monthly violations
+    public function process_adding_sanctions_all_monthly_violations(Request $request){
+        // get all request
+        $get_sel_stud_num     = $request->get('sel_stud_num');
+        $get_respo_user_id    = $request->get('respo_user_id');
+        $get_respo_user_lname = $request->get('respo_user_lname');
+        $get_respo_user_fname = $request->get('respo_user_fname');   
+        $get_sanctions        = json_decode(json_encode($request->get('sanctions')));
+        $get_sel_all_viola_id = json_decode(json_encode($request->get('sel_all_viola_id')));
+        $get_sel_Year         = $request->get('sel_Year');
+        $get_sel_Month        = $request->get('sel_Month');   
+
+        // custom values
+        $now_timestamp = now();
+        $sq = "'";
+
+        // if there are violations selected
+        if(count($get_sel_all_viola_id) > 0){
+            // get selected student's info from students_tbl
+            $sel_stud_info = Students::select('Student_Number', 'First_Name', 'Middle_Name', 'Last_Name', 'Email', 'School_Name', 'Course', 'YearLevel')
+                                ->where('Student_Number', $get_sel_stud_num)
+                                ->first();
+            $sel_stud_Fname       = $sel_stud_info->First_Name;
+            $sel_stud_Mname       = $sel_stud_info->Middle_Name;
+            $sel_stud_Lname       = $sel_stud_info->Last_Name;
+            $sel_stud_Email       = $sel_stud_info->Email;
+            $sel_stud_School_Name = $sel_stud_info->School_Name;
+            $sel_stud_Course      = $sel_stud_info->Course;
+            $sel_stud_YearLevel   = $sel_stud_info->YearLevel;
+            // year level
+            if($sel_stud_YearLevel === '1'){
+                $yearLevel_txt = '1st Year';
+            }else if($sel_stud_YearLevel === '2'){
+                $yearLevel_txt = '2nd Year';
+            }else if($sel_stud_YearLevel === '3'){
+                $yearLevel_txt = '3rd Year';
+            }else if($sel_stud_YearLevel === '4'){
+                $yearLevel_txt = '4th Year';
+            }else if($sel_stud_YearLevel === '5'){
+                $yearLevel_txt = '5th Year';
+            }else{
+                $yearLevel_txt = $sel_stud_YearLevel . ' Year';
+            }
+            // process adding sanctions fro each selected violations
+            foreach($get_sel_all_viola_id as $this_ViolaId){
+                // get selected violatin's info
+                $sel_viola_info = Violations::select('viola_id', 'recorded_at', 'offense_count')
+                        ->where('viola_id', $this_ViolaId)
+                        ->first();
+                $sel_viola_recorded_at   = $sel_viola_info->recorded_at;
+                $sel_viola_offense_count = $sel_viola_info->offense_count;
+                if($sel_viola_offense_count > 0){
+                    if($sel_viola_offense_count > 1){
+                        $vc_s = 's';
+                    }else{
+                        $vc_s = '';
+                    }
+                }else{
+                    $vc_s = '';
+                }
+                // save requests to sanctions_tbl
+                $new_hasSanctCount = 0;
+                if(count($get_sanctions) > 0){
+                    $count_sanctions = count($get_sanctions);
+                    if($count_sanctions > 0){
+                        if($count_sanctions > 1){
+                            $sc_s = 's';
+                        }else{
+                            $sc_s = '';
+                        }
+                    }
+                    foreach($get_sanctions as $sanction){
+                        if(!is_null($sanction) OR !empty($sanction)){
+                            $record_sanctions = new Sanctions;
+                            $record_sanctions->stud_num      = $get_sel_stud_num;
+                            $record_sanctions->for_viola_id  = $this_ViolaId;
+                            $record_sanctions->sanct_details = $sanction;
+                            $record_sanctions->respo_user_id = $get_respo_user_id;
+                            $record_sanctions->created_at    = $now_timestamp;
+                            $record_sanctions->save();
+                            $new_hasSanctCount++;
+                        }
+                    }
+                    if($record_sanctions){
+                        // get all recorded sanctions' ids
+                        $to_array_sanct_ids = array();
+                        $get_all_processed_sanctions = Sanctions::select('sanct_id')
+                                                            ->where('stud_num', $get_sel_stud_num)
+                                                            ->where('for_viola_id', $this_ViolaId)
+                                                            ->where('respo_user_id', $get_respo_user_id)
+                                                            ->offset(0)
+                                                            ->limit($new_hasSanctCount)
+                                                            ->get();
+                        if(count($get_all_processed_sanctions) > 0){
+                            foreach($get_all_processed_sanctions as $sanction_ids){
+                                array_push($to_array_sanct_ids, $sanction_ids);
+                            }
+                        }
+                        $to_Json_sanct_ids = json_encode($to_array_sanct_ids);
+                        $ext_jsonSanct_ids = str_replace(array( '{', '}', '"', ':', 'sanct_id' ), '', $to_Json_sanct_ids);
+                        // update selected violation's "has_sanction"
+                        $update_sel_viol_tbl = DB::table('violations_tbl')
+                            ->where('viola_id', $this_ViolaId)
+                            ->update([
+                                'has_sanction'    => 1,
+                                'has_sanct_count' => $new_hasSanctCount,
+                                'updated_at'      => $now_timestamp
+                                ]);
+                        // record activity
+                        $record_act = new Useractivites;
+                        $record_act->created_at             = $now_timestamp;
+                        $record_act->act_respo_user_id      = $get_respo_user_id;
+                        $record_act->act_respo_users_lname  = $get_respo_user_lname;
+                        $record_act->act_respo_users_fname  = $get_respo_user_fname;
+                        $record_act->act_type               = 'sanction entry';
+                        $record_act->act_details            = 'Added ' . $new_hasSanctCount . ' Sanction'.$sc_s . ' for the ' . $sel_viola_offense_count . ' Offense'.$vc_s . ' made by ' . $yearLevel_txt . ' ' . $sel_stud_Course . ' student: ' . $sel_stud_Fname . ' ' . $sel_stud_Mname . ' ' . $sel_stud_Lname . ' on ' . date('F d, Y', strtotime($sel_viola_recorded_at)).'.';
+                        $record_act->act_affected_sanct_ids = $ext_jsonSanct_ids;
+                        $record_act->save();
+                    }else{
+                        return back()->withFailedStatus('Adding Sanctions has failed! Try Again later.');
+                    }
+                }else{
+                    return back()->withFailedStatus('No Corresponding Sanctions has been selected! please Select Sanctions.');
+                }
+            }
+            if($record_act){
+                return back()->withSuccessStatus('Sanctions was recorded successfully!');
+            }else{
+                return back()->withFailedStatus('Recording User Activity has failed!');
+            }
+        }else{
+            return back()->withFailedStatus('No Offenses has been selected! please Select Recorded Offenses to add Sanctions.');
+        }
+
+        // try
+        // if(count($get_sel_all_viola_id) > 0){
+        //     echo 'Student Number: ' .$get_sel_stud_num .'<br>';
+        //     echo 'Year: ' .$get_sel_Year .'<br>';
+        //     echo 'Month: ' .$get_sel_Month .'<br>';
+        //     echo 'violation ids: <br>';
+        //     foreach($get_sel_all_viola_id as $this_selViola_id){
+        //         echo '~ ' . $this_selViola_id . '<br>';
+        //     }
+        //     echo '<br>';
+        //     if(count($get_sanctions) > 0){
+        //         echo 'Sanctions: <br>';
+        //         foreach($get_sanctions as $this_selSanction){
+        //             echo '~ ' . $this_selSanction . '<br>';
+        //         }
+        //     }else{
+        //         echo 'No sanctions Selected!';
+        //     }
+        //     echo 'Responsible user: ' .$get_respo_user_id.': ' . $get_respo_user_fname . ' ' . $get_respo_user_lname . '<br>';
+        // }else{
+        //     echo 'No recorded Violations Selected!';
+        // }
+    }
 
     // VIOLATION DELETION
     // temporary delete violation confirmation modal

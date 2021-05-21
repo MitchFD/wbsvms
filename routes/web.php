@@ -162,10 +162,14 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('violation_records/add_sanction_form', 'App\Http\Controllers\ViolationRecordsController@add_sanction_form')->name('violation_records.add_sanction_form');
 	// submit and process added sanctions form
 	Route::post('violation_records/submit_sanction_form', 'App\Http\Controllers\ViolationRecordsController@submit_sanction_form')->name('violation_records.submit_sanction_form');
-	// add sanctions form on modal
+	// edit sanctions form on modal
 	Route::get('violation_records/edit_sanction_form', 'App\Http\Controllers\ViolationRecordsController@edit_sanction_form')->name('violation_records.edit_sanction_form');
-	// submit and process added sanctions form
+	// submit and process updated sanctions form
 	Route::post('violation_records/update_sanction_form', 'App\Http\Controllers\ViolationRecordsController@update_sanction_form')->name('violation_records.update_sanction_form');
+	// add sanctions to all Monthly Violations form on modal
+	Route::get('violation_records/add_sanction_all_monthly_violations_form', 'App\Http\Controllers\ViolationRecordsController@add_sanction_all_monthly_violations_form')->name('violation_records.add_sanction_all_monthly_violations_form');
+	// submit and process adding sanctions to all monthly violations
+	Route::post('violation_records/process_adding_sanctions_all_monthly_violations', 'App\Http\Controllers\ViolationRecordsController@process_adding_sanctions_all_monthly_violations')->name('violation_records.process_adding_sanctions_all_monthly_violations');
 
 	// add new sanctions form on modal
 	Route::post('violation_records/add_new_sanctions', 'App\Http\Controllers\ViolationRecordsController@add_new_sanctions')->name('violation_records.add_new_sanctions');

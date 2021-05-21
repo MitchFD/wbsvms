@@ -668,54 +668,58 @@
             </table>
 
             <br>
+            
             <p class="notice_1">-- end of table <span class="cg"> (Violator's Recorded Violations Table) </span> --</p>
+            
             <br>
 
-            <table id="contentsInfo_table" class="b_1">   
-                <tbody>
-                    <tr class="tr_bg_DDD">
-                        <td colspan="2"><span class="font-weight-bold">Violator's Information: </span></td>
-                    </tr>
-                    <tr>
-                        <td class="bb_1"><span class="font-weight-bold">Name: </span> {{ $query_selViolator_info->First_Name }} {{ $query_selViolator_info->Middle_Name }} {{ $query_selViolator_info->Last_Name}}</td>
-                        <td class="bb_1"><span class="font-weight-bold">Gender: </span> {{ $query_selViolator_info->Gender }}</td>
-                    </tr>
-                    <tr>
-                        <td class="bb_1"><span class="font-weight-bold">Student Number: </span> {{ $query_selViolator_info->Student_Number }}</td>
-                        <td class="bb_1"><span class="font-weight-bold">Age: </span> {{ $query_selViolator_info->Age }}</td>
-                    </tr>
-                    <tr>
-                        <td class="bb_1"><span class="font-weight-bold">School: </span> {{ $query_selViolator_info->School_Name }}</td>
-                        <td class="bb_1"><span class="font-weight-bold">Year Level: </span> {{ $query_selViolator_info->YearLevel }}</td>
-                    </tr>
-                    <tr>
-                        <td class="bb_1"><span class="font-weight-bold">Program: </span> {{ $query_selViolator_info->Course }}</td>
-                        <td class="bb_1"></td>
-                    </tr>
-                    <tr>
-                        <td class="b_0 p_x0y2"></td>
-                        <td class="b_0 p_x0y2"></td>
-                    </tr>
-                    <tr class="tr_bg_DDD">
-                        <td><span class="font-weight-bold">Offense Details: </span></td>
-                        <td><span class="font-weight-bold">Sanctions Details: </span></td>
-                    </tr>
-                    <tr>
-                        <td class="bb_1"><span class="font-weight-bold">Cleared Offense{{$C_s}}: </span> {{ $countAll_Cleared_offenses}}</td>
-                        <td class="bb_1"><span class="font-weight-bold">Completed Sanction{{$CS_s}}: </span> {{ $countAll_CompletedSanctions}}</td>
-                    </tr>
-                    <tr>
-                        <td class="bb_1"><span class="font-weight-bold">Uncleared Offense{{$UC_s}}: </span> {{ $UC_offCount}}</td>
-                        <td class="bb_1"><span class="font-weight-bold">Not Completed Sanction{{$NCS_s}}: </span> {{ $countAll_NotCompletedSanctions}}</td>
-                    </tr>
-                    <tr>
-                        <td class="bb_1"><span class="font-weight-bold">Total Offense{{$TO_s}}: {{ $countTotal_offenses}}</span></td>
-                        <td class="bb_1"><span class="font-weight-bold">Total Sanction{{$TS_s}}: {{ $countAll_Sanctions}}</span></td>
-                    </tr>
-                </tbody>
-            </table>
+            @if (count($query_selViolator_Offenses) > 10)
+                <table id="contentsInfo_table" class="b_1">   
+                    <tbody>
+                        <tr class="tr_bg_DDD">
+                            <td colspan="2"><span class="font-weight-bold">Violator's Information: </span></td>
+                        </tr>
+                        <tr>
+                            <td class="bb_1"><span class="font-weight-bold">Name: </span> {{ $query_selViolator_info->First_Name }} {{ $query_selViolator_info->Middle_Name }} {{ $query_selViolator_info->Last_Name}}</td>
+                            <td class="bb_1"><span class="font-weight-bold">Gender: </span> {{ $query_selViolator_info->Gender }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bb_1"><span class="font-weight-bold">Student Number: </span> {{ $query_selViolator_info->Student_Number }}</td>
+                            <td class="bb_1"><span class="font-weight-bold">Age: </span> {{ $query_selViolator_info->Age }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bb_1"><span class="font-weight-bold">School: </span> {{ $query_selViolator_info->School_Name }}</td>
+                            <td class="bb_1"><span class="font-weight-bold">Year Level: </span> {{ $query_selViolator_info->YearLevel }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bb_1"><span class="font-weight-bold">Program: </span> {{ $query_selViolator_info->Course }}</td>
+                            <td class="bb_1"></td>
+                        </tr>
+                        <tr>
+                            <td class="b_0 p_x0y2"></td>
+                            <td class="b_0 p_x0y2"></td>
+                        </tr>
+                        <tr class="tr_bg_DDD">
+                            <td><span class="font-weight-bold">Offense Details: </span></td>
+                            <td><span class="font-weight-bold">Sanctions Details: </span></td>
+                        </tr>
+                        <tr>
+                            <td class="bb_1"><span class="font-weight-bold">Cleared Offense{{$C_s}}: </span> {{ $countAll_Cleared_offenses}}</td>
+                            <td class="bb_1"><span class="font-weight-bold">Completed Sanction{{$CS_s}}: </span> {{ $countAll_CompletedSanctions}}</td>
+                        </tr>
+                        <tr>
+                            <td class="bb_1"><span class="font-weight-bold">Uncleared Offense{{$UC_s}}: </span> {{ $UC_offCount}}</td>
+                            <td class="bb_1"><span class="font-weight-bold">Not Completed Sanction{{$NCS_s}}: </span> {{ $countAll_NotCompletedSanctions}}</td>
+                        </tr>
+                        <tr>
+                            <td class="bb_1"><span class="font-weight-bold">Total Offense{{$TO_s}}: {{ $countTotal_offenses}}</span></td>
+                            <td class="bb_1"><span class="font-weight-bold">Total Sanction{{$TS_s}}: {{ $countAll_Sanctions}}</span></td>
+                        </tr>
+                    </tbody>
+                </table>
 
-            <br>
+                <br>
+            @endif
 
             <table id="contentsInfo_table" class="b_1">
                 <tbody>

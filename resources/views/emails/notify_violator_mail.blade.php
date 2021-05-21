@@ -180,10 +180,12 @@
                         <tr style="line-height: 12px;">
                             <td style="vertical-align-top; border: 0 !important;">
                                 <br>
-                                <p style="margin: 10px 15px !important;"><strong>Violator: </strong></p>
-                                <p style="margin: 6px 15px 6px 15px !important;"><strong>Name: </strong> {{ $query_violatorInformation->First_Name }} {{ $query_violatorInformation->Middle_Name }} {{ $query_violatorInformation->Last_Name }}</p>
-                                <p style="margin: 6px 15px 6px 15px !important;"><strong>Student Number: </strong> {{ $query_violatorInformation->Student_Number }}</p>
-                                <p style="margin: 6px 15px 6px 15px !important;"><strong>School/Program/Year Level: </strong> {{ $query_violatorInformation->School_Name }} | {{ $query_violatorInformation->Course }} | {{ $query_violatorInformation->YearLevel}}-Y</p>
+                                {{-- <p style="margin: 10px 15px !important;"><strong>Violator: </strong></p> --}}
+                                <p style="margin: 6px 15px 6px 15px !important;"><strong>Name: </strong> {{ $query_violatorInformation->First_Name }} {{ $query_violatorInformation->Middle_Name }} {{ $query_violatorInformation->Last_Name }} </p>
+                                <p style="margin: 6px 15px 6px 15px !important;"><strong>Student Number: </strong> {{ $query_violatorInformation->Student_Number }} </p>
+                                <p style="margin: 6px 15px 6px 15px !important;"><strong>School Name: </strong> {{ $query_violatorInformation->School_Name }} </p>
+                                <p style="margin: 6px 15px 6px 15px !important;"><strong>Program: </strong>{{ $query_violatorInformation->Course }} </p>
+                                <p style="margin: 6px 15px 6px 15px !important;"><strong>Year Level: </strong>{{ $query_violatorInformation->YearLevel}}-Y </p>
                                 <p style="margin: 6px 15px 6px 15px !important;"><strong>Age/Gender: </strong> {{ $query_violatorInformation->Age }} y/o | {{ $query_violatorInformation->Gender }} </p>
                                 <br>
                             </td>
@@ -522,7 +524,9 @@
                         @endif
                     @endforeach
                 {{-- offenses and corresponding sanctions tables end --}}
-                {{-- overview part II --}}
+                {{-- if violation count reach 10 then append overview --}}
+                @if ($has_recordedViolations > 10)
+                    {{-- overview part II --}}
                     <thead style="
                         background-color: #e7e7e7;
                         color: #242333;
@@ -554,6 +558,8 @@
                     </tbody>
 
                     <br>
+                     {{-- overview part II end --}}
+                @endif
 
                 </table>
                 @if(count($query_allViolations) == $count_allClearedViolations)
