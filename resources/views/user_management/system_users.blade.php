@@ -396,7 +396,7 @@
                                                             <div class="assignedUsersCirclesDiv">
                                                                 <?php
                                                                     if($count_assigned_users > 8){
-                                                                        $get_only_8 = App\Models\Users::select('id', 'user_image', 'user_lname', 'user_fname')->where('user_role', $active_role->uRole)->take(8)->get();
+                                                                        $get_only_8 = App\Models\Users::select('id', 'user_image', 'user_lname', 'user_fname', 'user_type')->where('user_role', $active_role->uRole)->take(8)->get();
                                                                         $more_count = $count_assigned_users - 8;
                                                                         foreach($get_only_8->sortBy('id') as $display_8userImgs){
                                                                             // tolower case user_type
@@ -405,9 +405,9 @@
                                                                             if(!is_null($display_8userImgs->user_image) OR !empty($display_8userImgs->user_image)){
                                                                                 $user_imgJpgFile = $display_8userImgs->user_image;
                                                                             }else{
-                                                                                if($tolower_uType === 'employee'){
+                                                                                if($tolower_uType == 'employee'){
                                                                                     $user_imgJpgFile = 'employee_user_image.jpg';
-                                                                                }elseif($tolower_uType === 'student'){
+                                                                                }elseif($tolower_uType == 'student'){
                                                                                     $user_imgJpgFile = 'student_user_image.jpg';
                                                                                 }else{
                                                                                     $user_imgJpgFile = 'disabled_user_image.jpg';
@@ -422,7 +422,7 @@
                                                                         </div>
                                                                         <?php
                                                                     }else {
-                                                                        $get_all_assigned_users = App\Models\Users::select('id', 'user_image', 'user_lname', 'user_fname')->where('user_role', $active_role->uRole)->get();
+                                                                        $get_all_assigned_users = App\Models\Users::select('id', 'user_image', 'user_lname', 'user_fname', 'user_type')->where('user_role', $active_role->uRole)->get();
                                                                         foreach($get_all_assigned_users->sortBy('id') as $assigned_user) {
                                                                             // tolower case user_type
                                                                             $tolower_uType = Str::lower($assigned_user->user_type);

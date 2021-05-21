@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Violation Records</title>
+        <title>SVMS - Violation Records</title>
 
         <style type="text/css">
             @page {
@@ -147,6 +147,10 @@
                 font-size: 13px !important;
                 font-style: italic !important;
                 text-align: center !important;
+            }
+
+            .text_justify {
+                text-align: justify !important;
             }
 
             /* contents data table */
@@ -404,7 +408,7 @@
 
             <br>
 
-            <p class="notice">Below {{ $is_are }} the Recorded Violation{{$_s }} retrieved from the Student Violation Management System generated with custom filters as shown above.</p>
+            <p class="notice text_justify">Below {{ $is_are }} the Recorded Violation{{$_s }} retrieved from the Student Violation Management System generated with custom filters as shown above.</p>
 
             <br>
             
@@ -529,7 +533,9 @@
             </table>
 
             <br>
+            
             <p class="notice_1">-- end of table <span class="cg"> (Recorded Violations Table) </span> --</p>
+            
             <br>
 
             @if (count($query_violation_records) > 5)

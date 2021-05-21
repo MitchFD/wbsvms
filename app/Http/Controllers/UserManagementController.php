@@ -705,14 +705,38 @@ class UserManagementController extends Controller
                 $paginate = '';
                 $total_matched_results = '';
                 // get all request
-                $logs_search    = $request->get('logs_search');
-                $logs_userTypes = $request->get('logs_userTypes');
-                $logs_userRoles = $request->get('logs_userRoles');
-                $logs_users     = $request->get('logs_users');
-                $logs_category  = $request->get('logs_category');
-                $logs_rangefrom = $request->get('logs_rangefrom');
-                $logs_rangeTo   = $request->get('logs_rangeTo');
-                $logs_page      = $request->get('page');
+                $logs_search       = $request->get('logs_search');
+                $logs_userTypes    = $request->get('logs_userTypes');
+                $logs_userRoles    = $request->get('logs_userRoles');
+                $logs_users        = $request->get('logs_users');
+                $logs_category     = $request->get('logs_category');
+                $logs_rangefrom    = $request->get('logs_rangefrom');
+                $logs_rangeTo      = $request->get('logs_rangeTo');
+                $logs_orderBy      = $request->get('logs_orderBy');
+                $logs_orderByRange = $request->get('logs_orderByRange');
+                $logs_numRows      = $request->get('logs_numRows');
+                $logs_page         = $request->get('page');
+
+                // order by 
+                if($logs_orderBy != 0 OR !empty($logs_orderBy)){
+                    if($logs_orderBy == 1){
+                        $orderBy_filterVal = 'users.user_sdca_id';
+                    }else{
+                        $orderBy_filterVal = 'users_activity_tbl.created_at';
+                    }
+                }else{
+                    $orderBy_filterVal = 'users_activity_tbl.created_at';
+                }
+                // order by range
+                if(!empty($logs_orderByRange) OR $logs_orderByRange != 0){
+                    if($logs_orderByRange === 'asc'){
+                        $orderByRange_filterVal = 'ASC';
+                    }else{
+                        $orderByRange_filterVal = 'DESC';
+                    }
+                }else{
+                    $orderByRange_filterVal = 'DESC';
+                }
     
                 if($logs_search != ''){
                     $filter_user_logs_table = DB::table('users_activity_tbl')
@@ -745,8 +769,8 @@ class UserManagementController extends Controller
                                                     $query->whereBetween('users_activity_tbl.created_at', [$logs_rangefrom, $logs_rangeTo]);
                                                 }
                                             })
-                                            ->orderBy('users_activity_tbl.created_at', 'DESC')
-                                            ->paginate(10);
+                                            ->orderBy($orderBy_filterVal, $orderByRange_filterVal)
+                                            ->paginate($logs_numRows);
                     $matched_result_txt = ' Matched Record';
                 }else{
                     $filter_user_logs_table = DB::table('users_activity_tbl')
@@ -769,8 +793,8 @@ class UserManagementController extends Controller
                                                     $query->whereBetween('users_activity_tbl.created_at', [$logs_rangefrom, $logs_rangeTo]);
                                                 }
                                             })
-                                            ->orderBy('users_activity_tbl.created_at', 'DESC')
-                                            ->paginate(10);
+                                            ->orderBy($orderBy_filterVal, $orderByRange_filterVal)
+                                            ->paginate($logs_numRows);
                     $matched_result_txt = ' Record';
                 }
                 // total filtered date
@@ -790,31 +814,47 @@ class UserManagementController extends Controller
                 }
                 if($count_filtered_result > 0){
                     foreach($filter_user_logs_table as $users_logs){
-                        // custom values
-                        if($users_logs->user_type === 'employee'){
-                            $img_border = 'rslts_emp';
-                        }elseif($users_logs->user_type === 'student'){
-                            $img_border = 'rslts_stud';
+                        // tolower case user_type
+                        $tolower_uType = Str::lower($users_logs->user_type);
+                        // user's image handler
+                        if(!is_null($users_logs->user_image) OR !empty($users_logs->user_image)){
+                            $user_imgJpgFile = $users_logs->user_image;
+                            if($tolower_uType === 'employee'){
+                                $img_border = 'rslts_emp';
+                            }elseif($tolower_uType === 'student'){
+                                $img_border = 'rslts_stud';
+                            }else{
+                                $img_border = 'rslts_unknown';
+                            }
                         }else{
-                            $img_border = 'rslts_unknown';
+                            if($tolower_uType === 'employee'){
+                                $user_imgJpgFile = 'employee_user_image.jpg';
+                                $img_border = 'rslts_emp';
+                            }elseif($tolower_uType === 'student'){
+                                $user_imgJpgFile = 'student_user_image.jpg';
+                                $img_border = 'rslts_stud';
+                            }else{
+                                $user_imgJpgFile = 'disabled_user_image.jpg';
+                                $img_border = 'rslts_unknown';
+                            }
                         }
                         $output .= '
                         <tr>
                             <td class="pl12 d-flex justify-content-start align-items-center">
-                                <img class="rslts_userImgs ' . $img_border.'" src="'.asset('storage/svms/user_images/'.$users_logs->user_image.'').'" alt="user image">
+                                <img class="rslts_userImgs ' . $img_border.'" src="'.asset('storage/svms/user_images/'.$user_imgJpgFile.'').'" alt="user image">
                                 <div class="cust_td_info">
                                     <span class="actLogs_tdTitle font-weight-bold">'.preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', $users_logs->act_respo_users_fname) . ' ' .preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', $users_logs->act_respo_users_lname) . '</span>
                                     <span class="actLogs_tdSubTitle"><span class="sub1">'.preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', $users_logs->user_sdca_id) . ' </span> <span class="subDiv"> / </span> <span class="sub1"> ' . preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', ucwords($users_logs->user_role)).'</span></span>
                                 </div>
                             </td>
-                            <td>
+                            <td width="10%">
                                 <div class="d-inline">
                                     <span class="actLogs_content">'.preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', date('F d, Y', strtotime($users_logs->created_at))) . '</span>
                                     <span class="actLogs_tdSubTitle sub2">'.preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', date('D', strtotime($users_logs->created_at))) . ' - '.preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', date('g:i A', strtotime($users_logs->created_at))) . '</span>
                                 </div>
                             </td>
-                            <td><span class="actLogs_content">'.preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', $users_logs->act_type) . '</span></td>
-                            <td><span class="actLogs_content">'.preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', $users_logs->act_details) . '</span></td>
+                            <td width="10%"><span class="actLogs_content">'.preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', $users_logs->act_type) . '</span></td>
+                            <td width="50%"><span class="actLogs_content">'.preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', $users_logs->act_details) . '</span></td>
                         </tr>
                     ';
                     }
@@ -3771,20 +3811,76 @@ class UserManagementController extends Controller
     // generate users activity logs confirmation on modal
     public function generate_act_logs_confirmation_modal(Request $request){
         // get all request
-        $logs_search    = $request->get('logs_search');
-        $logs_userTypes = $request->get('logs_userTypes');
-        $logs_userRoles = $request->get('logs_userRoles');
-        $logs_users     = $request->get('logs_users');
-        $logs_category  = $request->get('logs_category');
-        $logs_rangefrom = $request->get('logs_rangefrom');
-        $logs_rangeTo   = $request->get('logs_rangeTo');
-        $logs_totalData = $request->get('logs_totalData');
+        $logs_search       = $request->get('logs_search');
+        $logs_userTypes    = $request->get('logs_userTypes');
+        $logs_userRoles    = $request->get('logs_userRoles');
+        $logs_users        = $request->get('logs_users');
+        $logs_category     = $request->get('logs_category');
+        $logs_rangefrom    = $request->get('logs_rangefrom');
+        $logs_rangeTo      = $request->get('logs_rangeTo');
+        $logs_totalData    = $request->get('logs_totalData');
+        $logs_orderBy      = $request->get('logs_orderBy');
+        $logs_orderByRange = $request->get('logs_orderByRange');
         // inner texts
-        $txt_logs_userTypes = $request->get('txt_logs_userTypes');
-        $txt_logs_userRoles = $request->get('txt_logs_userRoles');
-        $txt_logs_users     = $request->get('txt_logs_users');
-        $txt_logs_category  = $request->get('txt_logs_category');
+        // $txt_logs_userTypes = $request->get('txt_logs_userTypes');
+        // $txt_logs_userRoles = $request->get('txt_logs_userRoles');
+        // $txt_logs_users     = $request->get('txt_logs_users');
+        // $txt_logs_category  = $request->get('txt_logs_category');
         
+        // user type
+        if($logs_userTypes != 0 OR !empty($logs_userTypes)){
+            $tolower_uType = Str::lower($logs_userTypes);
+            if($tolower_uType === 'employee'){
+                $txt_filteredUserType = 'Employee Type';
+            }elseif($tolower_uType === 'student'){
+                $txt_filteredUserType = 'Student Type';
+            }else{
+                $txt_filteredUserType = 'All Types (Employee and Student)';
+            }
+        }else{
+            $txt_filteredUserType = 'All Types (Employee and Student)';
+        }
+        // user role
+        if($logs_userRoles != 0 OR !empty($logs_userRoles)){
+            $txt_filteredUserRole = ''.ucwords($logs_userRoles).'';
+        }else{
+            $txt_filteredUserRole = 'All Roles';
+        }
+        // user
+        if($logs_users != 0 OR !empty($logs_users)){
+            $sel_user_info = Users::select('id', 'user_lname', 'user_fname')->where('id', '=', $logs_users)->first();
+            $sel_Fname = $sel_user_info->user_fname;
+            $sel_Lname = $sel_user_info->user_lname;
+            $txt_filteredUser = ''.$sel_Fname . ' ' . $sel_Lname.'';
+        }else{
+            $txt_filteredUser = 'All Users';
+        }
+        // category
+        if($logs_category != 0 OR !empty($logs_category)){
+            $txt_filteredCategory = ''.ucwords($logs_category).'';
+        }else{
+            $txt_filteredCategory = 'All Logs Category';
+        }
+        // order by 
+        if($logs_orderBy != 0 OR !empty($logs_orderBy)){
+            if($logs_orderBy == 1){
+                $orderBy_filterVal = 'Employee ID';
+            }else{
+                $orderBy_filterVal = 'Date Recorded';
+            }
+        }else{
+            $orderBy_filterVal = 'Date Recorded';
+        }
+        // order by range
+        if(!empty($logs_orderByRange) OR $logs_orderByRange != 0){
+            if($logs_orderByRange === 'asc'){
+                $orderByRange_filterVal = '(Ascending)';
+            }else{
+                $orderByRange_filterVal = '(Descending)';
+            }
+        }else{
+            $orderByRange_filterVal = '(Descending)';
+        }
         // plural 
         if($logs_totalData > 1){
             $s = 's';
@@ -3822,10 +3918,11 @@ class UserManagementController extends Controller
                 </div>
                 <div class="card-body lightBlue_cardBody shadow-none mt-2">
                     <span class="lightBlue_cardBody_blueTitle">Applied Filters:</span>
-                    <span class="lightBlue_cardBody_notice"><i class="fa fa-check-square-o text-success mr-1" aria-hidden="true"></i> '.$txt_logs_userTypes.'</span>
-                    <span class="lightBlue_cardBody_notice"><i class="fa fa-check-square-o text-success mr-1" aria-hidden="true"></i> '.$txt_logs_userRoles.'</span>
-                    <span class="lightBlue_cardBody_notice"><i class="fa fa-check-square-o text-success mr-1" aria-hidden="true"></i> '.$txt_logs_users.'</span>
-                    <span class="lightBlue_cardBody_notice"><i class="fa fa-check-square-o text-success mr-1" aria-hidden="true"></i> '.$txt_logs_category.'</span>
+                    <span class="lightBlue_cardBody_notice"><i class="fa fa-check-square-o text-success mr-1" aria-hidden="true"></i> User Types: <span class="font-weight-bold"> ' . $txt_filteredUserType . ' </span></span>
+                    <span class="lightBlue_cardBody_notice"><i class="fa fa-check-square-o text-success mr-1" aria-hidden="true"></i> User Roles: <span class="font-weight-bold"> ' . $txt_filteredUserRole . ' </span></span>
+                    <span class="lightBlue_cardBody_notice"><i class="fa fa-check-square-o text-success mr-1" aria-hidden="true"></i> Selected Users: <span class="font-weight-bold"> ' . $txt_filteredUser . ' </span></span>
+                    <span class="lightBlue_cardBody_notice"><i class="fa fa-check-square-o text-success mr-1" aria-hidden="true"></i> Log Category: <span class="font-weight-bold"> ' . $txt_filteredCategory . ' </span></span>
+                    <span class="lightBlue_cardBody_notice"><i class="fa fa-check-square-o text-success mr-1" aria-hidden="true"></i> Order By: <span class="font-weight-bold"> ' . $orderBy_filterVal . ' </span> ' . $orderByRange_filterVal . '</span>
                     ';
                     if(!empty($logs_search) OR $logs_search != 0){
                         $output .= '
@@ -3843,7 +3940,7 @@ class UserManagementController extends Controller
                     <span class="lightBlue_cardBody_notice"><i class="fa fa-list-ul text-success mr-1" aria-hidden="true"></i> ' . $results_found . '</span>
                 </div>
             </div>
-            <form action="'.route('user_management.users_logs_report_pdf').'" method="POST" enctype="multipart/form-data" onsubmit="process_ActLogsReport_btn.disabled = true; return true;">
+            <form id="form_confirmGenerateUsersLogsReport" target="_blank" action="'.route('user_management.users_logs_report_pdf').'" method="POST" enctype="multipart/form-data">
                 <div class="modal-footer border-0">
                     <input type="hidden" name="_token" value="'.csrf_token().'">
                     <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
@@ -3857,9 +3954,11 @@ class UserManagementController extends Controller
                     <input type="hidden" name="logs_category" value="'.$logs_category.'">
                     <input type="hidden" name="logs_rangefrom" value="'.$logs_rangefrom.'">
                     <input type="hidden" name="logs_rangeTo" value="'.$logs_rangeTo.'">
+                    <input type="hidden" name="logs_orderBy" value="'.$logs_orderBy.'">
+                    <input type="hidden" name="logs_orderByRange" value="'.$logs_orderByRange.'">
                     <div class="btn-group" role="group" aria-label="Basic example">
-                        <button type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
-                        <button id="process_ActLogsReport_btn" type="submit" class="btn btn-round btn-success btn_show_icon m-0" ' .$dis_enable_printBtn.'>Export Report <i class="nc-icon nc-single-copy-04 btn_icon_show_right" aria-hidden="true"></i></button>
+                        <button id="cancel_GenerateActLogsReport_btn" type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                        <button id="process_GenerateActLogsReport_btn" type="submit" class="btn btn-round btn-success btn_show_icon m-0" ' .$dis_enable_printBtn.'>Export Report <i class="nc-icon nc-single-copy-04 btn_icon_show_right" aria-hidden="true"></i></button>
                     </div>
                 </div>
             </form>
@@ -3868,14 +3967,23 @@ class UserManagementController extends Controller
     }
     // process PDF export of activity logs
     public function users_logs_report_pdf(Request $request){
+        // now timestamp
+        $now_timestamp      = now();
+
         // get all request
-        $logs_search    = $request->get('logs_search');
-        $logs_userTypes = $request->get('logs_userTypes');
-        $logs_userRoles = $request->get('logs_userRoles');
-        $logs_users     = $request->get('logs_users');
-        $logs_category  = $request->get('logs_category');
-        $logs_rangefrom = $request->get('logs_rangefrom');
-        $logs_rangeTo   = $request->get('logs_rangeTo');
+        $logs_search       = $request->get('logs_search');
+        $logs_userTypes    = $request->get('logs_userTypes');
+        $logs_userRoles    = $request->get('logs_userRoles');
+        $logs_users        = $request->get('logs_users');
+        $logs_category     = $request->get('logs_category');
+        $logs_rangefrom    = $request->get('logs_rangefrom');
+        $logs_rangeTo      = $request->get('logs_rangeTo');
+        $logs_orderBy      = $request->get('logs_orderBy');
+        $logs_orderByRange = $request->get('logs_orderByRange');
+
+        $respo_user_id      = $request->get('respo_user_id');
+        $respo_user_lname   = $request->get('respo_user_lname');
+        $respo_user_fname   = $request->get('respo_user_fname');  
         // check value
         // echo 'logs_search: ' . $logs_search . ' <br/>';
         // echo 'logs_userTypes: ' . $logs_userTypes . ' <br/>';
@@ -3884,6 +3992,30 @@ class UserManagementController extends Controller
         // echo 'logs_category: ' . $logs_category . ' <br/>';
         // echo 'logs_rangefrom: ' . $logs_rangefrom . ' <br/>';
         // echo 'logs_rangeTo: ' . $logs_rangeTo . ' <br/>';
+
+        // query responsible user's info
+        $query_respo_user = Users::select('user_role','user_lname', 'user_fname')->where('id', $respo_user_id)->first();
+
+        // order by 
+        if($logs_orderBy != 0 OR !empty($logs_orderBy)){
+            if($logs_orderBy == 1){
+                $orderBy_filterVal = 'users.user_sdca_id';
+            }else{
+                $orderBy_filterVal = 'users_activity_tbl.created_at';
+            }
+        }else{
+            $orderBy_filterVal = 'users_activity_tbl.created_at';
+        }
+        // order by range
+        if(!empty($logs_orderByRange) OR $logs_orderByRange != 0){
+            if($logs_orderByRange === 'asc'){
+                $orderByRange_filterVal = 'ASC';
+            }else{
+                $orderByRange_filterVal = 'DESC';
+            }
+        }else{
+            $orderByRange_filterVal = 'DESC';
+        }
 
         if($logs_search != ''){
             $filter_user_logs_table = DB::table('users_activity_tbl')
@@ -3916,7 +4048,7 @@ class UserManagementController extends Controller
                                             return $query->whereBetween('users_activity_tbl.created_at', [$logs_rangefrom, $logs_rangeTo]);
                                         }
                                     })
-                                    ->orderBy('users_activity_tbl.created_at', 'DESC')
+                                    ->orderBy($orderBy_filterVal, $orderByRange_filterVal)
                                     ->get();
         }else{
             $filter_user_logs_table = DB::table('users_activity_tbl')
@@ -3939,7 +4071,7 @@ class UserManagementController extends Controller
                                             $query->whereBetween('users_activity_tbl.created_at', [$logs_rangefrom, $logs_rangeTo]);
                                         }
                                     })
-                                    ->orderBy('users_activity_tbl.created_at', 'DESC')
+                                    ->orderBy($orderBy_filterVal, $orderByRange_filterVal)
                                     ->get();
         }
 
@@ -3947,7 +4079,15 @@ class UserManagementController extends Controller
         // $pdf = \App::make('dompdf.wrapper');
         // $pdf->loadHTML($act_logs_to_pdf);
         // return back()->withSuccessStatus('Report has been generated successfully.');
-        $pdf = PDF::loadView('user_management.report_viewer', compact('filter_user_logs_table'));
-        return $pdf->stream('Activity-Logs.pdf');
+        // $pdf = PDF::loadView('user_management.report_viewer', compact('filter_user_logs_table'));
+        // return $pdf->stream('Activity-Logs.pdf');
+
+        // Generate PDF
+        $pdf = \App::make('dompdf.wrapper');
+        // $pdf->loadHTML($output);
+        $pdf = PDF::loadView('reports/users_act_logs', compact('now_timestamp', 'query_respo_user', 'filter_user_logs_table', 'logs_search', 'logs_userTypes', 'logs_userRoles', 'logs_users', 'logs_category', 'logs_rangefrom', 'logs_rangeTo', 'logs_orderBy', 'logs_orderByRange'));
+        $pdf->setPaper('A4');
+        $pdf->getDomPDF()->set_option("enable_php", true);
+        return $pdf->stream('reports/users_act_logs.pdf');
     } 
 }

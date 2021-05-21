@@ -152,6 +152,27 @@
                                         <input type="hidden" name="hidden_totalDataFound" id="hidden_totalDataFound">
                                     </div>
                                 </div>
+                                <span class="cust_status_title mt-3 mb-2">Order By: </span>
+                                <div class="row">
+                                    <div class="col-lg-8 col-md-8 col-sm-12 pr-0">
+                                        <div class="form-group">
+                                            <select id="actLogsFiltr_orderBy" name="actLogsFiltr_orderBy" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
+                                                <option value="0" selected>Date Recorded</option>
+                                                <option value="1">Employee ID</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-12 pl-0 d-flex justify-content-end">
+                                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                            <label class="btn btn_svms_blue cust_btn_radio cbr_p" data-toggle="tooltip" data-placement="top" title="Ascending Order?">
+                                                <input class="m-0 p-0" type="radio" name="actLogsFiltr_orderByRange" id="actLogsFiltr_orderByRange_ASC" value="asc" autocomplete="off"> <i class="fa fa-sort-amount-asc cbr_i" aria-hidden="true"></i>
+                                            </label>
+                                            <label class="btn btn_svms_blue cust_btn_radio cbr_p active" data-toggle="tooltip" data-placement="top" title="Descending Order?">
+                                                <input class="m-0 p-0" type="radio" name="actLogsFiltr_orderByRange" id="actLogsFiltr_orderByRange_DESC" value="desc" autocomplete="off" checked> <i class="fa fa-sort-amount-desc cbr_i" aria-hidden="true"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="row mt-3">
                                     <div class="col-lg-12 col-md-12 col-sm-12 text-right">
                                         <button type="button" id="generateActLogs_btn" onclick="generateActLogs_modal()" class="btn btn-success cust_bt_links shadow"><i class="nc-icon nc-single-copy-04 mr-1" aria-hidden="true"></i> Generate Report</button>
@@ -172,18 +193,23 @@
                                 <i class="nc-icon nc-zoom-split" aria-hidden="true"></i>    
                             </div>
                         </div>
-                        {{-- <div class="col-lg-7 col-md-4 col-sm-2">
-                            <div class="form-group">
+                        <div class="col-lg-7 col-md-4 col-sm-2 d-flex justify-content-end align-items-center">
+                            <span class="custom_label_subv1 mr-3">Number of Rows </span>
+                            <div class="form-group m-0" style="width:80px;">
                                 <select id="actLogsFiltr_numOfRows" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
+                                    <option value="5">5</option>
                                     <option value="10" selected>10</option>
                                     <option value="25">25</option>
                                     <option value="50">50</option>
+                                    <option value="75">75</option>
                                     <option value="100">100</option>
+                                    <option value="250">250</option>
+                                    <option value="500">500</option>
                                 </select>
                             </div>
-                        </div> --}}
+                        </div>
                     </div>
-                    <div class="row mt-3">
+                    {{-- <div class="row mt-3">
                         <div class="col-lg-12 col-sm-12">
                             <span class="cust_table_filters_title"> Filters: </span>
                             <span id="filter_userTypes_txt" class="cust_table_filters_texts"> All User Types </span> <span class="cust_table_filters_texts_divider"> / </span>
@@ -193,7 +219,7 @@
                             <span id="filter_date_txt" class="cust_table_filters_texts"> From Previous Days up to this day </span> <span class="cust_table_filters_texts_divider"> / </span>
                             <span id="filter_liveSearch_txt" class="cust_table_filters_texts"> ...</span>
                         </div>
-                    </div>
+                    </div> --}}
                     <div class="row mt-3">
                         <div class="col-lg-12 col-md-12 col-sm-12">
                             <table class="table table-hover cust_table shadow">
@@ -264,17 +290,24 @@
                 var logs_category = document.getElementById("actLogsFiltr_selectCategories").value;
                 var logs_rangefrom = document.getElementById("hidden_dateRangeFrom").value;
                 var logs_rangeTo = document.getElementById("hidden_dateRangeTo").value;
+                var logs_orderBy = document.getElementById("actLogsFiltr_orderBy").value;
+                var logs_orderByRange = document.querySelector('input[type=radio][name=actLogsFiltr_orderByRange]:checked').value;  
+                var logs_numRows = document.getElementById("actLogsFiltr_numOfRows").value;
                 var page = document.getElementById("hidden_page").value;
                 const ajax_logs_totalData = 0;
 
-                console.log(logs_search);
-                console.log(logs_userTypes);
-                console.log(logs_userRoles);
-                console.log(logs_users);
-                console.log(logs_category);
-                console.log(logs_rangefrom);
-                console.log(logs_rangeTo);
-                console.log(page);
+                console.log('_________________________________');
+                console.log('Live Search: ' + logs_search);
+                console.log('User Types : ' + logs_userTypes);
+                console.log('User Roles: ' + logs_userRoles);
+                console.log('User: ' + logs_users);
+                console.log('Logs Category: ' + logs_category);
+                console.log('Date Range From: ' + logs_rangefrom);
+                console.log('Date Range to: ' + logs_rangeTo);
+                console.log('Order by category: ' + logs_orderBy);
+                console.log('list Order: ' + logs_orderByRange);
+                console.log('Number of Rows: ' + logs_numRows);
+                console.log('page: ' + page);
 
                 $.ajax({
                     url:"{{ route('user_management.users_logs') }}",
@@ -287,6 +320,9 @@
                         logs_category:logs_category,
                         logs_rangefrom:logs_rangefrom,
                         logs_rangeTo:logs_rangeTo,
+                        logs_orderBy:logs_orderBy,
+                        logs_orderByRange:logs_orderByRange,
+                        logs_numRows:logs_numRows,
                         page:page
                         },
                     dataType:'json',
@@ -308,368 +344,422 @@
                 });
                 
                 // for disabling/ enabling reset filter button
-                if(logs_userTypes != 0 || logs_userRoles != 0 || logs_users != 0 || logs_category != 0 || logs_rangefrom != '' || logs_rangeTo != ''){
+                if(logs_userTypes != 0 || logs_userRoles != 0 || logs_users != 0 || logs_category != 0 || logs_rangefrom != '' || logs_rangeTo != '' || logs_orderBy != 0){
                     $('#resetActLogsFilter_btn').prop('disabled', false);
                 }else{
                     $('#resetActLogsFilter_btn').prop('disabled', true);
                 }
             }
+            $(document).ready(function(){
+                setInterval(loadActLogsTable,30000);
+            });
 
             // function for ajax table pagination
-            $(window).on('hashchange', function() {
-                if (window.location.hash) {
-                    var page = window.location.hash.replace('#', '');
-                    if (page == Number.NaN || page <= 0) {
-                        return false;
-                    }else{
-                        getData(page);
+                $(window).on('hashchange', function() {
+                    if (window.location.hash) {
+                        var page = window.location.hash.replace('#', '');
+                        if (page == Number.NaN || page <= 0) {
+                            return false;
+                        }else{
+                            getData(page);
+                        }
                     }
-                }
-            });
-            $(document).on('click', '.pagination a', function(event){
-                event.preventDefault();
-                
-                var page = $(this).attr('href').split('page=')[1];
-                $('#hidden_page').val(page);
-
-                loadActLogsTable();
-                getData(page);
-                $('li.page-item').removeClass('active');
-                $(this).parent('li.page-item').addClass('active');
-            });
-            function getData(page){
-                $.ajax(
-                {
-                    url: '?page=' + page,
-                    type: "get",
-                    datatype: "html"
-                }).done(function(data){
-                    location.hash = page;
-                }).fail(function(jqXHR, ajaxOptions, thrownError){
-                    alert('No response from server');
                 });
-            }
+                $(document).on('click', '.pagination a', function(event){
+                    event.preventDefault();
+                    
+                    var page = $(this).attr('href').split('page=')[1];
+                    $('#hidden_page').val(page);
+
+                    loadActLogsTable();
+                    getData(page);
+                    $('li.page-item').removeClass('active');
+                    $(this).parent('li.page-item').addClass('active');
+                });
+                function getData(page){
+                    $.ajax(
+                    {
+                        url: '?page=' + page,
+                        type: "get",
+                        datatype: "html"
+                    }).done(function(data){
+                        location.hash = page;
+                    }).fail(function(jqXHR, ajaxOptions, thrownError){
+                        // alert('No response from server');
+                        location.hash = page;
+                    });
+                }
             // function for ajax table pagination end
 
             // function for capitalizing first letter of a word
-            function capitalizeFirstLetter(string) {
-                return string.charAt(0).toUpperCase() + string.slice(1);
-            }
+                function capitalizeFirstLetter(string) {
+                    return string.charAt(0).toUpperCase() + string.slice(1);
+                }
+            // function for capitalizing first letter of a word end
 
             // daterange picker
-            $('#actLogsFiltr_datepickerRange').daterangepicker({
-                timePicker: true,
-                showDropdowns: true,
-                minYear: 2020,
-                maxYear: parseInt(moment().format('YYYY'),10),
-                drops: 'up',
-                opens: 'right',
-                autoUpdateInput: false,
-                locale: {
-                    format: 'MMMM DD, YYYY - hh:mm A',
-                    cancelLabel: 'Clear'
+                $('#actLogsFiltr_datepickerRange').daterangepicker({
+                    timePicker: true,
+                    showDropdowns: true,
+                    maxDate: new Date(),
+                    minYear: 2020,
+                    maxYear: parseInt(moment().format('YYYY'),10),
+                    drops: 'up',
+                    opens: 'right',
+                    autoUpdateInput: false,
+                    locale: {
+                        format: 'MMMM DD, YYYY - hh:mm A',
+                        cancelLabel: 'Clear'
+                        }
+                });
+                $('#actLogsFiltr_datepickerRange').on('cancel.daterangepicker', function(ev, picker) {
+                    document.getElementById("hidden_dateRangeFrom").value = '';
+                    document.getElementById("hidden_dateRangeTo").value = '';
+                    $(this).val('');
+                    $(this).removeClass('cust_input_hasvalue');
+                    // inner HTML for filter texts
+                    // $('#filter_date_txt').html('From Previous Days up to this day');
+                    // document.getElementById("filter_date_txt").classList.remove("font-weight-bold");
+                    // table paginatin set to 1
+                    $('#hidden_page').val(1);
+                    loadActLogsTable();
+                });
+                $('#actLogsFiltr_datepickerRange').on('apply.daterangepicker', function(ev, picker) {
+                    // for hidden data range inputs
+                    var start_range = picker.startDate.format('YYYY-MM-DD HH:MM:SS');
+                    var end_range = picker.endDate.format('YYYY-MM-DD HH:MM:SS');
+                    document.getElementById("hidden_dateRangeFrom").value = start_range;
+                    document.getElementById("hidden_dateRangeTo").value = end_range;
+                    // for date range display
+                    $(this).val(picker.startDate.format('MMMM DD, YYYY') + ' - ' + picker.endDate.format('MMMM DD, YYYY'));
+                    $(this).addClass('cust_input_hasvalue');
+                    // inner HTML for filter texts
+                    // $('#filter_date_txt').html('From ' + picker.startDate.format('MMMM DD, YYYY') + ' to ' + picker.endDate.format('MMMM DD, YYYY'));
+                    // document.getElementById("filter_date_txt").classList.add("font-weight-bold");
+                    // table paginatin set to 1
+                    $('#hidden_page').val(1);
+                    loadActLogsTable();
+                });
+            // daterange picker end
+
+            // number of rows
+                $('#actLogsFiltr_numOfRows').on('change paste keyup', function(){
+                    var selectedNumRows = $(this).val();
+                    if(selectedNumRows != 10){
+                        $(this).addClass('cust_input_hasvalue');
+                    }else{
+                        $(this).removeClass('cust_input_hasvalue');
                     }
-            });
-            $('#actLogsFiltr_datepickerRange').on('cancel.daterangepicker', function(ev, picker) {
-                document.getElementById("hidden_dateRangeFrom").value = '';
-                document.getElementById("hidden_dateRangeTo").value = '';
-                $(this).val('');
-                $(this).removeClass('cust_input_hasvalue');
-                // inner HTML for filter texts
-                $('#filter_date_txt').html('From Previous Days up to this day');
-                document.getElementById("filter_date_txt").classList.remove("font-weight-bold");
-                // table paginatin set to 1
-                $('#hidden_page').val(1);
-                loadActLogsTable();
-            });
-            $('#actLogsFiltr_datepickerRange').on('apply.daterangepicker', function(ev, picker) {
-                // for hidden data range inputs
-                var start_range = picker.startDate.format('YYYY-MM-DD HH:MM:SS');
-                var end_range = picker.endDate.format('YYYY-MM-DD HH:MM:SS');
-                document.getElementById("hidden_dateRangeFrom").value = start_range;
-                document.getElementById("hidden_dateRangeTo").value = end_range;
-                // for date range display
-                $(this).val(picker.startDate.format('MMMM DD, YYYY') + ' - ' + picker.endDate.format('MMMM DD, YYYY'));
-                $(this).addClass('cust_input_hasvalue');
-                // inner HTML for filter texts
-                $('#filter_date_txt').html('From ' + picker.startDate.format('MMMM DD, YYYY') + ' to ' + picker.endDate.format('MMMM DD, YYYY'));
-                document.getElementById("filter_date_txt").classList.add("font-weight-bold");
-                // table paginatin set to 1
-                $('#hidden_page').val(1);
-                loadActLogsTable();
-            });
+                    // table paginatin set to 1
+                    $('#hidden_page').val(1);
+                    loadActLogsTable();
+                });
+            // number of rows end
 
             // live search filter
-            $('#actLogsFiltr_liveSearch').on('keyup', function(){
-                var liveSearchValue = $(this).val();
-                if(liveSearchValue != ''){
-                    $('#filter_liveSearch_txt').html(liveSearchValue);
-                    document.getElementById("filter_liveSearch_txt").classList.add("font-weight-bold");
-                }else{
-                    $('#filter_liveSearch_txt').html('...');
-                    document.getElementById("filter_liveSearch_txt").classList.remove("font-weight-bold");
-                }
-                $('#hidden_page').val(1);
-                loadActLogsTable();
-            });
+                $('#actLogsFiltr_liveSearch').on('keyup', function(){
+                    var liveSearchValue = $(this).val();
+                    // if(liveSearchValue != ''){
+                    //     $('#filter_liveSearch_txt').html(liveSearchValue);
+                    //     document.getElementById("filter_liveSearch_txt").classList.add("font-weight-bold");
+                    // }else{
+                    //     $('#filter_liveSearch_txt').html('...');
+                    //     document.getElementById("filter_liveSearch_txt").classList.remove("font-weight-bold");
+                    // }
+                    $('#hidden_page').val(1);
+                    loadActLogsTable();
+                });
+            // live search filter end
 
             // user type filter
-            $('#actLogsFiltr_selectUserTypes').on('change paste keyup', function(){
-                var selectedUserType = $(this).val();
-                // table paginatin set to 1
-                $('#hidden_page').val(1);
-                emp_type = 'employee';
-                stud_type = 'student';
-                all_roles = 'all_roles';
-                all_users = 'all_users';
-                if(selectedUserType != 0){
-                    document.getElementById("actLogsFiltr_selectUserTypes").classList.add("cust_input_hasvalue");
-                    if(selectedUserType === 'employee'){
-                        // value for System Roles Filter based on selected user type
-                        $('#actLogsFiltr_selectUserRoles option[data-role-type="' + stud_type + '"]').hide();
-                        $('#actLogsFiltr_selectUserRoles option[data-role-type="' + emp_type + '"]').show();
-                        $('#actLogsFiltr_selectUserRoles option[data-default-roles="' + all_roles + '"]').html('All Employee Type Roles');
-                        $('#actLogsFiltr_selectUserRoles').val(0);
-                        // value for System Users Filter based on selected user type
-                        $('#actLogsFiltr_selectUsers option[data-user-type="' + stud_type + '"]').hide();
-                        $('#actLogsFiltr_selectUsers option[data-user-type="' + emp_type + '"]').show();
-                        $('#actLogsFiltr_selectUsers option[data-default-users="' + all_users + '"]').html('All Employee Type Users');
-                        $('#actLogsFiltr_selectUsers').val(0);
-                        // inner HTML for filter texts
-                        $('#filter_userTypes_txt').html('Employee Type Users');
-                        $('#filter_userRoles_txt').html('All Employee Type Roles');
-                        $('#filter_users_txt').html('All Employee Type Users');
-                        document.getElementById("filter_userTypes_txt").classList.add("font-weight-bold");
-                    }else if(selectedUserType === 'student'){
-                        // value for System Roles Filter based on selected user type
-                        $('#actLogsFiltr_selectUserRoles option[data-role-type="' + emp_type + '"]').hide();
-                        $('#actLogsFiltr_selectUserRoles option[data-role-type="' + stud_type + '"]').show();
-                        $('#actLogsFiltr_selectUserRoles option[data-default-roles="' + all_roles + '"]').html('All Student Type Roles');
-                        $('#actLogsFiltr_selectUserRoles').val(0);
-                        // value for System Users Filter based on selected user type
-                        $('#actLogsFiltr_selectUsers option[data-user-type="' + stud_type + '"]').show();
-                        $('#actLogsFiltr_selectUsers option[data-user-type="' + emp_type + '"]').hide();
-                        $('#actLogsFiltr_selectUsers option[data-default-users="' + all_users + '"]').html('All Student Type Users');
-                        $('#actLogsFiltr_selectUsers').val(0);
-                        // inner HTML for filter texts
-                        $('#filter_userTypes_txt').html('Student Type Users');
-                        $('#filter_userRoles_txt').html('All Student Type Roles');
-                        $('#filter_users_txt').html('All Student Type Users');
-                        document.getElementById("filter_userTypes_txt").classList.add("font-weight-bold");
+                $('#actLogsFiltr_selectUserTypes').on('change paste keyup', function(){
+                    var selectedUserType = $(this).val();
+                    // table paginatin set to 1
+                    $('#hidden_page').val(1);
+                    emp_type = 'employee';
+                    stud_type = 'student';
+                    all_roles = 'all_roles';
+                    all_users = 'all_users';
+                    if(selectedUserType != 0){
+                        document.getElementById("actLogsFiltr_selectUserTypes").classList.add("cust_input_hasvalue");
+                        if(selectedUserType === 'employee'){
+                            // value for System Roles Filter based on selected user type
+                            $('#actLogsFiltr_selectUserRoles option[data-role-type="' + stud_type + '"]').hide();
+                            $('#actLogsFiltr_selectUserRoles option[data-role-type="' + emp_type + '"]').show();
+                            $('#actLogsFiltr_selectUserRoles option[data-default-roles="' + all_roles + '"]').html('All Employee Type Roles');
+                            $('#actLogsFiltr_selectUserRoles').val(0);
+                            // value for System Users Filter based on selected user type
+                            $('#actLogsFiltr_selectUsers option[data-user-type="' + stud_type + '"]').hide();
+                            $('#actLogsFiltr_selectUsers option[data-user-type="' + emp_type + '"]').show();
+                            $('#actLogsFiltr_selectUsers option[data-default-users="' + all_users + '"]').html('All Employee Type Users');
+                            $('#actLogsFiltr_selectUsers').val(0);
+                            // inner HTML for filter texts
+                            // $('#filter_userTypes_txt').html('Employee Type Users');
+                            // $('#filter_userRoles_txt').html('All Employee Type Roles');
+                            // $('#filter_users_txt').html('All Employee Type Users');
+                            // document.getElementById("filter_userTypes_txt").classList.add("font-weight-bold");
+                        }else if(selectedUserType === 'student'){
+                            // value for System Roles Filter based on selected user type
+                            $('#actLogsFiltr_selectUserRoles option[data-role-type="' + emp_type + '"]').hide();
+                            $('#actLogsFiltr_selectUserRoles option[data-role-type="' + stud_type + '"]').show();
+                            $('#actLogsFiltr_selectUserRoles option[data-default-roles="' + all_roles + '"]').html('All Student Type Roles');
+                            $('#actLogsFiltr_selectUserRoles').val(0);
+                            // value for System Users Filter based on selected user type
+                            $('#actLogsFiltr_selectUsers option[data-user-type="' + stud_type + '"]').show();
+                            $('#actLogsFiltr_selectUsers option[data-user-type="' + emp_type + '"]').hide();
+                            $('#actLogsFiltr_selectUsers option[data-default-users="' + all_users + '"]').html('All Student Type Users');
+                            $('#actLogsFiltr_selectUsers').val(0);
+                            // inner HTML for filter texts
+                            // $('#filter_userTypes_txt').html('Student Type Users');
+                            // $('#filter_userRoles_txt').html('All Student Type Roles');
+                            // $('#filter_users_txt').html('All Student Type Users');
+                            // document.getElementById("filter_userTypes_txt").classList.add("font-weight-bold");
+                        }else{
+                            // value for System Roles Filter based on selected user type
+                            $('#actLogsFiltr_selectUserRoles option[data-role-type="' + stud_type + '"]').show();
+                            $('#actLogsFiltr_selectUserRoles option[data-role-type="' + emp_type + '"]').show();
+                            $('#actLogsFiltr_selectUserRoles option[data-default-roles="' + all_roles + '"]').html('All Roles');
+                            $('#actLogsFiltr_selectUserRoles').val(0);
+                            // value for System Users Filter based on selected user type
+                            $('#actLogsFiltr_selectUsers option[data-user-type="' + stud_type + '"]').show();
+                            $('#actLogsFiltr_selectUsers option[data-user-type="' + emp_type + '"]').show();
+                            $('#actLogsFiltr_selectUsers option[data-default-users="' + all_users + '"]').html('All Users');
+                            $('#actLogsFiltr_selectUsers').val(0);
+                            // inner HTML for filter texts
+                            // $('#filter_userTypes_txt').html('All User Types');
+                            // $('#filter_userRoles_txt').html('All User Roles');
+                            // $('#filter_users_txt').html('All Users');
+                            // document.getElementById("filter_userTypes_txt").classList.remove("font-weight-bold");
+                        }
                     }else{
+                        document.getElementById("actLogsFiltr_selectUserTypes").classList.remove("cust_input_hasvalue");
                         // value for System Roles Filter based on selected user type
                         $('#actLogsFiltr_selectUserRoles option[data-role-type="' + stud_type + '"]').show();
                         $('#actLogsFiltr_selectUserRoles option[data-role-type="' + emp_type + '"]').show();
                         $('#actLogsFiltr_selectUserRoles option[data-default-roles="' + all_roles + '"]').html('All Roles');
                         $('#actLogsFiltr_selectUserRoles').val(0);
+                        document.getElementById("actLogsFiltr_selectUserRoles").classList.remove("cust_input_hasvalue");
                         // value for System Users Filter based on selected user type
                         $('#actLogsFiltr_selectUsers option[data-user-type="' + stud_type + '"]').show();
                         $('#actLogsFiltr_selectUsers option[data-user-type="' + emp_type + '"]').show();
                         $('#actLogsFiltr_selectUsers option[data-default-users="' + all_users + '"]').html('All Users');
                         $('#actLogsFiltr_selectUsers').val(0);
+                        document.getElementById("actLogsFiltr_selectUsers").classList.remove("cust_input_hasvalue");
                         // inner HTML for filter texts
-                        $('#filter_userTypes_txt').html('All User Types');
-                        $('#filter_userRoles_txt').html('All User Roles');
-                        $('#filter_users_txt').html('All Users');
-                        document.getElementById("filter_userTypes_txt").classList.remove("font-weight-bold");
+                        // $('#filter_userTypes_txt').html('All User Types');
+                        // $('#filter_userRoles_txt').html('All Users Roles');
+                        // $('#filter_users_txt').html('All Users');
+                        // document.getElementById("filter_userTypes_txt").classList.remove("font-weight-bold");
+                        // document.getElementById("filter_userRoles_txt").classList.remove("font-weight-bold");
+                        // document.getElementById("filter_users_txt").classList.remove("font-weight-bold");
                     }
-                }else{
+                    loadActLogsTable();
+                });
+            // user type filter end
+
+            // user role filter
+                $('#actLogsFiltr_selectUserRoles').on('change paste keyup', function(){
+                    var selectedUserRole = $(this).val();
+                    // table paginatin set to 1
+                    $('#hidden_page').val(1);
+                    if(selectedUserRole != 0){
+                        document.getElementById("actLogsFiltr_selectUserRoles").classList.add("cust_input_hasvalue");
+                        all_roles = 'all_roles';
+                        all_users = 'all_users';
+                        emp_type = 'employee';
+                        stud_type = 'student';
+                        // value for System Users Filter based on selected Role
+                        $('#actLogsFiltr_selectUsers option[data-user-role="' + selectedUserRole + '"]').show();
+                        $('#actLogsFiltr_selectUsers option[data-user-role!="' + selectedUserRole + '"]').hide();
+                        $('#actLogsFiltr_selectUsers option[data-default-users="' + all_users + '"]').html('All ' + capitalizeFirstLetter(selectedUserRole)+'s');
+                        $('#actLogsFiltr_selectUsers').val(0);
+                        // inner HTML for filter texts
+                        // $('#filter_userRoles_txt').html(capitalizeFirstLetter(selectedUserRole) + ' Role');
+                        // $('#filter_users_txt').html('All ' + capitalizeFirstLetter(selectedUserRole)+'s');
+                        // document.getElementById("filter_userRoles_txt").classList.add("font-weight-bold");
+                    }else{
+                        // check selected user type first 
+                        var sel_user_type = document.getElementById("actLogsFiltr_selectUserTypes");
+                        emp_type = 'employee';
+                        stud_type = 'student';
+                        all_roles = 'all_roles';
+                        all_users = 'all_users';
+                        // console.log(sel_user_type.value);
+                        if(sel_user_type.value === 'employee'){
+                            // value for System Roles Filter based on selected user type
+                            $('#actLogsFiltr_selectUserRoles option[data-role-type="' + stud_type + '"]').hide();
+                            $('#actLogsFiltr_selectUserRoles option[data-role-type="' + emp_type + '"]').show();
+                            $('#actLogsFiltr_selectUserRoles option[data-default-roles="' + all_roles + '"]').html('All Employee Type Roles');
+                            $('#actLogsFiltr_selectUserRoles').val(0);
+                            // value for System Users Filter based on selected user type
+                            $('#actLogsFiltr_selectUsers option[data-user-type="' + stud_type + '"]').hide();
+                            $('#actLogsFiltr_selectUsers option[data-user-type="' + emp_type + '"]').show();
+                            $('#actLogsFiltr_selectUsers option[data-default-users="' + all_users + '"]').html('All Employee Type Users');
+                            $('#actLogsFiltr_selectUsers').val(0);
+                            // inner HTML for filter texts
+                            // $('#filter_userRoles_txt').html('All Employee Type Roles');
+                            // $('#filter_users_txt').html('All Employee Type Users');
+                            // document.getElementById("filter_userRoles_txt").classList.add("font-weight-bold");
+                        }else if(sel_user_type.value === 'student'){
+                            // value for System Roles Filter based on selected user type
+                            $('#actLogsFiltr_selectUserRoles option[data-role-type="' + emp_type + '"]').hide();
+                            $('#actLogsFiltr_selectUserRoles option[data-role-type="' + stud_type + '"]').show();
+                            $('#actLogsFiltr_selectUserRoles option[data-default-roles="' + all_roles + '"]').html('All Student Type Roles');
+                            $('#actLogsFiltr_selectUserRoles').val(0);
+                            // value for System Users Filter based on selected user type
+                            $('#actLogsFiltr_selectUsers option[data-user-type="' + stud_type + '"]').show();
+                            $('#actLogsFiltr_selectUsers option[data-user-type="' + emp_type + '"]').hide();
+                            $('#actLogsFiltr_selectUsers option[data-default-users="' + all_users + '"]').html('All Student Type Users');
+                            $('#actLogsFiltr_selectUsers').val(0);
+                            // inner HTML for filter texts
+                            // $('#filter_userRoles_txt').html('All Student Type Roles');
+                            // $('#filter_users_txt').html('All Student Type Users');
+                            // document.getElementById("filter_userRoles_txt").classList.add("font-weight-bold");
+                        }else{
+                            // value for System Roles Filter based on selected user type
+                            $('#actLogsFiltr_selectUserRoles option[data-role-type="' + stud_type + '"]').show();
+                            $('#actLogsFiltr_selectUserRoles option[data-role-type="' + emp_type + '"]').show();
+                            $('#actLogsFiltr_selectUserRoles option[data-default-roles="' + all_roles + '"]').html('All Roles');
+                            $('#actLogsFiltr_selectUserRoles').val(0);
+                            // value for System Users Filter based on selected user type
+                            $('#actLogsFiltr_selectUsers option[data-user-type="' + stud_type + '"]').show();
+                            $('#actLogsFiltr_selectUsers option[data-user-type="' + emp_type + '"]').show();
+                            $('#actLogsFiltr_selectUsers option[data-default-users="' + all_users + '"]').html('All Users');
+                            document.getElementById("actLogsFiltr_selectUsers").classList.remove("cust_input_hasvalue");
+                            $('#actLogsFiltr_selectUsers').val(0);
+                            document.getElementById("actLogsFiltr_selectUserRoles").classList.remove("cust_input_hasvalue");
+                            // inner HTML for filter texts
+                            // $('#filter_userRoles_txt').html('All Users Roles');
+                            // $('#filter_users_txt').html('All Users');
+                            // document.getElementById("filter_userRoles_txt").classList.remove("font-weight-bold");
+                            // document.getElementById("filter_users_txt").classList.remove("font-weight-bold");
+                        }
+                    }
+                    loadActLogsTable();
+                });
+            // user role filter end
+
+            // user filter
+                $('#actLogsFiltr_selectUsers').on('change paste keyup', function(){
+                    var selectedUser = $(this).val();
+                    // table paginatin set to 1
+                    $('#hidden_page').val(1);
+                    if(selectedUser != 0){
+                        document.getElementById("actLogsFiltr_selectUsers").classList.add("cust_input_hasvalue");
+                        // document.getElementById("filter_users_txt").classList.add("font-weight-bold");
+                        var selectedUser_id = document.getElementById('actLogsFiltr_selectUsers').value;
+                        var _token = $('input[name="_token"]').val();
+                        $.ajax({
+                            url:"{{ route('user_management.users_logs_filter_table_user_info') }}",
+                            method:"GET",
+                            data:{selectedUser_id:selectedUser_id, _token:_token},
+                            // dataType:'json',
+                            success:function(data){
+                                // $('#filter_users_txt').html(data);
+                            }
+                        });
+                    }else{
+                        document.getElementById("actLogsFiltr_selectUsers").classList.remove("cust_input_hasvalue");
+                        // document.getElementById("filter_users_txt").classList.remove("font-weight-bold");
+                        // $('#filter_users_txt').html('All Users');
+                    }
+                    loadActLogsTable();
+                });
+            // user filter end
+
+            // act category filter
+                $('#actLogsFiltr_selectCategories').on('change paste keyup', function(){
+                    var selectedCategory = $(this).val();
+                    // table paginatin set to 1
+                    $('#hidden_page').val(1);
+                    if(selectedCategory != 0){
+                        document.getElementById("actLogsFiltr_selectCategories").classList.add("cust_input_hasvalue");
+                        // $('#filter_logCat_txt').html(capitalizeFirstLetter(selectedCategory) + ' histories');
+                        // document.getElementById("filter_logCat_txt").classList.add("font-weight-bold");
+                    }else{
+                        document.getElementById("actLogsFiltr_selectCategories").classList.remove("cust_input_hasvalue");
+                        // $('#filter_logCat_txt').html('All Log History');
+                        // document.getElementById("filter_logCat_txt").classList.remove("font-weight-bold");
+                    }
+                    loadActLogsTable();
+                });
+            // act category filter end
+
+            // filter order by
+                $('#actLogsFiltr_orderBy').on('change paste keyup', function(){
+                    var selectedOrderBy = $(this).val();
+                    if(selectedOrderBy != 0){
+                        $(this).addClass('cust_input_hasvalue');
+                    }else{
+                        $(this).removeClass('cust_input_hasvalue');
+                    }
+                    // table paginatin set to 1
+                    $('#hidden_page').val(1);
+                    loadActLogsTable();
+                });
+            // filter order by end 
+
+            // filter ASC/DESC order
+                $('input[type=radio][name=actLogsFiltr_orderByRange]').change(function() {
+                    // var logs_orderByRange = $(this).val();
+                    // table paginatin set to 1
+                    $('#hidden_page').val(1);
+                    loadActLogsTable();
+                });
+            // filter ASC/DESC order end
+            
+            // reset filter
+                $('#resetActLogsFilter_btn').on('click', function(){
+                    emp_type = 'employee';
+                    stud_type = 'student';
+                    all_roles = 'all_roles';
+                    all_users = 'all_users';
+                    // table paginatin set to 1
+                    $('#hidden_page').val(1);
+                    // User Type
                     document.getElementById("actLogsFiltr_selectUserTypes").classList.remove("cust_input_hasvalue");
-                    // value for System Roles Filter based on selected user type
+                    $('#actLogsFiltr_selectUserTypes').val(0);
+                    // User Role
                     $('#actLogsFiltr_selectUserRoles option[data-role-type="' + stud_type + '"]').show();
                     $('#actLogsFiltr_selectUserRoles option[data-role-type="' + emp_type + '"]').show();
                     $('#actLogsFiltr_selectUserRoles option[data-default-roles="' + all_roles + '"]').html('All Roles');
-                    $('#actLogsFiltr_selectUserRoles').val(0);
                     document.getElementById("actLogsFiltr_selectUserRoles").classList.remove("cust_input_hasvalue");
-                    // value for System Users Filter based on selected user type
+                    $('#actLogsFiltr_selectUserRoles').val(0);
+                    // Users
                     $('#actLogsFiltr_selectUsers option[data-user-type="' + stud_type + '"]').show();
                     $('#actLogsFiltr_selectUsers option[data-user-type="' + emp_type + '"]').show();
                     $('#actLogsFiltr_selectUsers option[data-default-users="' + all_users + '"]').html('All Users');
-                    $('#actLogsFiltr_selectUsers').val(0);
                     document.getElementById("actLogsFiltr_selectUsers").classList.remove("cust_input_hasvalue");
-                    // inner HTML for filter texts
-                    $('#filter_userTypes_txt').html('All User Types');
-                    $('#filter_userRoles_txt').html('All Users Roles');
-                    $('#filter_users_txt').html('All Users');
-                    document.getElementById("filter_userTypes_txt").classList.remove("font-weight-bold");
-                    document.getElementById("filter_userRoles_txt").classList.remove("font-weight-bold");
-                    document.getElementById("filter_users_txt").classList.remove("font-weight-bold");
-                }
-                loadActLogsTable();
-            });
-
-            // user role filter
-            $('#actLogsFiltr_selectUserRoles').on('change paste keyup', function(){
-                var selectedUserRole = $(this).val();
-                // table paginatin set to 1
-                $('#hidden_page').val(1);
-                if(selectedUserRole != 0){
-                    document.getElementById("actLogsFiltr_selectUserRoles").classList.add("cust_input_hasvalue");
-                    all_roles = 'all_roles';
-                    all_users = 'all_users';
-                    emp_type = 'employee';
-                    stud_type = 'student';
-                    // value for System Users Filter based on selected Role
-                    $('#actLogsFiltr_selectUsers option[data-user-role="' + selectedUserRole + '"]').show();
-                    $('#actLogsFiltr_selectUsers option[data-user-role!="' + selectedUserRole + '"]').hide();
-                    $('#actLogsFiltr_selectUsers option[data-default-users="' + all_users + '"]').html('All ' + capitalizeFirstLetter(selectedUserRole)+'s');
                     $('#actLogsFiltr_selectUsers').val(0);
                     // inner HTML for filter texts
-                    $('#filter_userRoles_txt').html(capitalizeFirstLetter(selectedUserRole) + ' Role');
-                    $('#filter_users_txt').html('All ' + capitalizeFirstLetter(selectedUserRole)+'s');
-                    document.getElementById("filter_userRoles_txt").classList.add("font-weight-bold");
-                }else{
-                    // check selected user type first 
-                    var sel_user_type = document.getElementById("actLogsFiltr_selectUserTypes");
-                    emp_type = 'employee';
-                    stud_type = 'student';
-                    all_roles = 'all_roles';
-                    all_users = 'all_users';
-                    // console.log(sel_user_type.value);
-                    if(sel_user_type.value === 'employee'){
-                        // value for System Roles Filter based on selected user type
-                        $('#actLogsFiltr_selectUserRoles option[data-role-type="' + stud_type + '"]').hide();
-                        $('#actLogsFiltr_selectUserRoles option[data-role-type="' + emp_type + '"]').show();
-                        $('#actLogsFiltr_selectUserRoles option[data-default-roles="' + all_roles + '"]').html('All Employee Type Roles');
-                        $('#actLogsFiltr_selectUserRoles').val(0);
-                        // value for System Users Filter based on selected user type
-                        $('#actLogsFiltr_selectUsers option[data-user-type="' + stud_type + '"]').hide();
-                        $('#actLogsFiltr_selectUsers option[data-user-type="' + emp_type + '"]').show();
-                        $('#actLogsFiltr_selectUsers option[data-default-users="' + all_users + '"]').html('All Employee Type Users');
-                        $('#actLogsFiltr_selectUsers').val(0);
-                        // inner HTML for filter texts
-                        $('#filter_userRoles_txt').html('All Employee Type Roles');
-                        $('#filter_users_txt').html('All Employee Type Users');
-                        document.getElementById("filter_userRoles_txt").classList.add("font-weight-bold");
-                    }else if(sel_user_type.value === 'student'){
-                        // value for System Roles Filter based on selected user type
-                        $('#actLogsFiltr_selectUserRoles option[data-role-type="' + emp_type + '"]').hide();
-                        $('#actLogsFiltr_selectUserRoles option[data-role-type="' + stud_type + '"]').show();
-                        $('#actLogsFiltr_selectUserRoles option[data-default-roles="' + all_roles + '"]').html('All Student Type Roles');
-                        $('#actLogsFiltr_selectUserRoles').val(0);
-                        // value for System Users Filter based on selected user type
-                        $('#actLogsFiltr_selectUsers option[data-user-type="' + stud_type + '"]').show();
-                        $('#actLogsFiltr_selectUsers option[data-user-type="' + emp_type + '"]').hide();
-                        $('#actLogsFiltr_selectUsers option[data-default-users="' + all_users + '"]').html('All Student Type Users');
-                        $('#actLogsFiltr_selectUsers').val(0);
-                        // inner HTML for filter texts
-                        $('#filter_userRoles_txt').html('All Student Type Roles');
-                        $('#filter_users_txt').html('All Student Type Users');
-                        document.getElementById("filter_userRoles_txt").classList.add("font-weight-bold");
-                    }else{
-                        // value for System Roles Filter based on selected user type
-                        $('#actLogsFiltr_selectUserRoles option[data-role-type="' + stud_type + '"]').show();
-                        $('#actLogsFiltr_selectUserRoles option[data-role-type="' + emp_type + '"]').show();
-                        $('#actLogsFiltr_selectUserRoles option[data-default-roles="' + all_roles + '"]').html('All Roles');
-                        $('#actLogsFiltr_selectUserRoles').val(0);
-                        // value for System Users Filter based on selected user type
-                        $('#actLogsFiltr_selectUsers option[data-user-type="' + stud_type + '"]').show();
-                        $('#actLogsFiltr_selectUsers option[data-user-type="' + emp_type + '"]').show();
-                        $('#actLogsFiltr_selectUsers option[data-default-users="' + all_users + '"]').html('All Users');
-                        document.getElementById("actLogsFiltr_selectUsers").classList.remove("cust_input_hasvalue");
-                        $('#actLogsFiltr_selectUsers').val(0);
-                        document.getElementById("actLogsFiltr_selectUserRoles").classList.remove("cust_input_hasvalue");
-                        // inner HTML for filter texts
-                        $('#filter_userRoles_txt').html('All Users Roles');
-                        $('#filter_users_txt').html('All Users');
-                        document.getElementById("filter_userRoles_txt").classList.remove("font-weight-bold");
-                        document.getElementById("filter_users_txt").classList.remove("font-weight-bold");
-                    }
-                }
-                loadActLogsTable();
-            });
-
-            // user filter
-            $('#actLogsFiltr_selectUsers').on('change paste keyup', function(){
-                var selectedUser = $(this).val();
-                // table paginatin set to 1
-                $('#hidden_page').val(1);
-                if(selectedUser != 0){
-                    document.getElementById("actLogsFiltr_selectUsers").classList.add("cust_input_hasvalue");
-                    document.getElementById("filter_users_txt").classList.add("font-weight-bold");
-                    var selectedUser_id = document.getElementById('actLogsFiltr_selectUsers').value;
-                    var _token = $('input[name="_token"]').val();
-                    $.ajax({
-                        url:"{{ route('user_management.users_logs_filter_table_user_info') }}",
-                        method:"GET",
-                        data:{selectedUser_id:selectedUser_id, _token:_token},
-                        // dataType:'json',
-                        success:function(data){
-                            $('#filter_users_txt').html(data);
-                        }
-                    });
-                }else{
-                    document.getElementById("actLogsFiltr_selectUsers").classList.remove("cust_input_hasvalue");
-                    document.getElementById("filter_users_txt").classList.remove("font-weight-bold");
-                    $('#filter_users_txt').html('All Users');
-                }
-                loadActLogsTable();
-            });
-
-            // act category filter
-            $('#actLogsFiltr_selectCategories').on('change paste keyup', function(){
-                var selectedCategory = $(this).val();
-                // table paginatin set to 1
-                $('#hidden_page').val(1);
-                if(selectedCategory != 0){
-                    document.getElementById("actLogsFiltr_selectCategories").classList.add("cust_input_hasvalue");
-                    $('#filter_logCat_txt').html(capitalizeFirstLetter(selectedCategory) + ' histories');
-                    document.getElementById("filter_logCat_txt").classList.add("font-weight-bold");
-                }else{
+                    // $('#filter_userTypes_txt').html('All User Types');
+                    // $('#filter_userRoles_txt').html('All User Roles');
+                    // $('#filter_users_txt').html('All Users');
+                    // document.getElementById("filter_userTypes_txt").classList.remove("font-weight-bold");
+                    // document.getElementById("filter_userRoles_txt").classList.remove("font-weight-bold");
+                    // document.getElementById("filter_users_txt").classList.remove("font-weight-bold");
+                    // categories
                     document.getElementById("actLogsFiltr_selectCategories").classList.remove("cust_input_hasvalue");
-                    $('#filter_logCat_txt').html('All Log History');
-                    document.getElementById("filter_logCat_txt").classList.remove("font-weight-bold");
-                }
-                loadActLogsTable();
-            });
-
-            // reset filter
-            $('#resetActLogsFilter_btn').on('click', function(){
-                emp_type = 'employee';
-                stud_type = 'student';
-                all_roles = 'all_roles';
-                all_users = 'all_users';
-                // table paginatin set to 1
-                $('#hidden_page').val(1);
-                // User Type
-                document.getElementById("actLogsFiltr_selectUserTypes").classList.remove("cust_input_hasvalue");
-                $('#actLogsFiltr_selectUserTypes').val(0);
-                // User Role
-                $('#actLogsFiltr_selectUserRoles option[data-role-type="' + stud_type + '"]').show();
-                $('#actLogsFiltr_selectUserRoles option[data-role-type="' + emp_type + '"]').show();
-                $('#actLogsFiltr_selectUserRoles option[data-default-roles="' + all_roles + '"]').html('All Roles');
-                document.getElementById("actLogsFiltr_selectUserRoles").classList.remove("cust_input_hasvalue");
-                $('#actLogsFiltr_selectUserRoles').val(0);
-                // Users
-                $('#actLogsFiltr_selectUsers option[data-user-type="' + stud_type + '"]').show();
-                $('#actLogsFiltr_selectUsers option[data-user-type="' + emp_type + '"]').show();
-                $('#actLogsFiltr_selectUsers option[data-default-users="' + all_users + '"]').html('All Users');
-                document.getElementById("actLogsFiltr_selectUsers").classList.remove("cust_input_hasvalue");
-                $('#actLogsFiltr_selectUsers').val(0);
-                // inner HTML for filter texts
-                $('#filter_userTypes_txt').html('All User Types');
-                $('#filter_userRoles_txt').html('All User Roles');
-                $('#filter_users_txt').html('All Users');
-                document.getElementById("filter_userTypes_txt").classList.remove("font-weight-bold");
-                document.getElementById("filter_userRoles_txt").classList.remove("font-weight-bold");
-                document.getElementById("filter_users_txt").classList.remove("font-weight-bold");
-                // categories
-                document.getElementById("actLogsFiltr_selectCategories").classList.remove("cust_input_hasvalue");
-                $('#actLogsFiltr_selectCategories').val(0);
-                $('#filter_logCat_txt').html('All Log History');
-                document.getElementById("filter_logCat_txt").classList.remove("font-weight-bold");
-                // for hidden data range inputs
-                document.getElementById("hidden_dateRangeFrom").value = '';
-                document.getElementById("hidden_dateRangeTo").value = '';
-                // for date range display
-                document.getElementById("actLogsFiltr_datepickerRange").classList.remove("cust_input_hasvalue");
-                document.getElementById("actLogsFiltr_datepickerRange").value = '';
-                // inner HTML for filter texts
-                $('#filter_date_txt').html('From Previous Days up to this day');
-                document.getElementById("filter_date_txt").classList.remove("font-weight-bold");
-                $(this).prop('disabled', true);
-                loadActLogsTable();
-            });
+                    $('#actLogsFiltr_selectCategories').val(0);
+                    // $('#filter_logCat_txt').html('All Log History');
+                    // document.getElementById("filter_logCat_txt").classList.remove("font-weight-bold");
+                    // for hidden data range inputs
+                    document.getElementById("hidden_dateRangeFrom").value = '';
+                    document.getElementById("hidden_dateRangeTo").value = '';
+                    // for date range display
+                    document.getElementById("actLogsFiltr_datepickerRange").classList.remove("cust_input_hasvalue");
+                    document.getElementById("actLogsFiltr_datepickerRange").value = '';
+                    // inner HTML for filter texts
+                    // $('#filter_date_txt').html('From Previous Days up to this day');
+                    // document.getElementById("filter_date_txt").classList.remove("font-weight-bold");
+                    // order by
+                    document.getElementById("actLogsFiltr_orderBy").classList.remove("cust_input_hasvalue");
+                    $('#actLogsFiltr_orderBy').val(0);
+                    
+                    $(this).prop('disabled', true);
+                    loadActLogsTable();
+                });
+            // reset filter end
         });
     </script>
 {{-- Activity Logs Filter end --}}
@@ -686,22 +776,28 @@
             var logs_rangefrom = document.getElementById("hidden_dateRangeFrom").value;
             var logs_rangeTo = document.getElementById("hidden_dateRangeTo").value;
             var logs_totalData = document.getElementById("hidden_totalDataFound").value;
+            var logs_orderBy = document.getElementById("actLogsFiltr_orderBy").value;
+            var logs_orderByRange = document.querySelector('input[type=radio][name=actLogsFiltr_orderByRange]:checked').value;  
             var _token = $('input[name="_token"]').val();
 
             // inner texts
-            var txt_logs_userTypes = document.getElementById("filter_userTypes_txt").innerText;
-            var txt_logs_userRoles = document.getElementById("filter_userRoles_txt").innerText;
-            var txt_logs_users = document.getElementById("filter_users_txt").innerText;
-            var txt_logs_category = document.getElementById("filter_logCat_txt").innerText;
+            // var txt_logs_userTypes = document.getElementById("filter_userTypes_txt").innerText;
+            // var txt_logs_userRoles = document.getElementById("filter_userRoles_txt").innerText;
+            // var txt_logs_users = document.getElementById("filter_users_txt").innerText;
+            // var txt_logs_category = document.getElementById("filter_logCat_txt").innerText;
 
-            console.log(logs_search);
-            console.log(logs_userTypes);
-            console.log(logs_userRoles);
-            console.log(logs_users);
-            console.log(logs_category);
-            console.log(logs_rangefrom);
-            console.log(logs_rangeTo);
-            console.log(logs_totalData);
+            console.log('_________________________________');
+            console.log('_________REPORT__________________');
+            console.log('Live Search: ' + logs_search);
+            console.log('User Types : ' + logs_userTypes);
+            console.log('User Roles: ' + logs_userRoles);
+            console.log('User: ' + logs_users);
+            console.log('Logs Category: ' + logs_category);
+            console.log('Date Range From: ' + logs_rangefrom);
+            console.log('Date Range to: ' + logs_rangeTo);
+            console.log('Order by category: ' + logs_orderBy);
+            console.log('list Order: ' + logs_orderByRange);
+            console.log('total Data: ' + logs_totalData);
 
             $.ajax({
                 url:"{{ route('user_management.generate_act_logs_confirmation_modal') }}",
@@ -715,10 +811,12 @@
                     logs_rangefrom:logs_rangefrom,
                     logs_rangeTo:logs_rangeTo,
                     logs_totalData:logs_totalData,
-                    txt_logs_userTypes:txt_logs_userTypes, 
-                    txt_logs_userRoles:txt_logs_userRoles,
-                    txt_logs_users:txt_logs_users,
-                    txt_logs_category:txt_logs_category,
+                    logs_orderBy:logs_orderBy,
+                    logs_orderByRange:logs_orderByRange,
+                    // txt_logs_userTypes:txt_logs_userTypes, 
+                    // txt_logs_userRoles:txt_logs_userRoles,
+                    // txt_logs_users:txt_logs_users,
+                    // txt_logs_category:txt_logs_category,
                     _token:_token
                     },
                 success: function(data){
@@ -727,6 +825,20 @@
                 }
             });
         }
+    </script>
+    <script>
+        $('#generateActLogsConfirmationModal').on('show.bs.modal', function () {
+            var form_confirmGenerateUsersLogsReport  = document.querySelector("#form_confirmGenerateUsersLogsReport");
+            var cancel_GenerateActLogsReport_btn = document.querySelector("#cancel_GenerateActLogsReport_btn");
+            var process_GenerateActLogsReport_btn = document.querySelector("#process_GenerateActLogsReport_btn");
+            // disable cancel and sibmit button on submit
+            $(form_confirmGenerateUsersLogsReport).submit(function(){
+                process_GenerateActLogsReport_btn.disabled = true;
+                cancel_GenerateActLogsReport_btn.disabled = true;
+                $('#generateActLogsConfirmationModal').modal('hide');
+                return true;
+            });
+        });
     </script>
 {{-- generate activity logs for print --}}
 @endpush
