@@ -70,6 +70,7 @@
                 border-left: 0 !important;
             }
 
+            /* custom paddings */
             .p_0{
                 padding: 0 !important;
             }

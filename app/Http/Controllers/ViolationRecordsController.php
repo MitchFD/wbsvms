@@ -326,8 +326,8 @@ class ViolationRecordsController extends Controller
             $check_exist = Students::where('Student_Number', $violator_id)->count();
             if($check_exist > 0){
                 // get violator's info from students_tbl and violations_tbl
-                $violator_info = Students::where('Student_Number', $violator_id)->first();
-                $offenses_count = Violations::where('stud_num', $violator_id)->count();
+                $violator_info = Students::where('Student_Number', '=', $violator_id)->first();
+                $offenses_count = Violations::where('stud_num', '=', $violator_id)->count();
                 return view('violation_records.violator')->with(compact('violator_info', 'offenses_count', 'violator_id'));
             }else{
                 return view('violation_records.unknown_violator')->with(compact('violator_id'));

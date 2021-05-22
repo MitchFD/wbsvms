@@ -804,32 +804,36 @@
                                                     // date range placeholder 
                                                     if(!is_null($user_first_record) OR !empty($user_first_record) OR $user_first_record != 0 AND !is_null($user_latest_record) OR !empty($user_latest_record) OR $user_latest_record != 0){
                                                         $dateRange_placeholder = ''.$user_first_record_date . ' to ' . $user_latest_record_date.'';
-                                                        $readOnly_class = 'readOnlyClass';
+                                                        $readOnly_class  = 'readOnlyClass';
+                                                        $disable_BtnAttr = '';
                                                     }else{
                                                         $dateRange_placeholder = 'No Records Found...';
-                                                        $readOnly_class = '';
+                                                        $readOnly_class  = '';
+                                                        $disable_BtnAttr = 'disabled';
                                                     }
                                                     // categori input placeholder
                                                     if(count($user_trans_categories) > 0){
                                                         $categories_placeholder = 'All Categories';
-                                                        $readOnly_attr = '';
+                                                        $readOnly_attr    = '';
+                                                        $disable_BtnAttr1 = '';
                                                     }else{
                                                         $categories_placeholder = 'No Records Found...';
                                                         $readOnly_attr = 'readonly';
+                                                        $disable_BtnAttr1 = 'disabled';
                                                     }
                                                 @endphp
                                                 <div class="col-lg-8 col-md-9 col-sm-12">
                                                     <div class="cust_inputDiv_wIcon">
-                                                        <input id="userActLogsFiltr_datepickerRange" name="userActLogsFiltr_datepickerRange" type="text" class="form-control cust_inputv1 {{ $readOnly_class }}" placeholder="{{ $dateRange_placeholder }}" readonly />
+                                                        <input id="userActLogsFiltr_datepickerRange" name="userActLogsFiltr_datepickerRange" type="text" class="form-control cust_inputv1 {{ $readOnly_class }}" placeholder="{{ $dateRange_placeholder }}" readonly {{ $disable_BtnAttr }}/>
                                                         <i class="fa fa-calendar" aria-hidden="true"></i>
                                                     </div>
                                                     <input type="hidden" name="userActLogs_hidden_dateRangeFrom" id="userActLogs_hidden_dateRangeFrom">
                                                     <input type="hidden" name="userActLogs_hidden_dateRangeTo" id="userActLogs_hidden_dateRangeTo">
-                                                    <input type="hidden" name="uac_hiddenTotalData_found" id="uac_hiddenTotalData_found">
+                                                    <input type="hidden" name="ual_hiddenTotalDataFound" id="ual_hiddenTotalDataFound">
                                                 </div>
                                                 <div class="col-lg-4 col-md-3 col-sm-12">
                                                     <div class="form-group cust_inputDiv_wIconv1 mb-1">
-                                                        <select id="userActLogsFiltr_categories" class="form-control cust_selectDropdownBox1 drpdwn_arrow" {{ $readOnly_attr }}>
+                                                        <select id="userActLogsFiltr_categories" class="form-control cust_selectDropdownBox1 drpdwn_arrow" {{ $readOnly_attr }} {{ $disable_BtnAttr1 }}>
                                                             <option value="0" selected>{{$categories_placeholder}}</option>
                                                             @if(count($user_trans_categories) > 0)
                                                                 @foreach ($user_trans_categories as $this_category)
@@ -988,6 +992,23 @@
             </div>
         </div>
     {{-- add New System Role modal end --}}
+    {{-- generate user's logs report confirmation modal --}}
+        <div class="modal fade" id="generateUserActLogsConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="generateUserActLogsConfirmationModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="generateUserActLogsConfirmationModalLabel">Generate User's Logs Report?</span>
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="generateUserActLogsConfirmationModalHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{-- generate user's logs report confirmation modal end --}}
 
 @endsection
 
@@ -1481,12 +1502,13 @@
 {{-- disable / enable submit button on required inputs --}}
 
 {{-- USER'S ACTIVITY LOGS --}}
+    {{-- load user's logs table --}}
     <script>
         $(document).ready(function(){
             load_userActLogs_table();
 
             // function for ajax table pagination
-            $(window).on('hashchange', function() {
+                $(window).on('hashchange', function() {
                     if (window.location.hash) {
                         var page = window.location.hash.replace('#', '');
                         if (page == Number.NaN || page <= 0) {
@@ -1549,12 +1571,12 @@
                         $('#ual_tableTbody').html(ual_data.ual_table);
                         $('#ual_tablePagination').html(ual_data.ual_table_paginate);
                         $('#ual_tableTotalData_count').html(ual_data.ual_total_rows);
-                        $('#uac_hiddenTotalData_found').val(ual_data.ual_total_data_found);
+                        $('#ual_hiddenTotalDataFound').val(ual_data.ual_total_data_found);
                         $('.total_rec_found').html(ual_data.ual_total_rec_found);
 
                         // for disabling/ enabling generate report button
-                        var val_hiddenTotalData_found = document.getElementById("uac_hiddenTotalData_found").value;
-                        if(val_hiddenTotalData_found > 0){
+                        var ual_hiddenTotalData_found = document.getElementById("ual_hiddenTotalDataFound").value;
+                        if(ual_hiddenTotalData_found > 0){
                             $('#generateActLogs_btn').prop('disabled', false);
                         }else{
                             $('#generateActLogs_btn').prop('disabled', true);
@@ -1569,6 +1591,9 @@
                     $('#resetUserActLogsFilter_btn').prop('disabled', true);
                 }
             }
+            $(document).ready(function(){
+                setInterval(load_userActLogs_table,30000);
+            });
 
             // daterange picker
                 var ualMinDate = document.getElementById("ual_dateRangePicker_minDate").value;
@@ -1656,6 +1681,9 @@
             var ual_rangefrom = document.getElementById("userActLogs_hidden_dateRangeFrom").value;
             var ual_rangeTo = document.getElementById("userActLogs_hidden_dateRangeTo").value;
             var ual_category = document.getElementById("userActLogsFiltr_categories").value;
+            var ual_hiddenTotalData_found = document.getElementById("ual_hiddenTotalDataFound").value;
+            var _token = $('input[name="_token"]').val();
+
             // custom values
             if(ual_rangefrom != ""){
                 ual_rangefrom = ual_rangefrom;
@@ -1667,11 +1695,43 @@
             }else{
                 ual_rangeTo = 0;
             }
+
+            $.ajax({
+                url:"{{ route('user_management.generate_sel_user_act_logs_confirmation_modal') }}",
+                method:"GET",
+                data:{
+                    ual_user_id:ual_user_id, 
+                    ual_rangefrom:ual_rangefrom, 
+                    ual_rangeTo:ual_rangeTo, 
+                    ual_category:ual_category,
+                    ual_hiddenTotalData_found:ual_hiddenTotalData_found,
+                    _token:_token
+                    },
+                success: function(data){
+                    $('#generateUserActLogsConfirmationModalHtmlData').html(data); 
+                    $('#generateUserActLogsConfirmationModal').modal('show');
+                }
+            });
+
             // url redirect
-            var url = "{{ url('user_management/user_act_logs/pdf_user_logs', 'parameters') }}";
-            url = url.replace('parameters', ual_user_id+'/'+ual_rangefrom+'/'+ual_rangeTo+'/'+ual_category);
-            window.open(url, "_blank");
+            // var url = "{{ url('user_management/user_act_logs/pdf_user_logs', 'parameters') }}";
+            // url = url.replace('parameters', ual_user_id+'/'+ual_rangefrom+'/'+ual_rangeTo+'/'+ual_category);
+            // window.open(url, "_blank");
         }
+    </script>
+    <script>
+        $('#generateUserActLogsConfirmationModal').on('show.bs.modal', function () {
+            var form_confirmGenerateSelectedUserLogsReport  = document.querySelector("#form_confirmGenerateSelectedUserLogsReport");
+            var cancel_GenerateSelectedUserLogsReport_btn = document.querySelector("#cancel_GenerateSelectedUserLogsReport_btn");
+            var process_GenerateSelectedUserLogsReport_btn = document.querySelector("#process_GenerateSelectedUserLogsReport_btn");
+            // disable cancel and sibmit button on submit
+            $(form_confirmGenerateSelectedUserLogsReport).submit(function(){
+                process_GenerateSelectedUserLogsReport_btn.disabled = true;
+                cancel_GenerateSelectedUserLogsReport_btn.disabled = true;
+                $('#generateUserActLogsConfirmationModal').modal('hide');
+                return true;
+            });
+        });
     </script>
 {{-- USER'S ACTIVITY LOGS end --}}
 

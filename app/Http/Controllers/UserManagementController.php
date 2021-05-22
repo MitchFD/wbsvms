@@ -203,7 +203,7 @@ class UserManagementController extends Controller
                     $output .= '
                     <tr>
                         <td class="p12">
-                            <span class="actLogs_contentv1 font-weight-bold">'. date('F d, Y', strtotime($users_logs->created_at)) . ' <span class="sub2 font-weight-normal">' . date('(D - g:i A)', strtotime($users_logs->created_at)). '</span></span>
+                            <span class="actLogs_contentv1 font-weight-bold">'. date('F d, Y', strtotime($users_logs->created_at)) . ' <span class="font-weight-normal">' . date('(D - g:i A)', strtotime($users_logs->created_at)). '</span></span>
                         </td>
                         <td><span class="actLogs_contentv1">'.ucwords($users_logs->act_type) . '</span></td>
                         <td><span class="actLogs_contentv1">~ ' . $users_logs->act_details . '</span></td>
@@ -4089,5 +4089,152 @@ class UserManagementController extends Controller
         $pdf->setPaper('A4');
         $pdf->getDomPDF()->set_option("enable_php", true);
         return $pdf->stream('reports/users_act_logs.pdf');
-    } 
+    }
+    
+    // generate selected user's activity logs confirmation modal
+    public function generate_sel_user_act_logs_confirmation_modal(Request $request){
+        // get all request
+        $ual_user_id               = $request->get('ual_user_id');
+        $ual_rangefrom             = $request->get('ual_rangefrom');
+        $ual_rangeTo               = $request->get('ual_rangeTo');
+        $ual_category              = $request->get('ual_category');
+        $ual_hiddenTotalData_found = $request->get('ual_hiddenTotalData_found');
+
+        // try
+        // echo 'Selected user id: ' . $ual_user_id . ' <br>';
+        // echo 'Date Range From: ' . $ual_rangefrom . ' <br>';
+        // echo 'Date Range To: ' . $ual_rangeTo . ' <br>';
+        // echo 'Category: ' . $ual_category . ' <br>';
+
+        // check if ual_user_id exists in users table
+        $checkExist_ual_user_id = Users::where('id', '=', $ual_user_id)->count();
+        if($checkExist_ual_user_id > 0){
+            $query_selUserInfo = Users::select('id', 'user_lname', 'user_fname')->where('id', '=', $ual_user_id)->first();
+            $sel_userFname     = $query_selUserInfo->user_fname;
+            $sel_userLname     = $query_selUserInfo->user_lname;
+            $fil_selectedUser  = ''.$sel_userFname . ' ' . $sel_userLname.'';
+        }else{
+            $fil_selectedUser  = 'No Selected User';
+        }
+
+        // category
+        if($ual_category != 0 OR !empty($ual_category)){
+            $txt_filteredCategory = '<span class="font-weight-bold">'.ucwords($ual_category).' Histories </span>';
+        }else{
+            $queryAll_logCategories = Useractivites::select('act_type')->where('act_respo_user_id', $ual_user_id)->groupBy('act_type')->get();
+            if(count($queryAll_logCategories) > 0){
+                $this_categoryArray = array();
+                $count_displayCategory = count($queryAll_logCategories);
+                $i = 0;
+                foreach($queryAll_logCategories as $this_category){
+                    $this_categoryArray[] = ucwords($this_category->act_type);
+                    $i++;
+                }
+                if($i === $count_displayCategory) {
+                    $addTxt = 'Histories.';
+                }
+                $append_logCategories = '('.implode(', ', $this_categoryArray) . ' ' . $addTxt.')';
+            }else{
+                $append_logCategories = '';
+            }
+            $txt_filteredCategory = ' <span class="font-weight-bold"> All Log Categories </span> ' . $append_logCategories.'.';
+        }
+        // date range
+        if(!empty($ual_rangefrom) OR $ual_rangefrom != 0){
+            $fil_fromDate = date('F d, Y, D, g:i A ', strtotime($ual_rangefrom));
+            $fil_fromDateClass = 'font-weight-bold';
+        }else{
+            $fil_fromDate = ' previous days up';
+            $fil_fromDateClass = 'font-weight-normal';
+        }
+        if(!empty($ual_rangeTo) OR $ual_rangeTo != 0){
+            $fil_toDate = date('F d, Y, D, g:i A', strtotime($ual_rangeTo)).'.';
+            $fil_toDateClass = 'font-weight-bold';
+        }else{
+            $fil_toDate = ' this day.';
+            $fil_toDateClass = 'font-weight-normal';
+        }
+        // total data found
+        if($ual_hiddenTotalData_found > 1){
+            $TDF_s = 's';
+        }else{
+            $TDF_s = '';
+        }
+        if($ual_hiddenTotalData_found > 0){
+            $results_found = $ual_hiddenTotalData_found . ' Result'.$TDF_s.' Found.';
+        }else{
+            $results_found = 'No Records Found!';
+        }
+
+        $output = '';
+        $output .='
+            <div class="modal-body border-0 py-0">
+                <div class="card-body lightBlue_cardBody shadow-none">
+                    <span class="lightBlue_cardBody_blueTitle">Repoort Contents:</span>
+                    <span class="lightBlue_cardBody_notice">The system will generate a report based on the filters you have applied as shown below.</span>
+                </div>
+                <div class="card-body lightBlue_cardBody shadow-none mt-2">
+                    <span class="lightBlue_cardBody_blueTitle">Applied Filters:</span>
+                    <span class="lightBlue_cardBody_notice"><i class="fa fa-check-square-o text-success mr-1" aria-hidden="true"></i> Selected User: <span class="font-weight-bold"> ' . $fil_selectedUser . ' </span></span>
+                    <span class="lightBlue_cardBody_notice"><i class="fa fa-check-square-o text-success mr-1" aria-hidden="true"></i> Log Category: ' . $txt_filteredCategory . ' </span>
+                    <span class="lightBlue_cardBody_blueTitle mt-3">Date Range:</span>
+                    <span class="lightBlue_cardBody_notice"><i class="fa fa-calendar-check-o text-success mr-1" aria-hidden="true"></i> From <span class="'.$fil_fromDateClass.'"> '.$fil_fromDate . ' </span> to <span class="'.$fil_toDateClass.'">  ' . $fil_toDate.' </span></span>
+                </div>
+                <div class="card-body lightBlue_cardBody shadow-none mt-2">
+                    <span class="lightBlue_cardBody_blueTitle">Total Data:</span>
+                    <span class="lightBlue_cardBody_notice"><i class="fa fa-list-ul text-success mr-1" aria-hidden="true"></i> ' . $results_found . '</span>
+                </div>
+            </div>
+            <form id="form_confirmGenerateSelectedUserLogsReport" target="_blank" action="'.route('user_management.selected_user_logs_report_pdf').'" method="POST" enctype="multipart/form-data">
+                <div class="modal-footer border-0">
+                    <input type="hidden" name="_token" value="'.csrf_token().'">
+                    <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
+                    <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
+                    <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
+
+                    <input type="hidden" name="ual_user_id" value="'.$ual_user_id.'">
+                    <input type="hidden" name="ual_rangefrom" value="'.$ual_rangefrom.'">
+                    <input type="hidden" name="ual_rangeTo" value="'.$ual_rangeTo.'">
+                    <input type="hidden" name="ual_category" value="'.$ual_category.'">
+                    <div class="btn-group" role="group" aria-label="Basic example">
+                        <button id="cancel_GenerateSelectedUserLogsReport_btn" type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                        <button id="process_GenerateSelectedUserLogsReport_btn" type="submit" class="btn btn-round btn-success btn_show_icon m-0">Generate Report <i class="nc-icon nc-single-copy-04 btn_icon_show_right" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+            </form>
+        ';
+        echo $output;
+    }
+    // process PDF export of selected user's Activity Logs
+    public function selected_user_logs_report_pdf(Request $request){
+        // now timestamp
+        $now_timestamp      = now();
+
+        // get all request
+        $ual_user_id      = $request->get('ual_user_id');
+        $ual_rangefrom    = $request->get('ual_rangefrom');
+        $ual_rangeTo      = $request->get('ual_rangeTo');
+        $ual_category     = $request->get('ual_category');
+
+        $respo_user_id    = $request->get('respo_user_id');
+        $respo_user_lname = $request->get('respo_user_lname');
+        $respo_user_fname = $request->get('respo_user_fname'); 
+
+        // query responsible user's info
+        $query_respo_user = Users::select('user_role','user_lname', 'user_fname')->where('id', '=', $respo_user_id)->first();
+
+        // query selected user's info from users table
+        $query_selected_user = Users::select('user_role', 'user_type', 'user_sdca_id', 'user_lname', 'user_fname', 'user_gender')->where('id', '=', $ual_user_id)->first();
+
+        // query all selected user's logs from user_activity_tbl
+        $queryAll_activityLogs = Useractivites::where('act_respo_user_id', '=', $ual_user_id)->get();
+
+        // Generate PDF
+        $pdf = \App::make('dompdf.wrapper');
+        // $pdf->loadHTML($output);
+        $pdf = PDF::loadView('reports/user_logs_report', compact('now_timestamp', 'query_respo_user', 'query_selected_user', 'queryAll_activityLogs'));
+        $pdf->setPaper('A4');
+        $pdf->getDomPDF()->set_option("enable_php", true);
+        return $pdf->stream('reports/user_logs_report.pdf');
+    }
 }
