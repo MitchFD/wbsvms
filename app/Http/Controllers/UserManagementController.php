@@ -4185,7 +4185,7 @@ class UserManagementController extends Controller
                     <span class="lightBlue_cardBody_notice"><i class="fa fa-list-ul text-success mr-1" aria-hidden="true"></i> ' . $results_found . '</span>
                 </div>
             </div>
-            <form id="form_confirmGenerateSelectedUserLogsReport" target="_blank" action="'.route('user_management.selected_user_logs_report_pdf').'" method="POST" enctype="multipart/form-data">
+            <form id="form_confirmGenerateSelectedUserLogsReport" target="_blank" action="'.route('user_management.system_user_logs_report_pdf').'" method="POST" enctype="multipart/form-data">
                 <div class="modal-footer border-0">
                     <input type="hidden" name="_token" value="'.csrf_token().'">
                     <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
@@ -4206,7 +4206,7 @@ class UserManagementController extends Controller
         echo $output;
     }
     // process PDF export of selected user's Activity Logs
-    public function selected_user_logs_report_pdf(Request $request){
+    public function system_user_logs_report_pdf(Request $request){
         // now timestamp
         $now_timestamp      = now();
 
@@ -4224,15 +4224,103 @@ class UserManagementController extends Controller
         $query_respo_user = Users::select('user_role','user_lname', 'user_fname')->where('id', '=', $respo_user_id)->first();
 
         // query selected user's info from users table
-        $query_selected_user = Users::select('user_role', 'user_type', 'user_sdca_id', 'user_lname', 'user_fname', 'user_gender')->where('id', '=', $ual_user_id)->first();
+        $query_selected_user = Users::select('user_role', 'user_status', 'user_role_status', 'user_type', 'user_sdca_id', 'user_lname', 'user_fname', 'user_gender')->where('id', '=', $ual_user_id)->first();
 
         // query all selected user's logs from user_activity_tbl
-        $queryAll_activityLogs = Useractivites::where('act_respo_user_id', '=', $ual_user_id)->get();
+        // to lower user type
+        $toLower_ualCategory = Str::lower($ual_category);
+        $queryAll_activityLogs = Useractivites::where('act_respo_user_id', '=', $ual_user_id)
+                                    ->where(function($query) use ($ual_rangefrom, $ual_rangeTo, $ual_category, $toLower_ualCategory){
+                                        if($ual_category != 0 OR !empty($ual_category)){
+                                            $query->where('act_type', '=', $toLower_ualCategory);
+                                        }
+                                        if($ual_rangefrom != 0 OR !empty($ual_rangefrom) AND $ual_rangeTo != 0 OR !empty($ual_rangeTo)){
+                                            $query->whereBetween('created_at', [$ual_rangefrom, $ual_rangeTo]);
+                                        }
+                                    })
+                                    ->orderBy('created_at', 'DESC')
+                                    ->get();
+        // count total records found
+        $total_detaFound = count($queryAll_activityLogs);
+        // plural
+        if($total_detaFound > 1){
+            $ulTD_s = 's';
+        }else{
+            $ulTD_s = '';
+        }
+
+        // to lower user type
+        $toLower_userType = Str::lower($query_selected_user->user_type);
+
+        // user status
+        if($query_selected_user->user_status === 'active' AND $query_selected_user->user_role_status === 'active'){
+            $txt_userStatus = 'Active';
+        }else{
+            $txt_userStatus = 'Deactivated';
+        }
+
+        // display date range
+        if($ual_rangefrom != 0 AND $ual_rangeTo != 0){
+            // $display_date_range1 = date('F d, Y', strtotime($ual_rangefrom));
+            // $display_date_range2 = date('(D - g:i A)', strtotime($ual_rangefrom));
+            // $display_date_range3 = date('F d, Y', strtotime($ual_rangeTo));
+            // $display_date_range4 = date('(D - g:i A)', strtotime($ual_rangeTo));
+            $txt_dateFromRange = ''.date('F d, Y (D - g:i A)', strtotime($ual_rangefrom));
+            $txt_dateToRange = ''.date('F d, Y (D - g:i A)', strtotime($ual_rangeTo));
+        }else{
+            // get user's first and latest record
+            $user_first_record = Useractivites::where('act_respo_user_id', $ual_user_id)->first();
+            $user_latest_record = Useractivites::where('act_respo_user_id', $ual_user_id)->latest()->first();
+            // $display_date_range1 = date('F d, Y', strtotime($user_first_record->created_at));
+            // $display_date_range2 = date('(D - g:i A)', strtotime($user_first_record->created_at));
+            // $display_date_range3 = date('F d, Y', strtotime($user_latest_record->created_at));
+            // $display_date_range4 = date('(D - g:i A)', strtotime($user_latest_record->created_at));
+            $txt_dateFromRange = ''.date('F d, Y (D - g:i A)', strtotime($user_first_record->created_at));
+            $txt_dateToRange = ''.date('F d, Y (D - g:i A)', strtotime($user_latest_record->created_at));
+        }
+
+        // category
+        if($ual_category != 0 OR !empty($ual_category)){
+            $txt_fwb_logCategory = ''.ucwords($ual_category).'';
+            $txt_filteredCategory = '';
+        }else{
+            $queryAll_logCategories = Useractivites::select('act_type')->where('act_respo_user_id', $ual_user_id)->groupBy('act_type')->get();
+            if(count($queryAll_logCategories) > 0){
+                $this_categoryArray = array();
+                $count_displayCategory = count($queryAll_logCategories);
+                $i = 0;
+                foreach($queryAll_logCategories as $this_category){
+                    $this_categoryArray[] = ucwords($this_category->act_type);
+                    $i++;
+                }
+                if($i === $count_displayCategory) {
+                    $addTxt = 'Histories.';
+                }
+                $append_logCategories = '('.implode(', ', $this_categoryArray) . ' ' . $addTxt.')';
+            }else{
+                $append_logCategories = '';
+            }
+            $txt_fwb_logCategory = ' All Log Categories ';
+            $txt_filteredCategory = '' . $append_logCategories.'.';
+        }
 
         // Generate PDF
         $pdf = \App::make('dompdf.wrapper');
         // $pdf->loadHTML($output);
-        $pdf = PDF::loadView('reports/user_logs_report', compact('now_timestamp', 'query_respo_user', 'query_selected_user', 'queryAll_activityLogs'));
+        $pdf = PDF::loadView('reports/user_logs_report', compact(
+                                        'now_timestamp', 
+                                        'toLower_userType', 
+                                        'txt_userStatus', 
+                                        'query_respo_user', 
+                                        'query_selected_user', 
+                                        'queryAll_activityLogs',
+                                        'total_detaFound',
+                                        'ulTD_s',
+                                        'txt_fwb_logCategory',
+                                        'txt_filteredCategory',
+                                        'txt_dateFromRange',
+                                        'txt_dateToRange'
+                                    ));
         $pdf->setPaper('A4');
         $pdf->getDomPDF()->set_option("enable_php", true);
         return $pdf->stream('reports/user_logs_report.pdf');

@@ -54,7 +54,7 @@
             .font-weight-bold{
                 font-weight: bold !important;
             }
-            .d-block{
+            .d_block{
                 display: block;
             }
 
@@ -151,7 +151,9 @@
             #contentsData_table{
                 border-top-left-radius: 12px !important;
                 border-top-right-radius: 12px !important;
-                overflow: hidden;
+                border-bottom-left-radius: 12px !important;
+                border-bottom-right-radius: 12px !important;
+                overflow: hidden !important;
             }
             #contentsData_table thead tr th{
                 background-color: #2F2E41;
@@ -168,7 +170,7 @@
                 text-align: left;
                 font-size: 12px;
                 line-height: 16px;
-                border-bottom: 1px solid #f2f2f2;
+                border-bottom: 1px solid #f2f2f2 !important;
             }
             #contentsData_table tr:nth-child(even){background-color: #f2f2f2;}
             .row_count{
@@ -285,48 +287,115 @@
                 <table id="contentsInfo_table">
                     <tbody>
                         {{-- display selected user's information --}}
-                        {{-- if user_type == employee --}}
-                        {{-- if user_type == student --}}
                         <tr class="tr_bg_DDD">
                             <td class="">
-                                <span class="font-weight-bold">User's Information: </span>
+                                <span class="font-weight-bold">System User's Information: </span>
                             </td>
                             <td class="">
                                 {{-- empty --}}
                             </td>
                         </tr>
-                        <tr>
-                            <td class="br_1" style="padding-top: 15px !important;">
-                                <span class="font-weight-bold">Employee ID: </span> 
-                            </td>
-                            <td class="br_1" style="padding-top: 15px !important;">
-                                <span class="font-weight-bold">User Type: </span> 
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="br_1">
-                                <span class="font-weight-bold">Job Description: </span> 
-                            </td>
-                            <td class="br_1">
-                                <span class="font-weight-bold">User Role: </span> 
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="br_1">
-                                <span class="font-weight-bold">Department: </span> 
-                            </td>
-                            <td class="br_1">
-                                <span class="font-weight-bold">User Status: </span> 
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="br_1 bb_1" style="padding-bottom: 15px !important;">
-                                <span class="font-weight-bold">Gender: </span> 
-                            </td>
-                            <td class="br_1 bb_1" style="padding-bottom: 15px !important;">
-                                {{-- empty --}}
-                            </td>
-                        </tr>
+                        {{-- if user_type === employee --}}
+                        @if($toLower_userType === 'employee')
+                            @php
+                                $query_EmpInfo = App\Models\Useremployees::where('uEmp_id', '=', $query_selected_user->user_sdca_id)->first();
+                            @endphp
+                            <tr>
+                                <td class="br_1" style="padding-top: 15px !important;">
+                                    <span class="font-weight-bold">Name: </span> {{ $query_selected_user->user_fname }} {{ $query_selected_user->user_lname}}
+                                </td>
+                                <td class="br_1" style="padding-top: 15px !important;">
+                                    <span class="font-weight-bold">User Type: </span> {{ ucwords($query_selected_user->user_type) }} User
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="br_1">
+                                    <span class="font-weight-bold">Employee ID: </span> {{ $query_selected_user->user_sdca_id }}
+                                </td>
+                                <td class="br_1">
+                                    <span class="font-weight-bold">User Role: </span> System {{ ucwords($query_selected_user->user_role) }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="br_1">
+                                    <span class="font-weight-bold">Job Description: </span> {{ $query_EmpInfo->uEmp_job_desc }}
+                                </td>
+                                <td class="br_1">
+                                    <span class="font-weight-bold">User Status: </span> {{ $txt_userStatus }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="br_1">
+                                    <span class="font-weight-bold">Department: </span> {{ $query_EmpInfo->uEmp_dept }}
+                                </td>
+                                <td class="br_1">
+                                    <span class="font-weight-bold">
+                                        {{-- empty --}}
+                                    </span> 
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="br_1 bb_1" style="padding-bottom: 15px !important;">
+                                    <span class="font-weight-bold">Gender: </span> {{ ucwords($query_selected_user->user_gender) }}
+                                </td>
+                                <td class="br_1 bb_1" style="padding-bottom: 15px !important;">
+                                    {{-- empty --}}
+                                </td>
+                            </tr>
+                        @else
+                            {{-- if user_type === student --}}   
+                            @if($toLower_userType === 'student')
+                                @php
+                                    $query_StudInfo = App\Models\Userstudents::where('uStud_num', '=', $query_selected_user->user_sdca_id)->first();
+                                @endphp
+                                <tr>
+                                    <td class="br_1" style="padding-top: 15px !important;">
+                                        <span class="font-weight-bold">Name: </span> {{ $query_selected_user->user_fname }} {{ $query_selected_user->user_lname}}
+                                    </td>
+                                    <td class="br_1" style="padding-top: 15px !important;">
+                                        <span class="font-weight-bold">User Type: </span> {{ ucwords($query_selected_user->user_type) }} User
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="br_1">
+                                        <span class="font-weight-bold">Student Number: </span> {{ $query_selected_user->user_sdca_id }}
+                                    </td>
+                                    <td class="br_1">
+                                        <span class="font-weight-bold">User Role: </span> System {{ ucwords($query_selected_user->user_role) }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="br_1">
+                                        <span class="font-weight-bold">School: </span> {{ $query_StudInfo->uStud_school }}
+                                    </td>
+                                    <td class="br_1">
+                                        <span class="font-weight-bold">User Status: </span> {{ $txt_userStatus }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="br_1">
+                                        <span class="font-weight-bold">Program / Year / Section: </span> {{ $query_StudInfo->uStud_program }} | {{ $query_StudInfo->uStud_yearlvl }} | {{ $query_StudInfo->uStud_section }}
+                                    </td>
+                                    <td class="br_1">
+                                        <span class="font-weight-bold">
+                                            {{-- empty --}}
+                                        </span> 
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="br_1 bb_1" style="padding-bottom: 15px !important;">
+                                        <span class="font-weight-bold">Gender: </span> {{ ucwords($query_selected_user->user_gender) }}
+                                    </td>
+                                    <td class="br_1 bb_1" style="padding-bottom: 15px !important;">
+                                        {{-- empty --}}
+                                    </td>
+                                </tr>
+                            {{-- if user_type == unknown --}}
+                            @else
+                                {{-- if user_type == unknown --}}
+                            @endif
+                            {{-- if user_type == unknown --}}
+                        @endif
                         <tr>
                             <td class="b_0 p_x0y2"></td>
                             <td class="b_0 p_x0y2"></td>
@@ -341,18 +410,21 @@
                         </tr>
                         <tr>
                             <td class="br_1" style="padding-top: 15px !important;">
-                                <span class="font-weight-bold">Date Range: </span> 
+                                <span class="font-weight-bold">Date Range: </span> From: {{ $txt_dateFromRange }}
+                                {{-- <span class="d_block">From: {{ $txt_dateFromRange }}</span> --}}
+                                <span class="d_block">To: {{ $txt_dateToRange }}</span> 
                             </td>
                             <td class="br_1" style="padding-top: 15px !important;">
-                                <span class="font-weight-bold">Log Category: </span> 
+                                <span class="font-weight-bold">Log Category: {{ $txt_fwb_logCategory }}</span> 
+                                <span class="d_block"> {{ $txt_filteredCategory }} </span>
                             </td>
                         </tr>
                         <tr>
                             <td class="br_1" style="padding-bottom: 15px !important;">
-                                <span class="font-weight-bold">Total Data Found: </span> 
+                                <span class="font-weight-bold">Total Data Found: {{ $total_detaFound }} Rows</span> 
                             </td>
                             <td class="br_1" style="padding-bottom: 15px !important;">
-                                <span class="font-weight-bold">Order: </span> 
+                                <span class="font-weight-bold">Order: </span> Date Recorded (Descending)
                             </td>
                         </tr>
 
