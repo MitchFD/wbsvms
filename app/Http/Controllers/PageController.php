@@ -150,6 +150,7 @@ class PageController extends Controller
                 $count_yearly_violators = count($query_yearly_violators);
                 $yearly_ViolatorsArray = array();
                 $monthly_ViolatorsArray = array();
+                $months_byNumbers =  array();
                 if($count_yearly_violators > 0){
                     foreach($query_yearly_violators as $this_year){
                         $this_yearVal_t = str_replace(array( '{', '}', '"', ':', 'year' ), '', $this_year);
@@ -168,6 +169,7 @@ class PageController extends Controller
                                     $dateObj         = DateTime::createFromFormat('!m', $this_monthVal_t);
                                     $monthName       = $dateObj->format('F');
                                     $monthly_ViolatorsArray[] = $monthName . ' ' . $this_yearVal_t;
+                                    $months_byNumbers[] = $this_monthVal_t;
                                 }
                             }
                             // extract $yearly_ViolatorsArray[]
@@ -180,6 +182,7 @@ class PageController extends Controller
                 $toJson_arrayYearlyViolators = json_encode($yearly_ViolatorsArray);
                 $ext_toJson_arrayYearlyViolators = str_replace(array('"'), '', $toJson_arrayYearlyViolators);
             // get all years with recorded violations end
+
 
             // data 
                 $data = array(
@@ -194,7 +197,8 @@ class PageController extends Controller
                     'sase_violators_count'  => $count_SASE_violators,
                     'sase_S'                => $sase_S,
                     'years'                 => $ext_toJson_arrayYearlyViolators,
-                    'months'                => $monthly_ViolatorsArray
+                    'months'                => $monthly_ViolatorsArray,
+                    'months_byNumbers'      => $months_byNumbers
                 );
             // data end
 

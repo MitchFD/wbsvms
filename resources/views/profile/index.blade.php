@@ -792,8 +792,9 @@
                                         <table class="table table-hover cust_table shadow">
                                             <thead class="thead_svms_blue">
                                                 <tr>
-                                                    <th class="p12 w35prcnt">Date</th>
-                                                    <th>Transaction Details</th>
+                                                    <th class="pl12">~ Date</th>
+                                                    <th>Category</th>
+                                                    <th>Details</th>
                                                 </tr>
                                             </thead>
                                             <tbody class="tbody_svms_white" id="al_tableTbody">

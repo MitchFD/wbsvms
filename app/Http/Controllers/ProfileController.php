@@ -57,8 +57,8 @@ class ProfileController extends Controller
         $get_uRole_access   = json_decode(json_encode($get_user_role_info->uRole_access));
         if(in_array('profile', $get_uRole_access)){
             // my first and last record - dates
-            $my_first_record = Useractivites::where('act_respo_user_id', auth()->user()->id)->first();
-            $my_latest_record = Useractivites::where('act_respo_user_id', auth()->user()->id)->latest()->first();
+            $my_first_record = Useractivites::select('created_at')->where('act_respo_user_id', auth()->user()->id)->first();
+            $my_latest_record = Useractivites::select('created_at')->where('act_respo_user_id', auth()->user()->id)->latest()->first();
             // my categories options
             $my_trans_categories = Useractivites::select('act_type')->where('act_respo_user_id', auth()->user()->id)->groupBy('act_type')->get();
             // count my logs
@@ -107,8 +107,11 @@ class ProfileController extends Controller
                         $format_createdAt = ''.date('F d, Y (D - g:i A)', strtotime($users_logs->created_at));
                         $output .= '
                         <tr>
-                            <td class="p12 w35prcnt">'.$format_createdAt.'</td>
-                            <td>'.$users_logs->act_details.'</td>
+                            <td class="p12" width="25%">
+                                <span class="actLogs_contentv1 font-weight-bold">'. date('F d, Y', strtotime($users_logs->created_at)) . ' <span class="font-weight-normal">' . date('(D - g:i A)', strtotime($users_logs->created_at)). '</span></span>
+                            </td>
+                            <td width="15%"><span class="actLogs_contentv1">'.ucwords($users_logs->act_type) . '</span></td>
+                            <td width="60%"><span class="actLogs_contentv1">~ ' . $users_logs->act_details . '</span></td>
                         </tr>
                     ';
                     }

@@ -40,7 +40,6 @@
                         $count_monthly_offenses = count($this_monthly_offenses); 
                         $yearly_ViolationsArray[] = $this_yearVal_t;
                     @endphp
-                    {{$this_yearVal_t}} <br>
 
                     @if ($count_monthly_offenses > 0)
                         @php
@@ -53,7 +52,6 @@
                                 $monthName = $dateObj->format('F');
                                 $monthly_ViolationsArray[] = $monthName;
                             @endphp
-                            {{$monthName}} <br>
                         @endforeach
                     @endif
                 @endforeach
@@ -490,6 +488,7 @@
 
                             console.log(data.years);
                             console.log(data.months);
+                            console.log(data.months_byNumbers);
 
                             // chart
                             let shoolsViolatorsChart = document.getElementById('shoolsViolatorsChart').getContext('2d');
@@ -498,7 +497,7 @@
                                 data: {
                                     labels: [
                                         // 'April 2020', 'January 2021', 'February 2021', 'March 2021', 'April 2021', 'May 2021'
-                                        data.months
+                                        ...data.months
                                     ],
                                     datasets: [
                                         {
