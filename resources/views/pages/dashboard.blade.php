@@ -133,7 +133,7 @@
                             <div class="card-header p-0" id="schoolsViolatorsGraphCollapseHeading">
                                 <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#schoolsViolatorsGraphCollapseDiv" aria-expanded="true" aria-controls="schoolsViolatorsGraphCollapseDiv">
                                     <div>
-                                        <span class="card_body_title">Monthly Violators</span>
+                                        <span class="card_body_title">Monthly Violators Count</span>
                                         <span class="card_body_subtitle">Monthly Violators Count per School.</span>
                                     </div>
                                     <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
@@ -489,6 +489,11 @@
                             console.log(data.years);
                             console.log(data.months);
                             console.log(data.months_byNumbers);
+                            console.log('SBCS: ' + data.sbcs_monthlyViolatorDataset);
+                            console.log('SASE: ' + data.sase_monthlyViolatorDataset);
+                            console.log('SIHTM: ' + data.sihtm_monthlyViolatorDataset);
+                            console.log('SHSP: ' + data.shsp_monthlyViolatorDataset)
+                            console.log(data.format_merge_my);
 
                             // chart
                             let shoolsViolatorsChart = document.getElementById('shoolsViolatorsChart').getContext('2d');
@@ -502,7 +507,7 @@
                                     datasets: [
                                         {
                                             label: 'SBCS',
-                                            data: [1, 15, 18, 20, 10, 1],
+                                            data: [...data.sbcs_monthlyViolatorDataset],
                                             fill: true,
                                             backgroundColor: 'rgb(114, 114, 114, 0.04)',
                                             borderColor: '#727272',
@@ -512,7 +517,7 @@
                                         },
                                         {
                                             label: 'SHSP',
-                                            data: [0, 8, 5, 12, 5, 8],
+                                            data: [...data.shsp_monthlyViolatorDataset],
                                             fill: true,
                                             backgroundColor: 'rgb(0, 113, 58, 0.04)',
                                             borderColor: '#00713A',
@@ -522,7 +527,7 @@
                                         },
                                         {
                                             label: 'SIHTM',
-                                            data: [0, 3, 8, 3, 2, 9],
+                                            data: [...data.sihtm_monthlyViolatorDataset],
                                             fill: true,
                                             backgroundColor: 'rgb(234, 64, 33, 0.04)',
                                             borderColor: '#EA4021',
@@ -532,7 +537,7 @@
                                         },
                                         {
                                             label: 'SASE',
-                                            data: [0, 6, 19, 5, 15, 5],
+                                            data: [...data.sase_monthlyViolatorDataset],
                                             fill: true,
                                             backgroundColor: 'rgb(153, 51, 101, 0.04)',
                                             borderColor: '#993365',
@@ -551,6 +556,13 @@
                                             usePointStyle: true,
                                             padding: 30 
                                         }
+                                    },
+                                    scales: {
+                                        yAxes: [{
+                                            ticks: {
+                                                stepSize: 1
+                                            }
+                                        }]
                                     },
                                     onHover: (event, shoolsViolatorsChart) => {
                                         event.target.style.cursor = shoolsViolatorsChart[0] ? 'pointer' : 'pointer';
