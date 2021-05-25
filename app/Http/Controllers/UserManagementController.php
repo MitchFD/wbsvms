@@ -8,6 +8,7 @@ use App\Models\Userroles;
 use App\Models\Userrolesupdatestatus;
 use App\Models\Editedolduserroles;
 use App\Models\Editednewuserroles;
+use App\Models\Deleteduserroles;
 use App\Models\Users;
 use App\Models\Userupdatesstatus;
 use App\Models\Useremployees;
@@ -687,7 +688,9 @@ class UserManagementController extends Controller
         $get_user_role_info = Userroles::select('uRole_id', 'uRole', 'uRole_access')->where('uRole', auth()->user()->user_role)->first();
         $get_uRole_access   = json_decode(json_encode($get_user_role_info->uRole_access));
         if(in_array('users management', $get_uRole_access)){
-            return view('user_management.system_roles');
+            $countAll_RegisteredRoles = Userroles::count();
+            $queryAll_RegisteredRoles = Userroles::get();
+            return view('user_management.system_roles')->with(compact('countAll_RegisteredRoles', 'queryAll_RegisteredRoles'));
         }else{
             return view('profile.access_denied');
         }
@@ -2682,7 +2685,7 @@ class UserManagementController extends Controller
                     </div>
                 </div>
             </div>
-            <form action="'.route('user_management.process_deactivate_role').'" class="deactivateRoleConfirmationForm" method="POST">
+            <form id="form_systemRoleDeactivation" action="'.route('user_management.process_deactivate_role').'" class="deactivateRoleConfirmationForm" method="POST">
                 <div class="modal-body pb-0">';
                 if(count($get_assigned_users) > 0){
                 $output .= '
@@ -2705,8 +2708,8 @@ class UserManagementController extends Controller
                     <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
                     <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
                     <div class="btn-group" role="group" aria-label="Basic example">
-                        <button type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
-                        <button type="submit" class="btn btn-round btn_svms_red btn_show_icon m-0">Deactivate this Role <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                        <button id="cancel_deactivateSystemRole_btn" type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                        <button id="process_deactivateSystemRole_btn" type="submit" class="btn btn-round btn_svms_red btn_show_icon m-0">Deactivate this Role <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
                     </div>
                 </div>
             </form>
@@ -2862,7 +2865,7 @@ class UserManagementController extends Controller
                 </div>
             </div>
         </div>
-        <form action="'.route('user_management.process_activate_role').'" class="activateRoleConfirmationForm" method="POST">
+        <form id="form_systemRoleActivation" action="'.route('user_management.process_activate_role').'" class="activateRoleConfirmationForm" method="POST">
             <div class="modal-body pb-0">';
             if(count($get_assigned_users) > 0){
             $output .= '
@@ -2885,8 +2888,8 @@ class UserManagementController extends Controller
                 <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
                 <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
                 <div class="btn-group" role="group" aria-label="Basic example">
-                    <button type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
-                    <button type="submit" class="btn btn-round btn-success btn_show_icon m-0">Activate this Role <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                    <button id="cancel_activateSystemRole_btn" type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                    <button id="process_activateSystemRole_btn" type="submit" class="btn btn-round btn-success btn_show_icon m-0">Activate this Role <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
                 </div>
             </div>
         </form>
@@ -3052,6 +3055,178 @@ class UserManagementController extends Controller
             </div>
         ';
         echo $output;
+    }
+
+    // temporary delete system role confirmation on modal
+    public function temporary_delete_system_role_confirmation_modal(Request $request){
+        // get selected uRole_id
+            $tempDelete_uRole_id = $request->get('tempDelete_uRole_id');
+
+        // get role details from user_roles_tbl
+            $get_role_details     = Userroles::where('uRole_id', $tempDelete_uRole_id)->first();
+            $get_uRole_status     = $get_role_details->uRole_status;
+            $get_uRole_type       = $get_role_details->uRole_type;
+            $get_uRole            = $get_role_details->uRole;
+            $get_uRole_access     = $get_role_details->uRole_access;
+            $get_uRole_created_by = $get_role_details->created_by;
+            $get_uRole_created_at = $get_role_details->created_at;
+
+        // get info of user who created this role
+            $get_created_by_user  = Users::where('id', $get_uRole_created_by)->first();
+            $get_created_by_lname = $get_created_by_user->user_lname; 
+            $get_created_by_fname = $get_created_by_user->user_fname; 
+
+        // get all assigned users
+            $get_assigned_users = Users::where('user_role', $get_uRole)->get();
+
+        $output = '';
+        $output .='
+            <div class="modal-body border-0 p-0">
+                <div class="cust_modal_body_gray">
+                    <div class="accordion shadow cust_accordion_div" id="deactivateURoleModalAccordion_Parent'.$tempDelete_uRole_id.'">
+                        <div class="card custom_accordion_card">
+                            <div class="card-header p-0" id="deactivateRoleCollapse_heading'.$tempDelete_uRole_id.'">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-block custom2_btn_collapse d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#deactivateURoleCollapse_Div'.$tempDelete_uRole_id.'" aria-expanded="true" aria-controls="deactivateURoleCollapse_Div'.$tempDelete_uRole_id.'">
+                                        <div>
+                                            <span class="accordion_title">'.$get_uRole.'</span>
+                                            <span class="accordion_subtitle">'; 
+                                                if(count($get_assigned_users) > 0){
+                                                    if(count($get_assigned_users) > 1){
+                                                        $output .= count($get_assigned_users). ' Assigned Users Found.';
+                                                    }else{
+                                                        $output .= count($get_assigned_users). ' Assigned User Found.';
+                                                    }
+                                                }else{
+                                                    $output .= 'No Assigned Users.';
+                                                }
+                                            $output .='
+                                            </span>
+                                        </div>
+                                        <i class="nc-icon nc-minimal-down custom2_btn_collapse_icon"></i>
+                                    </button>
+                                </h2>
+                            </div>
+                            <div id="deactivateURoleCollapse_Div'.$tempDelete_uRole_id.'" class="collapse cust_collapse_active cb_t0b12y20" aria-labelledby="deactivateRoleCollapse_heading'.$tempDelete_uRole_id.'" data-parent="#deactivateURoleModalAccordion_Parent'.$tempDelete_uRole_id.'">
+                                <div class="card-body lightBlue_cardBody mt-2">
+                                    <span class="lightBlue_cardBody_blueTitle">Assigned Users:</span>';
+                                    if(count($get_assigned_users) > 0){
+                                        foreach($get_assigned_users as $index => $assigned_user){
+                                            $output .= '<span class="lightBlue_cardBody_list"><span class="lightBlue_cardBody_listCount">'.($index+1).'.</span> ' .$assigned_user->user_fname. ' ' .$assigned_user->user_lname. '</span>';
+                                        }
+                                    }else{
+                                        $output .= '<span class="lightBlue_cardBody_list font-italic">No assigned users found.</span>';
+                                    }
+                                    $output .= '
+                                </div>
+                                <div class="card-body lightGreen_cardBody mt-2 mb-2">
+                                    <span class="lightGreen_cardBody_greenTitle">Access Controls:</span>';
+                                    if(!is_null($get_uRole_access)){
+                                        foreach(json_decode(json_encode($get_uRole_access), true) as $index => $uRole_access){
+                                            $output .= '<span class="lightGreen_cardBody_list"><span class="lightGreen_cardBody_listCount">'.($index+1).'.</span> '.ucwords($uRole_access).'</span>';
+                                        }
+                                    }else{
+                                        $output .= '<span class="lightGreen_cardBody_notice"><i class="fa fa-lock" aria-hidden="true"></i> No access controls found.</span>';
+                                    }
+                                    $output .= '    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form id="form_systemRoleTempDeletion" action="'.route('user_management.process_temporary_delete_system_role').'" class="deactivateRoleConfirmationForm" method="POST">
+                <div class="modal-body pb-0">';
+                if(count($get_assigned_users) > 0){
+                $output .= '
+                    <div class="card-body lightRed_cardBody shadow-none">
+                        <span class="lightRed_cardBody_notice"><i class="fa fa-lock" aria-hidden="true"></i> Deactivating <span class="font-weight-bold"> ' .ucwords($get_uRole). ' </span> Role will also deactivate the assigned users wherein they will no longer be able to access the system until activation.</span>
+                    </div>';
+                }
+                $output .='
+                    <div class="card-body lightBlue_cardBody shadow-none mt-2">
+                        <span class="lightBlue_cardBody_blueTitle">Reason for Deleting ' .ucwords($get_uRole). ' Role:</span>
+                        <div class="form-group">
+                            <textarea class="form-control" id="temp_delete_role_reason" name="temp_delete_role_reason" rows="3" placeholder="Type reason for Deletion (optional)"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <input type="hidden" name="_token" value="'.csrf_token().'">
+                    <input type="hidden" name="temp_delete_selected_role_id" value="'.$tempDelete_uRole_id.'">
+                    <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
+                    <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
+                    <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
+                    <div class="btn-group" role="group" aria-label="Basic example">
+                        <button id="cancel_tempDeleteSystemRole_btn" type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                        <button id="process_tempDeleteSystemRole_btn" type="submit" class="btn btn-round btn_svms_red btn_show_icon m-0">Delete this Role <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+            </form>
+        ';
+
+        echo $output;
+    }
+    // process temporary deletion of system role
+    public function process_temporary_delete_system_role(Request $request){
+        // now timestamp
+            $now_timestamp   = now();
+            $sq              = "'";
+        // get all request
+            $sel_uRole_id         = $request->get('temp_delete_selected_role_id');
+            $reason_deletion      = $request->get('temp_delete_role_reason');
+            $get_respo_user_id    = $request->get('respo_user_id');
+            $get_respo_user_lname = $request->get('respo_user_lname');
+            $get_respo_user_fname = $request->get('respo_user_fname');
+        // get selected user role information from user_roles_tbl
+            $query_seluRoleInfo   = Userroles::where('uRole_id', $sel_uRole_id)->first();
+            $sel_uRole_status     = $query_seluRoleInfo->uRole_status;
+            $sel_uRole_type       = $query_seluRoleInfo->uRole_type;
+            $sel_uRole            = $query_seluRoleInfo->uRole;
+            $sel_uRole_access     = $query_seluRoleInfo->uRole_access;
+            $sel_assUsers_count   = $query_seluRoleInfo->assUsers_count;
+            $sel_uRole_created_by = $query_seluRoleInfo->created_by;
+            $sel_uRole_created_at = $query_seluRoleInfo->created_at;
+        // back selected role's information to deleted_user_roles_tbl
+            $back_seluRole = new Deleteduserroles;
+            $back_seluRole->reason_deletion	   = $reason_deletion;
+            $back_seluRole->del_uRole_status   = $sel_uRole_status;
+            $back_seluRole->del_uRole_type     = $sel_uRole_type;
+            $back_seluRole->del_uRole	       = $sel_uRole;
+            $back_seluRole->del_uRole_access   = $sel_uRole_access;
+            $back_seluRole->del_assUsers_count = $sel_assUsers_count;
+            $back_seluRole->del_created_at     = $sel_uRole_created_at;
+            $back_seluRole->del_created_by     = $sel_uRole_created_by;
+            $back_seluRole->deleted_at         = $now_timestamp;
+            $back_seluRole->deleted_by         = $get_respo_user_id;
+            $back_seluRole->save();
+        // if backup was a success - then delete selected role from user_roles_tbl
+            if($back_seluRole){
+                // delete selected user role
+                    $delete_seluRole = Userroles::where('uRole_id', $sel_uRole_id)->delete();
+                // if delete was a success
+                    if($delete_seluRole){
+                        $query_deluRole_id = Deleteduserroles::select('del_uRole_id')->where('del_uRole', $sel_uRole)->latest('deleted_at')->first();
+                        $get_deluRole_id   = $query_deluRole_id->del_uRole_id;
+
+                        // record activity
+                        $rec_activity = new Useractivites;
+                        $rec_activity->created_at            = $now_timestamp;
+                        $rec_activity->act_respo_user_id     = $get_respo_user_id;
+                        $rec_activity->act_respo_users_lname = $get_respo_user_lname;
+                        $rec_activity->act_respo_users_fname = $get_respo_user_fname;
+                        $rec_activity->act_type              = 'role deletion';
+                        $rec_activity->act_details           = 'Temporary Deleted ' . ucwords($sel_uRole) . ' Role.';
+                        $rec_activity->act_affected_id       = $get_deluRole_id;
+                        $rec_activity->save();
+
+                        return back()->withSuccessStatus(''.ucwords($sel_uRole) . ' Role was Deleted Successfully.');
+                    }else{
+                        return back()->withFailedStatus('Deleting ' .$sel_uRole . ' Role has Failed! try again later.');
+                    }
+            }else{
+                return back()->withFailedStatus(''.$sel_uRole . ' Role Backup has Failed! try again later.');
+            }
     }
 
     // FUNCTIONS FOR SYSTEM USERS

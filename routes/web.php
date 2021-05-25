@@ -101,6 +101,12 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('user_management/activate_role_modal', 'App\Http\Controllers\UserManagementController@activate_role_modal')->name('user_management.activate_role_modal');
 	Route::post('user_management/process_activate_role', 'App\Http\Controllers\UserManagementController@process_activate_role')->name('user_management.process_activate_role');
 
+	// for deleting system roles
+	// temporary delete system role confirmation on modal
+	Route::get('user_management/temporary_delete_system_role_confirmation_modal', 'App\Http\Controllers\UserManagementController@temporary_delete_system_role_confirmation_modal')->name('user_management.temporary_delete_system_role_confirmation_modal');
+	// process temporary deletion of system role
+	Route::post('user_management/process_temporary_delete_system_role', 'App\Http\Controllers\UserManagementController@process_temporary_delete_system_role')->name('user_management.process_temporary_delete_system_role');
+
 	// manage role first
 	Route::get('user_management/manage_role_first_modal', 'App\Http\Controllers\UserManagementController@manage_role_first_modal')->name('user_management.manage_role_first_modal');
 

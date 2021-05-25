@@ -537,18 +537,21 @@
                                 <div class="card-body cb_p15x25">
                                     <form action="{{route('user_management.create_new_system_role')}}" class="createSystemRoleForm" method="POST">
                                         @csrf
-                                        <label class="custom_label" for="create_role_name">Role Name:</label>
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text">
-                                                    <i class="nc-icon nc-badge"></i>
-                                                </span>
+                                        <div class="card-body lightBlue_cardBody shadow-none mt-2">
+                                            <span class="lightBlue_cardBody_blueTitle">Role Name:</span>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">
+                                                        <i class="nc-icon nc-badge"></i>
+                                                    </span>
+                                                </div>
+                                                <input id="create_role_name" name="create_role_name" type="text" class="form-control" placeholder="Type New Role Name" value="{{ old('create_role_name') }}" required>
                                             </div>
-                                            <input id="create_role_name" name="create_role_name" type="text" class="form-control" placeholder="Type New Role Name" value="{{ old('create_role_name') }}" required>
+                                            <span class="lightBlue_cardBody_notice mt-2"><i class="fa fa-info-circle" aria-hidden="true"></i> Make the New Role Name in Singular Form (recommended).</span>
                                         </div>
-                                        <div class="card-body lightBlue_cardBody mt-3">
+                                        {{-- <div class="card-body lightBlue_cardBody mt-3">
                                             <span class="lightBlue_cardBody_blueTitle">Select Role Type:</span>
-                                            <span class="lightBlue_cardBody_notice"><i class="nc-icon nc-tap-01" aria-hidden="true"></i> Role type selection is required for system preference.</span>
+                                            <span class="lightBlue_cardBody_notice"><i class="fa fa-info-circle" aria-hidden="true"></i> Role type selection is required for system preference.</span>
                                             <div class="form-check align-items-center cust_radioInptDiv">
                                                 <input class="form-check-input" type="radio" name="create_role_type" id="employee_type_role" value="employee" required>
                                                 <label class="form-check-label lightBlue_cardBody_chckboxLabel" for="employee_type_role">Employee Type Role</label>
@@ -557,6 +560,16 @@
                                                 <input class="form-check-input" type="radio" name="create_role_type" id="student_type_role" value="student" required>
                                                 <label class="form-check-label ml-2 lightBlue_cardBody_chckboxLabel" for="student_type_role">Student Type Role</label>
                                             </div>
+                                        </div> --}}
+                                        <div class="card-body lightBlue_cardBody shadow-none mt-3">
+                                            <div class="form-group cust_fltr_dropdowns_div mb-1">
+                                                <span class="lightBlue_cardBody_blueTitle">Role Type:</span>
+                                                <select class="form-control cust_fltr_dropdowns2 drpdwn_arrow2" id="create_role_type" name="create_role_type" required>
+                                                    <option value="employee" selected>Employee User</option>
+                                                    <option value="student">Student User</option>
+                                                </select>
+                                            </div>
+                                            <span class="lightBlue_cardBody_notice mt-2"><i class="fa fa-info-circle" aria-hidden="true"></i> Role type selection is required for system preferences.</span>
                                         </div>
                                         <div class="card-body lightGreen_cardBody mt-3">
                                             <span class="lightGreen_cardBody_greenTitle">Default Access Controls:</span>
@@ -600,6 +613,12 @@
                                                     <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="violation_record_mod">Violation Records</label>
                                                 </div>
                                             </div>
+                                            <div class="form-group mx-0 mt-0 mb-1">
+                                                <div class="custom-control custom-checkbox align-items-center">
+                                                    <input type="checkbox" name="create_role_access[]" value="sanctions" class="custom-control-input cursor_pointer" id="sanctions_mod">
+                                                    <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="sanctions_mod">Sanctions</label>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="row d-flex justify-content-center mt-2">
                                             <div class="col-lg-12 col-md-12 col-sm-12 text-center">
@@ -614,7 +633,7 @@
                             </div>
                             <div class="row mt-2">
                                 <div class="col-lg-12 col-md-12 col-sm-12">
-                                    <a href="{{ route('user_management.overview_users_management', 'overview_users_management') }}" class="btn btn_svms_blue btn-sm btn_normal_fontsz shadow m-0" role="button">View System Roles <i class="fa fa-share ml-1" aria-hidden="true"></i></a>
+                                    <a href="{{ route('user_management.system_roles', 'system_roles') }}" class="btn btn_svms_blue btn-sm btn_normal_fontsz shadow m-0" role="button">View System Roles <i class="fa fa-share ml-1" aria-hidden="true"></i></a>
                                 </div>
                             </div>
                         </div>

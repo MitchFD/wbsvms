@@ -17,13 +17,15 @@ class Deleteduserroles extends Model
      */
     protected $table = 'deleted_user_roles_tbl';
     protected $fillable = [
+        'del_status',
+        'reason_deletion',
         'del_uRole_status',
         'del_uRole_type',
         'del_uRole',
         'del_uRole_access' => 'array',
-        'del_created_at',
-        'reason_deletion',
-        'respo_user_id',
+        'del_assUsers_count',
+        'del_created_by',
+        'deleted_by'
     ];
     protected $casts = [
         'del_uRole_access' => 'array'

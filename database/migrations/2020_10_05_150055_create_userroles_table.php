@@ -19,7 +19,7 @@ class CreateUserrolesTable extends Migration
             $table->string('uRole_type');    
             $table->string('uRole');    
             $table->json('uRole_access');
-            $table->tinyInteger('assUsers_count')->default(0)->nullable(); 
+            $table->tinyInteger('assUsers_count')->default(0); 
             $table->unsignedBigInteger('created_by');
                 // $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->timestamp('created_at')->format('Y-m-d H:i:s')->nullable();

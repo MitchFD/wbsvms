@@ -21,6 +21,7 @@ class Userroles extends Model
         'uRole_type',
         'uRole',
         'uRole_access' => 'array',
+        'assUsers_count',
         'created_by',
     ];
     protected $casts = [

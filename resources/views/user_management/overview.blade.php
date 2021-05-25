@@ -85,13 +85,35 @@
                                         <div class="col-lg-12 col-md-12">
                                             <div class="card cust_listCard shadow">
                                                 @foreach($active_users->sortBy('id') as $active_user)
+                                                    @php
+                                                        // tolower case user_type
+                                                        $tolower_uType = Str::lower($active_user->user_type);
+                                                        $tolower_uStatus = Str::lower($active_user->user_status);
+                                                        $tolower_uRoleStatus = Str::lower($active_user->user_role_status);
+                                                        // user image handler
+                                                        if(!is_null($active_user->user_image) OR !empty($active_user->user_image)){
+                                                            $user_imgJpgFile = $active_user->user_image;
+                                                        }else{
+                                                            if($tolower_uStatus === 'active'){
+                                                                if($tolower_uType === 'employee'){
+                                                                    $user_imgJpgFile = 'employee_user_image.jpg';
+                                                                }elseif($tolower_uType === 'student'){
+                                                                    $user_imgJpgFile = 'student_user_image.jpg';
+                                                                }else{
+                                                                    $user_imgJpgFile = 'disabled_user_image.jpg';
+                                                                }
+                                                            }else{
+                                                                $user_imgJpgFile = 'no_student_image.jpg';
+                                                            }
+                                                        }
+                                                    @endphp 
                                                     <div class="card-header cust_listCard_header2">
                                                         <div class="d-flex justify-content-center align-items-center">
                                                             <div class="display_user_image_div text-center">
                                                                 @if($active_user->user_type === 'student')
-                                                                    <img class="studImg_background shadow-sm" src="{{asset('storage/svms/user_images/'.$active_user->user_image)}}" alt="{{$active_user->user_lname}}'s profile image">
+                                                                    <img class="studImg_background shadow-sm" src="{{asset('storage/svms/user_images/'.$user_imgJpgFile)}}" alt="{{$active_user->user_lname}}'s profile image">
                                                                 @else
-                                                                    <img class="empImg_background shadow-sm" src="{{asset('storage/svms/user_images/'.$active_user->user_image)}}" alt="{{$active_user->user_lname}}'s profile image">
+                                                                    <img class="empImg_background shadow-sm" src="{{asset('storage/svms/user_images/'.$user_imgJpgFile)}}" alt="{{$active_user->user_lname}}'s profile image">
                                                                 @endif
                                                             </div>
                                                             <div class="information_div ml-3 text-left">
@@ -99,7 +121,11 @@
                                                                 <span class="li_info_subtitle">{{ucwords($active_user->user_role)}}</span>
                                                             </div>
                                                         </div>
-                                                        <a href="#" class="btn cust_btn_smcircle2" data-toggle="tooltip" data-placement="top" title="@if(auth()->user()->id === $active_user->id) View your profile? @else View {{ $active_user->user_lname}}'s Account Information? @endif"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                                                        @if(auth()->user()->id == $active_user->id)
+                                                            <a href="{{ route('profile.index', 'profile') }}" class="btn cust_btn_smcircle2" data-toggle="tooltip" data-placement="top" title="View your profile?"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                                                        @else
+                                                            <a href="{{ route('user_management.user_profile', $active_user->id, 'user_profile') }}" class="btn cust_btn_smcircle2" data-toggle="tooltip" data-placement="top" title="View {{ $active_user->user_lname}}'s Account Information?"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                                                        @endif
                                                     </div>
                                                 @endforeach
                                             </div>

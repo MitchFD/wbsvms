@@ -15,16 +15,19 @@ class CreateDeleteduserrolesTable extends Migration
     {
         Schema::create('deleted_user_roles_tbl', function (Blueprint $table) {
             $table->id('del_uRole_id');
+            $table->tinyInteger('del_status')->default(1);
+            $table->string('reason_deletion')->nullable();
             $table->string('del_uRole_status');    
             $table->string('del_uRole_type');    
             $table->string('del_uRole');    
             $table->json('del_uRole_access');
-            $table->tinyInteger('del_assUsers_count')->nullable(); 
+            $table->tinyInteger('del_assUsers_count')->default(0); 
             $table->timestamp('del_created_at')->format('Y-m-d H:i:s')->nullable();
-            $table->string('reason_deletion')->nullable();
-            $table->unsignedBigInteger('respo_user_id');
-                // $table->foreign('respo_user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('del_created_by');
+                // $table->foreign('del_created_by')->references('id')->on('users')->onDelete('cascade');
             $table->timestamp('deleted_at')->format('Y-m-d H:i:s')->nullable();
+            $table->unsignedBigInteger('deleted_by');
+                // $table->foreign('deleted_by')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

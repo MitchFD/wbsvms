@@ -917,6 +917,14 @@ fieldset[disabled] .btn_svms_blue.active {
   color: var(--svms_blue);
   margin: 0 0 5px 0;
 }
+.lightBlue_cardBody_blueTitlev1{
+  display: block;
+  font-size: 12px !important;
+  font-weight: bold !important;
+  text-transform: uppercase !important;
+  color: var(--svms_light_blue2);
+  margin: 0 0 5px 0;
+}
 .grayed_txt{
   color: var(--svms_light_blue2) !important;
 }
@@ -1924,6 +1932,13 @@ a.text_svms_gray:hover {
   font-weight: normal;
   color: var(--svms_light_blue);
 }
+.li_info_subtitle3{
+  display: block;
+  font-size: 13px;
+  font-weight: bold;
+  font-style: italic;
+  color: var(--svms_red);
+}
 .li_info_title_gray{
   display: block;
   font-size: 15px;
@@ -2429,6 +2444,24 @@ a.text_svms_gray:hover {
 .grayUsersCirclesImgs_filter{
   border: 4px solid var(--white);
   filter: grayscale(100%) !important;
+}
+
+.assignedUsersCirclesImgs4{
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  margin: 0 !important;
+  overflow: hidden;
+  border-radius: 50%;
+  position: relative;
+  object-fit: cover !important;
+  background-size: cover !important;
+  background-position: 50% 50% !important;
+  background-repeat: no-repeat !important;
+  background-color: #F4F4F5;
+}
+.assignedUsersCirclesImgs4:not(:first-child){
+  margin-left: -10px !important;
 }
 
 .moreImgsCounterDiv{
