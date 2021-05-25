@@ -782,6 +782,9 @@ fieldset[disabled] .btn_svms_blue.active {
 .cb_t0b15x25{
   padding: 0px 25px 15px 25px !important;
 }
+.cb_t0r25b25l10{
+  padding: 0px 25px 25px 10px !important;
+}
 .cb_y0x25{
   padding: 0px 25px 0 25px !important;
 }
@@ -2104,6 +2107,27 @@ a.text_svms_gray:hover {
 .cust_btn_smcircle5v1:active:focus {
   background-color: #dadada !important;
   color: var(--svms_input_txt) !important;
+}
+
+.cust_btn_smcircle5v2{
+  height: 45px;
+  width: 45px;
+  border-radius: 50%;
+  font-size: 16px;
+  margin: 0;
+  padding: 10px;
+  background-color: #dadada;
+  color: var(--svms_text_gray);
+}
+.cust_btn_smcircle5v2:hover{
+  background-color: #c9c9c9 !important;
+  color: var(--svms_input_txt) !important;
+}
+.cust_btn_smcircle5v2:focus,
+.cust_btn_smcircle5v2:active,
+.cust_btn_smcircle5v2:active:focus {
+  background-color: #c9c9c9 !important;
+  color: var(--svms_input_txt) !important;;
 }
 
 

@@ -690,9 +690,290 @@ class UserManagementController extends Controller
         if(in_array('users management', $get_uRole_access)){
             $countAll_RegisteredRoles = Userroles::count();
             $queryAll_RegisteredRoles = Userroles::get();
-            return view('user_management.system_roles')->with(compact('countAll_RegisteredRoles', 'queryAll_RegisteredRoles'));
+            $queryAll_DeletedRoles    = Deleteduserroles::get();
+            return view('user_management.system_roles')->with(compact('countAll_RegisteredRoles', 'queryAll_RegisteredRoles', 'queryAll_DeletedRoles'));
         }else{
             return view('profile.access_denied');
+        }
+    }
+    // load system roles cards - ajax
+    public function load_system_roles_cards(Request $request){
+        if($request->ajax()){
+            $sr_output = '';
+            $selected_uRoleStatus = $request->get('selectURoles_status');
+
+            if(!empty($selected_uRoleStatus) OR $selected_uRoleStatus != 'all'){
+                $filter_uRoleCards = Userroles::where(function($srQuery) use ($selected_uRoleStatus){
+                                            if($selected_uRoleStatus == 'active'){
+                                                $srQuery->where('uRole_status', '=', 'active');
+                                            }
+                                            if($selected_uRoleStatus == 'deactivated'){
+                                                $srQuery->where('uRole_status', '=', 'deactivated');
+                                            }
+                                        })
+                                        ->orderBy('uRole_id')
+                                        ->get();
+            }else{
+                $filter_uRoleCards = Userroles::orderBy('uRole_id')->get();
+            }
+
+            $count_total = count($filter_uRoleCards);
+
+            if($selected_uRoleStatus === 'all'){
+                $txt_selFilter = '';
+            }else{
+                $txt_selFilter = ''.ucwords($selected_uRoleStatus).'';
+            }
+
+            if($count_total > 0){
+                if($count_total > 1){
+                    $furC_s = 's';
+                }else{
+                    $furC_s = '';
+                }
+                $txt_totalRolesFound = ''.$count_total . ' ' . $txt_selFilter. ' Role'.$furC_s . ' Found.';
+            }else{
+                $furC_s = '';
+                $txt_totalRolesFound = 'No ' . $txt_selFilter. ' Role'.$furC_s . ' Found.';
+            }
+
+            if($count_total > 0){
+                foreach($filter_uRoleCards as $this_uRoleCard){
+                    // to lowers
+                    $toLower_uRoleName   = Str::lower($this_uRoleCard->uRole);
+                    $toLower_uRoleStatus = Str::lower($this_uRoleCard->uRole_status);
+
+                    // status classes and texts handler
+                    if($toLower_uRoleStatus === 'active'){
+                        $class_uRoleStat = 'text-success font-italic';
+                        $txt_uRoleStat   = '~ Active';
+                        $cardBody_bgCol  = 'lightGreen_cardBody';
+                        $cardBody_title  = 'lightGreen_cardBody_greenTitle';
+                        $cardBody_lists  = 'lightGreen_cardBody_list';
+                    }elseif($toLower_uRoleStatus === 'deactivated') {
+                        $class_uRoleStat = 'text_svms_red font-italic';
+                        $txt_uRoleStat   = '~ Deactivated';
+                        $cardBody_bgCol  = 'lightBlue_cardBody';
+                        $cardBody_title  = 'lightBlue_cardBody_blueTitlev1';
+                        $cardBody_lists  = 'lightBlue_cardBody_list';
+                    }elseif($toLower_uRoleStatus === 'deleted'){
+                        $class_uRoleStat = 'text_svms_red font-italic';
+                        $txt_uRoleStat   = '~ Deleted';
+                        $cardBody_bgCol  = 'lightBlue_cardBody';
+                        $cardBody_title  = 'lightBlue_cardBody_blueTitlev1';
+                        $cardBody_lists  = 'lightBlue_cardBody_list';
+                    }else{
+                        $class_uRoleStat = 'text-secondary font-italic';
+                        $txt_uRoleStat   = '~ Status Pending';
+                        $cardBody_bgCol  = 'lightBlue_cardBody';
+                        $cardBody_title  = 'lightBlue_cardBody_blueTitlev1';
+                        $cardBody_lists  = 'lightBlue_cardBody_list';
+                    }
+
+                    // query all assigned users
+                    $queryAll_AssignedUsers  = Users::where('user_role', '=', $toLower_uRoleName)->get();
+                    $countQuery_AssignedUsers = count($queryAll_AssignedUsers);
+                    if($countQuery_AssignedUsers > 0){
+                        if($countQuery_AssignedUsers > 1){
+                            $cqaAU_s = 's';
+                        }else{
+                            $cqaAU_s = '';
+                        }
+                        $txt_AssignedUsers   = ''.$countQuery_AssignedUsers . ' Assigned User'.$cqaAU_s.'.';
+                        $class_AssignedUsers = 'li_info_subtitle';
+                    }else{
+                        $cqaAU_s = '';
+                        $txt_AssignedUsers = 'No Assigned Users!';
+                        $class_AssignedUsers = 'li_info_subtitle3';
+                    }
+
+                    $sr_output .= '
+                    <div class="col-lg-4 col-md-4 col-sm-12 mt-4">
+                        <div class="accordion violaAccordions shadow cust_accordion_div" id="sr'.$this_uRoleCard->uRole_id.'Accordion_Parent">
+                            <div class="card custom_accordion_card">
+                                <div class="card-header p-0" id="changeUserRoleCollapse_heading">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-block custom2_btn_collapse cb_x12y15 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#sr'.$this_uRoleCard->uRole_id.'Collapse_Div" aria-expanded="true" aria-controls="sr'.$this_uRoleCard->uRole_id.'Collapse_Div">
+                                            <div class="d-flex justify-content-start align-items-center">
+                                                <div class="information_div2">
+                                                    <span class="li_info_title">'.ucwords($this_uRoleCard->uRole) .' <span class="'.$class_uRoleStat.'"> '. $txt_uRoleStat .'</span></span>
+                                                    <span class="'.$class_AssignedUsers.'">'. $txt_AssignedUsers .'</span>
+                                                </div>
+                                            </div>
+                                            <i class="nc-icon nc-minimal-up"></i>
+                                        </button>
+                                    </h2>
+                                </div>
+                                <div id="sr'.$this_uRoleCard->uRole_id.'Collapse_Div" class="collapse violaAccordions_collapse show cb_t0b12y15" aria-labelledby="sr'.$this_uRoleCard->uRole_id.'Collapse_heading" data-parent="#sr'.$this_uRoleCard->uRole_id.'Accordion_Parent">
+                                    ';
+                                    // assigned users
+                                    if($countQuery_AssignedUsers > 0){
+                                        $sr_output .= '
+                                        <div class="row">
+                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                                <div class="card-body lightBlue_cardBody mb-2">
+                                                    <span class="lightBlue_cardBody_blueTitle mb-1">Assigned User'.$cqaAU_s.':</span>
+                                                    <div class="assignedUsersCirclesDiv">
+                                                    ';
+                                                        if($countQuery_AssignedUsers > 13){
+                                                            $getOnly_13UserImgs = Users::select('id', 'user_image', 'user_lname', 'user_fname', 'user_type')->where('user_role', $toLower_uRoleName)->take(13)->get();
+                                                            $more_count = $countQuery_AssignedUsers - 13;
+                                                            foreach($getOnly_13UserImgs->sortBy('id') as $display_13UserImgs){
+                                                                // tolower case user_type
+                                                                $tolower_uType = Str::lower($display_13UserImgs->user_type);
+                                                                // user image handler
+                                                                if(!is_null($display_13UserImgs->user_image) OR !empty($display_13UserImgs->user_image)){
+                                                                    $user_imgJpgFile = $display_13UserImgs->user_image;
+                                                                }else{
+                                                                    if($tolower_uType == 'employee'){
+                                                                        $user_imgJpgFile = 'employee_user_image.jpg';
+                                                                    }elseif($tolower_uType == 'student'){
+                                                                        $user_imgJpgFile = 'student_user_image.jpg';
+                                                                    }else{
+                                                                        $user_imgJpgFile = 'disabled_user_image.jpg';
+                                                                    }
+                                                                }
+                                                                // tootltip
+                                                                if(auth()->user()->id === $display_13UserImgs->id){
+                                                                    $txt_userImgTooltip = 'You';
+                                                                }else{
+                                                                    $txt_userImgTooltip = ''.$display_13UserImgs->user_fname. ' ' .$display_13UserImgs->user_lname.'';
+                                                                }
+                                                                $sr_output .= '<img id="'.$display_13UserImgs->id.'" class="assignedUsersCirclesImgs4 F4F4F5_border cursor_pointer" src="'.asset('storage/svms/user_images/'.$user_imgJpgFile).'" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="'.$txt_userImgTooltip.'">';
+                                                            }
+                                                        }else{
+                                                            $getAll_UserImgs = Users::select('id', 'user_image', 'user_lname', 'user_fname', 'user_type')->where('user_role', $toLower_uRoleName)->get();
+                                                            foreach($getAll_UserImgs->sortBy('id') as $displayAll_UserImgs) {
+                                                                // tolower case user_type
+                                                                $tolower_uType = Str::lower($displayAll_UserImgs->user_type);
+                                                                // user image handler
+                                                                if(!is_null($displayAll_UserImgs->user_image) OR !empty($displayAll_UserImgs->user_image)){
+                                                                    $user_imgJpgFile = $displayAll_UserImgs->user_image;
+                                                                }else{
+                                                                    if($tolower_uType === 'employee'){
+                                                                        $user_imgJpgFile = 'employee_user_image.jpg';
+                                                                    }elseif($tolower_uType === 'student'){
+                                                                        $user_imgJpgFile = 'student_user_image.jpg';
+                                                                    }else{
+                                                                        $user_imgJpgFile = 'disabled_user_image.jpg';
+                                                                    }
+                                                                }
+                                                                // tootltip
+                                                                if(auth()->user()->id === $displayAll_UserImgs->id){
+                                                                    $txt_userImgTooltip = 'You';
+                                                                }else{
+                                                                    $txt_userImgTooltip = ''.$displayAll_UserImgs->user_fname. ' ' .$displayAll_UserImgs->user_lname.'';
+                                                                }
+                                                                // onclick functions to view user's profiles
+                                                                if(auth()->user()->id == $displayAll_UserImgs->id){
+                                                                    $onClickFunct = 'onclick="viewMyProfile(this.id)"';
+                                                                }else{
+                                                                    $onClickFunct = 'onclick="viewMyUserProfile(this.id)"';
+                                                                }
+                                                                $sr_output .= ' <img id="'.$displayAll_UserImgs->id.'" '. $onClickFunct .' class="assignedUsersCirclesImgs4 F4F4F5_border cursor_pointer" src="'.asset('storage/svms/user_images/'.$user_imgJpgFile).'" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="'.$txt_userImgTooltip.'"> ';
+                                                            }
+                                                        }
+                                                    $sr_output .= '
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        ';
+                                    }else{
+                                        $sr_output .= '
+                                        <div class="row">
+                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                                <div class="card-body lightBlue_cardBody mb-2">
+                                                    <span class="lightBlue_cardBody_list font-italic"><i class="fa fa-exclamation-circle font-weight-bold mr-1" aria-hidden="true"></i> No Assigned Users Found...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        ';
+                                    }
+                                    // access controls
+                                    if(!is_null($this_uRoleCard->uRole_access) OR !empty($this_uRoleCard->uRole_access)){
+                                        $sr_output .= '
+                                        <div class="row">
+                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                                <div class="card-body '. $cardBody_bgCol .' mb-2">
+                                                    <span class="'. $cardBody_title .' mb-1">Access Controls: <i class="fa fa-info-circle cust_info_icon mx-1" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Pages Accessible to '. ucwords($this_uRoleCard->uRole) .' Role."></i></span>
+                                                    ';
+                                                    foreach(json_decode(json_encode($this_uRoleCard->uRole_access), true) as $this_uRoleAccess){
+                                                        $sr_output .= '<span class="'. $cardBody_lists .'"><i class="fa fa-check-square-o font-weight-bold mr-1"></i> '. ucwords($this_uRoleAccess) .'</span>';
+                                                    }
+                                                    $sr_output .= '
+                                                </div>
+                                            </div>
+                                        </div>
+                                        ';
+                                    }else{
+                                        $sr_output .= '
+                                        <div class="row">
+                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                                <div class="card-body lightBlue_cardBody mb-2">
+                                                    <span class="lightBlue_cardBody_list font-italic"><i class="fa fa-exclamation-circle font-weight-bold mr-1" aria-hidden="true"></i> No Access Controls Found...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        ';
+                                    }
+                                    $sr_output .= '
+                                    <div class="row mt-2">
+                                        <div class="col-lg-12 col-md-12 col-sm-12 d-flex justify-content-between align-items-center">
+                                            <span class="cust_info_txtwicon font-weight-bold"><i class="fa fa-users mr-1" aria-hidden="true"></i> '. $txt_AssignedUsers.'</span>  
+                                            <div class="d-flex align-items-end">
+                                            ';
+                                            if($toLower_uRoleName !== 'administrator'){
+                                                if($toLower_uRoleStatus === 'active'){
+                                                    $onClick_icon    = 'fa fa-toggle-on';
+                                                    $onClick_tooltip = 'Deactivate ' . ucwords($this_uRoleCard->uRole) . ' Role?';
+                                                    $onClick_funct   = 'onclick=deactivateSystemRole(this.id)';
+                                                }elseif($toLower_uRoleStatus === 'deactivated') {
+                                                    $onClick_icon    = 'fa fa-toggle-off';
+                                                    $onClick_tooltip = 'Activate ' . ucwords($this_uRoleCard->uRole) . ' Role?';
+                                                    $onClick_funct   = 'onclick=activateSystemRole(this.id)';
+                                                }elseif($toLower_uRoleStatus === 'deleted'){
+                                                    $onClick_icon    = '';
+                                                    $onClick_tooltip = '';
+                                                    $onClick_funct   = '';
+                                                }else{
+                                                    $onClick_icon    = '';
+                                                    $onClick_tooltip = '';
+                                                    $onClick_funct   = '';
+                                                } 
+                                                $sr_output .= '<button id="'.$this_uRoleCard->uRole_id.'" '. $onClick_funct .' class="btn cust_btn_smcircle2" data-toggle="tooltip" data-placement="top" title="'. $onClick_tooltip .'"><i class="'.$onClick_icon.'" aria-hidden="true"></i></button>';
+                                                if($countQuery_AssignedUsers <= 0){
+                                                    $sr_output .= '<button id="'.$this_uRoleCard->uRole_id.'" onclick="deleteSystemRole(this.id)" class="btn cust_btn_smcircle2" data-toggle="tooltip" data-placement="top" title="Delete '. ucwords($this_uRoleCard->uRole) .' Role?"><i class="fa fa-trash" aria-hidden="true"></i></button>';
+                                                }
+                                            }
+                                            $sr_output .= '
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    ';
+                }
+            }else{
+                $sr_output .= '
+                <div class="col-lg-12 col-md-12 col-sm-12 mt-4">
+                    <div class="card-body card_body_bg_gray2 card_gbr card_ofh mb-2">
+                        <span class="lightBlue_cardBody_list font-italic"><i class="fa fa-exclamation-circle font-weight-bold mr-1" aria-hidden="true"></i> ' . $txt_totalRolesFound.'</span>
+                    </div>
+                </div>
+                ';
+            }
+
+            $sr_data = array(
+                'system_roles_cards' => $sr_output,
+                'total_roles_found'  => $txt_totalRolesFound
+            );
+         
+            echo json_encode($sr_data);
+        }else{
+            return view('violation_records.system_roles');
         }
     }
 
@@ -3227,6 +3508,116 @@ class UserManagementController extends Controller
             }else{
                 return back()->withFailedStatus(''.$sel_uRole . ' Role Backup has Failed! try again later.');
             }
+    }
+    // permanent delete system role confirmation on modal
+    public function permanent_delete_system_role_confirmation_modal(Request $request){
+        // get selected uRole_id
+            $permDelete_uRole_id = $request->get('permDelete_uRole_id');
+
+        // get role details from user_roles_tbl
+            $get_role_details     = Userroles::where('uRole_id', $permDelete_uRole_id)->first();
+            $get_uRole_status     = $get_role_details->uRole_status;
+            $get_uRole_type       = $get_role_details->uRole_type;
+            $get_uRole            = $get_role_details->uRole;
+            $get_uRole_access     = $get_role_details->uRole_access;
+            $get_uRole_created_by = $get_role_details->created_by;
+            $get_uRole_created_at = $get_role_details->created_at;
+
+        // get info of user who created this role
+            $get_created_by_user  = Users::where('id', $get_uRole_created_by)->first();
+            $get_created_by_lname = $get_created_by_user->user_lname; 
+            $get_created_by_fname = $get_created_by_user->user_fname; 
+
+        // get all assigned users
+            $get_assigned_users = Users::where('user_role', $get_uRole)->get();
+
+        $output = '';
+        $output .='
+            <div class="modal-body border-0 p-0">
+                <div class="cust_modal_body_gray">
+                    <div class="accordion shadow cust_accordion_div" id="deactivateURoleModalAccordion_Parent'.$permDelete_uRole_id.'">
+                        <div class="card custom_accordion_card">
+                            <div class="card-header p-0" id="deactivateRoleCollapse_heading'.$permDelete_uRole_id.'">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-block custom2_btn_collapse d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#deactivateURoleCollapse_Div'.$permDelete_uRole_id.'" aria-expanded="true" aria-controls="deactivateURoleCollapse_Div'.$permDelete_uRole_id.'">
+                                        <div>
+                                            <span class="accordion_title">'.$get_uRole.'</span>
+                                            <span class="accordion_subtitle">'; 
+                                                if(count($get_assigned_users) > 0){
+                                                    if(count($get_assigned_users) > 1){
+                                                        $output .= count($get_assigned_users). ' Assigned Users Found.';
+                                                    }else{
+                                                        $output .= count($get_assigned_users). ' Assigned User Found.';
+                                                    }
+                                                }else{
+                                                    $output .= 'No Assigned Users.';
+                                                }
+                                            $output .='
+                                            </span>
+                                        </div>
+                                        <i class="nc-icon nc-minimal-down custom2_btn_collapse_icon"></i>
+                                    </button>
+                                </h2>
+                            </div>
+                            <div id="deactivateURoleCollapse_Div'.$permDelete_uRole_id.'" class="collapse cust_collapse_active cb_t0b12y20" aria-labelledby="deactivateRoleCollapse_heading'.$permDelete_uRole_id.'" data-parent="#deactivateURoleModalAccordion_Parent'.$permDelete_uRole_id.'">
+                                <div class="card-body lightBlue_cardBody mt-2">
+                                    <span class="lightBlue_cardBody_blueTitle">Assigned Users:</span>';
+                                    if(count($get_assigned_users) > 0){
+                                        foreach($get_assigned_users as $index => $assigned_user){
+                                            $output .= '<span class="lightBlue_cardBody_list"><span class="lightBlue_cardBody_listCount">'.($index+1).'.</span> ' .$assigned_user->user_fname. ' ' .$assigned_user->user_lname. '</span>';
+                                        }
+                                    }else{
+                                        $output .= '<span class="lightBlue_cardBody_list font-italic">No assigned users found.</span>';
+                                    }
+                                    $output .= '
+                                </div>
+                                <div class="card-body lightGreen_cardBody mt-2 mb-2">
+                                    <span class="lightGreen_cardBody_greenTitle">Access Controls:</span>';
+                                    if(!is_null($get_uRole_access)){
+                                        foreach(json_decode(json_encode($get_uRole_access), true) as $index => $uRole_access){
+                                            $output .= '<span class="lightGreen_cardBody_list"><span class="lightGreen_cardBody_listCount">'.($index+1).'.</span> '.ucwords($uRole_access).'</span>';
+                                        }
+                                    }else{
+                                        $output .= '<span class="lightGreen_cardBody_notice"><i class="fa fa-lock" aria-hidden="true"></i> No access controls found.</span>';
+                                    }
+                                    $output .= '    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form id="form_systemRoleTempDeletion" action="'.route('user_management.process_temporary_delete_system_role').'" class="deactivateRoleConfirmationForm" method="POST">
+                <div class="modal-body pb-0">';
+                if(count($get_assigned_users) > 0){
+                $output .= '
+                    <div class="card-body lightRed_cardBody shadow-none">
+                        <span class="lightRed_cardBody_notice"><i class="fa fa-lock" aria-hidden="true"></i> Deactivating <span class="font-weight-bold"> ' .ucwords($get_uRole). ' </span> Role will also deactivate the assigned users wherein they will no longer be able to access the system until activation.</span>
+                    </div>';
+                }
+                $output .='
+                    <div class="card-body lightBlue_cardBody shadow-none mt-2">
+                        <span class="lightBlue_cardBody_blueTitle">Reason for Deleting ' .ucwords($get_uRole). ' Role:</span>
+                        <div class="form-group">
+                            <textarea class="form-control" id="temp_delete_role_reason" name="temp_delete_role_reason" rows="3" placeholder="Type reason for Deletion (optional)"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <input type="hidden" name="_token" value="'.csrf_token().'">
+                    <input type="hidden" name="temp_delete_selected_role_id" value="'.$permDelete_uRole_id.'">
+                    <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
+                    <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
+                    <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
+                    <div class="btn-group" role="group" aria-label="Basic example">
+                        <button id="cancel_tempDeleteSystemRole_btn" type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                        <button id="process_tempDeleteSystemRole_btn" type="submit" class="btn btn-round btn_svms_red btn_show_icon m-0">Delete this Role <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+            </form>
+        ';
+
+        echo $output;
     }
 
     // FUNCTIONS FOR SYSTEM USERS
