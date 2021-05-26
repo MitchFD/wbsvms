@@ -28,6 +28,8 @@ class CreateDeleteduserrolesTable extends Migration
             $table->timestamp('deleted_at')->format('Y-m-d H:i:s')->nullable();
             $table->unsignedBigInteger('deleted_by');
                 // $table->foreign('deleted_by')->references('id')->on('users')->onDelete('cascade');
+            $table->timestamp('perm_deleted_at')->format('Y-m-d H:i:s')->nullable();
+            $table->unsignedBigInteger('perm_deleted_by')->nullable();
         });
     }
 

@@ -592,6 +592,9 @@ fieldset[disabled] .btn_svms_blue.active {
 .cursor_pointer{
   cursor: pointer !important;
 }
+.cursor_default{
+  cursor: default !important;
+}
 
 /* table customizations */
 .w20prcnt{
@@ -1687,6 +1690,15 @@ a.text_svms_gray:hover {
   text-decoration: none !important;
   text-transform: normal !important;
   color: var(--svms_light_blue);
+}
+.accordion_subtitlev1{
+  display: block;
+  font-size: 13px !important;
+  font-weight: bold !important;
+  text-decoration: none !important;
+  text-transform: normal !important;
+  font-style: italic !important;
+  color: var(--svms_red);
 }
 .accordion_title_gray{
   display: block;

@@ -116,6 +116,17 @@
         {{-- deleted system roles card --}}
         @php
             $countAll_deletedRoles = count($queryAll_DeletedRoles);
+            if($countAll_deletedRoles > 0){
+                if($countAll_deletedRoles > 1){
+                    $tdrC_s = 's'; 
+                }else{
+                    $tdrC_s = '';
+                }
+                $txt_totalDeletedRolesCount = ''.$countAll_deletedRoles . ' Deleted System Role'.$tdrC_s . ' Found.';
+            }else{
+                $tdrC_s = '';
+                $txt_totalDeletedRolesCount = 'No Deleted System Roles Found.';
+            }
         @endphp
         @if($countAll_deletedRoles > 0)
             <div class="row">
@@ -123,7 +134,7 @@
                     <div class="accordion gCardAccordions" id="recentlyDeletedRolesDisplayCollapseParent">
                         <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray">
                             <div class="card-header p-0" id="recentlyDeletedRolesDisplayCollapseHeading">
-                                <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse pb-0 m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#recentlyDeletedRolesDisplayCollapseDiv" aria-expanded="true" aria-controls="recentlyDeletedRolesDisplayCollapseDiv">
+                                <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#recentlyDeletedRolesDisplayCollapseDiv" aria-expanded="true" aria-controls="recentlyDeletedRolesDisplayCollapseDiv">
                                     <div>
                                         <span class="card_body_title">Recently Deleted</span>
                                         <span class="card_body_subtitle">Below are System Roles that have been deleted.</span>
@@ -133,6 +144,27 @@
                             </div>
                             <div id="recentlyDeletedRolesDisplayCollapseDiv" class="collapse gCardAccordions_collapse show cb_t0r25b25l10" aria-labelledby="recentlyDeletedRolesDisplayCollapseHeading" data-parent="#recentlyDeletedRolesDisplayCollapseParent">
                                 @foreach($queryAll_DeletedRoles as $this_deletedRole)
+                                    @php
+                                        // get responsible user who created this role
+                                        if(auth()->user()->id === $this_deletedRole->del_created_by){
+                                            $txtRole_createdByName  = 'Created by You.';
+                                            $txtRole_createdByRole = '';
+                                        }else{
+                                            $queryUser_createdBy   = App\Models\Users::select('id', 'user_fname', 'user_lname', 'user_role')->where('id', '=', $this_deletedRole->del_created_by)->first();
+                                            $txtRole_createdByName = ''.$queryUser_createdBy->user_fname . ' ' . $queryUser_createdBy->user_lname.'';
+                                            $txtRole_createdByRole = '('.ucwords($queryUser_createdBy->user_role).')';
+                                        }
+
+                                        // get responsible user who deleted this role
+                                        if(auth()->user()->id === $this_deletedRole->deleted_by){
+                                            $txtRole_deletedByName = 'Deleted by You.';
+                                            $txtRole_deletedByRole = '';
+                                        }else{
+                                            $queryUser_deletedBy   = App\Models\Users::select('id', 'user_fname', 'user_lname', 'user_role')->where('id', '=', $this_deletedRole->deleted_by)->first();
+                                            $txtRole_deletedByName = ''.$queryUser_deletedBy->user_fname . ' ' . $queryUser_deletedBy->user_lname.'';
+                                            $txtRole_deletedByRole = '('.ucwords($queryUser_deletedBy->user_role).')';
+                                        }
+                                    @endphp
                                     <div class="col-lg-4 col-md-4 col-sm-12 mt-4">
                                         <div class="accordion violaAccordions shadow cust_accordion_div" id="dsr{{$this_deletedRole->del_uRole_id}}Accordion_Parent">
                                             <div class="card custom_accordion_card">
@@ -142,7 +174,7 @@
                                                             <div class="d-flex justify-content-start align-items-center">
                                                                 <div class="information_div2">
                                                                     <span class="li_info_title">{{ucwords($this_deletedRole->del_uRole) }}</span>
-                                                                    <span class="li_info_subtitle3"> {{ date('F d, Y (D ~ g:i A)', strtotime($this_deletedRole->deleted_at))}} </span>
+                                                                    <span class="li_info_subtitle3" data-toggle="tooltip" data-placement="top" title="Date the {{ ucwords($this_deletedRole->del_uRole) }} Role was deleted:">{{ date('F d, Y (D ~ g:i A)', strtotime($this_deletedRole->deleted_at))}} </span>
                                                                 </div>
                                                             </div>
                                                             <i class="nc-icon nc-minimal-up"></i>
@@ -183,11 +215,22 @@
                                                         </div>
                                                     @endif
                                                     {{-- footer --}}
+                                                    <div class="row mt-3">
+                                                        <div class="col-lg-12 col-md-12 col-sm-12 d-flex justify-content-between align-items-center">
+                                                            <div class="cursor_default" data-toggle="tooltip" data-placement="top" title="Date the {{ ucwords($this_deletedRole->del_uRole) }} Role was created and created by:">
+                                                                <span class="cust_info_txtwicon mb-1"><i class="fa fa-calendar-plus-o mr-1" aria-hidden="true"></i>{{ date('F d, Y (D ~ g:i A)', strtotime($this_deletedRole->del_created_at)) }}</span> 
+                                                                <span class="cust_info_txtwicon"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> {{ $txtRole_createdByName }} <span class="font-italic"> {{ $txtRole_createdByRole }} </span></span> 
+                                                            </div> 
+                                                            <div class="d-flex align-items-end">
+                                                                <button id="{{$this_deletedRole->del_uRole_id}}" onclick="permanentDeleteSystemRole(this.id)" class="btn cust_btn_smcircle2" data-toggle="tooltip" data-placement="top" title="Recover {{ ucwords($this_deletedRole->del_uRole) }} Role?"><i class="fa fa-external-link" aria-hidden="true"></i></button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <hr class="hr_gry">
                                                     <div class="row mt-2">
                                                         <div class="col-lg-12 col-md-12 col-sm-12 d-flex justify-content-between align-items-center">
-                                                            <div>
-                                                                <span class="cust_info_txtwicon mb-1"><i class="fa fa-calendar-plus-o mr-1" aria-hidden="true"></i> Created on</span> 
-                                                                <span class="cust_info_txtwicon"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> Created By</span> 
+                                                            <div class="cursor_default" data-toggle="tooltip" data-placement="top" title="Deleted by:">
+                                                                <span class="cust_info_txtwicon text_svms_red"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> {{ $txtRole_deletedByName }} <span class="font-italic"> {{ $txtRole_deletedByRole }} </span></span> 
                                                             </div> 
                                                             <div class="d-flex align-items-end">
                                                                 <button id="{{$this_deletedRole->del_uRole_id}}" onclick="permanentDeleteSystemRole(this.id)" class="btn cust_btn_smcircle2" data-toggle="tooltip" data-placement="top" title="Delete {{ ucwords($this_deletedRole->del_uRole) }} Role Permanently?"><i class="fa fa-trash" aria-hidden="true"></i></button>
@@ -199,6 +242,17 @@
                                         </div>
                                     </div>
                                 @endforeach
+                                <div class="row mt-4">
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <div class="card-body py-0 pr-0 d-flex justify-content-between align-items-center">
+                                            <span class="cust_info_txtwicon font-weight-bold"><i class="fa fa-trash mr-1" aria-hidden="true"></i> {{ $txt_totalDeletedRolesCount }} </span>  
+                                            <div>
+                                                <button class="btn cust_btn_smcircle5v1" data-toggle="tooltip" data-placement="top" title="Recover All Recently Deleted Roles?"><i class="fa fa-external-link" aria-hidden="true"></i></button>
+                                                <button class="btn cust_btn_smcircle5v1" data-toggle="tooltip" data-placement="top" title="Permanent Delete All Recently Deleted Roles?"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -360,7 +414,7 @@
             </div>
         </div>
     {{-- temporary delete system role modal end --}}
-    {{-- temporary delete system role modal --}}
+    {{-- permanent delete system role modal --}}
         <div class="modal fade" id="permanentDeleteSystemRoleModal" tabindex="-1" role="dialog" aria-labelledby="permanentDeleteSystemRoleModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content cust_modal">
@@ -376,7 +430,7 @@
                 </div>
             </div>
         </div>
-    {{-- temporary delete system role modal end --}}
+    {{-- permanent delete system role modal end --}}
 
 @endsection
 
@@ -499,6 +553,19 @@
                 }
             });
         }
+    </script>
+    <script>
+        $('#permanentDeleteSystemRoleModal').on('show.bs.modal', function () {
+            var form_systemRolePermDeletion  = document.querySelector("#form_systemRolePermDeletion");
+            var process_permDeleteSystemRole_btn = document.querySelector("#process_permDeleteSystemRole_btn");
+            var cancel_permDeleteSystemRole_btn = document.querySelector("#cancel_permDeleteSystemRole_btn");
+            // disable cancel and sibmit button on submit
+            $(form_systemRolePermDeletion).submit(function(){
+                cancel_permDeleteSystemRole_btn.disabled = true;
+                process_permDeleteSystemRole_btn.disabled = true;
+                return true;
+            });
+        });
     </script>
 {{-- delete system role --}}
 

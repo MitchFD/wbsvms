@@ -690,7 +690,7 @@ class UserManagementController extends Controller
         if(in_array('users management', $get_uRole_access)){
             $countAll_RegisteredRoles = Userroles::count();
             $queryAll_RegisteredRoles = Userroles::get();
-            $queryAll_DeletedRoles    = Deleteduserroles::get();
+            $queryAll_DeletedRoles    = Deleteduserroles::where('del_status', '=', 1)->get();
             return view('user_management.system_roles')->with(compact('countAll_RegisteredRoles', 'queryAll_RegisteredRoles', 'queryAll_DeletedRoles'));
         }else{
             return view('profile.access_denied');
@@ -3515,109 +3515,178 @@ class UserManagementController extends Controller
             $permDelete_uRole_id = $request->get('permDelete_uRole_id');
 
         // get role details from user_roles_tbl
-            $get_role_details     = Userroles::where('uRole_id', $permDelete_uRole_id)->first();
-            $get_uRole_status     = $get_role_details->uRole_status;
-            $get_uRole_type       = $get_role_details->uRole_type;
-            $get_uRole            = $get_role_details->uRole;
-            $get_uRole_access     = $get_role_details->uRole_access;
-            $get_uRole_created_by = $get_role_details->created_by;
-            $get_uRole_created_at = $get_role_details->created_at;
+            $query_del_uRole_details  = Deleteduserroles ::where('del_uRole_id', $permDelete_uRole_id)->first();
+            $get_reason_deletion      = $query_del_uRole_details->reason_deletion;
+            $get_del_uRole_status     = $query_del_uRole_details->del_uRole_status;
+            $get_del_uRole_type       = $query_del_uRole_details->del_uRole_type;
+            $get_del_uRole            = $query_del_uRole_details->del_uRole;
+            $get_del_uRole_access     = $query_del_uRole_details->del_uRole_access;
+            $get_del_uRole_created_by = $query_del_uRole_details->del_created_by;
+            $get_del_uRole_created_at = $query_del_uRole_details->del_created_at;
+            $get_uRole_deleted_at     = $query_del_uRole_details->deleted_at;
+            $get_uRole_deleted_by     = $query_del_uRole_details->deleted_by;
+
+        // cusotm values
+            $sq = "'";
 
         // get info of user who created this role
-            $get_created_by_user  = Users::where('id', $get_uRole_created_by)->first();
-            $get_created_by_lname = $get_created_by_user->user_lname; 
-            $get_created_by_fname = $get_created_by_user->user_fname; 
+            if(auth()->user()->id === $get_del_uRole_created_by){
+                $txtRole_createdByName  = 'Created by You.';
+                $txtRole_createdByRole = '';
+            }else{
+                $queryUser_createdBy   = App\Models\Users::select('id', 'user_fname', 'user_lname', 'user_role')->where('id', '=', $get_del_uRole_created_by)->first();
+                $txtRole_createdByName = ''.$queryUser_createdBy->user_fname . ' ' . $queryUser_createdBy->user_lname.'';
+                $txtRole_createdByRole = '('.ucwords($queryUser_createdBy->user_role).')';
+            }
+
+        // get responsible user who deleted this role
+            if(auth()->user()->id === $get_uRole_deleted_by){
+                $txtRole_deletedByName = 'Deleted by You.';
+                $txtRole_deletedByRole = '';
+            }else{
+                $queryUser_deletedBy   = App\Models\Users::select('id', 'user_fname', 'user_lname', 'user_role')->where('id', '=', $get_uRole_deleted_by)->first();
+                $txtRole_deletedByName = ''.$queryUser_deletedBy->user_fname . ' ' . $queryUser_deletedBy->user_lname.'';
+                $txtRole_deletedByRole = '('.ucwords($queryUser_deletedBy->user_role).')';
+            }
 
         // get all assigned users
-            $get_assigned_users = Users::where('user_role', $get_uRole)->get();
+            $get_assigned_users = Users::where('user_role', $get_del_uRole)->get();
 
         $output = '';
         $output .='
             <div class="modal-body border-0 p-0">
                 <div class="cust_modal_body_gray">
-                    <div class="accordion shadow cust_accordion_div" id="deactivateURoleModalAccordion_Parent'.$permDelete_uRole_id.'">
+                    <div class="accordion shadow cust_accordion_div" id="permDeleteURoleModalAccordion_Parent'.$permDelete_uRole_id.'">
                         <div class="card custom_accordion_card">
                             <div class="card-header p-0" id="deactivateRoleCollapse_heading'.$permDelete_uRole_id.'">
                                 <h2 class="mb-0">
-                                    <button class="btn btn-block custom2_btn_collapse d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#deactivateURoleCollapse_Div'.$permDelete_uRole_id.'" aria-expanded="true" aria-controls="deactivateURoleCollapse_Div'.$permDelete_uRole_id.'">
+                                    <button class="btn btn-block custom2_btn_collapse d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#permDeleteURoleCollapse_Div'.$permDelete_uRole_id.'" aria-expanded="true" aria-controls="permDeleteURoleCollapse_Div'.$permDelete_uRole_id.'">
                                         <div>
-                                            <span class="accordion_title">'.$get_uRole.'</span>
-                                            <span class="accordion_subtitle">'; 
-                                                if(count($get_assigned_users) > 0){
-                                                    if(count($get_assigned_users) > 1){
-                                                        $output .= count($get_assigned_users). ' Assigned Users Found.';
-                                                    }else{
-                                                        $output .= count($get_assigned_users). ' Assigned User Found.';
-                                                    }
-                                                }else{
-                                                    $output .= 'No Assigned Users.';
-                                                }
-                                            $output .='
-                                            </span>
+                                            <span class="accordion_title">'.ucwords($get_del_uRole).'</span>
+                                            <span class="accordion_subtitlev1" data-toggle="tooltip" data-placement="top" title="Date the ' . ucwords($get_del_uRole) . '  Role was deleted:"> ' . date('F d, Y (D ~ g:i A)', strtotime($get_uRole_deleted_at)) . '</span>
                                         </div>
                                         <i class="nc-icon nc-minimal-down custom2_btn_collapse_icon"></i>
                                     </button>
                                 </h2>
                             </div>
-                            <div id="deactivateURoleCollapse_Div'.$permDelete_uRole_id.'" class="collapse cust_collapse_active cb_t0b12y20" aria-labelledby="deactivateRoleCollapse_heading'.$permDelete_uRole_id.'" data-parent="#deactivateURoleModalAccordion_Parent'.$permDelete_uRole_id.'">
-                                <div class="card-body lightBlue_cardBody mt-2">
-                                    <span class="lightBlue_cardBody_blueTitle">Assigned Users:</span>';
-                                    if(count($get_assigned_users) > 0){
-                                        foreach($get_assigned_users as $index => $assigned_user){
-                                            $output .= '<span class="lightBlue_cardBody_list"><span class="lightBlue_cardBody_listCount">'.($index+1).'.</span> ' .$assigned_user->user_fname. ' ' .$assigned_user->user_lname. '</span>';
+                            <div id="permDeleteURoleCollapse_Div'.$permDelete_uRole_id.'" class="collapse cust_collapse_active cb_t0b12y20 active show" aria-labelledby="deactivateRoleCollapse_heading'.$permDelete_uRole_id.'" data-parent="#permDeleteURoleModalAccordion_Parent'.$permDelete_uRole_id.'">
+                                <div class="card-body lightBlue_cardBody mt-0 mb-2">
+                                    <span class="lightBlue_cardBody_blueTitle">Access Controls:</span>';
+                                    if(!is_null($get_del_uRole_access)){
+                                        foreach(json_decode(json_encode($get_del_uRole_access), true) as $index => $uRole_access){
+                                            $output .= '<span class="lightBlue_cardBody_list"><span class="lightBlue_cardBody_listCount">'.($index+1).'.</span> '.ucwords($uRole_access).'</span>';
                                         }
                                     }else{
-                                        $output .= '<span class="lightBlue_cardBody_list font-italic">No assigned users found.</span>';
-                                    }
-                                    $output .= '
-                                </div>
-                                <div class="card-body lightGreen_cardBody mt-2 mb-2">
-                                    <span class="lightGreen_cardBody_greenTitle">Access Controls:</span>';
-                                    if(!is_null($get_uRole_access)){
-                                        foreach(json_decode(json_encode($get_uRole_access), true) as $index => $uRole_access){
-                                            $output .= '<span class="lightGreen_cardBody_list"><span class="lightGreen_cardBody_listCount">'.($index+1).'.</span> '.ucwords($uRole_access).'</span>';
-                                        }
-                                    }else{
-                                        $output .= '<span class="lightGreen_cardBody_notice"><i class="fa fa-lock" aria-hidden="true"></i> No access controls found.</span>';
+                                        $output .= '<span class="lightBlue_cardBody_notice"><i class="fa fa-lock" aria-hidden="true"></i> No access controls found.</span>';
                                     }
                                     $output .= '    
+                                </div>
+                                ';
+                                if(!is_null($get_reason_deletion) OR !empty($get_reason_deletion)){
+                                    $output .= '
+                                    <div class="card-body lightBlue_cardBody mt-0 mb-2">
+                                        <span class="lightBlue_cardBody_blueTitle">Reason of Deletion:</span>
+                                        <span class="lightBlue_cardBody_list"><i class="fa fa-question-circle font-weight-bold" aria-hidden="true"></i> ' . $get_reason_deletion . ' </span>    
+                                    </div>
+                                    ';
+                                }
+                                $output .= '
+                                <div class="row mt-3">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 cursor_default" data-toggle="tooltip" data-placement="top" title="Date the ' . ucwords($get_del_uRole) . ' Role was created and created by:">
+                                        <span class="cust_info_txtwicon mb-1"><i class="fa fa-calendar-plus-o mr-1" aria-hidden="true"></i> ' . date('F d, Y (D ~ g:i A)', strtotime($get_del_uRole_created_at)) . ' </span> 
+                                        <span class="cust_info_txtwicon"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> ' . $txtRole_createdByName . ' <span class="font-italic"> ' . $txtRole_createdByRole . ' </span></span> 
+                                    </div>
+                                </div>
+                                <hr class="hr_gry">
+                                <div class="row mt-2">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 cursor_default" data-toggle="tooltip" data-placement="top" title="Deleted by:">
+                                        <span class="cust_info_txtwicon"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> ' . $txtRole_deletedByName . ' <span class="font-italic"> ' . $txtRole_deletedByRole . ' </span></span> 
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <form id="form_systemRoleTempDeletion" action="'.route('user_management.process_temporary_delete_system_role').'" class="deactivateRoleConfirmationForm" method="POST">
-                <div class="modal-body pb-0">';
-                if(count($get_assigned_users) > 0){
-                $output .= '
+            <form id="form_systemRolePermDeletion" action="'.route('user_management.process_permanent_delete_system_role').'" class="deactivateRoleConfirmationForm" method="POST">
+                <div class="modal-body pb-0">
                     <div class="card-body lightRed_cardBody shadow-none">
-                        <span class="lightRed_cardBody_notice"><i class="fa fa-lock" aria-hidden="true"></i> Deactivating <span class="font-weight-bold"> ' .ucwords($get_uRole). ' </span> Role will also deactivate the assigned users wherein they will no longer be able to access the system until activation.</span>
-                    </div>';
-                }
-                $output .='
-                    <div class="card-body lightBlue_cardBody shadow-none mt-2">
-                        <span class="lightBlue_cardBody_blueTitle">Reason for Deleting ' .ucwords($get_uRole). ' Role:</span>
-                        <div class="form-group">
-                            <textarea class="form-control" id="temp_delete_role_reason" name="temp_delete_role_reason" rows="3" placeholder="Type reason for Deletion (optional)"></textarea>
-                        </div>
+                        <span class="lightRed_cardBody_notice"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> This action will permanently delete ' . ucwords($get_del_uRole) . ' Role and can'.$sq.'t be undone.</span>
                     </div>
                 </div>
                 <div class="modal-footer border-0">
                     <input type="hidden" name="_token" value="'.csrf_token().'">
-                    <input type="hidden" name="temp_delete_selected_role_id" value="'.$permDelete_uRole_id.'">
+                    <input type="hidden" name="perm_delete_selected_role_id[]" value="'.$permDelete_uRole_id.'">
                     <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
                     <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
                     <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
                     <div class="btn-group" role="group" aria-label="Basic example">
-                        <button id="cancel_tempDeleteSystemRole_btn" type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
-                        <button id="process_tempDeleteSystemRole_btn" type="submit" class="btn btn-round btn_svms_red btn_show_icon m-0">Delete this Role <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                        <button id="cancel_permDeleteSystemRole_btn" type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                        <button id="process_permDeleteSystemRole_btn" type="submit" class="btn btn-round btn_svms_red btn_show_icon m-0">Delete Forever <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
                     </div>
                 </div>
             </form>
         ';
 
         echo $output;
+    }
+    // process permanent deletion of selected system roles
+    public function process_permanent_delete_system_role(Request $request){
+        // get all request
+            $get_perDelete_uRole_ids = json_decode(json_encode($request->get('perm_delete_selected_role_id')), true);
+            $get_respo_user_id       = $request->get('respo_user_id');
+            $get_respo_user_lname    = $request->get('respo_user_lname');
+            $get_respo_user_fname    = $request->get('respo_user_fname');
+        // custom values
+            $now_timestamp = now();
+            $sq = "'";
+            if(!is_null($get_perDelete_uRole_ids) OR !empty($get_perDelete_uRole_ids)){
+                $count_get_perDelete_uRole_ids = count($get_perDelete_uRole_ids);
+            }else{
+                $count_get_perDelete_uRole_ids = 0;
+            }
+            if($count_get_perDelete_uRole_ids > 1){
+                $suR_s = 's';
+            }else{
+                $suR_s = '';
+            }
+        // process permanent deletion
+            if($count_get_perDelete_uRole_ids > 0){
+                $zero = 0;
+                foreach($get_perDelete_uRole_ids as $this_recDel_uRoleID){
+                    // get recently deleted role info
+                    $query_del_uRole_details  = Deleteduserroles ::select('del_uRole')->where('del_uRole_id', $this_recDel_uRoleID)->first();
+                    $get_del_uRole            = ucwords($query_del_uRole_details->del_uRole);
+                    // update del_status from deleted_user_roles_tbl
+                    $update_DelStatus = Deleteduserroles::where('del_uRole_id', '=', $this_recDel_uRoleID)
+                                            ->update([
+                                                'del_status'      => $zero,
+                                                'perm_deleted_at' => $now_timestamp,
+                                                'perm_deleted_by' => $get_respo_user_id
+                                            ]);
+                    // if update was a success
+                    if($update_DelStatus){
+                        // record activity
+                        $record_act = new Useractivites;
+                        $record_act->created_at            = $now_timestamp;
+                        $record_act->act_respo_user_id     = $get_respo_user_id;
+                        $record_act->act_respo_users_lname = $get_respo_user_lname;
+                        $record_act->act_respo_users_fname = $get_respo_user_fname;
+                        $record_act->act_type              = 'role deletion';
+                        $record_act->act_details           = 'Permanently Deleted ' . $get_del_uRole . ' Role.';
+                        $record_act->act_affected_id       = $this_recDel_uRoleID;
+                        $record_act->save();
+                    }
+                }
+                // if all process was a succes
+                if($record_act){
+                    return back()->withSuccessStatus(''.$count_get_perDelete_uRole_ids . ' Role'.$suR_s . ' has been deleted permanently.');
+                }else{
+                    return back()->withFailedStatus('There has been a problem deleting the System Role! please try again.');
+                }
+            }else{
+                return back()->withFailedStatus(' There are no selected System Roles for deletion! please try again.');
+            }
     }
 
     // FUNCTIONS FOR SYSTEM USERS

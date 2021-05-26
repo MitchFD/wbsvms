@@ -25,7 +25,8 @@ class Deleteduserroles extends Model
         'del_uRole_access' => 'array',
         'del_assUsers_count',
         'del_created_by',
-        'deleted_by'
+        'deleted_by',
+        'perm_deleted_by'
     ];
     protected $casts = [
         'del_uRole_access' => 'array'
