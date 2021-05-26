@@ -572,9 +572,9 @@ class UserManagementController extends Controller
                     }else{
                         if($tolower_uStatus === 'deactivated' OR $tolower_uRoleStatus === 'deactivated'){
                             $tr_gray_stat    = 'gry_stat';
-                            $stat_txt_filter = 'text_svms_red';
+                            $stat_txt_filter = 'text_svms_gray';
                             $stat_txt_alt    = 'deactivated';
-                            $uImg_fltr       = 'rslts_dele';
+                            $uImg_fltr       = 'rslts_deact';
                         }else{
                             if($tolower_uRoleStatus === 'deleted'){
                                 $tr_gray_stat    = 'gry_stat';
@@ -583,7 +583,7 @@ class UserManagementController extends Controller
                                 $uImg_fltr       = 'rslts_dele';
                             }else{
                                 $tr_gray_stat    = 'gry_stat';
-                                $stat_txt_filter = '';
+                                $stat_txt_filter = 'text_svms_gray';
                                 $stat_txt_alt    = 'pending';
                                 $uImg_fltr       = 'rslts_deact';
                             }
@@ -592,17 +592,26 @@ class UserManagementController extends Controller
                     // user image handler
                     if(!is_null($row->user_image) OR !empty($row->user_image)){
                         $user_imgJpgFile = $row->user_image;
+                        if($tolower_uStatus === 'active' AND $tolower_uRoleStatus === 'active'){
+                            $gray_image_filter = '';
+                        }else{
+                            $gray_image_filter = 'gray_image_filter';
+                        }
                     }else{
-                        if($tolower_uStatus === 'active'){
+                        if($tolower_uStatus === 'active' AND $tolower_uRoleStatus === 'active'){
                             if($tolower_uType === 'employee'){
-                                $user_imgJpgFile = 'employee_user_image.jpg';
+                                $user_imgJpgFile   = 'employee_user_image.jpg';
+                                $gray_image_filter = '';
                             }elseif($tolower_uType === 'student'){
-                                $user_imgJpgFile = 'student_user_image.jpg';
+                                $user_imgJpgFile   = 'student_user_image.jpg';
+                                $gray_image_filter = '';
                             }else{
-                                $user_imgJpgFile = 'disabled_user_image.jpg';
+                                $user_imgJpgFile   = 'disabled_user_image.jpg';
+                                $gray_image_filter = 'gray_image_filter';
                             }
                         }else{
-                            $user_imgJpgFile = 'no_student_image.jpg';
+                            $user_imgJpgFile   = 'no_student_image.jpg';
+                            $gray_image_filter = 'gray_image_filter';
                         }
                     }
 
@@ -612,7 +621,7 @@ class UserManagementController extends Controller
                     $output .='
                         <tr class="'.$tr_gray_stat.'">
                             <td class="pl12">
-                                <img class="rslts_userImgs ' . $uImg_fltr.'" src="'.asset('storage/svms/user_images/'.$user_imgJpgFile).'" alt="'.$row->user_fname . ' ' . $row->user_lname.''.$apost.'s profile image">
+                                <img class="rslts_userImgs ' . $uImg_fltr . ' ' . $gray_image_filter . '" src="'.asset('storage/svms/user_images/'.$user_imgJpgFile).'" alt="'.$row->user_fname . ' ' . $row->user_lname.''.$apost.'s profile image">
                                 <span class="ml-3">'.preg_replace('/('.$su_search.')/i','<span class="grn_highlight">$1</span>', $row->user_fname). ' ' .preg_replace('/('.$su_search.')/i','<span class="grn_highlight">$1</span>', $row->user_lname).'</span>
                             </td>
                             <td>'.preg_replace('/('.$su_search.')/i','<span class="grn_highlight">$1</span>', ucwords($row->user_sdca_id)).'</td>

@@ -155,13 +155,35 @@
                                         <div class="col-lg-12 col-md-12">
                                             <div class="card cust_listCard shadow-none">
                                                 @foreach($deactivated_users->sortBy('id') as $deactivated_user)
+                                                    @php
+                                                        // tolower case user_type
+                                                        $tolower_uType = Str::lower($deactivated_user->user_type);
+                                                        $tolower_uStatus = Str::lower($deactivated_user->user_status);
+                                                        $tolower_uRoleStatus = Str::lower($deactivated_user->user_role_status);
+                                                        // user image handler
+                                                        if(!is_null($deactivated_user->user_image) OR !empty($deactivated_user->user_image)){
+                                                            $user_imgJpgFile = $deactivated_user->user_image;
+                                                        }else{
+                                                            if($tolower_uStatus === 'active'){
+                                                                if($tolower_uType === 'employee'){
+                                                                    $user_imgJpgFile = 'employee_user_image.jpg';
+                                                                }elseif($tolower_uType === 'student'){
+                                                                    $user_imgJpgFile = 'student_user_image.jpg';
+                                                                }else{
+                                                                    $user_imgJpgFile = 'disabled_user_image.jpg';
+                                                                }
+                                                            }else{
+                                                                $user_imgJpgFile = 'no_student_image.jpg';
+                                                            }
+                                                        }
+                                                    @endphp
                                                     <div class="card-header cust_listCard_header2">
                                                         <div class="d-flex justify-content-center align-items-center">
                                                             <div class="display_user_image_div text-center">
                                                                 @if($deactivated_user->user_type === 'student')
-                                                                <img class="display_user_image grayImg_border shadow-none" src="{{asset('storage/svms/user_images/'.$deactivated_user->user_image)}}" alt="upload user's image">
+                                                                <img class="display_user_image grayImg_border shadow-none" src="{{asset('storage/svms/user_images/'.$user_imgJpgFile)}}" alt="upload user's image">
                                                                 @else
-                                                                <img class="display_user_image grayImg_border shadow-none" src="{{asset('storage/svms/user_images/'.$deactivated_user->user_image)}}" alt="upload user's image">
+                                                                <img class="display_user_image grayImg_border shadow-none" src="{{asset('storage/svms/user_images/'.$user_imgJpgFile)}}" alt="upload user's image">
                                                                 @endif
                                                             </div>
                                                             <div class="information_div ml-3 text-left">
@@ -243,10 +265,30 @@
                                                         <div class="assignedUsersCirclesDiv">
                                                             <?php
                                                                 if($count_assigned_users > 7){
-                                                                    $get_only_6 = App\Models\Users::select('id', 'user_image', 'user_lname', 'user_fname')->where('user_role', $active_role->uRole)->take(6)->get();
+                                                                    $get_only_6 = App\Models\Users::select('id', 'user_image', 'user_lname', 'user_fname', 'user_type', 'user_status', 'user_role_status')->where('user_role', $active_role->uRole)->take(6)->get();
                                                                     $more_count = $count_assigned_users - 6;
                                                                     foreach($get_only_6->sortBy('id') as $display_6userImgs){
-                                                                        ?><img class="assignedUsersCirclesImgs whiteImg_border1" src="{{asset('storage/svms/user_images/'.$display_6userImgs->user_image)}}" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="@if(auth()->user()->id === $display_6userImgs->id) You @else {{$display_6userImgs->user_fname. ' ' .$display_6userImgs->user_lname}} @endif"> <?php
+                                                                        // tolower case user_type
+                                                                        $tolower_uType = Str::lower($display_6userImgs->user_type);
+                                                                        $tolower_uStatus = Str::lower($display_6userImgs->user_status);
+                                                                        $tolower_uRoleStatus = Str::lower($display_6userImgs->user_role_status);
+                                                                        // user image handler
+                                                                        if(!is_null($display_6userImgs->user_image) OR !empty($display_6userImgs->user_image)){
+                                                                            $user_imgJpgFile = $display_6userImgs->user_image;
+                                                                        }else{
+                                                                            if($tolower_uStatus === 'active'){
+                                                                                if($tolower_uType === 'employee'){
+                                                                                    $user_imgJpgFile = 'employee_user_image.jpg';
+                                                                                }elseif($tolower_uType === 'student'){
+                                                                                    $user_imgJpgFile = 'student_user_image.jpg';
+                                                                                }else{
+                                                                                    $user_imgJpgFile = 'disabled_user_image.jpg';
+                                                                                }
+                                                                            }else{
+                                                                                $user_imgJpgFile = 'no_student_image.jpg';
+                                                                            }
+                                                                        }
+                                                                        ?><img class="assignedUsersCirclesImgs whiteImg_border1" src="{{asset('storage/svms/user_images/'.$user_imgJpgFile)}}" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="@if(auth()->user()->id === $display_6userImgs->id) You @else {{$display_6userImgs->user_fname. ' ' .$display_6userImgs->user_lname}} @endif"> <?php
                                                                     }
                                                                     ?>
                                                                     <div class="moreImgsCounterDiv" data-toggle="tooltip" data-placement="top" title="{{$more_count}} more users">
@@ -254,9 +296,29 @@
                                                                     </div>
                                                                     <?php
                                                                 }else {
-                                                                    $get_all_assigned_users = App\Models\Users::select('id', 'user_image', 'user_lname', 'user_fname')->where('user_role', $active_role->uRole)->get();
+                                                                    $get_all_assigned_users = App\Models\Users::select('id', 'user_image', 'user_lname', 'user_fname', 'user_type', 'user_status', 'user_role_status')->where('user_role', $active_role->uRole)->get();
                                                                     foreach($get_all_assigned_users->sortBy('id') as $assigned_user) {
-                                                                        ?> <img class="assignedUsersCirclesImgs whiteImg_border1" src="{{asset('storage/svms/user_images/'.$assigned_user->user_image)}}" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="@if(auth()->user()->id === $assigned_user->id) You @else {{$assigned_user->user_fname. ' ' .$assigned_user->user_lname}} @endif"> <?php
+                                                                        // tolower case user_type
+                                                                        $tolower_uType = Str::lower($assigned_user->user_type);
+                                                                        $tolower_uStatus = Str::lower($assigned_user->user_status);
+                                                                        $tolower_uRoleStatus = Str::lower($assigned_user->user_role_status);
+                                                                        // user image handler
+                                                                        if(!is_null($assigned_user->user_image) OR !empty($assigned_user->user_image)){
+                                                                            $user_imgJpgFile = $assigned_user->user_image;
+                                                                        }else{
+                                                                            if($tolower_uStatus === 'active'){
+                                                                                if($tolower_uType === 'employee'){
+                                                                                    $user_imgJpgFile = 'employee_user_image.jpg';
+                                                                                }elseif($tolower_uType === 'student'){
+                                                                                    $user_imgJpgFile = 'student_user_image.jpg';
+                                                                                }else{
+                                                                                    $user_imgJpgFile = 'disabled_user_image.jpg';
+                                                                                }
+                                                                            }else{
+                                                                                $user_imgJpgFile = 'no_student_image.jpg';
+                                                                            }
+                                                                        }
+                                                                        ?> <img class="assignedUsersCirclesImgs whiteImg_border1" src="{{asset('storage/svms/user_images/'.$user_imgJpgFile)}}" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="@if(auth()->user()->id === $assigned_user->id) You @else {{$assigned_user->user_fname. ' ' .$assigned_user->user_lname}} @endif"> <?php
                                                                     }
                                                                 }
                                                             ?>
@@ -301,10 +363,30 @@
                                                         <div class="assignedUsersCirclesDiv">
                                                             <?php
                                                                 if($count_assigned_users > 7){
-                                                                    $get_only_6 = App\Models\Users::select('id', 'user_image', 'user_lname', 'user_fname')->where('user_role', $deactivated_role->uRole)->take(6)->get();
+                                                                    $get_only_6 = App\Models\Users::select('id', 'user_image', 'user_lname', 'user_fname', 'user_type', 'user_status', 'user_role_status')->where('user_role', $deactivated_role->uRole)->take(6)->get();
                                                                     $more_count = $count_assigned_users - 6;
                                                                     foreach($get_only_6->sortBy('id') as $display_6userImgs){
-                                                                        ?><img class="assignedUsersCirclesImgs grayUsersCirclesImgs_filter" src="{{asset('storage/svms/user_images/'.$display_6_user_images->user_image)}}" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="@if(auth()->user()->id === $display_6_user_images->id) You @else {{$display_6_user_images->user_fname. ' ' .$display_6_user_images->user_lname}} @endif"> <?php
+                                                                        // tolower case user_type
+                                                                        $tolower_uType = Str::lower($display_6userImgs->user_type);
+                                                                        $tolower_uStatus = Str::lower($display_6userImgs->user_status);
+                                                                        $tolower_uRoleStatus = Str::lower($display_6userImgs->user_role_status);
+                                                                        // user image handler
+                                                                        if(!is_null($display_6userImgs->user_image) OR !empty($display_6userImgs->user_image)){
+                                                                            $user_imgJpgFile = $display_6userImgs->user_image;
+                                                                        }else{
+                                                                            if($tolower_uStatus === 'active'){
+                                                                                if($tolower_uType === 'employee'){
+                                                                                    $user_imgJpgFile = 'employee_user_image.jpg';
+                                                                                }elseif($tolower_uType === 'student'){
+                                                                                    $user_imgJpgFile = 'student_user_image.jpg';
+                                                                                }else{
+                                                                                    $user_imgJpgFile = 'disabled_user_image.jpg';
+                                                                                }
+                                                                            }else{
+                                                                                $user_imgJpgFile = 'no_student_image.jpg';
+                                                                            }
+                                                                        }
+                                                                        ?><img class="assignedUsersCirclesImgs grayUsersCirclesImgs_filter" src="{{asset('storage/svms/user_images/'.$user_imgJpgFile)}}" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="@if(auth()->user()->id === $display_6_user_images->id) You @else {{$display_6_user_images->user_fname. ' ' .$display_6_user_images->user_lname}} @endif"> <?php
                                                                     }
                                                                     ?>
                                                                     <div class="moreImgsCounterDiv" data-toggle="tooltip" data-placement="top" title="{{$more_count}} more users">
@@ -312,9 +394,29 @@
                                                                     </div>
                                                                     <?php
                                                                 }else {
-                                                                    $get_all_assigned_users = App\Models\Users::select('id', 'user_image', 'user_lname', 'user_fname')->where('user_role', $deactivated_role->uRole)->get();
+                                                                    $get_all_assigned_users = App\Models\Users::select('id', 'user_image', 'user_lname', 'user_fname', 'user_type', 'user_status', 'user_role_status')->where('user_role', $deactivated_role->uRole)->get();
                                                                     foreach($get_all_assigned_users->sortBy('id') as $assigned_user) {
-                                                                        ?> <img class="assignedUsersCirclesImgs grayUsersCirclesImgs_filter" src="{{asset('storage/svms/user_images/'.$assigned_user->user_image)}}" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="@if(auth()->user()->id === $assigned_user->id) You @else {{$assigned_user->user_fname. ' ' .$assigned_user->user_lname}} @endif"> <?php
+                                                                        // tolower case user_type
+                                                                        $tolower_uType = Str::lower($assigned_user->user_type);
+                                                                        $tolower_uStatus = Str::lower($assigned_user->user_status);
+                                                                        $tolower_uRoleStatus = Str::lower($assigned_user->user_role_status);
+                                                                        // user image handler
+                                                                        if(!is_null($assigned_user->user_image) OR !empty($assigned_user->user_image)){
+                                                                            $user_imgJpgFile = $assigned_user->user_image;
+                                                                        }else{
+                                                                            if($tolower_uStatus === 'active'){
+                                                                                if($tolower_uType === 'employee'){
+                                                                                    $user_imgJpgFile = 'employee_user_image.jpg';
+                                                                                }elseif($tolower_uType === 'student'){
+                                                                                    $user_imgJpgFile = 'student_user_image.jpg';
+                                                                                }else{
+                                                                                    $user_imgJpgFile = 'disabled_user_image.jpg';
+                                                                                }
+                                                                            }else{
+                                                                                $user_imgJpgFile = 'no_student_image.jpg';
+                                                                            }
+                                                                        }
+                                                                        ?> <img class="assignedUsersCirclesImgs grayUsersCirclesImgs_filter" src="{{asset('storage/svms/user_images/'.$user_imgJpgFile)}}" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="@if(auth()->user()->id === $assigned_user->id) You @else {{$assigned_user->user_fname. ' ' .$assigned_user->user_lname}} @endif"> <?php
                                                                     }
                                                                 }
                                                             ?>

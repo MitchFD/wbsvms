@@ -396,24 +396,29 @@
                                                             <div class="assignedUsersCirclesDiv">
                                                                 <?php
                                                                     if($count_assigned_users > 8){
-                                                                        $get_only_8 = App\Models\Users::select('id', 'user_image', 'user_lname', 'user_fname', 'user_type')->where('user_role', $active_role->uRole)->take(8)->get();
+                                                                        $get_only_8 = App\Models\Users::select('id', 'user_image', 'user_lname', 'user_fname', 'user_type', 'user_status', 'user_role_status')->where('user_role', $active_role->uRole)->take(8)->get();
                                                                         $more_count = $count_assigned_users - 8;
                                                                         foreach($get_only_8->sortBy('id') as $display_8userImgs){
                                                                             // tolower case user_type
                                                                             $tolower_uType = Str::lower($display_8userImgs->user_type);
+                                                                            $tolower_uStatus = Str::lower($display_8userImgs->user_status);
+                                                                            $tolower_uRoleStatus = Str::lower($display_8userImgs->user_role_status);
                                                                             // user image handler
                                                                             if(!is_null($display_8userImgs->user_image) OR !empty($display_8userImgs->user_image)){
                                                                                 $user_imgJpgFile = $display_8userImgs->user_image;
                                                                             }else{
-                                                                                if($tolower_uType == 'employee'){
-                                                                                    $user_imgJpgFile = 'employee_user_image.jpg';
-                                                                                }elseif($tolower_uType == 'student'){
-                                                                                    $user_imgJpgFile = 'student_user_image.jpg';
+                                                                                if($tolower_uStatus === 'active'){
+                                                                                    if($tolower_uType === 'employee'){
+                                                                                        $user_imgJpgFile = 'employee_user_image.jpg';
+                                                                                    }elseif($tolower_uType === 'student'){
+                                                                                        $user_imgJpgFile = 'student_user_image.jpg';
+                                                                                    }else{
+                                                                                        $user_imgJpgFile = 'disabled_user_image.jpg';
+                                                                                    }
                                                                                 }else{
-                                                                                    $user_imgJpgFile = 'disabled_user_image.jpg';
+                                                                                    $user_imgJpgFile = 'no_student_image.jpg';
                                                                                 }
                                                                             }
-                                                                            
                                                                             ?><img id="{{$display_8userImgs->id}}" class="assignedUsersCirclesImgs2 whiteImg_border1 cursor_pointer" src="{{asset('storage/svms/user_images/'.$user_imgJpgFile)}}" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="@if(auth()->user()->id === $display_8userImgs->id) You @else {{$display_8userImgs->user_fname. ' ' .$display_8userImgs->user_lname}} @endif"> <?php
                                                                         }
                                                                         ?>
@@ -422,20 +427,26 @@
                                                                         </div>
                                                                         <?php
                                                                     }else {
-                                                                        $get_all_assigned_users = App\Models\Users::select('id', 'user_image', 'user_lname', 'user_fname', 'user_type')->where('user_role', $active_role->uRole)->get();
+                                                                        $get_all_assigned_users = App\Models\Users::select('id', 'user_image', 'user_lname', 'user_fname', 'user_type', 'user_status', 'user_role_status')->where('user_role', $active_role->uRole)->get();
                                                                         foreach($get_all_assigned_users->sortBy('id') as $assigned_user) {
                                                                             // tolower case user_type
                                                                             $tolower_uType = Str::lower($assigned_user->user_type);
+                                                                            $tolower_uStatus = Str::lower($assigned_user->user_status);
+                                                                            $tolower_uRoleStatus = Str::lower($assigned_user->user_role_status);
                                                                             // user image handler
                                                                             if(!is_null($assigned_user->user_image) OR !empty($assigned_user->user_image)){
                                                                                 $user_imgJpgFile = $assigned_user->user_image;
                                                                             }else{
-                                                                                if($tolower_uType === 'employee'){
-                                                                                    $user_imgJpgFile = 'employee_user_image.jpg';
-                                                                                }elseif($tolower_uType === 'student'){
-                                                                                    $user_imgJpgFile = 'student_user_image.jpg';
+                                                                                if($tolower_uStatus === 'active'){
+                                                                                    if($tolower_uType === 'employee'){
+                                                                                        $user_imgJpgFile = 'employee_user_image.jpg';
+                                                                                    }elseif($tolower_uType === 'student'){
+                                                                                        $user_imgJpgFile = 'student_user_image.jpg';
+                                                                                    }else{
+                                                                                        $user_imgJpgFile = 'disabled_user_image.jpg';
+                                                                                    }
                                                                                 }else{
-                                                                                    $user_imgJpgFile = 'disabled_user_image.jpg';
+                                                                                    $user_imgJpgFile = 'no_student_image.jpg';
                                                                                 }
                                                                             }
                                                                             // onclick functions to view user's profiles
@@ -492,24 +503,29 @@
                                                             <div class="assignedUsersCirclesDiv">
                                                                 <?php
                                                                     if($count_assigned_users > 8){
-                                                                        $get_only_8 = App\Models\Users::select('id', 'user_image', 'user_lname', 'user_fname')->where('user_role', $deactivated_role->uRole)->take(8)->get();
+                                                                        $get_only_8 = App\Models\Users::select('id', 'user_image', 'user_lname', 'user_fname', 'user_type', 'user_status', 'user_role_status')->where('user_role', $deactivated_role->uRole)->take(8)->get();
                                                                         $more_count = $count_assigned_users - 8;
                                                                         foreach($get_only_8->sortBy('id') as $display_8userImgs){
                                                                             // tolower case user_type
-                                                                            $tolower_uType = Str::lower($display_8userImgs->user_type);
+                                                                            $tolower_uType = Str::lower($display_6userImgs->user_type);
+                                                                            $tolower_uStatus = Str::lower($display_6userImgs->user_status);
+                                                                            $tolower_uRoleStatus = Str::lower($display_6userImgs->user_role_status);
                                                                             // user image handler
-                                                                            if(!is_null($display_8userImgs->user_image) OR !empty($display_8userImgs->user_image)){
-                                                                                $user_imgJpgFile = $display_8userImgs->user_image;
+                                                                            if(!is_null($display_6userImgs->user_image) OR !empty($display_6userImgs->user_image)){
+                                                                                $user_imgJpgFile = $display_6userImgs->user_image;
                                                                             }else{
-                                                                                if($tolower_uType == 'employee'){
-                                                                                    $user_imgJpgFile = 'employee_user_image.jpg';
-                                                                                }elseif($tolower_uType == 'student'){
-                                                                                    $user_imgJpgFile = 'student_user_image.jpg';
+                                                                                if($tolower_uStatus === 'active'){
+                                                                                    if($tolower_uType === 'employee'){
+                                                                                        $user_imgJpgFile = 'employee_user_image.jpg';
+                                                                                    }elseif($tolower_uType === 'student'){
+                                                                                        $user_imgJpgFile = 'student_user_image.jpg';
+                                                                                    }else{
+                                                                                        $user_imgJpgFile = 'disabled_user_image.jpg';
+                                                                                    }
                                                                                 }else{
-                                                                                    $user_imgJpgFile = 'disabled_user_image.jpg';
+                                                                                    $user_imgJpgFile = 'no_student_image.jpg';
                                                                                 }
                                                                             }
-                                                                            
                                                                             ?><img class="assignedUsersCirclesImgs2 gray_image_filter whiteImg_border1" src="{{asset('storage/svms/user_images/'.$user_imgJpgFile)}}" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="@if(auth()->user()->id === $display_8userImgs->id) You @else {{$display_8userImgs->user_fname. ' ' .$display_8userImgs->user_lname}} @endif"> <?php
                                                                         }
                                                                         ?>
@@ -518,20 +534,26 @@
                                                                         </div>
                                                                         <?php
                                                                     }else {
-                                                                        $get_all_assigned_users = App\Models\Users::select('id', 'user_image', 'user_lname', 'user_fname')->where('user_role', $deactivated_role->uRole)->get();
+                                                                        $get_all_assigned_users = App\Models\Users::select('id', 'user_image', 'user_lname', 'user_fname', 'user_type', 'user_status', 'user_role_status')->where('user_role', $deactivated_role->uRole)->get();
                                                                         foreach($get_all_assigned_users->sortBy('id') as $assigned_user) {
                                                                             // tolower case user_type
                                                                             $tolower_uType = Str::lower($assigned_user->user_type);
+                                                                            $tolower_uStatus = Str::lower($assigned_user->user_status);
+                                                                            $tolower_uRoleStatus = Str::lower($assigned_user->user_role_status);
                                                                             // user image handler
                                                                             if(!is_null($assigned_user->user_image) OR !empty($assigned_user->user_image)){
                                                                                 $user_imgJpgFile = $assigned_user->user_image;
                                                                             }else{
-                                                                                if($tolower_uType == 'employee'){
-                                                                                    $user_imgJpgFile = 'employee_user_image.jpg';
-                                                                                }elseif($tolower_uType == 'student'){
-                                                                                    $user_imgJpgFile = 'student_user_image.jpg';
+                                                                                if($tolower_uStatus === 'active'){
+                                                                                    if($tolower_uType === 'employee'){
+                                                                                        $user_imgJpgFile = 'employee_user_image.jpg';
+                                                                                    }elseif($tolower_uType === 'student'){
+                                                                                        $user_imgJpgFile = 'student_user_image.jpg';
+                                                                                    }else{
+                                                                                        $user_imgJpgFile = 'disabled_user_image.jpg';
+                                                                                    }
                                                                                 }else{
-                                                                                    $user_imgJpgFile = 'disabled_user_image.jpg';
+                                                                                    $user_imgJpgFile = 'no_student_image.jpg';
                                                                                 }
                                                                             }
                                                                             ?> <img class="assignedUsersCirclesImgs2 gray_image_filter whiteImg_border1" src="{{asset('storage/svms/user_images/'.$user_imgJpgFile)}}" alt="assigned user image" data-toggle="tooltip" data-placement="top" title="@if(auth()->user()->id === $assigned_user->id) You @else {{$assigned_user->user_fname. ' ' .$assigned_user->user_lname}} @endif"> <?php

@@ -557,6 +557,10 @@
                                             padding: 30 
                                         }
                                     },
+                                    tooltips: {
+                                        intersect: false,
+                                        mode: 'x-axis'
+                                    },
                                     scales: {
                                         yAxes: [{
                                             ticks: {
