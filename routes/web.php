@@ -111,9 +111,19 @@ Route::group(['middleware' => 'auth'], function () {
 	// process temporary deletion of system role
 	Route::post('user_management/process_temporary_delete_system_role', 'App\Http\Controllers\UserManagementController@process_temporary_delete_system_role')->name('user_management.process_temporary_delete_system_role');
 	// permanent delete system role confirmation on modal
+	// single permanent deletion
 	Route::get('user_management/permanent_delete_system_role_confirmation_modal', 'App\Http\Controllers\UserManagementController@permanent_delete_system_role_confirmation_modal')->name('user_management.permanent_delete_system_role_confirmation_modal');
-	/// process permanent deletion of selected system role
+	// multiple permanent deletion
+	Route::get('user_management/permanent_delete_all_system_role_confirmation_modal', 'App\Http\Controllers\UserManagementController@permanent_delete_all_system_role_confirmation_modal')->name('user_management.permanent_delete_all_system_role_confirmation_modal');
+	// process permanent deletion of selected system role
 	Route::post('user_management/process_permanent_delete_system_role', 'App\Http\Controllers\UserManagementController@process_permanent_delete_system_role')->name('user_management.process_permanent_delete_system_role');
+	// recover deleted system role confirmation on modal
+	// single recovery
+	Route::get('user_management/recover_deleted_system_role_confirmation_modal', 'App\Http\Controllers\UserManagementController@recover_deleted_system_role_confirmation_modal')->name('user_management.recover_deleted_system_role_confirmation_modal');
+	// multiple recovery
+	Route::get('user_management/recover_all_deleted_system_role_confirmation_modal', 'App\Http\Controllers\UserManagementController@recover_all_deleted_system_role_confirmation_modal')->name('user_management.recover_all_deleted_system_role_confirmation_modal');
+	// process permanent deletion of selected system role
+	Route::post('user_management/process_recover_deleted_system_roles', 'App\Http\Controllers\UserManagementController@process_recover_deleted_system_roles')->name('user_management.process_recover_deleted_system_roles');
 
 	// manage role first
 	Route::get('user_management/manage_role_first_modal', 'App\Http\Controllers\UserManagementController@manage_role_first_modal')->name('user_management.manage_role_first_modal');

@@ -1708,6 +1708,14 @@ a.text_svms_gray:hover {
   text-transform: uppercase !important;
   color: var(--svms_text_gray);
 }
+.accordion_title_grayv1{
+  display: block;
+  font-size: 15px !important;
+  font-weight: bold !important;
+  text-decoration: none !important;
+  text-transform: uppercase !important;
+  color: var(--svms_light_blue2);
+}
 .accordion_subtitle_gray{
   display: block;
   font-size: 13px !important;
@@ -1934,6 +1942,12 @@ a.text_svms_gray:hover {
   font-size: 14px;
   font-weight: bold;
   color: var(--svms_blue);
+}
+.li_info_titlev1{
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--svms_light_blue2);
 }
 .li_info_subtitle{
   display: block;

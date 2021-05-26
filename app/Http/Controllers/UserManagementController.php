@@ -745,29 +745,33 @@ class UserManagementController extends Controller
 
                     // status classes and texts handler
                     if($toLower_uRoleStatus === 'active'){
-                        $class_uRoleStat = 'text-success font-italic';
-                        $txt_uRoleStat   = '~ Active';
-                        $cardBody_bgCol  = 'lightGreen_cardBody';
-                        $cardBody_title  = 'lightGreen_cardBody_greenTitle';
-                        $cardBody_lists  = 'lightGreen_cardBody_list';
+                        $class_uRoleStat   = 'text-success font-italic';
+                        $txt_uRoleStat     = '~ Active';
+                        $cardBody_bgCol    = 'lightGreen_cardBody';
+                        $cardBody_title    = 'lightGreen_cardBody_greenTitle';
+                        $cardBody_lists    = 'lightGreen_cardBody_list';
+                        $class_liInfoTitle = 'li_info_title';
                     }elseif($toLower_uRoleStatus === 'deactivated') {
-                        $class_uRoleStat = 'text_svms_red font-italic';
-                        $txt_uRoleStat   = '~ Deactivated';
-                        $cardBody_bgCol  = 'lightBlue_cardBody';
-                        $cardBody_title  = 'lightBlue_cardBody_blueTitlev1';
-                        $cardBody_lists  = 'lightBlue_cardBody_list';
+                        $class_uRoleStat   = 'text_svms_red font-italic';
+                        $txt_uRoleStat     = '~ Deactivated';
+                        $cardBody_bgCol    = 'lightBlue_cardBody';
+                        $cardBody_title    = 'lightBlue_cardBody_blueTitlev1';
+                        $cardBody_lists    = 'lightBlue_cardBody_list';
+                        $class_liInfoTitle = 'li_info_titlev1';
                     }elseif($toLower_uRoleStatus === 'deleted'){
-                        $class_uRoleStat = 'text_svms_red font-italic';
-                        $txt_uRoleStat   = '~ Deleted';
-                        $cardBody_bgCol  = 'lightBlue_cardBody';
-                        $cardBody_title  = 'lightBlue_cardBody_blueTitlev1';
-                        $cardBody_lists  = 'lightBlue_cardBody_list';
+                        $class_uRoleStat   = 'text_svms_red font-italic';
+                        $txt_uRoleStat     = '~ Deleted';
+                        $cardBody_bgCol    = 'lightBlue_cardBody';
+                        $cardBody_title    = 'lightBlue_cardBody_blueTitlev1';
+                        $cardBody_lists    = 'lightBlue_cardBody_list';
+                        $class_liInfoTitle = 'li_info_titlev1';
                     }else{
-                        $class_uRoleStat = 'text-secondary font-italic';
-                        $txt_uRoleStat   = '~ Status Pending';
-                        $cardBody_bgCol  = 'lightBlue_cardBody';
-                        $cardBody_title  = 'lightBlue_cardBody_blueTitlev1';
-                        $cardBody_lists  = 'lightBlue_cardBody_list';
+                        $class_uRoleStat   = 'text-secondary font-italic';
+                        $txt_uRoleStat     = '~ Status Pending';
+                        $cardBody_bgCol    = 'lightBlue_cardBody';
+                        $cardBody_title    = 'lightBlue_cardBody_blueTitlev1';
+                        $cardBody_lists    = 'lightBlue_cardBody_list';
+                        $class_liInfoTitle = 'li_info_titlev1';
                     }
 
                     // query all assigned users
@@ -796,7 +800,7 @@ class UserManagementController extends Controller
                                         <button class="btn btn-block custom2_btn_collapse cb_x12y15 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#sr'.$this_uRoleCard->uRole_id.'Collapse_Div" aria-expanded="true" aria-controls="sr'.$this_uRoleCard->uRole_id.'Collapse_Div">
                                             <div class="d-flex justify-content-start align-items-center">
                                                 <div class="information_div2">
-                                                    <span class="li_info_title">'.ucwords($this_uRoleCard->uRole) .' <span class="'.$class_uRoleStat.'"> '. $txt_uRoleStat .'</span></span>
+                                                    <span class="'.$class_liInfoTitle.'">'.ucwords($this_uRoleCard->uRole) .' <span class="'.$class_uRoleStat.'"> '. $txt_uRoleStat .'</span></span>
                                                     <span class="'.$class_AssignedUsers.'">'. $txt_AssignedUsers .'</span>
                                                 </div>
                                             </div>
@@ -812,7 +816,7 @@ class UserManagementController extends Controller
                                         <div class="row">
                                             <div class="col-lg-12 col-md-12 col-sm-12">
                                                 <div class="card-body lightBlue_cardBody mb-2">
-                                                    <span class="lightBlue_cardBody_blueTitle mb-1">Assigned User'.$cqaAU_s.':</span>
+                                                    <span class="' . $cardBody_title . ' mb-1">Assigned User'.$cqaAU_s.':</span>
                                                     <div class="assignedUsersCirclesDiv">
                                                     ';
                                                         if($countQuery_AssignedUsers > 13){
@@ -2938,8 +2942,8 @@ class UserManagementController extends Controller
                                     </button>
                                 </h2>
                             </div>
-                            <div id="deactivateURoleCollapse_Div'.$get_deactivated_uRole_id.'" class="collapse cust_collapse_active cb_t0b12y20" aria-labelledby="deactivateRoleCollapse_heading'.$get_deactivated_uRole_id.'" data-parent="#deactivateURoleModalAccordion_Parent'.$get_deactivated_uRole_id.'">
-                                <div class="card-body lightBlue_cardBody mt-2">
+                            <div id="deactivateURoleCollapse_Div'.$get_deactivated_uRole_id.'" class="collapse cust_collapse_active cb_t0b12y20 active show" aria-labelledby="deactivateRoleCollapse_heading'.$get_deactivated_uRole_id.'" data-parent="#deactivateURoleModalAccordion_Parent'.$get_deactivated_uRole_id.'">
+                                <div class="card-body lightBlue_cardBody mt-0">
                                     <span class="lightBlue_cardBody_blueTitle">Assigned Users:</span>';
                                     if(count($get_assigned_users) > 0){
                                         foreach($get_assigned_users as $index => $assigned_user){
@@ -2953,8 +2957,8 @@ class UserManagementController extends Controller
                                 <div class="card-body lightGreen_cardBody mt-2 mb-2">
                                     <span class="lightGreen_cardBody_greenTitle">Access Controls:</span>';
                                     if(!is_null($get_uRole_access)){
-                                        foreach(json_decode(json_encode($get_uRole_access), true) as $index => $uRole_access){
-                                            $output .= '<span class="lightGreen_cardBody_list"><span class="lightGreen_cardBody_listCount">'.($index+1).'.</span> '.ucwords($uRole_access).'</span>';
+                                        foreach(json_decode(json_encode($get_uRole_access), true) as $uRole_access){
+                                            $output .= '<span class="lightGreen_cardBody_list"><i class="fa fa-check-square-o font-weight-bold mr-1"></i> '.ucwords($uRole_access).'</span>';
                                         }
                                     }else{
                                         $output .= '<span class="lightGreen_cardBody_notice"><i class="fa fa-lock" aria-hidden="true"></i> No access controls found.</span>';
@@ -3100,7 +3104,7 @@ class UserManagementController extends Controller
                             <h2 class="mb-0">
                                 <button class="btn btn-block custom2_btn_collapse d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#deactivateURoleCollapse_Div'.$get_activated_uRole_id.'" aria-expanded="true" aria-controls="deactivateURoleCollapse_Div'.$get_activated_uRole_id.'">
                                     <div>
-                                        <span class="accordion_title_gray">'.$get_uRole.'</span>
+                                        <span class="accordion_title_grayv1">'.$get_uRole.'</span>
                                         <span class="accordion_subtitle_gray">'; 
                                             if(count($get_assigned_users) > 0){
                                                 if(count($get_assigned_users) > 1){
@@ -3118,8 +3122,8 @@ class UserManagementController extends Controller
                                 </button>
                             </h2>
                         </div>
-                        <div id="deactivateURoleCollapse_Div'.$get_activated_uRole_id.'" class="collapse cust_collapse_active cb_t0b12y20" aria-labelledby="activateRoleCollapse_heading'.$get_activated_uRole_id.'" data-parent="#activateURoleModalAccordion_Parent'.$get_activated_uRole_id.'">
-                            <div class="card-body lightBlue_cardBody mt-2">
+                        <div id="deactivateURoleCollapse_Div'.$get_activated_uRole_id.'" class="collapse cust_collapse_active cb_t0b12y20 active show" aria-labelledby="activateRoleCollapse_heading'.$get_activated_uRole_id.'" data-parent="#activateURoleModalAccordion_Parent'.$get_activated_uRole_id.'">
+                            <div class="card-body lightBlue_cardBody mt-0">
                                 <span class="lightBlue_cardBody_blueTitle grayed_txt">Assigned Users:</span>';
                                 if(count($get_assigned_users) > 0){
                                     foreach($get_assigned_users as $index => $assigned_user){
@@ -3133,8 +3137,8 @@ class UserManagementController extends Controller
                             <div class="card-body lightBlue_cardBody mt-2 mb-2">
                                 <span class="lightBlue_cardBody_blueTitle grayed_txt">Access Controls:</span>';
                                 if(!is_null($get_uRole_access)){
-                                    foreach(json_decode(json_encode($get_uRole_access), true) as $index => $uRole_access){
-                                        $output .= '<span class="lightBlue_cardBody_list"><span class="lightBlue_cardBody_listCount grayed_txt">'.($index+1).'.</span> '.ucwords($uRole_access).'</span>';
+                                    foreach(json_decode(json_encode($get_uRole_access), true) as $uRole_access){
+                                        $output .= '<span class="lightBlue_cardBody_list"><i class="fa fa-check-square-o font-weight-bold mr-1"></i> '.ucwords($uRole_access).'</span>';
                                     }
                                 }else{
                                     $output .= '<span class="lightBlue_cardBody_notice"><i class="fa fa-lock" aria-hidden="true"></i> No access controls found.</span>';
@@ -3388,8 +3392,8 @@ class UserManagementController extends Controller
                                     </button>
                                 </h2>
                             </div>
-                            <div id="deactivateURoleCollapse_Div'.$tempDelete_uRole_id.'" class="collapse cust_collapse_active cb_t0b12y20" aria-labelledby="deactivateRoleCollapse_heading'.$tempDelete_uRole_id.'" data-parent="#deactivateURoleModalAccordion_Parent'.$tempDelete_uRole_id.'">
-                                <div class="card-body lightBlue_cardBody mt-2">
+                            <div id="deactivateURoleCollapse_Div'.$tempDelete_uRole_id.'" class="collapse cust_collapse_active cb_t0b12y20 active show" aria-labelledby="deactivateRoleCollapse_heading'.$tempDelete_uRole_id.'" data-parent="#deactivateURoleModalAccordion_Parent'.$tempDelete_uRole_id.'">
+                                <div class="card-body lightBlue_cardBody mt-0">
                                     <span class="lightBlue_cardBody_blueTitle">Assigned Users:</span>';
                                     if(count($get_assigned_users) > 0){
                                         foreach($get_assigned_users as $index => $assigned_user){
@@ -3510,6 +3514,7 @@ class UserManagementController extends Controller
             }
     }
     // permanent delete system role confirmation on modal
+    // single permanent deletion
     public function permanent_delete_system_role_confirmation_modal(Request $request){
         // get selected uRole_id
             $permDelete_uRole_id = $request->get('permDelete_uRole_id');
@@ -3571,10 +3576,10 @@ class UserManagementController extends Controller
                             </div>
                             <div id="permDeleteURoleCollapse_Div'.$permDelete_uRole_id.'" class="collapse cust_collapse_active cb_t0b12y20 active show" aria-labelledby="deactivateRoleCollapse_heading'.$permDelete_uRole_id.'" data-parent="#permDeleteURoleModalAccordion_Parent'.$permDelete_uRole_id.'">
                                 <div class="card-body lightBlue_cardBody mt-0 mb-2">
-                                    <span class="lightBlue_cardBody_blueTitle">Access Controls:</span>';
+                                    <span class="lightBlue_cardBody_blueTitlev1">Access Controls:</span>';
                                     if(!is_null($get_del_uRole_access)){
-                                        foreach(json_decode(json_encode($get_del_uRole_access), true) as $index => $uRole_access){
-                                            $output .= '<span class="lightBlue_cardBody_list"><span class="lightBlue_cardBody_listCount">'.($index+1).'.</span> '.ucwords($uRole_access).'</span>';
+                                        foreach(json_decode(json_encode($get_del_uRole_access), true) as $uRole_access){
+                                            $output .= '<span class="lightBlue_cardBody_list"><i class="fa fa-check-square-o font-weight-bold mr-1"></i> '.ucwords($uRole_access).'</span>';
                                         }
                                     }else{
                                         $output .= '<span class="lightBlue_cardBody_notice"><i class="fa fa-lock" aria-hidden="true"></i> No access controls found.</span>';
@@ -3585,7 +3590,7 @@ class UserManagementController extends Controller
                                 if(!is_null($get_reason_deletion) OR !empty($get_reason_deletion)){
                                     $output .= '
                                     <div class="card-body lightBlue_cardBody mt-0 mb-2">
-                                        <span class="lightBlue_cardBody_blueTitle">Reason of Deletion:</span>
+                                        <span class="lightBlue_cardBody_blueTitlev1">Reason of Deletion:</span>
                                         <span class="lightBlue_cardBody_list"><i class="fa fa-question-circle font-weight-bold" aria-hidden="true"></i> ' . $get_reason_deletion . ' </span>    
                                     </div>
                                     ';
@@ -3600,7 +3605,7 @@ class UserManagementController extends Controller
                                 <hr class="hr_gry">
                                 <div class="row mt-2">
                                     <div class="col-lg-12 col-md-12 col-sm-12 cursor_default" data-toggle="tooltip" data-placement="top" title="Deleted by:">
-                                        <span class="cust_info_txtwicon"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> ' . $txtRole_deletedByName . ' <span class="font-italic"> ' . $txtRole_deletedByRole . ' </span></span> 
+                                        <span class="cust_info_txtwicon text_svms_red"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> ' . $txtRole_deletedByName . ' <span class="font-italic"> ' . $txtRole_deletedByRole . ' </span></span> 
                                     </div>
                                 </div>
                             </div>
@@ -3620,7 +3625,7 @@ class UserManagementController extends Controller
                     <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
                     <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
                     <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
-                    <div class="btn-group" role="group" aria-label="Basic example">
+                    <div class="btn-group" role="group" aria-label="Permanent Delettion of System Role actions">
                         <button id="cancel_permDeleteSystemRole_btn" type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
                         <button id="process_permDeleteSystemRole_btn" type="submit" class="btn btn-round btn_svms_red btn_show_icon m-0">Delete Forever <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
                     </div>
@@ -3629,6 +3634,144 @@ class UserManagementController extends Controller
         ';
 
         echo $output;
+    }
+    // multiple permanent deletion
+    public function permanent_delete_all_system_role_confirmation_modal(Request $request){
+        // get all recently deleted roles with where del_status = 1
+            $queryAll_deletedRoles = Deleteduserroles::where('del_status', '=', 1)->get();
+            $count_queryAll_deletedRoles = count($queryAll_deletedRoles);
+        // custom values
+            $output = '';
+            $sq = "'";
+            if($count_queryAll_deletedRoles > 0){
+                if($count_queryAll_deletedRoles > 1){
+                    $rdR_s = 's';
+                }else{
+                    $rdR_s = '';
+                }
+            }else{
+                $rdR_s = '';
+            }
+        // output
+        if($count_queryAll_deletedRoles > 0){
+            $output .= '
+            <div class="modal-body border-0 p-0">
+                <form id="form_permDeleteAllDeletedRoles" action="'.route('user_management.process_permanent_delete_system_role').'" class="form" enctype="multipart/form-data" method="POST">
+                    <div class="cust_modal_body_gray">
+            ';
+            foreach($queryAll_deletedRoles as $this_deletedRole){
+                // get info of user who created this role
+                    if(auth()->user()->id === $this_deletedRole->del_created_by){
+                        $txtRole_createdByName  = 'Created by You.';
+                        $txtRole_createdByRole = '';
+                    }else{
+                        $queryUser_createdBy   = App\Models\Users::select('id', 'user_fname', 'user_lname', 'user_role')->where('id', '=', $this_deletedRole->del_created_by)->first();
+                        $txtRole_createdByName = ''.$queryUser_createdBy->user_fname . ' ' . $queryUser_createdBy->user_lname.'';
+                        $txtRole_createdByRole = '('.ucwords($queryUser_createdBy->user_role).')';
+                    }
+
+                // get responsible user who deleted this role
+                    if(auth()->user()->id === $this_deletedRole->deleted_by){
+                        $txtRole_deletedByName = 'Deleted by You.';
+                        $txtRole_deletedByRole = '';
+                    }else{
+                        $queryUser_deletedBy   = App\Models\Users::select('id', 'user_fname', 'user_lname', 'user_role')->where('id', '=', $this_deletedRole->deleted_by)->first();
+                        $txtRole_deletedByName = ''.$queryUser_deletedBy->user_fname . ' ' . $queryUser_deletedBy->user_lname.'';
+                        $txtRole_deletedByRole = '('.ucwords($queryUser_deletedBy->user_role).')';
+                    }
+
+                // get all assigned users
+                    $get_assigned_users = Users::where('user_role', $this_deletedRole->del_uRole)->get();
+                $output .= '
+                <div class="accordion shadow cust_accordion_div mb-2" id="permDeleteAllURoleModalAccordion_Parent'.$this_deletedRole->del_uRole_id.'">
+                    <div class="card custom_accordion_card">
+                        <div class="card-header  py10l15r10 d-flex justify-content-between align-items-center" id="deactivateRoleCollapse_heading'.$this_deletedRole->del_uRole_id.'">
+                            <div class="form-group m-0">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" id="'.$this_deletedRole->del_uRole_id.'_markPermDeleteThisRole" value="'.$this_deletedRole->del_uRole_id.'" name="perm_delete_selected_role_id[]" class="custom-control-input cust_checkbox_label permDeleteRolesMarSingle" checked>
+                                    <label class="custom-control-label cust_checkbox_label" for="'.$this_deletedRole->del_uRole_id.'_markPermDeleteThisRole">
+                                        <span class="accordion_title_grayv1">'.ucwords($this_deletedRole->del_uRole).'</span>
+                                        <span class="accordion_subtitlev1" data-toggle="tooltip" data-placement="top" title="Date the ' . ucwords($this_deletedRole->del_uRole) . '  Role was deleted:"> ' . date('F d, Y (D ~ g:i A)', strtotime($this_deletedRole->deleted_at)) . '</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <button class="btn cust_btn_smcircle3" type="button" data-toggle="collapse" data-target="#permDeleteAllURoleCollapse_Div'.$this_deletedRole->del_uRole_id.'" aria-expanded="true" aria-controls="permDeleteAllURoleCollapse_Div'.$this_deletedRole->del_uRole_id.'">
+                                <i class="nc-icon nc-minimal-down"></i>
+                            </button>
+                        </div>
+                        <div id="permDeleteAllURoleCollapse_Div'.$this_deletedRole->del_uRole_id.'" class="collapse cust_collapse_active cb_t0b12y20" aria-labelledby="permDeleteAllURoleCollapse_Div_heading'.$this_deletedRole->del_uRole_id.'" data-parent="#permDeleteAllURoleModalAccordion_Parent'.$this_deletedRole->del_uRole_id.'">
+                            <div class="card-body lightBlue_cardBody mt-0 mb-2">
+                                <span class="lightBlue_cardBody_blueTitlev1">Access Controls:</span>';
+                                if(!is_null($this_deletedRole->del_uRole_access)){
+                                    foreach(json_decode(json_encode($this_deletedRole->del_uRole_access), true) as $uRole_access){
+                                        $output .= '<span class="lightBlue_cardBody_list"><i class="fa fa-check-square-o font-weight-bold mr-1"></i> '.ucwords($uRole_access).'</span>';
+                                    }
+                                }else{
+                                    $output .= '<span class="lightBlue_cardBody_notice"><i class="fa fa-lock" aria-hidden="true"></i> No access controls found.</span>';
+                                }
+                                $output .= '    
+                            </div>
+                            ';
+                            if(!is_null($this_deletedRole->reason_deletion) OR !empty($this_deletedRole->reason_deletion)){
+                                $output .= '
+                                <div class="card-body lightBlue_cardBody mt-0 mb-2">
+                                    <span class="lightBlue_cardBody_blueTitlev1">Reason of Deletion:</span>
+                                    <span class="lightBlue_cardBody_list"><i class="fa fa-question-circle font-weight-bold" aria-hidden="true"></i> ' . $this_deletedRole->reason_deletion . ' </span>    
+                                </div>
+                                ';
+                            }
+                            $output .= '
+                            <div class="row mt-3">
+                                <div class="col-lg-12 col-md-12 col-sm-12 cursor_default" data-toggle="tooltip" data-placement="top" title="Date the ' . ucwords($this_deletedRole->del_uRole) . ' Role was created and created by:">
+                                    <span class="cust_info_txtwicon mb-1"><i class="fa fa-calendar-plus-o mr-1" aria-hidden="true"></i> ' . date('F d, Y (D ~ g:i A)', strtotime($this_deletedRole->del_created_at)) . ' </span> 
+                                    <span class="cust_info_txtwicon"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> ' . $txtRole_createdByName . ' <span class="font-italic"> ' . $txtRole_createdByRole . ' </span></span> 
+                                </div>
+                            </div>
+                            <hr class="hr_gry">
+                            <div class="row mt-2">
+                                <div class="col-lg-12 col-md-12 col-sm-12 cursor_default" data-toggle="tooltip" data-placement="top" title="Deleted by:">
+                                    <span class="cust_info_txtwicon text_svms_red"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> ' . $txtRole_deletedByName . ' <span class="font-italic"> ' . $txtRole_deletedByRole . ' </span></span> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                ';
+            }
+            $output .= '
+                    </div>
+                    <div class="modal-body pb-0">
+                        <div class="card-body lightRed_cardBody shadow-none">
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <div class="form-group m-0">
+                                        <div class="custom-control custom-checkbox align-items-center">
+                                            <input type="checkbox" name="permanent_delete_all_roles" value="permanent_delete_all_roles" class="custom-control-input cursor_pointer" id="permDeleteRolesMarkAll" checked>
+                                            <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="permDeleteRolesMarkAll">Permanent Delete All ('.$count_queryAll_deletedRoles.') Role'.$rdR_s.'.</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="lightRed_cardBody_notice"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i> This action will permanently delete All the Selected Roles and can'.$sq.'t be undone.</span>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <input type="hidden" name="_token" value="'.csrf_token().'">
+                        <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
+                        <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
+                        <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
+                        <div class="btn-group" role="group" aria-label="delete sanctions actions">
+                            <button id="cancel_permDeleteAllDeletedRolesBtn" type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                            <button id="submit_permDeleteAllDeletedRolesBtn" type="submit" class="btn btn-round btn_svms_red btn_show_icon m-0"> Delete Selected Roles <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            ';
+            echo $output;
+        }else{
+            return back()->withFailedStatus(' There are no selected System Roles for deletion! please try again.');
+        }
     }
     // process permanent deletion of selected system roles
     public function process_permanent_delete_system_role(Request $request){
@@ -3655,7 +3798,7 @@ class UserManagementController extends Controller
                 $zero = 0;
                 foreach($get_perDelete_uRole_ids as $this_recDel_uRoleID){
                     // get recently deleted role info
-                    $query_del_uRole_details  = Deleteduserroles ::select('del_uRole')->where('del_uRole_id', $this_recDel_uRoleID)->first();
+                    $query_del_uRole_details  = Deleteduserroles::select('del_uRole')->where('del_uRole_id', $this_recDel_uRoleID)->first();
                     $get_del_uRole            = ucwords($query_del_uRole_details->del_uRole);
                     // update del_status from deleted_user_roles_tbl
                     $update_DelStatus = Deleteduserroles::where('del_uRole_id', '=', $this_recDel_uRoleID)
@@ -3686,6 +3829,346 @@ class UserManagementController extends Controller
                 }
             }else{
                 return back()->withFailedStatus(' There are no selected System Roles for deletion! please try again.');
+            }
+    }
+    // recover deleted roles
+    // single recovery confimarion on modal
+    public function recover_deleted_system_role_confirmation_modal(Request $request){
+        // get selected uRole_id
+            $recoverDeleted_uRole_id = $request->get('recoverDeleted_uRole_id');
+
+        // get role details from user_roles_tbl
+            $query_del_uRole_details  = Deleteduserroles ::where('del_uRole_id', $recoverDeleted_uRole_id)->first();
+            $get_reason_deletion      = $query_del_uRole_details->reason_deletion;
+            $get_del_uRole_status     = $query_del_uRole_details->del_uRole_status;
+            $get_del_uRole_type       = $query_del_uRole_details->del_uRole_type;
+            $get_del_uRole            = $query_del_uRole_details->del_uRole;
+            $get_del_uRole_access     = $query_del_uRole_details->del_uRole_access;
+            $get_del_uRole_created_by = $query_del_uRole_details->del_created_by;
+            $get_del_uRole_created_at = $query_del_uRole_details->del_created_at;
+            $get_uRole_deleted_at     = $query_del_uRole_details->deleted_at;
+            $get_uRole_deleted_by     = $query_del_uRole_details->deleted_by;
+
+        // cusotm values
+            $sq = "'";
+
+        // get info of user who created this role
+            if(auth()->user()->id === $get_del_uRole_created_by){
+                $txtRole_createdByName  = 'Created by You.';
+                $txtRole_createdByRole = '';
+            }else{
+                $queryUser_createdBy   = App\Models\Users::select('id', 'user_fname', 'user_lname', 'user_role')->where('id', '=', $get_del_uRole_created_by)->first();
+                $txtRole_createdByName = ''.$queryUser_createdBy->user_fname . ' ' . $queryUser_createdBy->user_lname.'';
+                $txtRole_createdByRole = '('.ucwords($queryUser_createdBy->user_role).')';
+            }
+
+        // get responsible user who deleted this role
+            if(auth()->user()->id === $get_uRole_deleted_by){
+                $txtRole_deletedByName = 'Deleted by You.';
+                $txtRole_deletedByRole = '';
+            }else{
+                $queryUser_deletedBy   = App\Models\Users::select('id', 'user_fname', 'user_lname', 'user_role')->where('id', '=', $get_uRole_deleted_by)->first();
+                $txtRole_deletedByName = ''.$queryUser_deletedBy->user_fname . ' ' . $queryUser_deletedBy->user_lname.'';
+                $txtRole_deletedByRole = '('.ucwords($queryUser_deletedBy->user_role).')';
+            }
+
+        // get all assigned users
+            $get_assigned_users = Users::where('user_role', $get_del_uRole)->get();
+
+        $output = '';
+        $output .='
+            <div class="modal-body border-0 p-0">
+                <div class="cust_modal_body_gray">
+                    <div class="accordion shadow cust_accordion_div" id="permDeleteURoleModalAccordion_Parent'.$recoverDeleted_uRole_id.'">
+                        <div class="card custom_accordion_card">
+                            <div class="card-header p-0" id="deactivateRoleCollapse_heading'.$recoverDeleted_uRole_id.'">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-block custom2_btn_collapse d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#permDeleteURoleCollapse_Div'.$recoverDeleted_uRole_id.'" aria-expanded="true" aria-controls="permDeleteURoleCollapse_Div'.$recoverDeleted_uRole_id.'">
+                                        <div>
+                                            <span class="accordion_title">'.ucwords($get_del_uRole).'</span>
+                                            <span class="accordion_subtitlev1" data-toggle="tooltip" data-placement="top" title="Date the ' . ucwords($get_del_uRole) . '  Role was deleted:"> ' . date('F d, Y (D ~ g:i A)', strtotime($get_uRole_deleted_at)) . '</span>
+                                        </div>
+                                        <i class="nc-icon nc-minimal-down custom2_btn_collapse_icon"></i>
+                                    </button>
+                                </h2>
+                            </div>
+                            <div id="permDeleteURoleCollapse_Div'.$recoverDeleted_uRole_id.'" class="collapse cust_collapse_active cb_t0b12y20 active show" aria-labelledby="deactivateRoleCollapse_heading'.$recoverDeleted_uRole_id.'" data-parent="#permDeleteURoleModalAccordion_Parent'.$recoverDeleted_uRole_id.'">
+                                <div class="card-body lightBlue_cardBody mt-0 mb-2">
+                                    <span class="lightBlue_cardBody_blueTitlev1">Access Controls:</span>';
+                                    if(!is_null($get_del_uRole_access)){
+                                        foreach(json_decode(json_encode($get_del_uRole_access), true) as $uRole_access){
+                                            $output .= '<span class="lightBlue_cardBody_list"><i class="fa fa-check-square-o font-weight-bold mr-1"></i> '.ucwords($uRole_access).'</span>';
+                                        }
+                                    }else{
+                                        $output .= '<span class="lightBlue_cardBody_notice"><i class="fa fa-lock" aria-hidden="true"></i> No access controls found.</span>';
+                                    }
+                                    $output .= '    
+                                </div>
+                                ';
+                                if(!is_null($get_reason_deletion) OR !empty($get_reason_deletion)){
+                                    $output .= '
+                                    <div class="card-body lightBlue_cardBody mt-0 mb-2">
+                                        <span class="lightBlue_cardBody_blueTitlev1">Reason of Deletion:</span>
+                                        <span class="lightBlue_cardBody_list"><i class="fa fa-question-circle font-weight-bold" aria-hidden="true"></i> ' . $get_reason_deletion . ' </span>    
+                                    </div>
+                                    ';
+                                }
+                                $output .= '
+                                <div class="row mt-3">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 cursor_default" data-toggle="tooltip" data-placement="top" title="Date the ' . ucwords($get_del_uRole) . ' Role was created and created by:">
+                                        <span class="cust_info_txtwicon mb-1"><i class="fa fa-calendar-plus-o mr-1" aria-hidden="true"></i> ' . date('F d, Y (D ~ g:i A)', strtotime($get_del_uRole_created_at)) . ' </span> 
+                                        <span class="cust_info_txtwicon"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> ' . $txtRole_createdByName . ' <span class="font-italic"> ' . $txtRole_createdByRole . ' </span></span> 
+                                    </div>
+                                </div>
+                                <hr class="hr_gry">
+                                <div class="row mt-2">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 cursor_default" data-toggle="tooltip" data-placement="top" title="Deleted by:">
+                                        <span class="cust_info_txtwicon text_svms_red"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> ' . $txtRole_deletedByName . ' <span class="font-italic"> ' . $txtRole_deletedByRole . ' </span></span> 
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form id="form_deletedSystemRoleRecovery" action="'.route('user_management.process_recover_deleted_system_roles').'" class="deactivateRoleConfirmationForm" method="POST">
+                <div class="modal-body pb-0">
+                    <div class="card-body lightGreen_cardBody shadow-none">
+                        <span class="lightGreen_cardBody_notice"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> This action will recover ' . ucwords($get_del_uRole) . ' Role.</span>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <input type="hidden" name="_token" value="'.csrf_token().'">
+                    <input type="hidden" name="recover_deleted_selected_role_id[]" value="'.$recoverDeleted_uRole_id.'">
+                    <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
+                    <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
+                    <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
+                    <div class="btn-group" role="group" aria-label="System Roles Recovery Actions">
+                        <button id="cancel_recoverDeletedRoles_btn" type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                        <button id="process_recoverDeletedRoles_btn" type="submit" class="btn btn-round btn-success btn_show_icon m-0">Recover Role <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+            </form>
+        ';
+
+        echo $output;
+    }
+    // multiple recovery confirmatin on modal
+    public function recover_all_deleted_system_role_confirmation_modal(Request $request){
+        // get all recently deleted roles with where del_status = 1
+            $queryAll_deletedRoles = Deleteduserroles::where('del_status', '=', 1)->get();
+            $count_queryAll_deletedRoles = count($queryAll_deletedRoles);
+        // custom values
+            $output = '';
+            $sq = "'";
+            if($count_queryAll_deletedRoles > 0){
+                if($count_queryAll_deletedRoles > 1){
+                    $rdR_s = 's';
+                }else{
+                    $rdR_s = '';
+                }
+            }else{
+                $rdR_s = '';
+            }
+        // output
+        if($count_queryAll_deletedRoles > 0){
+            $output .= '
+            <div class="modal-body border-0 p-0">
+                <form id="form_recoverAllDeletedRoles" action="'.route('user_management.process_recover_deleted_system_roles').'" class="form" enctype="multipart/form-data" method="POST">
+                    <div class="cust_modal_body_gray">
+            ';
+            foreach($queryAll_deletedRoles as $this_deletedRole){
+                // get info of user who created this role
+                    if(auth()->user()->id === $this_deletedRole->del_created_by){
+                        $txtRole_createdByName  = 'Created by You.';
+                        $txtRole_createdByRole = '';
+                    }else{
+                        $queryUser_createdBy   = App\Models\Users::select('id', 'user_fname', 'user_lname', 'user_role')->where('id', '=', $this_deletedRole->del_created_by)->first();
+                        $txtRole_createdByName = ''.$queryUser_createdBy->user_fname . ' ' . $queryUser_createdBy->user_lname.'';
+                        $txtRole_createdByRole = '('.ucwords($queryUser_createdBy->user_role).')';
+                    }
+
+                // get responsible user who deleted this role
+                    if(auth()->user()->id === $this_deletedRole->deleted_by){
+                        $txtRole_deletedByName = 'Deleted by You.';
+                        $txtRole_deletedByRole = '';
+                    }else{
+                        $queryUser_deletedBy   = App\Models\Users::select('id', 'user_fname', 'user_lname', 'user_role')->where('id', '=', $this_deletedRole->deleted_by)->first();
+                        $txtRole_deletedByName = ''.$queryUser_deletedBy->user_fname . ' ' . $queryUser_deletedBy->user_lname.'';
+                        $txtRole_deletedByRole = '('.ucwords($queryUser_deletedBy->user_role).')';
+                    }
+
+                // get all assigned users
+                    $get_assigned_users = Users::where('user_role', $this_deletedRole->del_uRole)->get();
+                $output .= '
+                <div class="accordion shadow cust_accordion_div mb-2" id="recoverAllURoleModalAccordion_Parent'.$this_deletedRole->del_uRole_id.'">
+                    <div class="card custom_accordion_card">
+                        <div class="card-header  py10l15r10 d-flex justify-content-between align-items-center" id="deactivateRoleCollapse_heading'.$this_deletedRole->del_uRole_id.'">
+                            <div class="form-group m-0">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" id="'.$this_deletedRole->del_uRole_id.'_markRecoverThisRole" value="'.$this_deletedRole->del_uRole_id.'" name="recover_deleted_selected_role_id[]" class="custom-control-input cust_checkbox_label recoverRolesMarSingle" checked>
+                                    <label class="custom-control-label cust_checkbox_label" for="'.$this_deletedRole->del_uRole_id.'_markRecoverThisRole">
+                                        <span class="accordion_title_grayv1">'.ucwords($this_deletedRole->del_uRole).'</span>
+                                        <span class="accordion_subtitlev1" data-toggle="tooltip" data-placement="top" title="Date the ' . ucwords($this_deletedRole->del_uRole) . '  Role was deleted:"> ' . date('F d, Y (D ~ g:i A)', strtotime($this_deletedRole->deleted_at)) . '</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <button class="btn cust_btn_smcircle3" type="button" data-toggle="collapse" data-target="#recoverAllURoleCollapse_Div'.$this_deletedRole->del_uRole_id.'" aria-expanded="true" aria-controls="recoverAllURoleCollapse_Div'.$this_deletedRole->del_uRole_id.'">
+                                <i class="nc-icon nc-minimal-down"></i>
+                            </button>
+                        </div>
+                        <div id="recoverAllURoleCollapse_Div'.$this_deletedRole->del_uRole_id.'" class="collapse cust_collapse_active cb_t0b12y20" aria-labelledby="recoverAllURoleCollapse_Div_heading'.$this_deletedRole->del_uRole_id.'" data-parent="#recoverAllURoleModalAccordion_Parent'.$this_deletedRole->del_uRole_id.'">
+                            <div class="card-body lightBlue_cardBody mt-0 mb-2">
+                                <span class="lightBlue_cardBody_blueTitlev1">Access Controls:</span>';
+                                if(!is_null($this_deletedRole->del_uRole_access)){
+                                    foreach(json_decode(json_encode($this_deletedRole->del_uRole_access), true) as $uRole_access){
+                                        $output .= '<span class="lightBlue_cardBody_list"><i class="fa fa-check-square-o font-weight-bold mr-1"></i> '.ucwords($uRole_access).'</span>';
+                                    }
+                                }else{
+                                    $output .= '<span class="lightBlue_cardBody_notice"><i class="fa fa-lock" aria-hidden="true"></i> No access controls found.</span>';
+                                }
+                                $output .= '    
+                            </div>
+                            ';
+                            if(!is_null($this_deletedRole->reason_deletion) OR !empty($this_deletedRole->reason_deletion)){
+                                $output .= '
+                                <div class="card-body lightBlue_cardBody mt-0 mb-2">
+                                    <span class="lightBlue_cardBody_blueTitlev1">Reason of Deletion:</span>
+                                    <span class="lightBlue_cardBody_list"><i class="fa fa-question-circle font-weight-bold" aria-hidden="true"></i> ' . $this_deletedRole->reason_deletion . ' </span>    
+                                </div>
+                                ';
+                            }
+                            $output .= '
+                            <div class="row mt-3">
+                                <div class="col-lg-12 col-md-12 col-sm-12 cursor_default" data-toggle="tooltip" data-placement="top" title="Date the ' . ucwords($this_deletedRole->del_uRole) . ' Role was created and created by:">
+                                    <span class="cust_info_txtwicon mb-1"><i class="fa fa-calendar-plus-o mr-1" aria-hidden="true"></i> ' . date('F d, Y (D ~ g:i A)', strtotime($this_deletedRole->del_created_at)) . ' </span> 
+                                    <span class="cust_info_txtwicon"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> ' . $txtRole_createdByName . ' <span class="font-italic"> ' . $txtRole_createdByRole . ' </span></span> 
+                                </div>
+                            </div>
+                            <hr class="hr_gry">
+                            <div class="row mt-2">
+                                <div class="col-lg-12 col-md-12 col-sm-12 cursor_default" data-toggle="tooltip" data-placement="top" title="Deleted by:">
+                                    <span class="cust_info_txtwicon text_svms_red"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> ' . $txtRole_deletedByName . ' <span class="font-italic"> ' . $txtRole_deletedByRole . ' </span></span> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                ';
+            }
+            $output .= '
+                    </div>
+                    <div class="modal-body pb-0">
+                        <div class="card-body lightGreen_cardBody shadow-none">
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <div class="form-group m-0">
+                                        <div class="custom-control custom-checkbox align-items-center">
+                                            <input type="checkbox" name="recover_all_roles" value="recover_all_roles" class="custom-control-input cursor_pointer" id="recoverRolesMarkAll" checked>
+                                            <label class="custom-control-label lightGreen_cardBody_chckboxLabel" for="recoverRolesMarkAll">Recover All ('.$count_queryAll_deletedRoles.') Role'.$rdR_s.'.</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="lightGreen_cardBody_notice"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i> This action will recover the selected Recently Deleted System Roles.</span>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <input type="hidden" name="_token" value="'.csrf_token().'">
+                        <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
+                        <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
+                        <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
+                        <div class="btn-group" role="group" aria-label="delete sanctions actions">
+                            <button id="cancel_recoverAllDeletedRolesBtn" type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                            <button id="submit_recoverAllDeletedRolesBtn" type="submit" class="btn btn-round btn-success btn_show_icon m-0"> Recover Selected Roles <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            ';
+            echo $output;
+        }else{
+            return back()->withFailedStatus(' There are no selected System Roles for recovery! please try again.');
+        }
+    }
+    // process recovery of deleted system roles
+    public function process_recover_deleted_system_roles(Request $request){
+        // get all request
+            $get_recoverDeleted_uRole_ids = json_decode(json_encode($request->get('recover_deleted_selected_role_id')), true);
+            $get_respo_user_id       = $request->get('respo_user_id');
+            $get_respo_user_lname    = $request->get('respo_user_lname');
+            $get_respo_user_fname    = $request->get('respo_user_fname');
+        // custom values
+            $now_timestamp = now();
+            $sq = "'";
+            if(!is_null($get_recoverDeleted_uRole_ids) OR !empty($get_recoverDeleted_uRole_ids)){
+                $count_get_recoverDeleted_uRole_ids = count($get_recoverDeleted_uRole_ids);
+            }else{
+                $count_get_recoverDeleted_uRole_ids = 0;
+            }
+            if($count_get_recoverDeleted_uRole_ids > 1){
+                $suRr_s = 's';
+            }else{
+                $suRr_s = '';
+            }
+        // process permanent deletion
+            if($count_get_recoverDeleted_uRole_ids > 0){
+                $zero = 0;
+                foreach($get_recoverDeleted_uRole_ids as $this_recoverDel_uRoleID){
+                    // get recently deleted role info
+                    $query_del_uRole_details = Deleteduserroles::where('del_uRole_id', $this_recoverDel_uRoleID)->first();
+                    $get_del_uRole_status    = $query_del_uRole_details->del_uRole_status;
+                    $get_del_uRole_type      = $query_del_uRole_details->del_uRole_type;
+                    $get_del_uRole           = $query_del_uRole_details->del_uRole;
+                    $get_del_uRole_access    = $query_del_uRole_details->del_uRole_access;
+                    $get_del_created_at      = $query_del_uRole_details->del_created_at;
+                    $get_del_created_by      = $query_del_uRole_details->del_created_by;
+                    $get_deleted_at          = $query_del_uRole_details->deleted_at;
+                    // save deleted role to user_roles_tbl
+                    $recover_uRole = new Userroles;
+                    $recover_uRole->uRole_status = $get_del_uRole_status;
+                    $recover_uRole->uRole_type   = $get_del_uRole_type;
+                    $recover_uRole->uRole        = $get_del_uRole;
+                    $recover_uRole->uRole_access = $get_del_uRole_access;
+                    $recover_uRole->created_by   = $get_del_created_by;
+                    $recover_uRole->created_at   = $get_del_created_at;
+                    $recover_uRole->updated_at   = $now_timestamp;
+                    $recover_uRole->deleted_at   = $get_deleted_at;
+                    $recover_uRole->recovered_at = $now_timestamp;
+                    $recover_uRole->save();
+                    
+                    // if update was a success
+                    if($recover_uRole){
+                        // remove recovered uRole from deleted_user_roles_tbl
+                        $remove_recoveredURole = Deleteduserroles::where('del_uRole_id', '=', $this_recoverDel_uRoleID)
+                                                    ->where('del_uRole', '=', $get_del_uRole)
+                                                    ->delete();
+                        // get recovered uRole_id from user_roles_tbl
+                        $query_newURole_id = Userroles::select('uRole_id')
+                                                ->where('uRole', '=', $get_del_uRole)
+                                                ->latest('recovered_at')
+                                                ->first();
+                        $get_newURole_id = $query_newURole_id->uRole_id;
+                        // record activity
+                        $record_act = new Useractivites;
+                        $record_act->created_at            = $now_timestamp;
+                        $record_act->act_respo_user_id     = $get_respo_user_id;
+                        $record_act->act_respo_users_lname = $get_respo_user_lname;
+                        $record_act->act_respo_users_fname = $get_respo_user_fname;
+                        $record_act->act_type              = 'role recovery';
+                        $record_act->act_details           = 'Recovered Deleted System Role: ' . ucwords($get_del_uRole).' Role.';
+                        $record_act->act_affected_id       = $get_newURole_id;
+                        $record_act->save();
+                    }
+                }
+                // if all process was a succes
+                if($record_act){
+                    return back()->withSuccessStatus(''.$count_get_recoverDeleted_uRole_ids . ' Role'.$suRr_s . ' has been Recovered Successfully.');
+                }else{
+                    return back()->withFailedStatus('There has been a problem recovering the deleted System Role! please try again.');
+                }
+            }else{
+                return back()->withFailedStatus(' There are no selected System Roles for recovery! please try again.');
             }
     }
 

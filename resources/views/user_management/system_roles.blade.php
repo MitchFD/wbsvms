@@ -142,113 +142,115 @@
                                     <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
                                 </button>
                             </div>
-                            <div id="recentlyDeletedRolesDisplayCollapseDiv" class="collapse gCardAccordions_collapse show cb_t0r25b25l10" aria-labelledby="recentlyDeletedRolesDisplayCollapseHeading" data-parent="#recentlyDeletedRolesDisplayCollapseParent">
-                                @foreach($queryAll_DeletedRoles as $this_deletedRole)
-                                    @php
-                                        // get responsible user who created this role
-                                        if(auth()->user()->id === $this_deletedRole->del_created_by){
-                                            $txtRole_createdByName  = 'Created by You.';
-                                            $txtRole_createdByRole = '';
-                                        }else{
-                                            $queryUser_createdBy   = App\Models\Users::select('id', 'user_fname', 'user_lname', 'user_role')->where('id', '=', $this_deletedRole->del_created_by)->first();
-                                            $txtRole_createdByName = ''.$queryUser_createdBy->user_fname . ' ' . $queryUser_createdBy->user_lname.'';
-                                            $txtRole_createdByRole = '('.ucwords($queryUser_createdBy->user_role).')';
-                                        }
+                            <div id="recentlyDeletedRolesDisplayCollapseDiv" class="collapse gCardAccordions_collapse show cb_t0b15x25" aria-labelledby="recentlyDeletedRolesDisplayCollapseHeading" data-parent="#recentlyDeletedRolesDisplayCollapseParent">
+                                <div class="row">
+                                    @foreach($queryAll_DeletedRoles as $this_deletedRole)
+                                        @php
+                                            // get responsible user who created this role
+                                            if(auth()->user()->id === $this_deletedRole->del_created_by){
+                                                $txtRole_createdByName  = 'Created by You.';
+                                                $txtRole_createdByRole = '';
+                                            }else{
+                                                $queryUser_createdBy   = App\Models\Users::select('id', 'user_fname', 'user_lname', 'user_role')->where('id', '=', $this_deletedRole->del_created_by)->first();
+                                                $txtRole_createdByName = ''.$queryUser_createdBy->user_fname . ' ' . $queryUser_createdBy->user_lname.'';
+                                                $txtRole_createdByRole = '('.ucwords($queryUser_createdBy->user_role).')';
+                                            }
 
-                                        // get responsible user who deleted this role
-                                        if(auth()->user()->id === $this_deletedRole->deleted_by){
-                                            $txtRole_deletedByName = 'Deleted by You.';
-                                            $txtRole_deletedByRole = '';
-                                        }else{
-                                            $queryUser_deletedBy   = App\Models\Users::select('id', 'user_fname', 'user_lname', 'user_role')->where('id', '=', $this_deletedRole->deleted_by)->first();
-                                            $txtRole_deletedByName = ''.$queryUser_deletedBy->user_fname . ' ' . $queryUser_deletedBy->user_lname.'';
-                                            $txtRole_deletedByRole = '('.ucwords($queryUser_deletedBy->user_role).')';
-                                        }
-                                    @endphp
-                                    <div class="col-lg-4 col-md-4 col-sm-12 mt-4">
-                                        <div class="accordion violaAccordions shadow cust_accordion_div" id="dsr{{$this_deletedRole->del_uRole_id}}Accordion_Parent">
-                                            <div class="card custom_accordion_card">
-                                                <div class="card-header p-0" id="changeUserRoleCollapse_heading">
-                                                    <h2 class="mb-0">
-                                                        <button class="btn btn-block custom2_btn_collapse cb_x12y15 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#dsr{{$this_deletedRole->del_uRole_id}}Collapse_Div" aria-expanded="true" aria-controls="dsr{{$this_deletedRole->del_uRole_id}}Collapse_Div">
-                                                            <div class="d-flex justify-content-start align-items-center">
-                                                                <div class="information_div2">
-                                                                    <span class="li_info_title">{{ucwords($this_deletedRole->del_uRole) }}</span>
-                                                                    <span class="li_info_subtitle3" data-toggle="tooltip" data-placement="top" title="Date the {{ ucwords($this_deletedRole->del_uRole) }} Role was deleted:">{{ date('F d, Y (D ~ g:i A)', strtotime($this_deletedRole->deleted_at))}} </span>
+                                            // get responsible user who deleted this role
+                                            if(auth()->user()->id === $this_deletedRole->deleted_by){
+                                                $txtRole_deletedByName = 'Deleted by You.';
+                                                $txtRole_deletedByRole = '';
+                                            }else{
+                                                $queryUser_deletedBy   = App\Models\Users::select('id', 'user_fname', 'user_lname', 'user_role')->where('id', '=', $this_deletedRole->deleted_by)->first();
+                                                $txtRole_deletedByName = ''.$queryUser_deletedBy->user_fname . ' ' . $queryUser_deletedBy->user_lname.'';
+                                                $txtRole_deletedByRole = '('.ucwords($queryUser_deletedBy->user_role).')';
+                                            }
+                                        @endphp
+                                        <div class="col-lg-4 col-md-4 col-sm-12 mt-4">
+                                            <div class="accordion violaAccordions shadow cust_accordion_div" id="dsr{{$this_deletedRole->del_uRole_id}}Accordion_Parent">
+                                                <div class="card custom_accordion_card">
+                                                    <div class="card-header p-0" id="changeUserRoleCollapse_heading">
+                                                        <h2 class="mb-0">
+                                                            <button class="btn btn-block custom2_btn_collapse cb_x12y15 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#dsr{{$this_deletedRole->del_uRole_id}}Collapse_Div" aria-expanded="true" aria-controls="dsr{{$this_deletedRole->del_uRole_id}}Collapse_Div">
+                                                                <div class="d-flex justify-content-start align-items-center">
+                                                                    <div class="information_div2">
+                                                                        <span class="li_info_titlev1">{{ucwords($this_deletedRole->del_uRole) }}</span>
+                                                                        <span class="li_info_subtitle3" data-toggle="tooltip" data-placement="top" title="Date the {{ ucwords($this_deletedRole->del_uRole) }} Role was deleted:">{{ date('F d, Y (D ~ g:i A)', strtotime($this_deletedRole->deleted_at))}} </span>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                            <i class="nc-icon nc-minimal-up"></i>
-                                                        </button>
-                                                    </h2>
-                                                </div>
-                                                <div id="dsr{{$this_deletedRole->del_uRole_id}}Collapse_Div" class="collapse violaAccordions_collapse show cb_t0b12y15" aria-labelledby="dsr{{$this_deletedRole->del_uRole_id}}Collapse_heading" data-parent="#dsr{{$this_deletedRole->del_uRole_id}}Accordion_Parent">
-                                                    {{-- access controls --}}
-                                                    @if(!is_null($this_deletedRole->del_uRole_access) OR !empty($this_deletedRole->del_uRole_access))
-                                                        <div class="row">
-                                                            <div class="col-lg-12 col-md-12 col-sm-12">
-                                                                <div class="card-body lightBlue_cardBody mb-2">
-                                                                    <span class="lightBlue_cardBody_blueTitlev1 mb-1">Access Controls: <i class="fa fa-info-circle cust_info_icon mx-1" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Pages Accessible to {{ ucwords($this_deletedRole->del_uRole) }} Role."></i></span>
-                                                                    @foreach(json_decode(json_encode($this_deletedRole->del_uRole_access), true) as $this_uRoleAccess)
-                                                                    <span class="lightBlue_cardBody_list"><i class="fa fa-check-square-o font-weight-bold mr-1"></i> {{ ucwords($this_uRoleAccess) }}</span>
-                                                                    @endforeach
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    @else
-                                                        <div class="row">
-                                                            <div class="col-lg-12 col-md-12 col-sm-12">
-                                                                <div class="card-body lightBlue_cardBody mb-2">
-                                                                    <span class="lightBlue_cardBody_list font-italic"><i class="fa fa-exclamation-circle font-weight-bold mr-1" aria-hidden="true"></i> No Access Controls Found...</span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    @endif
-                                                    {{-- reason for deletion --}}
-                                                    @if(!is_null($this_deletedRole->reason_deletion) OR !empty($this_deletedRole->reason_deletion))
-                                                        <div class="row">
-                                                            <div class="col-lg-12 col-md-12 col-sm-12">
-                                                                <div class="card-body lightBlue_cardBody mb-2">
-                                                                    <span class="lightBlue_cardBody_blueTitlev1 mb-1">Reason of Deletion: </span>
-                                                                    <span class="lightBlue_cardBody_list"><i class="fa fa-question-circle font-weight-bold mr-1"></i> {{ $this_deletedRole->reason_deletion }}</span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    @endif
-                                                    {{-- footer --}}
-                                                    <div class="row mt-3">
-                                                        <div class="col-lg-12 col-md-12 col-sm-12 d-flex justify-content-between align-items-center">
-                                                            <div class="cursor_default" data-toggle="tooltip" data-placement="top" title="Date the {{ ucwords($this_deletedRole->del_uRole) }} Role was created and created by:">
-                                                                <span class="cust_info_txtwicon mb-1"><i class="fa fa-calendar-plus-o mr-1" aria-hidden="true"></i>{{ date('F d, Y (D ~ g:i A)', strtotime($this_deletedRole->del_created_at)) }}</span> 
-                                                                <span class="cust_info_txtwicon"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> {{ $txtRole_createdByName }} <span class="font-italic"> {{ $txtRole_createdByRole }} </span></span> 
-                                                            </div> 
-                                                            <div class="d-flex align-items-end">
-                                                                <button id="{{$this_deletedRole->del_uRole_id}}" onclick="permanentDeleteSystemRole(this.id)" class="btn cust_btn_smcircle2" data-toggle="tooltip" data-placement="top" title="Recover {{ ucwords($this_deletedRole->del_uRole) }} Role?"><i class="fa fa-external-link" aria-hidden="true"></i></button>
-                                                            </div>
-                                                        </div>
+                                                                <i class="nc-icon nc-minimal-up"></i>
+                                                            </button>
+                                                        </h2>
                                                     </div>
-                                                    <hr class="hr_gry">
-                                                    <div class="row mt-2">
-                                                        <div class="col-lg-12 col-md-12 col-sm-12 d-flex justify-content-between align-items-center">
-                                                            <div class="cursor_default" data-toggle="tooltip" data-placement="top" title="Deleted by:">
-                                                                <span class="cust_info_txtwicon text_svms_red"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> {{ $txtRole_deletedByName }} <span class="font-italic"> {{ $txtRole_deletedByRole }} </span></span> 
-                                                            </div> 
-                                                            <div class="d-flex align-items-end">
-                                                                <button id="{{$this_deletedRole->del_uRole_id}}" onclick="permanentDeleteSystemRole(this.id)" class="btn cust_btn_smcircle2" data-toggle="tooltip" data-placement="top" title="Delete {{ ucwords($this_deletedRole->del_uRole) }} Role Permanently?"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                    <div id="dsr{{$this_deletedRole->del_uRole_id}}Collapse_Div" class="collapse violaAccordions_collapse show cb_t0b12y15" aria-labelledby="dsr{{$this_deletedRole->del_uRole_id}}Collapse_heading" data-parent="#dsr{{$this_deletedRole->del_uRole_id}}Accordion_Parent">
+                                                        {{-- access controls --}}
+                                                        @if(!is_null($this_deletedRole->del_uRole_access) OR !empty($this_deletedRole->del_uRole_access))
+                                                            <div class="row">
+                                                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                                                    <div class="card-body lightBlue_cardBody mb-2">
+                                                                        <span class="lightBlue_cardBody_blueTitlev1 mb-1">Access Controls: <i class="fa fa-info-circle cust_info_icon mx-1" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Pages Accessible to {{ ucwords($this_deletedRole->del_uRole) }} Role."></i></span>
+                                                                        @foreach(json_decode(json_encode($this_deletedRole->del_uRole_access), true) as $this_uRoleAccess)
+                                                                        <span class="lightBlue_cardBody_list"><i class="fa fa-check-square-o font-weight-bold mr-1"></i> {{ ucwords($this_uRoleAccess) }}</span>
+                                                                        @endforeach
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        @else
+                                                            <div class="row">
+                                                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                                                    <div class="card-body lightBlue_cardBody mb-2">
+                                                                        <span class="lightBlue_cardBody_list font-italic"><i class="fa fa-exclamation-circle font-weight-bold mr-1" aria-hidden="true"></i> No Access Controls Found...</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        @endif
+                                                        {{-- reason for deletion --}}
+                                                        @if(!is_null($this_deletedRole->reason_deletion) OR !empty($this_deletedRole->reason_deletion))
+                                                            <div class="row">
+                                                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                                                    <div class="card-body lightBlue_cardBody mb-2">
+                                                                        <span class="lightBlue_cardBody_blueTitlev1 mb-1">Reason of Deletion: </span>
+                                                                        <span class="lightBlue_cardBody_list"><i class="fa fa-question-circle font-weight-bold mr-1"></i> {{ $this_deletedRole->reason_deletion }}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        @endif
+                                                        {{-- footer --}}
+                                                        <div class="row mt-3">
+                                                            <div class="col-lg-12 col-md-12 col-sm-12 d-flex justify-content-between align-items-center">
+                                                                <div class="cursor_default" data-toggle="tooltip" data-placement="top" title="Date the {{ ucwords($this_deletedRole->del_uRole) }} Role was created and created by:">
+                                                                    <span class="cust_info_txtwicon mb-1"><i class="fa fa-calendar-plus-o mr-1" aria-hidden="true"></i>{{ date('F d, Y (D ~ g:i A)', strtotime($this_deletedRole->del_created_at)) }}</span> 
+                                                                    <span class="cust_info_txtwicon"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> {{ $txtRole_createdByName }} <span class="font-italic"> {{ $txtRole_createdByRole }} </span></span> 
+                                                                </div> 
+                                                                <div class="d-flex align-items-end">
+                                                                    <button id="{{$this_deletedRole->del_uRole_id}}" onclick="recoverDeletedSystemRole(this.id)" class="btn cust_btn_smcircle2" data-toggle="tooltip" data-placement="top" title="Recover {{ ucwords($this_deletedRole->del_uRole) }} Role?"><i class="fa fa-external-link" aria-hidden="true"></i></button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <hr class="hr_gry">
+                                                        <div class="row mt-2">
+                                                            <div class="col-lg-12 col-md-12 col-sm-12 d-flex justify-content-between align-items-center">
+                                                                <div class="cursor_default" data-toggle="tooltip" data-placement="top" title="Deleted by:">
+                                                                    <span class="cust_info_txtwicon text_svms_red"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> {{ $txtRole_deletedByName }} <span class="font-italic"> {{ $txtRole_deletedByRole }} </span></span> 
+                                                                </div> 
+                                                                <div class="d-flex align-items-end">
+                                                                    <button id="{{$this_deletedRole->del_uRole_id}}" onclick="permanentDeleteSystemRole(this.id)" class="btn cust_btn_smcircle2" data-toggle="tooltip" data-placement="top" title="Delete {{ ucwords($this_deletedRole->del_uRole) }} Role Permanently?"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                @endforeach
-                                <div class="row mt-4">
+                                    @endforeach
+                                </div>
+                                <div class="row mt-3">
                                     <div class="col-lg-12 col-md-12 col-sm-12">
-                                        <div class="card-body py-0 pr-0 d-flex justify-content-between align-items-center">
+                                        <div class="card-body p-0 d-flex justify-content-between align-items-center">
                                             <span class="cust_info_txtwicon font-weight-bold"><i class="fa fa-trash mr-1" aria-hidden="true"></i> {{ $txt_totalDeletedRolesCount }} </span>  
                                             <div>
-                                                <button class="btn cust_btn_smcircle5v1" data-toggle="tooltip" data-placement="top" title="Recover All Recently Deleted Roles?"><i class="fa fa-external-link" aria-hidden="true"></i></button>
-                                                <button class="btn cust_btn_smcircle5v1" data-toggle="tooltip" data-placement="top" title="Permanent Delete All Recently Deleted Roles?"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                <button onclick="recoverAllDeletedRoles()" class="btn cust_btn_smcircle5v1" data-toggle="tooltip" data-placement="top" title="Recover All Recently Deleted Roles?"><i class="fa fa-external-link" aria-hidden="true"></i></button>
+                                                <button onclick="permanentDeleteAllDeletedRoles()" class="btn cust_btn_smcircle5v1" data-toggle="tooltip" data-placement="top" title="Permanent Delete All Recently Deleted Roles?"><i class="fa fa-trash" aria-hidden="true"></i></button>
                                             </div>
                                         </div>
                                     </div>
@@ -415,6 +417,7 @@
         </div>
     {{-- temporary delete system role modal end --}}
     {{-- permanent delete system role modal --}}
+        {{-- single permanent deletion --}}
         <div class="modal fade" id="permanentDeleteSystemRoleModal" tabindex="-1" role="dialog" aria-labelledby="permanentDeleteSystemRoleModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content cust_modal">
@@ -430,7 +433,57 @@
                 </div>
             </div>
         </div>
+        {{-- multiple permanent deletion --}}
+        <div class="modal fade" id="permanentDeleteAllSystemRoleModal" tabindex="-1" role="dialog" aria-labelledby="permanentDeleteAllSystemRoleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="permanentDeleteAllSystemRoleModalLabel">Permanently Delete All System Role?</span>
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="permanentDeleteAllSystemRoleModalHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
     {{-- permanent delete system role modal end --}}
+    {{-- recover deleted system role modal --}}
+        {{-- single recovery --}}
+        <div class="modal fade" id="recoverDeletedSystemRoleModal" tabindex="-1" role="dialog" aria-labelledby="recoverDeletedSystemRoleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="recoverDeletedSystemRoleModalLabel">Recover Deleted System Role?</span>
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="recoverDeletedSystemRoleModalHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- multiple recovery --}}
+        <div class="modal fade" id="recoverAllDeletedSystemRoleModal" tabindex="-1" role="dialog" aria-labelledby="recoverAllDeletedSystemRoleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="recoverAllDeletedSystemRoleModalLabel">Recover All Deleted System Role?</span>
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="recoverAllDeletedSystemRoleModalHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{-- recover deleted system role modal end --}}
 
 @endsection
 
@@ -539,6 +592,7 @@
         });
     </script>
     {{-- permanent delete --}}
+    {{-- single permanent deletion --}}
     <script>
         function permanentDeleteSystemRole(permDelete_uRole_id){
             var permDelete_uRole_id = permDelete_uRole_id;
@@ -567,7 +621,174 @@
             });
         });
     </script>
+    {{-- multiple permanent deletion --}}
+    <script>
+        function permanentDeleteAllDeletedRoles(){
+            var _token = $('input[name="_token"]').val();
+            $.ajax({
+                url:"{{ route('user_management.permanent_delete_all_system_role_confirmation_modal') }}",
+                method:"GET",
+                data:{_token:_token},
+                success: function(data){
+                    $('#permanentDeleteSystemRoleModalHtmlData').html(data); 
+                    $('#permanentDeleteSystemRoleModal').modal('show');
+                }
+            });
+        }
+    </script>
+    <script>
+        $('#permanentDeleteSystemRoleModal').on('show.bs.modal', function () {
+            var form_permDeleteAllDeletedRoles  = document.querySelector("#form_permDeleteAllDeletedRoles");
+            var submit_permDeleteAllDeletedRolesBtn = document.querySelector("#submit_permDeleteAllDeletedRolesBtn");
+            var cancel_permDeleteAllDeletedRolesBtn = document.querySelector("#cancel_permDeleteAllDeletedRolesBtn");
+            // disable /enable submit button
+            function dis_en_submit_permDeleteAllDeletedRolesBtn(){
+                var has_permDeleteRolesMarSingle = 0;
+                $(".permDeleteRolesMarSingle").each(function(){
+                    if(this.checked){
+                        has_permDeleteRolesMarSingle = 1;
+                    }
+                });
+                if(has_permDeleteRolesMarSingle != 0){
+                    submit_permDeleteAllDeletedRolesBtn.disabled = false;
+                }else{
+                    submit_permDeleteAllDeletedRolesBtn.disabled = true;
+                }
+            }
+            // selection of sanctions for deletion
+            $("#permDeleteRolesMarkAll").change(function(){
+                if(this.checked){
+                $(".permDeleteRolesMarSingle").each(function(){
+                    this.checked=true;
+                })              
+                }else{
+                $(".permDeleteRolesMarSingle").each(function(){
+                    this.checked=false;
+                })              
+                }
+                dis_en_submit_permDeleteAllDeletedRolesBtn();
+            });
+            $(".permDeleteRolesMarSingle").click(function () {
+                if ($(this).is(":checked")){
+                var ispermDeleteRolesMarkAllChecked = 0;
+                $(".permDeleteRolesMarSingle").each(function(){
+                    if(!this.checked)
+                    ispermDeleteRolesMarkAllChecked = 1;
+                })              
+                if(ispermDeleteRolesMarkAllChecked == 0){ $("#permDeleteRolesMarkAll").prop("checked", true); }     
+                }else {
+                $("#permDeleteRolesMarkAll").prop("checked", false);
+                }
+                dis_en_submit_permDeleteAllDeletedRolesBtn();
+            });
+            // disable cancel and sibmit button on submit
+            $(form_permDeleteAllDeletedRoles).submit(function(){
+                cancel_permDeleteAllDeletedRolesBtn.disabled = true;
+                submit_permDeleteAllDeletedRolesBtn.disabled = true;
+                return true;
+            });
+        });
+    </script>
 {{-- delete system role --}}
+{{-- recover system roles --}}
+    {{-- single recovery --}}
+    <script>
+        function recoverDeletedSystemRole(recoverDeleted_uRole_id){
+            var recoverDeleted_uRole_id = recoverDeleted_uRole_id;
+            var _token = $('input[name="_token"]').val();
+            $.ajax({
+                url:"{{ route('user_management.recover_deleted_system_role_confirmation_modal') }}",
+                method:"GET",
+                data:{recoverDeleted_uRole_id:recoverDeleted_uRole_id, _token:_token},
+                success: function(data){
+                    $('#recoverDeletedSystemRoleModalHtmlData').html(data); 
+                    $('#recoverDeletedSystemRoleModal').modal('show');
+                }
+            });
+        }
+    </script>
+    <script>
+        $('#recoverDeletedSystemRoleModal').on('show.bs.modal', function () {
+            var form_deletedSystemRoleRecovery  = document.querySelector("#form_deletedSystemRoleRecovery");
+            var process_recoverDeletedRoles_btn = document.querySelector("#process_recoverDeletedRoles_btn");
+            var cancel_recoverDeletedRoles_btn = document.querySelector("#cancel_recoverDeletedRoles_btn");
+            // disable cancel and sibmit button on submit
+            $(form_deletedSystemRoleRecovery).submit(function(){
+                cancel_recoverDeletedRoles_btn.disabled = true;
+                process_recoverDeletedRoles_btn.disabled = true;
+                return true;
+            });
+        });
+    </script>
+    {{-- multiple recovery --}}
+    <script>
+        function recoverAllDeletedRoles(){
+            var _token = $('input[name="_token"]').val();
+            $.ajax({
+                url:"{{ route('user_management.recover_all_deleted_system_role_confirmation_modal') }}",
+                method:"GET",
+                data:{_token:_token},
+                success: function(data){
+                    $('#recoverAllDeletedSystemRoleModalHtmlData').html(data); 
+                    $('#recoverAllDeletedSystemRoleModal').modal('show');
+                }
+            });
+        }
+    </script>
+    <script>
+        $('#recoverAllDeletedSystemRoleModal').on('show.bs.modal', function () {
+            var form_recoverAllDeletedRoles  = document.querySelector("#form_recoverAllDeletedRoles");
+            var submit_recoverAllDeletedRolesBtn = document.querySelector("#submit_recoverAllDeletedRolesBtn");
+            var cancel_recoverAllDeletedRolesBtn = document.querySelector("#cancel_recoverAllDeletedRolesBtn");
+            // disable /enable submit button
+            function dis_en_submit_recoverAllDeletedRolesBtn(){
+                var has_recoverRolesMarSingle = 0;
+                $(".recoverRolesMarSingle").each(function(){
+                    if(this.checked){
+                        has_recoverRolesMarSingle = 1;
+                    }
+                });
+                if(has_recoverRolesMarSingle != 0){
+                    submit_recoverAllDeletedRolesBtn.disabled = false;
+                }else{
+                    submit_recoverAllDeletedRolesBtn.disabled = true;
+                }
+            }
+            // selection of sanctions for deletion
+            $("#recoverRolesMarkAll").change(function(){
+                if(this.checked){
+                $(".recoverRolesMarSingle").each(function(){
+                    this.checked=true;
+                })              
+                }else{
+                $(".recoverRolesMarSingle").each(function(){
+                    this.checked=false;
+                })              
+                }
+                dis_en_submit_recoverAllDeletedRolesBtn();
+            });
+            $(".recoverRolesMarSingle").click(function () {
+                if ($(this).is(":checked")){
+                var isRecoverRolesMarkAllChecked = 0;
+                $(".recoverRolesMarSingle").each(function(){
+                    if(!this.checked)
+                    isRecoverRolesMarkAllChecked = 1;
+                })              
+                if(isRecoverRolesMarkAllChecked == 0){ $("#recoverRolesMarkAll").prop("checked", true); }     
+                }else {
+                $("#recoverRolesMarkAll").prop("checked", false);
+                }
+                dis_en_submit_recoverAllDeletedRolesBtn();
+            });
+            // disable cancel and sibmit button on submit
+            $(form_recoverAllDeletedRoles).submit(function(){
+                cancel_recoverAllDeletedRolesBtn.disabled = true;
+                submit_recoverAllDeletedRolesBtn.disabled = true;
+                return true;
+            });
+        });
+    </script>
+{{-- recover system roles end --}}
 
 {{-- activate system role --}}
     <script>
