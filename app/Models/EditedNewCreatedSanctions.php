@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 
-class DeletedCreatedSanctions extends Model
+class EditedNewCreatedSanctions extends Model
 {
     use HasFactory, Notifiable;
 
@@ -15,13 +15,11 @@ class DeletedCreatedSanctions extends Model
      *
      * @var array
      */
-    protected $table = 'deleted_created_sanctions_tbl';
+    protected $table = 'edited_new_created_sanctions_tbl';
     protected $fillable = [
-        'del_crSanct_details',
-        'del_Status',
-        'deleted_by',
-        'perm_deleted_by'
+        'eNew_from_eOld_id',
+        'eNew_crSanct_details'
     ];
-    public $primaryKey = 'del_id';
+    public $primaryKey = 'eNew_id';
     public $timestamps = false;
 }
