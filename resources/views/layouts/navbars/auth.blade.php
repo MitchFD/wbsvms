@@ -131,6 +131,14 @@
                         </div>
                     </li>
                 @endif
+                @if(in_array('offenses', $get_uRole_access))
+                    <li class="{{ $elementActive == 'offenses' ? 'active' : '' }}">
+                        <a href="{{ route('offenses.index', 'offenses') }}">
+                            <i class="nc-icon nc-align-left-2"></i>
+                            <p>{{ __('offenses') }}</p>
+                        </a>
+                    </li>
+                @endif
                 @if(in_array('sanctions', $get_uRole_access))
                     <li class="{{ $elementActive == 'sanctions' ? 'active' : '' }}">
                         <a href="{{ route('sanctions.index', 'sanctions') }}">

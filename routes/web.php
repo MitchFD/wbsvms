@@ -274,6 +274,11 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::post('sanctions/process_delete_selected_sanctions', 'App\Http\Controllers\SanctionsController@process_delete_selected_sanctions')->name('sanctions.process_delete_selected_sanctions');
 });
 
+// offenses
+Route::group(['middleware' => 'auth'], function () {
+	Route::get('offenses/index', ['as' => 'offenses.index', 'uses' => 'App\Http\Controllers\OffensesController@index']);
+});
+
 // student handbook
 Route::group(['middleware' => 'auth'], function () {
 	Route::get('student_handbook/index', ['as' => 'student_handbook.index', 'uses' => 'App\Http\Controllers\StudentHandbookController@index']);

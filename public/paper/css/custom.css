@@ -762,6 +762,9 @@ fieldset[disabled] .btn_svms_blue.active {
 }
 
 /* global card customization */
+.cb_p15{
+  padding: 15px !important;
+}
 .cb_p15x25{
   padding: 15px 25px !important;
 }

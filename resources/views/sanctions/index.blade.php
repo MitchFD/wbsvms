@@ -51,7 +51,10 @@
                         <div class="card-body card_intro">
                             <div class="page_intro">
                                 <span class="page_intro_title">Sanctions</span>
-                                <span class="page_intro_subtitle">Create Sanctions as default options to ease your task for adding corresponding sanctions to recorded violations. You will be able to Add new Sanctions, Edit Existing Sanctions, and/or delete created sanctions.</span>
+                                <span class="page_intro_subtitle">Create Sanctions as default options to ease your task for adding corresponding sanctions to 
+                                    recorded violations. You will be able to Add new Sanction Details,, Edit Existing Sanctions, and/or Delete 
+                                    the custom Sanction/s you have registered.
+                                    </span>
                             </div>
                             <div class="page_illustration">
                                 <img class="illustration_svg" src="{{ asset('storage/svms/illustrations/sanctions_illustration.svg') }}" alt="...">
