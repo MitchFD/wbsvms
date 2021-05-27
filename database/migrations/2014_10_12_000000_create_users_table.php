@@ -24,12 +24,12 @@ class CreateUsersTable extends Migration
             $table->string('user_role')->nullable();
             $table->string('user_status')->nullable();    
             $table->string('user_role_status')->nullable();    
-            $table->string('user_type');  
-            $table->unsignedBigInteger('user_sdca_id'); 
+            $table->string('user_type')->nullable();  
+            $table->unsignedBigInteger('user_sdca_id')->nullable(); 
             $table->string('user_image')->nullable();    
-            $table->string('user_lname');    
-            $table->string('user_fname'); 
-            $table->string('user_gender'); 
+            $table->string('user_lname')->nullable();    
+            $table->string('user_fname')->nullable(); 
+            $table->string('user_gender')->nullable(); 
             $table->unsignedBigInteger('registered_by'); 
                 // $table->foreign('registered_by')->references('id')->on('users')->onDelete('cascade');
             $table->timestamp('created_at')->format('Y-m-d H:i:s')->nullable();
