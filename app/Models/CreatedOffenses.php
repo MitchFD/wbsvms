@@ -17,6 +17,8 @@ class CreatedOffenses extends Model
      */
     protected $table = 'created_offenses_tbl';
     protected $fillable = [
+        'crOffense_category',
+        'crOffense_type',
         'crOffense_details',
         'respo_user_id',
     ];

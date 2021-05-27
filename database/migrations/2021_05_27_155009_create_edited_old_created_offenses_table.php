@@ -15,10 +15,12 @@ class CreateEditedOldCreatedOffensesTable extends Migration
     {
         Schema::create('edited_old_created_offenses_tbl', function (Blueprint $table) {
             $table->id('eOld_id');
-            $table->unsignedBigInteger('eOld_from_crOffense_id');
+            $table->unsignedBigInteger('eOld_from_crOffense_id')->nullable();
             // $table->foreign('eOld_from_crOffense_id')->references('crOffense_id')->on('created_offenses_tbl')->onDelete('cascade');
-            $table->string('eOld_crOffense_details');
-            $table->unsignedBigInteger('edited_by');
+            $table->string('eOld_crOffense_category')->nullable();
+            $table->string('eOld_crOffense_type')->nullable();
+            $table->string('eOld_crOffense_details')->nullable();
+            $table->unsignedBigInteger('edited_by')->nullable();
                 // $table->foreign('edited_by')->references('id')->on('users')->onDelete('cascade');
             $table->timestamp('edited_at')->format('Y-m-d H:i:s')->nullable();
         });

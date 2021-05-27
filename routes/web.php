@@ -277,6 +277,10 @@ Route::group(['middleware' => 'auth'], function () {
 // offenses
 Route::group(['middleware' => 'auth'], function () {
 	Route::get('offenses/index', ['as' => 'offenses.index', 'uses' => 'App\Http\Controllers\OffensesController@index']);
+	// add new category form
+	Route::get('offenses/add_new_category_form', 'App\Http\Controllers\OffensesController@add_new_category_form')->name('offenses.add_new_category_form');
+	// process registration of new category
+	Route::post('offenses/process_register_new_category', 'App\Http\Controllers\OffensesController@process_register_new_category')->name('offenses.process_register_new_category');
 });
 
 // student handbook

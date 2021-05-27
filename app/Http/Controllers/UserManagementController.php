@@ -5323,7 +5323,7 @@ class UserManagementController extends Controller
                     <input type="hidden" name="ual_rangefrom" value="'.$ual_rangefrom.'">
                     <input type="hidden" name="ual_rangeTo" value="'.$ual_rangeTo.'">
                     <input type="hidden" name="ual_category" value="'.$ual_category.'">
-                    <div class="btn-group" role="group" aria-label="Basic example">
+                    <div class="btn-group" role="group" aria-label="Generate Report Actions">
                         <button id="cancel_GenerateSelectedUserLogsReport_btn" type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
                         <button id="process_GenerateSelectedUserLogsReport_btn" type="submit" class="btn btn-round btn-success btn_show_icon m-0">Generate Report <i class="nc-icon nc-single-copy-04 btn_icon_show_right" aria-hidden="true"></i></button>
                     </div>

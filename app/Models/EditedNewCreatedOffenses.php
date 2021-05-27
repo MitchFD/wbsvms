@@ -18,6 +18,8 @@ class EditedNewCreatedOffenses extends Model
     protected $table = 'edited_new_created_offenses_tbl';
     protected $fillable = [
         'eNew_from_eOld_id',
+        'eNew_crOffense_category',
+        'eNew_crOffense_type',
         'eNew_crOffense_details'
     ];
     public $primaryKey = 'eNew_id';

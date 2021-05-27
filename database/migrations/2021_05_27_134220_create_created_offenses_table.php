@@ -15,8 +15,10 @@ class CreateCreatedOffensesTable extends Migration
     {
         Schema::create('created_offenses_tbl', function (Blueprint $table) {
             $table->id('crOffense_id');
-            $table->string('crOffense_details');
-            $table->unsignedBigInteger('respo_user_id');
+            $table->string('crOffense_category')->nullable();
+            $table->string('crOffense_type')->nullable();
+            $table->string('crOffense_details')->nullable();
+            $table->unsignedBigInteger('respo_user_id')->nullable();
                 // $table->foreign('respo_user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamp('created_at')->format('Y-m-d H:i:s')->nullable();
             $table->timestamp('updated_at')->format('Y-m-d H:i:s')->nullable();
