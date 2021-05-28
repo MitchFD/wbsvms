@@ -3504,6 +3504,12 @@ fieldset[disabled] .applyBtn.active {
   background-color: #6bd098;
 }
 
+/* hoverable spans */
+.hoverableSpanRed:hover,
+.hoverableSpanRed:focus{
+  background-color: #F7E3E3 !important;
+}
+
 /* custom nav-tabs */
 /* nav-tab 1 */
 .cust_nav_tabs{

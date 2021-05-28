@@ -174,7 +174,7 @@
                                                                 @php
                                                                     $custIndex++;
                                                                 @endphp
-                                                                <span class="lightRed_cardBody_list cursor_pointer" onclick="editOffenseDetails()"><span class="font-weight-bold mr-1">{{$custIndex}}. </span> {{ $this_Custom_perOffCategory->crOffense_details}}</span>
+                                                                <span id="{{$this_Custom_perOffCategory->crOffense_id}}" onclick="editOffenseDetails(this.id)" class="lightRed_cardBody_list cursor_pointer hoverableSpanRed"><span class="font-weight-bold mr-1">{{$custIndex}}. </span> {{ $this_Custom_perOffCategory->crOffense_details}}</span>
                                                             @endforeach
                                                         </div>
                                                     </div>
@@ -233,6 +233,40 @@
             </div>
         </div>
     {{-- add new category end --}}
+    {{-- add new offense details --}}
+        <div class="modal fade" id="addNewOffenseDetailsFormModal" tabindex="-1" role="dialog" aria-labelledby="addNewOffenseDetailsFormModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="addNewOffenseDetailsFormModalLabel">Add New Offense Details?</span>
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="addNewOffenseDetailsFormModalHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{-- add new offense details end --}}
+    {{-- edit selected offense --}}
+        <div class="modal fade" id="editSelectedOffenseFormModal" tabindex="-1" role="dialog" aria-labelledby="editSelectedOffenseFormModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="editSelectedOffenseFormModalLabel">Edit Selected Offense?</span>
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="editSelectedOffenseFormModalHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{-- edit selected offense end --}}
 
 @endsection
 
@@ -251,14 +285,73 @@
                     $('#addNewCategoryFormModal').modal('show');
                 }
             });
-
         }
     </script>
     <script>
         $('#addNewCategoryFormModal').on('show.bs.modal', function () {
+            var register_new_category_name  = document.querySelector("#register_new_category_name");
+            var addCategoryDetails_input  = document.querySelector("#addCategoryDetails_input");
+            var categoryDetailsAdd_Btn = document.querySelector("#categoryDetailsAdd_Btn");
             var form_registerNewCategory  = document.querySelector("#form_registerNewCategory");
             var cancel_registerNewCategory_btn = document.querySelector("#cancel_registerNewCategory_btn");
             var process_registerNewCategory_btn = document.querySelector("#process_registerNewCategory_btn");
+            var addedCategoryDetials_field = $('.addedCategoryDetials_field').filter(function() {
+                    return this.value != '';
+                });
+            function disenAble_submitBtn(){
+                if(addCategoryDetails_input.value === "" ||  register_new_category_name.value === "") {
+                    process_registerNewCategory_btn.disabled = true;
+                }else{
+                    process_registerNewCategory_btn.disabled = false;
+                }
+                if(addCategoryDetails_input.value !== ""){
+                    categoryDetailsAdd_Btn.disabled = false;
+                }else{
+                    categoryDetailsAdd_Btn.disabled = true;
+                }
+            }
+            $(addCategoryDetails_input).keyup(function(){
+                disenAble_submitBtn();
+            });
+            $(register_new_category_name).keyup(function(){
+                disenAble_submitBtn();
+            });
+            // appending new input field
+            function addOtherOffIndexing(){
+                i = 1;
+                $(".addOtherOffIndex").each(function(){
+                    $(this).html(i+1 + '.');
+                    i++;
+                });
+            }
+            var maxField = 10;
+            var addedInputFields_div = document.querySelector('.addedInputFields_div');
+            var newInputField = '<div class="input-group mb-2">' +
+                                    '<div class="input-group-append"> ' +
+                                        '<span class="input-group-text txt_iptgrp_append2 addOtherOffIndex font-weight-bold">1. </span> ' +
+                                    '</div> ' +
+                                    '<input type="text" name="add_new_category_details[]" class="form-control input_grpInpt2 addedCategoryDetials_field" placeholder="Add New Category Details" aria-label="Add New Category Details" aria-describedby="new-category-details-input" required /> ' +
+                                    '<div class="input-group-append"> ' +
+                                        '<button class="btn btn_svms_blue m-0 btn_deleteAnother_input" type="button"><i class="nc-icon nc-simple-remove font-weight-bold" aria-hidden="true"></i></button> ' +
+                                    '</div> ' +
+                                '</div>';
+            var x = 1;
+            $(categoryDetailsAdd_Btn).click(function(){
+                if(x < maxField){
+                    x++;
+                    $(addedInputFields_div).append(newInputField);
+                    // console.log(x);
+                }
+                addOtherOffIndexing();
+            });
+            $(addedInputFields_div).on('click', '.btn_deleteAnother_input', function(e){
+                e.preventDefault();
+                $(this).closest('.input_grpInpt2').value = '';
+                $(this).closest('.input-group').last().remove();
+                x--;
+                // console.log('click');
+                addOtherOffIndexing();
+            });
             // disable cancel and sibmit button on submit
             $(form_registerNewCategory).submit(function(){
                 process_registerNewCategory_btn.disabled = true;
@@ -272,15 +365,107 @@
 {{-- add new Category --}}
     <script>
         function addNewOffenses(){
-            alert('add new custom Offenses');
+            var _token = $('input[name="_token"]').val();
+            $.ajax({
+                url:"{{ route('offenses.add_new_offense_details_form') }}",
+                method:"GET",
+                data:{_token:_token},
+                success: function(data){
+                    $('#addNewOffenseDetailsFormModalHtmlData').html(data); 
+                    $('#addNewOffenseDetailsFormModal').modal('show');
+                }
+            });
         }
+    </script>
+    <script>
+        $('#addNewOffenseDetailsFormModal').on('show.bs.modal', function () {
+            var select_selectOffenseCategory = document.querySelector('#select_offense_category');
+            var addNewOffenses_input  = document.querySelector("#addNewOffenses_input");
+            var NewOffensesAdd_Btn = document.querySelector("#NewOffensesAdd_Btn");
+            var form_registerNewOffenses  = document.querySelector("#form_registerNewOffenses");
+            var cancel_registerNewOffenses_btn = document.querySelector("#cancel_registerNewOffenses_btn");
+            var process_registerNewOffenses_btn = document.querySelector("#process_registerNewOffenses_btn");
+            var addedOffenses_field = $('.addedOffenses_field').filter(function() {
+                    return this.value != '';
+                });
+            function disenAble_submitBtn1(){
+                if(addNewOffenses_input.value !== "") {
+                    NewOffensesAdd_Btn.disabled = false;
+                }else{
+                    NewOffensesAdd_Btn.disabled = true;
+                }
+                if(addNewOffenses_input.value !== "" && select_selectOffenseCategory.value != 0) {
+                    process_registerNewOffenses_btn.disabled = false;
+                }else{
+                    process_registerNewOffenses_btn.disabled = true;
+                }
+            }
+            $(addNewOffenses_input).keyup(function(){
+                disenAble_submitBtn1();
+            });
+            $(select_selectOffenseCategory).on('change paste keyup', function(){
+                disenAble_submitBtn1();
+            });
+            // appending new input field
+            function addOtherOffIndexing1(){
+                i = 1;
+                $(".addOtherOffIndex").each(function(){
+                    $(this).html(i+1 + '.');
+                    i++;
+                });
+            }
+            var maxField = 10;
+            var addedInputFields_div1 = document.querySelector('.addedInputFields_div1');
+            var newInputField = '<div class="input-group mb-2">' +
+                                    '<div class="input-group-append"> ' +
+                                        '<span class="input-group-text txt_iptgrp_append2 addOtherOffIndex font-weight-bold">1. </span> ' +
+                                    '</div> ' +
+                                    '<input type="text" name="add_new_offenses[]" class="form-control input_grpInpt2 addedOffenses_field" placeholder="Add New Offenses" aria-label="Add New Offenses" aria-describedby="new-offenses-input" required /> ' +
+                                    '<div class="input-group-append"> ' +
+                                        '<button class="btn btn_svms_blue m-0 btn_deleteAnother_input1" type="button"><i class="nc-icon nc-simple-remove font-weight-bold" aria-hidden="true"></i></button> ' +
+                                    '</div> ' +
+                                '</div>';
+            var x = 1;
+            $(NewOffensesAdd_Btn).click(function(){
+                if(x < maxField){
+                    x++;
+                    $(addedInputFields_div1).append(newInputField);
+                    // console.log(x);
+                }
+                addOtherOffIndexing1();
+            });
+            $(addedInputFields_div1).on('click', '.btn_deleteAnother_input1', function(e){
+                e.preventDefault();
+                $(this).closest('.input_grpInpt2').value = '';
+                $(this).closest('.input-group').last().remove();
+                x--;
+                // console.log('click');
+                addOtherOffIndexing1();
+            });
+            // disable cancel and sibmit button on submit
+            $(form_registerNewOffenses).submit(function(){
+                process_registerNewOffenses_btn.disabled = true;
+                cancel_registerNewOffenses_btn.disabled = true;
+                return true;
+            });
+        });
     </script>
 {{-- add new Category end --}}
 
 {{-- edit offense details --}}
     <script>
-        function editOffenseDetails(){
-            alert('wow');
+        function editOffenseDetails(selected_crOffenseID){
+            var selected_crOffenseID = selected_crOffenseID;
+            var _token = $('input[name="_token"]').val();
+            $.ajax({
+                url:"{{ route('offenses.edit_selected_offense_form') }}",
+                method:"GET",
+                data:{selected_crOffenseID:selected_crOffenseID,_token:_token},
+                success: function(data){
+                    $('#editSelectedOffenseFormModalHtmlData').html(data); 
+                    $('#editSelectedOffenseFormModal').modal('show');
+                }
+            });
         }
     </script>
 {{-- edit offense details end--}}
