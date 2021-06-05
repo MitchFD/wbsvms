@@ -52,7 +52,11 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    // original form
+    // 'url' => env('APP_URL', 'http://localhost'),
+
+    // updated
+    'url' => env('APP_URL', 'APP_URL=https://svms.herokuapp.com/'),
 
     'asset_url' => env('ASSET_URL', null),
 
