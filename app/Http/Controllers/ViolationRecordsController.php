@@ -661,7 +661,7 @@ class ViolationRecordsController extends Controller
                                             $vrQuery->whereBetween('deleted_violations_tbl.deleted_at', [$vr_rangefrom, $vr_rangeTo]);
                                         }
                                     })
-                                    ->where('del_status', 1)
+                                    // ->where('del_status', 1)
                                     ->orderBy('deleted_violations_tbl.'.$orderBy_filterVal, $orderByRange_filterVal)
                                     ->paginate(intval($vr_numRows));
                     $matched_result_txt = ' Matched Records';
@@ -694,7 +694,7 @@ class ViolationRecordsController extends Controller
                                             $vrQuery->whereBetween('deleted_violations_tbl.deleted_at', [$vr_rangefrom, $vr_rangeTo]);
                                         }
                                     })
-                                    ->where('del_status', 1)
+                                    // ->where('del_status', 1)
                                     ->orderBy('deleted_violations_tbl.'.$orderBy_filterVal, $orderByRange_filterVal)
                                     ->paginate(intval($vr_numRows));
                     $matched_result_txt = ' Record';
@@ -735,9 +735,56 @@ class ViolationRecordsController extends Controller
                             $badge_stat = 'cust_badge_red';
                             $img_class = 'display_violator_image2';
                         }
+                        // if has sanctions
+                        if($this_violator->del_has_sanction == 1){
+                            if($this_violator->del_has_sanct_count > 1){
+                                $hsC_s = 's'; 
+                            }else{
+                                $hsC_s = '';
+                            }
+                            $txt_HasSanction = '<span class="badge cust_badge_grn"> '.$this_violator->del_has_sanct_count.' Sanction'.$hsC_s . ' </span> ';
+                        }else{
+                            $hsC_s = '';
+                            $txt_HasSanction = '<span class="badge cust_badge_red"> 0 Sanctions </span> ';
+                        }
+                        // type of deletion
+                        if($this_violator->del_status == 1){
+                            $txt_delType = 'Temporary deleted';
+                            $column_RespoUserID = 'respo_user_id';
+                        }else if($this_violator->del_status == 0){
+                            $txt_delType = 'Permanent deleted';
+                            $column_RespoUserID = 'perm_deleted_by';
+                        }else{
+                            $txt_delType = 'unknown';
+                            $column_RespoUserID = '';
+                        }
+                        // get responsible user's info (for deleting violation)
+                        if(auth()->user()->id == $this_violator->$column_RespoUserID){
+                            $txt_youIndicator = '<span class="sub2 font-italic">~ You</span>';
+                        }else{
+                            $txt_youIndicator = '';
+                        }
+                        $query_respoUser_DelViola = Users::select('id', 'user_fname', 'user_lname', 'user_role')->where('id', '=', $this_violator->$column_RespoUserID)->first();
+                        $respoUser_FullName = ''.$query_respoUser_DelViola->user_fname . ' ' . $query_respoUser_DelViola->user_lname.'';
+                        $respoUser_Role     = ''.ucwords($query_respoUser_DelViola->user_role).'';
                         $vr_output .= '
-                        <tr id="'.$this_violator->Student_Number.'" onclick="viewStudentOffenses(this.id)" class="tr_pointer">
-                            <td class="pl12 d-flex justify-content-start align-items-center">
+                        <tr id="'.$this_violator->del_id.'" onclick="viewDeletedOffensesInfo(this.id)" class="tr_pointer">
+                            <td class="pl12">
+                                <span class="actLogs_content">'. $txt_delType . '</span>
+                            </td>
+                            <td>
+                                <div class="d-inline">
+                                    <span class="actLogs_content">'.$respoUser_FullName . ' ' . $txt_youIndicator . '</span>
+                                    <span class="actLogs_tdSubTitle sub2">'.$respoUser_Role.'</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-inline">
+                                    <span class="actLogs_content">'.date('F d, Y', strtotime($this_violator->deleted_at)) . ' <span class="sub2">' . date('(D - g:i A)', strtotime($this_violator->deleted_at)) . '</span></span>
+                                    <span class="actLogs_tdSubTitle">reason: <span class="font-italic font-weight-bold"> ' . $this_violator->reason_deletion . '</span></span>
+                                </div>
+                            </td>
+                            <td class="d-flex justify-content-start align-items-center">
                                 ';
                                 if(!is_null($this_violator->Student_Image) OR !empty($this_violator->Student_Image)){
                                     $vr_output .= '<img class="'.$img_class.' shadow-sm" src="'.asset('storage/svms/sdca_images/registered_students_imgs/'.$this_violator->Student_Image.'').'" alt="student'.$sq.'s image">';
@@ -763,57 +810,54 @@ class ViolationRecordsController extends Controller
                             </td>
                             <td>
                                 <div class="d-inline">
-                                    <span class="actLogs_content">'.date('F d, Y', strtotime($this_violator->deleted_at)) . '</span>
-                                    <span class="actLogs_tdSubTitle sub2">'.date('D - g:i A', strtotime($this_violator->deleted_at)) . '</span>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="d-inline">
-                                    <span class="actLogs_content">'.date('F d, Y (D - g:i A) ', strtotime($this_violator->deleted_at)) . ' '.$this_violator->del_offense_count.' Offense'.$oc_s . ' ' . $violation_statTxt.'</span>
+                                    <span class="actLogs_content">'.date('F d, Y (D - g:i A) ', strtotime($this_violator->del_recorded_at)) . '</span>
                                     <span class="actLogs_tdSubTitle sub2">
+                                        <span class="badge '.$badge_stat.'"> '.$this_violator->del_offense_count.' Offense'.$oc_s . ' </span> 
+                                        ' . $txt_HasSanction . '
+                                        ' . $violation_statTxt . '
                                     ';
-                                    // set new array value
-                                    $to_array_allOffenses = array();
-                                    // merge all offenses to $to_array_allOffenses
-                                    if(!is_null($this_violator->del_minor_off) OR !empty($this_violator->del_minor_off)){
-                                        foreach(json_decode($this_violator->del_minor_off, true) as $this_mo){
-                                            array_push($to_array_allOffenses, $this_mo);
-                                        }
-                                    }
-                                    if(!is_null($this_violator->del_less_serious_off) OR !empty($this_violator->del_less_serious_off)){
-                                        foreach(json_decode($this_violator->del_less_serious_off, true) as $this_lso){
-                                            array_push($to_array_allOffenses, $this_lso);
-                                        }
-                                    }
-                                    if(!is_null($this_violator->del_other_off) OR !empty($this_violator->del_other_off)){
-                                        if(!in_array(null, json_decode($this_violator->del_other_off, true))){
-                                            foreach(json_decode($this_violator->del_other_off, true) as $this_oo){
-                                                array_push($to_array_allOffenses, $this_oo);
-                                            }
-                                        }
-                                    }
-                                    // convert $to_array_allOffenses to json
-                                    $toJson = json_encode($to_array_allOffenses);
-                                    // count all merged offenses
-                                    $count_allOffenses = json_encode(count($to_array_allOffenses));
-                                    $x = 0;
-                                    // display 4 badge
-                                    foreach(json_decode($toJson, true) as $all_offense){
-                                        if($count_allOffenses <= 3){
-                                            $vr_output .= ' <span class="badge '.$badge_stat.'"> '.Str::limit($all_offense, $limit=20, $end='...').' </span> ';
-                                        }else{
-                                            $vr_output .= ' <span class="badge '.$badge_stat.'"> '.Str::limit($all_offense, $limit=15, $end='...').' </span> ';
-                                        }
-                                        $x++;
-                                        if($x == 4){
-                                            break;
-                                        }
-                                    }
-                                    // display more count if offenses count > 4
-                                    if($count_allOffenses > 4){
-                                        $sub_moreOffense_count = $count_allOffenses - 4;
-                                        $vr_output .= ' <span class="badge '.$badge_stat.'"> '. $sub_moreOffense_count . ' more...</span> ';
-                                    }
+                                    // // set new array value
+                                    // $to_array_allOffenses = array();
+                                    // // merge all offenses to $to_array_allOffenses
+                                    // if(!is_null($this_violator->del_minor_off) OR !empty($this_violator->del_minor_off)){
+                                    //     foreach(json_decode($this_violator->del_minor_off, true) as $this_mo){
+                                    //         array_push($to_array_allOffenses, $this_mo);
+                                    //     }
+                                    // }
+                                    // if(!is_null($this_violator->del_less_serious_off) OR !empty($this_violator->del_less_serious_off)){
+                                    //     foreach(json_decode($this_violator->del_less_serious_off, true) as $this_lso){
+                                    //         array_push($to_array_allOffenses, $this_lso);
+                                    //     }
+                                    // }
+                                    // if(!is_null($this_violator->del_other_off) OR !empty($this_violator->del_other_off)){
+                                    //     if(!in_array(null, json_decode($this_violator->del_other_off, true))){
+                                    //         foreach(json_decode($this_violator->del_other_off, true) as $this_oo){
+                                    //             array_push($to_array_allOffenses, $this_oo);
+                                    //         }
+                                    //     }
+                                    // }
+                                    // // convert $to_array_allOffenses to json
+                                    // $toJson = json_encode($to_array_allOffenses);
+                                    // // count all merged offenses
+                                    // $count_allOffenses = json_encode(count($to_array_allOffenses));
+                                    // $x = 0;
+                                    // // display 4 badge
+                                    // foreach(json_decode($toJson, true) as $all_offense){
+                                    //     if($count_allOffenses <= 3){
+                                    //         $vr_output .= ' <span class="badge '.$badge_stat.'"> '.Str::limit($all_offense, $limit=20, $end='...').' </span> ';
+                                    //     }else{
+                                    //         $vr_output .= ' <span class="badge '.$badge_stat.'"> '.Str::limit($all_offense, $limit=15, $end='...').' </span> ';
+                                    //     }
+                                    //     $x++;
+                                    //     if($x == 4){
+                                    //         break;
+                                    //     }
+                                    // }
+                                    // // display more count if offenses count > 4
+                                    // if($count_allOffenses > 4){
+                                    //     $sub_moreOffense_count = $count_allOffenses - 4;
+                                    //     $vr_output .= ' <span class="badge '.$badge_stat.'"> '. $sub_moreOffense_count . ' more...</span> ';
+                                    // }
                                     $vr_output .= '
                                     </span>
                                 </div>
@@ -1014,6 +1058,13 @@ class ViolationRecordsController extends Controller
         }else{
             return back()->withFailedStatus(' There are no records of recently deleted violations! please reload this page.');
         }
+    }
+    // view deleted offenses' information on modal
+    public function view_deleted_offenses_information_modal(Request $request){
+        $get_del_id = $request->get('del_id');
+        $output = '';
+        $output .= 'Deleted ID: ' . $get_del_id.'';
+        echo $output;
     }
 
     // SANCTIONS PROCESSES

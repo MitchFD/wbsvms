@@ -1137,7 +1137,7 @@ class UserManagementController extends Controller
                         }
                         $output .= '
                         <tr>
-                            <td class="pl12 d-flex justify-content-start align-items-center">
+                            <td class=" d-flex justify-content-start align-items-center">
                                 <img class="rslts_userImgs ' . $img_border.'" src="'.asset('storage/svms/user_images/'.$user_imgJpgFile.'').'" alt="user image">
                                 <div class="cust_td_info">
                                     <span class="actLogs_tdTitle font-weight-bold">'.preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', $users_logs->act_respo_users_fname) . ' ' .preg_replace('/('.$logs_search.')/i','<span class="grn_highlight2">$1</span>', $users_logs->act_respo_users_lname) . '</span>

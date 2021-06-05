@@ -225,10 +225,10 @@
                                     </div>
                                     <div class="col-lg-4 col-md-4 col-sm-12 pl-0 d-flex justify-content-end">
                                         <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                                            <label class="btn btn_svms_blue cust_btn_radio cbr_p" data-toggle="tooltip" data-placement="top" title="Ascending Order?">
+                                            <label id="violationRecFltr_orderByRange_ASCLabel" class="btn btn_svms_blue cust_btn_radio cbr_p" data-toggle="tooltip" data-placement="top" title="Ascending Order?">
                                                 <input class="m-0 p-0" type="radio" name="violationRecFltr_orderByRange" id="violationRecFltr_orderByRange_ASC" value="asc" autocomplete="off"> <i class="fa fa-sort-amount-asc cbr_i" aria-hidden="true"></i>
                                             </label>
-                                            <label class="btn btn_svms_blue cust_btn_radio cbr_p active" data-toggle="tooltip" data-placement="top" title="Descending Order?">
+                                            <label id="violationRecFltr_orderByRange_DESCLabel" class="btn btn_svms_blue cust_btn_radio cbr_p active" data-toggle="tooltip" data-placement="top" title="Descending Order?">
                                                 <input class="m-0 p-0" type="radio" name="violationRecFltr_orderByRange" id="violationRecFltr_orderByRange_DESC" value="desc" autocomplete="off" checked> <i class="fa fa-sort-amount-desc cbr_i" aria-hidden="true"></i>
                                             </label>
                                         </div>
@@ -439,7 +439,7 @@
                         });
 
                         // for disabling/ enabling reset filter button
-                        if(vr_schools != 0 || vr_programs != 0 || vr_yearlvls != 0 || vr_genders != 0 || vr_minAgeRange != df_minAgeRange || vr_maxAgeRange != df_maxAgeRange || vr_status != 0 || vr_hasSanctions != 0 || vr_rangefrom != '' || vr_rangeTo != ''){
+                        if(vr_schools != 0 || vr_programs != 0 || vr_yearlvls != 0 || vr_genders != 0 || vr_minAgeRange != df_minAgeRange || vr_maxAgeRange != df_maxAgeRange || vr_status != 0 || vr_hasSanctions != 0 || vr_rangefrom != '' || vr_rangeTo != '' || vr_orderBy != 0 || selectedOrderByRange != 'desc'){
                             $('#resetViolationRecsFilter_btn').prop('disabled', false);
                         }else{
                             $('#resetViolationRecsFilter_btn').prop('disabled', true);
@@ -849,6 +849,14 @@
                         document.getElementById("violationRecFltr_hidden_dateRangeTo").value = '';
                         // search input
                         document.getElementById('violationRecsFiltr_liveSearch').value = '';
+                        // orderby
+                        document.getElementById("violationRecFltr_orderBy").classList.remove("cust_input_hasvalue");
+                        $('#violationRecFltr_orderBy').val(0);
+                        // filter SC/DESC
+                        document.getElementById("violationRecFltr_orderByRange_ASCLabel").classList.remove("active");
+                        document.getElementById("violationRecFltr_orderByRange_DESCLabel").classList.add("active");
+                        var fltrBack_toASC = document.getElementById('violationRecFltr_orderByRange_DESC');
+                        fltrBack_toASC.checked = true;
                         // table paginatin set to 1
                         $('#vr_hidden_page').val(1);
                         load_violationRec_table();

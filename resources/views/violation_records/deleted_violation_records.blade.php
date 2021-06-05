@@ -57,7 +57,7 @@
 
         {{-- filter options --}}
         <div class="row">
-            <div class="col-lg-3 col-md-4 col-sm-12">
+            <div class="col-lg-12 col-md-12 col-sm-12">
                 <div class="accordion gCardAccordions" id="delViolationRecFiltrOptionsCollapseParent">
                     <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray">
                         <div class="card-header p-0" id="delViolationRecFiltrOptionsCollapseHeading">
@@ -74,67 +74,77 @@
                                 @csrf
                                 <span class="cust_status_title mb-2">Students Filter Options <i class="fa fa-info-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Filter options for specific students."></i></span>
                                 <div class="row">
-                                    <div class="col-lg-12 col-md-12 col-sm-12">
-                                        <div class="form-group">
-                                            <select id="delViolationRecFltr_schools" name="delViolationRecFltr_schools" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
-                                                <option value="0" selected>All Schools</option>
-                                                <option value="SASE">SASE</option>
-                                                <option value="SBCS">SBCS</option>
-                                                <option value="SIHTM">SIHTM</option>
-                                                <option value="SHSP">SHSP</option>
-                                            </select>
+                                    <div class="col-lg-3 col-md-3 col-sm-12">
+                                        <div class="row">
+                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                                <div class="form-group">
+                                                    <select id="delViolationRecFltr_schools" name="delViolationRecFltr_schools" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
+                                                        <option value="0" selected>All Schools</option>
+                                                        <option value="SASE">SASE</option>
+                                                        <option value="SBCS">SBCS</option>
+                                                        <option value="SIHTM">SIHTM</option>
+                                                        <option value="SHSP">SHSP</option>
+                                                    </select>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-12 col-md-12 col-sm-12">
-                                        <div class="form-group">
-                                            <select id="delViolationRecFltr_programs" name="delViolationRecFltr_programs" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
-                                                <option value="0" data-default-program="all_programs" selected>All Programs</option>
-                                                <option value="BS Psychology" data-programs="SASE">BS Psychology</option>
-                                                <option value="BS Education" data-programs="SASE">BS Education</option>
-                                                <option value="BA Communication" data-programs="SASE">BA Communication</option>
-
-                                                <option value="BSBA" data-programs="SBCS">BSBA</option>
-                                                <option value="BSA" data-programs="SBCS">BSA</option>
-                                                <option value="BSIT" data-programs="SBCS">BSIT</option>
-                                                <option value="BMA" data-programs="SBCS">BMA</option>
-
-                                                <option value="BSHM" data-programs="SIHTM">BSHM</option>
-                                                <option value="BSTM" data-programs="SIHTM">BSTM</option>
-
-                                                <option value="BS Biology" data-programs="SHSP">BS Biology</option>
-                                                <option value="BS Pharmacy" data-programs="SHSP">BS Pharmacy</option>
-                                                <option value="BS Radiologic Technology" data-programs="SHSP">BS Radiologic Technology</option>
-                                                <option value="BS Physical Therapy" data-programs="SHSP">BS Physical Therapy</option>
-                                                <option value="BS Medical Technology" data-programs="SHSP">BS Medical Technology</option>
-                                                <option value="BS Nursing" data-programs="SHSP">BS Nursing</option>
-                                            </select>
+                                    <div class="col-lg-3 col-md-3 col-sm-12">
+                                        <div class="row">
+                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                                <div class="form-group">
+                                                    <select id="delViolationRecFltr_programs" name="delViolationRecFltr_programs" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
+                                                        <option value="0" data-default-program="all_programs" selected>All Programs</option>
+                                                        <option value="BS Psychology" data-programs="SASE">BS Psychology</option>
+                                                        <option value="BS Education" data-programs="SASE">BS Education</option>
+                                                        <option value="BA Communication" data-programs="SASE">BA Communication</option>
+        
+                                                        <option value="BSBA" data-programs="SBCS">BSBA</option>
+                                                        <option value="BSA" data-programs="SBCS">BSA</option>
+                                                        <option value="BSIT" data-programs="SBCS">BSIT</option>
+                                                        <option value="BMA" data-programs="SBCS">BMA</option>
+        
+                                                        <option value="BSHM" data-programs="SIHTM">BSHM</option>
+                                                        <option value="BSTM" data-programs="SIHTM">BSTM</option>
+        
+                                                        <option value="BS Biology" data-programs="SHSP">BS Biology</option>
+                                                        <option value="BS Pharmacy" data-programs="SHSP">BS Pharmacy</option>
+                                                        <option value="BS Radiologic Technology" data-programs="SHSP">BS Radiologic Technology</option>
+                                                        <option value="BS Physical Therapy" data-programs="SHSP">BS Physical Therapy</option>
+                                                        <option value="BS Medical Technology" data-programs="SHSP">BS Medical Technology</option>
+                                                        <option value="BS Nursing" data-programs="SHSP">BS Nursing</option>
+                                                    </select>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-12 col-md-12 col-sm-12">
-                                        <div class="form-group">
-                                            <select id="delViolationRecFltr_yearLvls" name="delViolationRecFltr_yearLvls" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
-                                                <option value="0" data-default-yearlvl="all_year_levels" selected>All Year Levels</option>
-                                                <option value="1" data-yearlvls="1">FIRST YEAR</option>
-                                                <option value="2" data-yearlvls="2">SECOND YEARS</option>
-                                                <option value="3" data-yearlvls="3">THIRD YEARS</option>
-                                                <option value="4" data-yearlvls="4">FOURTH YEARS</option>
-                                                <option value="5" data-yearlvls="5">FIFTH YEARS</option>
-                                            </select>
+                                    <div class="col-lg-3 col-md-3 col-sm-12">
+                                        <div class="row">
+                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                                <div class="form-group">
+                                                    <select id="delViolationRecFltr_yearLvls" name="delViolationRecFltr_yearLvls" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
+                                                        <option value="0" data-default-yearlvl="all_year_levels" selected>All Year Levels</option>
+                                                        <option value="1" data-yearlvls="1">FIRST YEAR</option>
+                                                        <option value="2" data-yearlvls="2">SECOND YEARS</option>
+                                                        <option value="3" data-yearlvls="3">THIRD YEARS</option>
+                                                        <option value="4" data-yearlvls="4">FOURTH YEARS</option>
+                                                        <option value="5" data-yearlvls="5">FIFTH YEARS</option>
+                                                    </select>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-12 col-md-12 col-sm-12">
-                                        <div class="form-group">
-                                            <select id="delViolationRecFltr_genders" name="delViolationRecFltr_genders" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
-                                                <option value="0" selected>All Genders</option>
-                                                <option value="Male">Male</option>
-                                                <option value="Female">Female</option>
-                                            </select>
+                                    <div class="col-lg-3 col-md-3 col-sm-12">
+                                        <div class="row">
+                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                                <div class="form-group">
+                                                    <select id="delViolationRecFltr_genders" name="delViolationRecFltr_genders" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
+                                                        <option value="0" selected>All Genders</option>
+                                                        <option value="Male">Male</option>
+                                                        <option value="Female">Female</option>
+                                                    </select>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -178,7 +188,18 @@
                                         </div>
                                     </div>
                                 </div>
-                                <span class="cust_status_title mt-2 mb-2">Violations Filter Options <i class="fa fa-info-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Filter options for specific Violations."></i></span>
+                                <span class="cust_status_title mt-2 mb-2">Deleted Violations Filter Options <i class="fa fa-info-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Filter options for specific Violations."></i></span>
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <div class="form-group">
+                                            <select id="delViolationRecFltr_DelViolaStat" name="delViolationRecFltr_DelViolaStat" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
+                                                <option value="0" selected>All Deleted Violation</option>
+                                                <option value="temp">Temporary Deleted</option>
+                                                <option value="perm">Permanently Deleted</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="row">
                                     <div class="col-lg-12 col-md-12 col-sm-12">
                                         <div class="form-group">
@@ -235,7 +256,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-9 col-md-8 col-sm-12">
+            <div class="col-lg-12 col-md-12 col-sm-12">
                 <div class="card card_gbr card_ofh shadow-none cb_p25 card_body_bg_gray">
                     <div class="row">
                         <div class="col-lg-5 col-md-8 col-sm-12 d-flex justify-content-start">
@@ -281,8 +302,10 @@
                             <table class="table table-hover cust_table shadow">
                                 <thead class="thead_svms_blue">
                                     <tr>
-                                        <th class="pl12">~ Students</th>
-                                        <th data-toggle="tooltip" data-placement="top" title="Below Columns are the dates which the recorded violation has been deleted.">Date Deleted</th>
+                                        <th class="pl12" data-toggle="tooltip" data-placement="top" title="Below Columns are the type of deletion.">~ Deletion Type</th>
+                                        <th data-toggle="tooltip" data-placement="top" title="Below Columns are the system users responsible for deletion.">Deleted By</th>
+                                        <th data-toggle="tooltip" data-placement="top" title="Below Columns are the dates which the recorded violation has been deleted and the reason behind deletion.">Date Deleted & Reason</th>
+                                        <th data-toggle="tooltip" data-placement="top" title="Below Columns are Violator's information.">Violator</th>
                                         <th data-toggle="tooltip" data-placement="top" title="Below Columns shows the Date a violation has been committed, offense count, and the status of the recorded violations.">Offense Details</th>
                                     </tr>
                                 </thead>
@@ -328,19 +351,49 @@
             </div>
         </div>
     {{-- generate violation records report confirmation modal end --}}
+    {{-- view deleted offenses' information modal --}}
+        <div class="modal fade" id="viewDeletedOffensesInformationModal" tabindex="-1" role="dialog" aria-labelledby="viewDeletedOffensesInformationModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="viewDeletedOffensesInformationModalLabel">Deleted Offenses' Information</span>
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="viewDeletedOffensesInformationModalHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{-- view deleted offenses' information modal end --}}
 @endsection
 
 @push('scripts')
 
-    {{-- view student's offenses --}}
+    {{-- view deleted offenses' information --}}
         <script>
-            function viewStudentOffenses(violator_id){
-                var violator_id = violator_id;
-                // console.log(violator_id);
-                window.location = "violator/"+violator_id;
+            function viewDeletedOffensesInfo(del_id){
+                var del_id = del_id;
+                var _token = $('input[name="_token"]').val();
+                // console.log(del_id);
+                // window.location = "violator/"+del_id;
+                $.ajax({
+                    url:"{{ route('violation_records.view_deleted_offenses_information_modal') }}",
+                    method:"GET",
+                    data:{
+                        del_id:del_id,
+                        _token:_token
+                        },
+                    success: function(data){
+                        $('#viewDeletedOffensesInformationModalHtmlData').html(data); 
+                        $('#viewDeletedOffensesInformationModal').modal('show');
+                    }
+                });
             }
         </script>
-    {{-- view student's offenses end --}}
+    {{-- view deleted offenses' information end --}}
 
     {{-- violation records table --}}
         <script>

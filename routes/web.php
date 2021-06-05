@@ -250,6 +250,8 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('violation_records/permanent_delall_recentlydelviolations_confirmation', 'App\Http\Controllers\ViolationRecordsController@permanent_delall_recentlydelviolations_confirmation')->name('violation_records.permanent_delall_recentlydelviolations_confirmation');
 	// process permanent delete of all recently deleted violations
 	Route::post('violation_records/process_permanent_delete_all_violations', 'App\Http\Controllers\ViolationRecordsController@process_permanent_delete_all_violations')->name('violation_records.process_permanent_delete_all_violations');
+	// view deleted offenses' information on modal
+	Route::get('violation_records/view_deleted_offenses_information_modal', 'App\Http\Controllers\ViolationRecordsController@view_deleted_offenses_information_modal')->name('violation_records.view_deleted_offenses_information_modal');
 
 	// NOTIFY VIOLATO OF ALL RECORDED OFFENSES
 	// notify violator confirmation on modal
