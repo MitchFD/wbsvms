@@ -38,6 +38,7 @@
     .modal-lg {
         max-width: 700px;
     }
+    
 }
 
 @media (max-width: 699px) {
@@ -51,3 +52,29 @@
         max-width: 580px;
     }
 } */
+
+
+
+@media (max-width: 799px) {
+    /* .modal-lg {
+        max-width: 700px;
+    } */
+
+    /* illustrations */
+    .page_intro{
+        position: relative;
+        margin-top: 10px;
+        margin-left: 20px;
+        width: 900px;
+    }
+    .page_intro_title{
+        font-size: 40px;
+    }
+    .illustration_svg{
+        margin-top: -100px;
+        height: 200px;
+        width: auto;
+        /* border-bottom-right-radius: 15px !important; */
+    } 
+    
+}

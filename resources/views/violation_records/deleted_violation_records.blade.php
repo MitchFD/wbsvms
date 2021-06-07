@@ -72,92 +72,95 @@
                         <div id="delViolationRecFiltrOptionsCollapseDiv" class="collapse gCardAccordions_collapse show cb_t0b15x25" aria-labelledby="delViolationRecFiltrOptionsCollapseHeading" data-parent="#delViolationRecFiltrOptionsCollapseParent">
                             <form id="form_filterViolationRecTable" class="form" method="POST" action="{{route('violation_records.report_violations_records')}}" enctype="multipart/form-data">
                                 @csrf
-                                <span class="cust_status_title mb-2">Students Filter Options <i class="fa fa-info-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Filter options for specific students."></i></span>
                                 <div class="row">
-                                    <div class="col-lg-3 col-md-3 col-sm-12">
+                                    <div class="col-lg-9 col-md-9 col-sm-12">
+                                        <span class="cust_status_title mb-2">Students Filter Options <i class="fa fa-info-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Filter options for specific students."></i></span>
                                         <div class="row">
-                                            <div class="col-lg-12 col-md-12 col-sm-12">
-                                                <div class="form-group">
-                                                    <select id="delViolationRecFltr_schools" name="delViolationRecFltr_schools" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
-                                                        <option value="0" selected>All Schools</option>
-                                                        <option value="SASE">SASE</option>
-                                                        <option value="SBCS">SBCS</option>
-                                                        <option value="SIHTM">SIHTM</option>
-                                                        <option value="SHSP">SHSP</option>
-                                                    </select>
+                                            <div class="col-lg-3 col-md-3 col-sm-12">
+                                                <div class="row">
+                                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                                        <div class="form-group">
+                                                            <select id="delViolationRecFltr_schools" name="delViolationRecFltr_schools" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
+                                                                <option value="0" selected>All Schools</option>
+                                                                <option value="SASE">SASE</option>
+                                                                <option value="SBCS">SBCS</option>
+                                                                <option value="SIHTM">SIHTM</option>
+                                                                <option value="SHSP">SHSP</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3 col-md-3 col-sm-12 lg_pl0">
+                                                <div class="row">
+                                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                                        <div class="form-group">
+                                                            <select id="delViolationRecFltr_programs" name="delViolationRecFltr_programs" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
+                                                                <option value="0" data-default-program="all_programs" selected>All Programs</option>
+                                                                <option value="BS Psychology" data-programs="SASE">BS Psychology</option>
+                                                                <option value="BS Education" data-programs="SASE">BS Education</option>
+                                                                <option value="BA Communication" data-programs="SASE">BA Communication</option>
+                
+                                                                <option value="BSBA" data-programs="SBCS">BSBA</option>
+                                                                <option value="BSA" data-programs="SBCS">BSA</option>
+                                                                <option value="BSIT" data-programs="SBCS">BSIT</option>
+                                                                <option value="BMA" data-programs="SBCS">BMA</option>
+                
+                                                                <option value="BSHM" data-programs="SIHTM">BSHM</option>
+                                                                <option value="BSTM" data-programs="SIHTM">BSTM</option>
+                
+                                                                <option value="BS Biology" data-programs="SHSP">BS Biology</option>
+                                                                <option value="BS Pharmacy" data-programs="SHSP">BS Pharmacy</option>
+                                                                <option value="BS Radiologic Technology" data-programs="SHSP">BS Radiologic Technology</option>
+                                                                <option value="BS Physical Therapy" data-programs="SHSP">BS Physical Therapy</option>
+                                                                <option value="BS Medical Technology" data-programs="SHSP">BS Medical Technology</option>
+                                                                <option value="BS Nursing" data-programs="SHSP">BS Nursing</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3 col-md-3 col-sm-12 lg_pl0">
+                                                <div class="row">
+                                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                                        <div class="form-group">
+                                                            <select id="delViolationRecFltr_yearLvls" name="delViolationRecFltr_yearLvls" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
+                                                                <option value="0" data-default-yearlvl="all_year_levels" selected>All Year Levels</option>
+                                                                <option value="1" data-yearlvls="1">FIRST YEAR</option>
+                                                                <option value="2" data-yearlvls="2">SECOND YEARS</option>
+                                                                <option value="3" data-yearlvls="3">THIRD YEARS</option>
+                                                                <option value="4" data-yearlvls="4">FOURTH YEARS</option>
+                                                                <option value="5" data-yearlvls="5">FIFTH YEARS</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3 col-md-3 col-sm-12 lg_pl0">
+                                                <div class="row">
+                                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                                        <div class="form-group">
+                                                            <select id="delViolationRecFltr_genders" name="delViolationRecFltr_genders" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
+                                                                <option value="0" selected>All Genders</option>
+                                                                <option value="Male">Male</option>
+                                                                <option value="Female">Female</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-lg-3 col-md-3 col-sm-12">
-                                        <div class="row">
-                                            <div class="col-lg-12 col-md-12 col-sm-12">
-                                                <div class="form-group">
-                                                    <select id="delViolationRecFltr_programs" name="delViolationRecFltr_programs" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
-                                                        <option value="0" data-default-program="all_programs" selected>All Programs</option>
-                                                        <option value="BS Psychology" data-programs="SASE">BS Psychology</option>
-                                                        <option value="BS Education" data-programs="SASE">BS Education</option>
-                                                        <option value="BA Communication" data-programs="SASE">BA Communication</option>
-        
-                                                        <option value="BSBA" data-programs="SBCS">BSBA</option>
-                                                        <option value="BSA" data-programs="SBCS">BSA</option>
-                                                        <option value="BSIT" data-programs="SBCS">BSIT</option>
-                                                        <option value="BMA" data-programs="SBCS">BMA</option>
-        
-                                                        <option value="BSHM" data-programs="SIHTM">BSHM</option>
-                                                        <option value="BSTM" data-programs="SIHTM">BSTM</option>
-        
-                                                        <option value="BS Biology" data-programs="SHSP">BS Biology</option>
-                                                        <option value="BS Pharmacy" data-programs="SHSP">BS Pharmacy</option>
-                                                        <option value="BS Radiologic Technology" data-programs="SHSP">BS Radiologic Technology</option>
-                                                        <option value="BS Physical Therapy" data-programs="SHSP">BS Physical Therapy</option>
-                                                        <option value="BS Medical Technology" data-programs="SHSP">BS Medical Technology</option>
-                                                        <option value="BS Nursing" data-programs="SHSP">BS Nursing</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3 col-md-3 col-sm-12">
-                                        <div class="row">
-                                            <div class="col-lg-12 col-md-12 col-sm-12">
-                                                <div class="form-group">
-                                                    <select id="delViolationRecFltr_yearLvls" name="delViolationRecFltr_yearLvls" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
-                                                        <option value="0" data-default-yearlvl="all_year_levels" selected>All Year Levels</option>
-                                                        <option value="1" data-yearlvls="1">FIRST YEAR</option>
-                                                        <option value="2" data-yearlvls="2">SECOND YEARS</option>
-                                                        <option value="3" data-yearlvls="3">THIRD YEARS</option>
-                                                        <option value="4" data-yearlvls="4">FOURTH YEARS</option>
-                                                        <option value="5" data-yearlvls="5">FIFTH YEARS</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3 col-md-3 col-sm-12">
-                                        <div class="row">
-                                            <div class="col-lg-12 col-md-12 col-sm-12">
-                                                <div class="form-group">
-                                                    <select id="delViolationRecFltr_genders" name="delViolationRecFltr_genders" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
-                                                        <option value="0" selected>All Genders</option>
-                                                        <option value="Male">Male</option>
-                                                        <option value="Female">Female</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                @php
-                                    $max_age = App\Models\Students::select('Age')->max('Age');
-                                    $min_age = App\Models\Students::select('Age')->min('Age');
-                                    $all_age = App\Models\Students::select('Age')->groupBy('Age')->get();
-                                @endphp
-                                <input type="hidden" name="delViolationRecFltr_hidden_maxAgeRange" id="delViolationRecFltr_hidden_maxAgeRange" value="{{$max_age}}">
-                                <input type="hidden" name="delViolationRecFltr_hidden_minAgeRange" id="delViolationRecFltr_hidden_minAgeRange" value="{{$min_age}}">
-                                <span class="cust_status_title mt-2 mb-2">Age Range: </span> <span class="custom_label_sub" id="filter_ageRange_label"> {{$min_age}} to {{$max_age}} Year Olds</span></label>
-                                <div class="row">
-                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        @php
+                                            $max_age = App\Models\Students::select('Age')->max('Age');
+                                            $min_age = App\Models\Students::select('Age')->min('Age');
+                                            $all_age = App\Models\Students::select('Age')->groupBy('Age')->get();
+                                        @endphp
+                                        <input type="hidden" name="delViolationRecFltr_hidden_maxAgeRange" id="delViolationRecFltr_hidden_maxAgeRange" value="{{$max_age}}">
+                                        <input type="hidden" name="delViolationRecFltr_hidden_minAgeRange" id="delViolationRecFltr_hidden_minAgeRange" value="{{$min_age}}">
+                                        {{-- <span class="cust_status_title mb-2">Age Range: </span> <span class="custom_label_subv1" id="filter_ageRange_label"> {{$min_age}} to {{$max_age}} Year Olds</span></span> --}}
+                                        <span class="cust_status_title mb-2">Age Range:</span>
                                         <div class="row">
                                             <div class="col-lg-6 col-md-6 col-sm-6 pr-1">
                                                 <div class="form-group">
@@ -188,59 +191,62 @@
                                         </div>
                                     </div>
                                 </div>
-                                <span class="cust_status_title mt-2 mb-2">Deleted Violations Filter Options <i class="fa fa-info-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Filter options for specific Violations."></i></span>
+
                                 <div class="row">
-                                    <div class="col-lg-12 col-md-12 col-sm-12">
-                                        <div class="form-group">
-                                            <select id="delViolationRecFltr_DelViolaStat" name="delViolationRecFltr_DelViolaStat" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
-                                                <option value="0" selected>All Deleted Violation</option>
-                                                <option value="temp">Temporary Deleted</option>
-                                                <option value="perm">Permanently Deleted</option>
-                                            </select>
+                                    <div class="col-lg-9 col-md-9 col-sm-12">
+                                        <span class="cust_status_title mt-2 mb-2">Deleted Violations Filter Options <i class="fa fa-info-circle cust_info_icon" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Filter options for specific Violations."></i></span>
+                                        <div class="row">
+                                            <div class="col-lg-3 col-md-3 col-sm-12">
+                                                <div class="form-group">
+                                                    <select id="delViolationRecFltr_DelViolaStat" name="delViolationRecFltr_DelViolaStat" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
+                                                        <option value="0" selected>All Deleted Violation</option>
+                                                        <option value="temp">Temporary Deleted</option>
+                                                        <option value="perm">Permanently Deleted</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3 col-md-3 col-sm-12 lg_pl0">
+                                                <div class="form-group">
+                                                    <select id="delViolationRecFltr_violationStat" name="delViolationRecFltr_violationStat" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
+                                                        <option value="0" selected>All Violation Status</option>
+                                                        <option value="not cleared">Not Cleared</option>
+                                                        <option value="cleared">Cleared</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 col-md-6 col-sm-12 lg_pl0">
+                                                <input id="violationRecFltr_datepickerRange" name="violationRecFltr_datepickerRange" type="text" class="form-control cust_input" placeholder="Select Date Range" data-toggle="tooltip" data-placement="top" title="Filter Deleted Violations by Date." readonly />
+                                                <input type="hidden" name="delViolationRecFltr_hidden_dateRangeFrom" id="delViolationRecFltr_hidden_dateRangeFrom">
+                                                <input type="hidden" name="delViolationRecFltr_hidden_dateRangeTo" id="delViolationRecFltr_hidden_dateRangeTo">
+                                                {{-- @php
+                                                    $count_actLogs = App\Models\Useractivites::all()->count();
+                                                @endphp --}}
+                                                <input type="hidden" name="delVr_hiddenTotalData_found" id="delVr_hiddenTotalData_found">
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-12 col-md-12 col-sm-12">
-                                        <div class="form-group">
-                                            <select id="delViolationRecFltr_violationStat" name="delViolationRecFltr_violationStat" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
-                                                <option value="0" selected>All Violation Status</option>
-                                                <option value="not cleared">Not Cleared</option>
-                                                <option value="cleared">Cleared</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row mb-1">
-                                    <div class="col-lg-12 col-md-12 col-sm-12">
-                                        <input id="violationRecFltr_datepickerRange" name="violationRecFltr_datepickerRange" type="text" class="form-control cust_input" placeholder="Select Date Range" data-toggle="tooltip" data-placement="top" title="Filter Deleted Violations by Date." readonly />
-                                        <input type="hidden" name="delViolationRecFltr_hidden_dateRangeFrom" id="delViolationRecFltr_hidden_dateRangeFrom">
-                                        <input type="hidden" name="delViolationRecFltr_hidden_dateRangeTo" id="delViolationRecFltr_hidden_dateRangeTo">
-                                        {{-- @php
-                                            $count_actLogs = App\Models\Useractivites::all()->count();
-                                        @endphp --}}
-                                        <input type="hidden" name="delVr_hiddenTotalData_found" id="delVr_hiddenTotalData_found">
-                                    </div>
-                                </div>
-                                <span class="cust_status_title mt-3 mb-2">Order By: </span>
-                                <div class="row">
-                                    <div class="col-lg-8 col-md-8 col-sm-12 pr-0">
-                                        <div class="form-group">
-                                            <select id="delViolationRecFltr_orderBy" name="delViolationRecFltr_orderBy" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
-                                                <option value="0" selected>Date Deleted</option>
-                                                <option value="1">Student Number</option>
-                                                <option value="2">Offense Count</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-4 col-md-4 col-sm-12 pl-0 d-flex justify-content-end">
-                                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                                            <label class="btn btn_svms_blue cust_btn_radio cbr_p" data-toggle="tooltip" data-placement="top" title="Ascending Order?">
-                                                <input class="m-0 p-0" type="radio" name="delViolationRecFltr_orderByRange" id="delViolationRecFltr_orderByRange_ASC" value="asc" autocomplete="off"> <i class="fa fa-sort-amount-asc cbr_i" aria-hidden="true"></i>
-                                            </label>
-                                            <label class="btn btn_svms_blue cust_btn_radio cbr_p active" data-toggle="tooltip" data-placement="top" title="Descending Order?">
-                                                <input class="m-0 p-0" type="radio" name="delViolationRecFltr_orderByRange" id="delViolationRecFltr_orderByRange_DESC" value="desc" autocomplete="off" checked> <i class="fa fa-sort-amount-desc cbr_i" aria-hidden="true"></i>
-                                            </label>
+                                    <div class="col-lg-3 col-md-3 col-sm-12">
+                                        <span class="cust_status_title mt-2 mb-2">Order By: </span>
+                                        <div class="row">
+                                            <div class="col-lg-8 col-md-8 col-sm-12 pr-0">
+                                                <div class="form-group">
+                                                    <select id="delViolationRecFltr_orderBy" name="delViolationRecFltr_orderBy" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
+                                                        <option value="0" selected>Date Deleted</option>
+                                                        <option value="1">Student Number</option>
+                                                        <option value="2">Offense Count</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4 col-md-4 col-sm-12 pl-0 d-flex justify-content-end">
+                                                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                                    <label class="btn btn_svms_blue cust_btn_radio cbr_p" data-toggle="tooltip" data-placement="top" title="Ascending Order?">
+                                                        <input class="m-0 p-0" type="radio" name="delViolationRecFltr_orderByRange" id="delViolationRecFltr_orderByRange_ASC" value="asc" autocomplete="off"> <i class="fa fa-sort-amount-asc cbr_i" aria-hidden="true"></i>
+                                                    </label>
+                                                    <label class="btn btn_svms_blue cust_btn_radio cbr_p active" data-toggle="tooltip" data-placement="top" title="Descending Order?">
+                                                        <input class="m-0 p-0" type="radio" name="delViolationRecFltr_orderByRange" id="delViolationRecFltr_orderByRange_DESC" value="desc" autocomplete="off" checked> <i class="fa fa-sort-amount-desc cbr_i" aria-hidden="true"></i>
+                                                    </label>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

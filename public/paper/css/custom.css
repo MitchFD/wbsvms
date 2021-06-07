@@ -678,6 +678,10 @@ fieldset[disabled] .btn_svms_blue.active {
   padding: 12px 7px 12px 12px !important
 }
 
+.lg_pl0{
+  padding-left: 0;
+}
+
 /* margin customizations */
 .my15br15{
   margin: 15px 0px !important;
@@ -1206,7 +1210,7 @@ input[type=checkbox]:checked + .lightRed_cardBody_chckboxLabel{
   border-bottom-right-radius: 15px !important;
 }
 .illustration_svg{
-  margin-top: -67px !important;
+  margin-top: -67px;
   height: 290px;
   width: auto;
   border-bottom-right-radius: 15px !important;
