@@ -239,10 +239,10 @@
                                             </div>
                                             <div class="col-lg-4 col-md-4 col-sm-12 pl-0 d-flex justify-content-end">
                                                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                                                    <label class="btn btn_svms_blue cust_btn_radio cbr_p" data-toggle="tooltip" data-placement="top" title="Ascending Order?">
+                                                    <label id="delViolaFltr_orderByRange_ASCLabel" class="btn btn_svms_blue cust_btn_radio cbr_p" data-toggle="tooltip" data-placement="top" title="Ascending Order?">
                                                         <input class="m-0 p-0" type="radio" name="delViolationRecFltr_orderByRange" id="delViolationRecFltr_orderByRange_ASC" value="asc" autocomplete="off"> <i class="fa fa-sort-amount-asc cbr_i" aria-hidden="true"></i>
                                                     </label>
-                                                    <label class="btn btn_svms_blue cust_btn_radio cbr_p active" data-toggle="tooltip" data-placement="top" title="Descending Order?">
+                                                    <label id="delViolaFltr_orderByRange_DESCLabel" class="btn btn_svms_blue cust_btn_radio cbr_p active" data-toggle="tooltip" data-placement="top" title="Descending Order?">
                                                         <input class="m-0 p-0" type="radio" name="delViolationRecFltr_orderByRange" id="delViolationRecFltr_orderByRange_DESC" value="desc" autocomplete="off" checked> <i class="fa fa-sort-amount-desc cbr_i" aria-hidden="true"></i>
                                                     </label>
                                                 </div>
@@ -253,7 +253,7 @@
                                 <div class="row mt-3">
                                     <div class="col-lg-12 col-md-12 col-sm-12 text-right">
                                         {{-- <button type="submit" id="generateDelViolationRecs_btn" class="btn btn-success cust_bt_links shadow"><i class="nc-icon nc-single-copy-04 mr-1" aria-hidden="true"></i> Generate Report</button> --}}
-                                        {{-- <button type="button" onclick="confirm_generateViolationRecReport()" id="generateDelViolationRecs_btn" class="btn btn-success cust_bt_links shadow"><i class="nc-icon nc-single-copy-04 mr-1" aria-hidden="true"></i> Generate Report</button> --}}
+                                        <button type="button" onclick="confirm_generateDeletedViolationRecReport()" id="generateDelViolationRecs_btn" class="btn btn-success cust_bt_links shadow"><i class="nc-icon nc-single-copy-04 mr-1" aria-hidden="true"></i> Generate Report</button>
                                         <button type="button" id="resetDelViolationRecsFilter_btn" class="btn btn_svms_blue cust_bt_links shadow" disabled><i class="fa fa-refresh mr-1" aria-hidden="true"></i> Reset</button>
                                     </div>
                                 </div>
@@ -418,6 +418,7 @@
                         var dvr_maxAgeRange = document.getElementById('delViolationRecFltr_maxAge').value;
                         var ddf_minAgeRange = document.getElementById('delViolationRecFltr_hidden_minAgeRange').value;
                         var ddf_maxAgeRange = document.getElementById('delViolationRecFltr_hidden_maxAgeRange').value;
+                        var dvr_delType = document.getElementById('delViolationRecFltr_DelViolaStat').value;
                         var dvr_status = document.getElementById('delViolationRecFltr_violationStat').value;
                         var dvr_rangefrom = document.getElementById("delViolationRecFltr_hidden_dateRangeFrom").value;
                         var dvr_rangeTo = document.getElementById("delViolationRecFltr_hidden_dateRangeTo").value;
@@ -443,6 +444,7 @@
                         console.log('gender_filter: ' + dvr_genders);
                         console.log('min_Age_filter: ' + dvr_minAgeRange);
                         console.log('max_Age_filter: ' + dvr_maxAgeRange);
+                        console.log('deletion type: ' + dvr_delType);
                         console.log('violation_status_filter: ' + dvr_status);
                         console.log('date_from_filter: ' + dvr_rangefrom);
                         console.log('date_filter: ' + dvr_rangeTo);
@@ -465,6 +467,7 @@
                                 dvr_maxAgeRange:dvr_maxAgeRange,
                                 ddf_minAgeRange:ddf_minAgeRange,
                                 ddf_maxAgeRange:ddf_maxAgeRange,
+                                dvr_delType:dvr_delType,
                                 dvr_status:dvr_status,
                                 dvr_rangefrom:dvr_rangefrom,
                                 dvr_rangeTo:dvr_rangeTo,
@@ -491,7 +494,7 @@
                         });
 
                         // for disabling/ enabling reset filter button
-                        if(dvr_schools != 0 || dvr_programs != 0 || dvr_yearlvls != 0 || dvr_genders != 0 || dvr_minAgeRange != ddf_minAgeRange || dvr_maxAgeRange != ddf_maxAgeRange || dvr_status != 0 || dvr_rangefrom != '' || dvr_rangeTo != ''){
+                        if(dvr_schools != 0 || dvr_programs != 0 || dvr_yearlvls != 0 || dvr_genders != 0 || dvr_minAgeRange != ddf_minAgeRange || dvr_maxAgeRange != ddf_maxAgeRange || dvr_delType != 0 || dvr_status != 0 || dvr_rangefrom != '' || dvr_rangeTo != '' || dvr_orderBy != 0 || dselectedOrderByRange != 'desc'){
                             $('#resetDelViolationRecsFilter_btn').prop('disabled', false);
                         }else{
                             $('#resetDelViolationRecsFilter_btn').prop('disabled', true);
@@ -795,6 +798,20 @@
                     });
                 // filter age range end 
 
+                // filter deletion type
+                    $('#delViolationRecFltr_DelViolaStat').on('change paste keyup', function(){
+                        var selectedDelViolaStat = $(this).val();
+                        if(selectedDelViolaStat != 0){
+                            $(this).addClass('cust_input_hasvalue');
+                        }else{
+                            $(this).removeClass('cust_input_hasvalue');
+                        }
+                        // table paginatin set to 1
+                        $('#delVr_hidden_page').val(1);
+                        load_delViolationRec_table();
+                    });
+                // filter deletion type end 
+
                 // filter violation status
                     $('#delViolationRecFltr_violationStat').on('change paste keyup', function(){
                         var selectedViolatinStat = $(this).val();
@@ -874,6 +891,9 @@
                         $('#delViolationRecFltr_minAge').val(ddf_minAgeRange);
                         document.getElementById("delViolationRecFltr_maxAge").classList.remove("cust_input_hasvalue");
                         $('#delViolationRecFltr_maxAge').val(ddf_maxAgeRange);
+                        // deletion type
+                        document.getElementById("delViolationRecFltr_DelViolaStat").classList.remove("cust_input_hasvalue");
+                        $('#delViolationRecFltr_DelViolaStat').val(0);
                         // violation status
                         document.getElementById("delViolationRecFltr_violationStat").classList.remove("cust_input_hasvalue");
                         $('#delViolationRecFltr_violationStat').val(0);
@@ -882,6 +902,14 @@
                         document.getElementById("violationRecFltr_datepickerRange").value = '';
                         document.getElementById("delViolationRecFltr_hidden_dateRangeFrom").value = '';
                         document.getElementById("delViolationRecFltr_hidden_dateRangeTo").value = '';
+                        // order by
+                        document.getElementById("delViolationRecFltr_orderBy").classList.remove("cust_input_hasvalue");
+                        $('#delViolationRecFltr_orderBy').val(0);
+                        // filter SC/DESC
+                        document.getElementById("delViolaFltr_orderByRange_ASCLabel").classList.remove("active");
+                        document.getElementById("delViolaFltr_orderByRange_DESCLabel").classList.add("active");
+                        var fltrBack_toDESC = document.getElementById('delViolationRecFltr_orderByRange_DESC');
+                        fltrBack_toDESC.checked = true;
                         // table paginatin set to 1
                         $('#delVr_hidden_page').val(1);
                         load_delViolationRec_table();
@@ -934,5 +962,47 @@
             });
         </script>
     {{-- delete all recently deleted violations end --}}
+
+    {{-- generate deleted violations report confirmation on modal --}}
+        <script>
+            function confirm_generateDeletedViolationRecReport(){
+                // get all filtered values
+                    var dvr_search = document.getElementById('delViolationRecsFiltr_liveSearch').value;
+                    var dvr_schools = document.getElementById('delViolationRecFltr_schools').value;
+                    var dvr_programs = document.getElementById('delViolationRecFltr_programs').value;
+                    var dvr_yearlvls = document.getElementById('delViolationRecFltr_yearLvls').value;
+                    var dvr_genders = document.getElementById('delViolationRecFltr_genders').value;
+                    var dvr_minAgeRange = document.getElementById('delViolationRecFltr_minAge').value;
+                    var dvr_maxAgeRange = document.getElementById('delViolationRecFltr_maxAge').value;
+                    var ddf_minAgeRange = document.getElementById('delViolationRecFltr_hidden_minAgeRange').value;
+                    var ddf_maxAgeRange = document.getElementById('delViolationRecFltr_hidden_maxAgeRange').value;
+                    var dvr_delType = document.getElementById('delViolationRecFltr_DelViolaStat').value;
+                    var dvr_status = document.getElementById('delViolationRecFltr_violationStat').value;
+                    var dvr_rangefrom = document.getElementById("delViolationRecFltr_hidden_dateRangeFrom").value;
+                    var dvr_rangeTo = document.getElementById("delViolationRecFltr_hidden_dateRangeTo").value;
+                    var dvr_orderBy = document.getElementById("delViolationRecFltr_orderBy").value;
+                    var dselectedOrderByRange = document.querySelector('input[type=radio][name=delViolationRecFltr_orderByRange]:checked').value;  
+                    var dvr_totalRecords = document.getElementById("delVr_hiddenTotalData_found").value;
+                    var _token = $('input[name="_token"]').val();
+
+                    console.log('______________REPORT_______________');
+                    console.log('search_filter: ' + dvr_search);
+                    console.log('school_filter: ' + dvr_schools);
+                    console.log('course_filter: ' + dvr_programs);
+                    console.log('year_level_filter: ' + dvr_yearlvls);
+                    console.log('gender_filter: ' + dvr_genders);
+                    console.log('min_Age_filter: ' + dvr_minAgeRange);
+                    console.log('max_Age_filter: ' + dvr_maxAgeRange);
+                    console.log('deletion type: ' + dvr_delType);
+                    console.log('violation_status_filter: ' + dvr_status);
+                    console.log('date_from_filter: ' + dvr_rangefrom);
+                    console.log('date_to_filter: ' + dvr_rangeTo);
+                    console.log('order by: ' + dvr_orderBy);
+                    console.log('order by Range: ' + dselectedOrderByRange);
+                    console.log('total records found: ' + dvr_totalRecords);
+                    console.log('');
+            }
+        </script>
+    {{-- generate deleted violations report confirmation on modal end --}}
     
 @endpush

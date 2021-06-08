@@ -46,7 +46,7 @@ class PageController extends Controller
             // total count of violators 
                 $query_total_violators = Violations::join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
                             ->select('violations_tbl.stud_num')
-                            ->groupBy('students_tbl.Student_Number')
+                            ->groupBy('violations_tbl.stud_num')
                             ->get();
                 if(count($query_total_violators) > 0){
                     $count_total_violators = count($query_total_violators);

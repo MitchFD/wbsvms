@@ -18,5 +18,6 @@ class DatabaseSeeder extends Seeder
         $this->call([RegisteredStudentsSeeder::class]);
         $this->call([DefaultOffensesCategoriesSeeder::class]);
         $this->call([DefaultOffensesSeeder::class]);
+        $this->call([DefaultSanctionsSeeder::class]);
     }
 }

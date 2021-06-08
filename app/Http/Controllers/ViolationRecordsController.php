@@ -593,6 +593,7 @@ class ViolationRecordsController extends Controller
                 $vr_rangeTo           = $request->get('dvr_rangeTo');
                 $df_minAgeRange       = $request->get('ddf_minAgeRange');
                 $df_maxAgeRange       = $request->get('ddf_maxAgeRange');
+                $dvr_delType          = $request->get('dvr_delType');
                 $vr_orderBy           = $request->get('dvr_orderBy');
                 $selectedOrderByRange = $request->get('dselectedOrderByRange');
                 $vr_numRows           = $request->get('dvr_numRows');
@@ -636,7 +637,7 @@ class ViolationRecordsController extends Controller
                                                     ->orWhere('students_tbl.Course', 'like', '%'.$vr_search.'%')
                                                     ->orWhere('deleted_violations_tbl.del_stud_num', 'like', '%'.$vr_search.'%');
                                     })
-                                    ->where(function($vrQuery) use ($vr_schools, $vr_programs, $vr_yearlvls, $vr_genders, $vr_minAgeRange, $vr_maxAgeRange, $df_minAgeRange, $df_maxAgeRange, $vr_status, $vr_rangefrom, $vr_rangeTo){
+                                    ->where(function($vrQuery) use ($vr_schools, $vr_programs, $vr_yearlvls, $vr_genders, $vr_minAgeRange, $vr_maxAgeRange, $df_minAgeRange, $df_maxAgeRange, $dvr_delType, $vr_status, $vr_rangefrom, $vr_rangeTo){
                                         if($vr_schools != 0 OR !empty($vr_schools)){
                                             $vrQuery->where('students_tbl.School_Name', '=', $vr_schools);
                                         }
@@ -652,6 +653,17 @@ class ViolationRecordsController extends Controller
                                         }
                                         if($vr_minAgeRange != $df_minAgeRange OR $vr_maxAgeRange != $df_maxAgeRange){
                                             $vrQuery->whereBetween('students_tbl.Age', [$vr_minAgeRange, $vr_maxAgeRange]);
+                                        }
+                                        if($dvr_delType != 0 OR !empty($dvr_delType)){
+                                            if($dvr_delType == 'temp'){
+                                                $vrQuery->where('del_status', '=', 1);
+                                            }elseif($dvr_delType == 'perm'){
+                                                $vrQuery->where('del_status', '=', 0);
+                                            }else{
+                                                $vrQuery->where('del_status', '>=', 0);
+                                            }
+                                        }else{
+                                            $vrQuery->where('del_status', '>=', 0);
                                         }
                                         if($vr_status != 0 OR !empty($vr_status)){
                                             $lower_vr_status = Str::lower($vr_status);
@@ -669,7 +681,7 @@ class ViolationRecordsController extends Controller
                     $fltr_VR_tbl = DB::table('deleted_violations_tbl')
                                     ->join('students_tbl', 'deleted_violations_tbl.del_stud_num', '=', 'students_tbl.Student_Number')
                                     ->select('deleted_violations_tbl.*', 'students_tbl.*')
-                                    ->where(function($vrQuery) use ($vr_schools, $vr_programs, $vr_yearlvls, $vr_genders, $vr_minAgeRange, $vr_maxAgeRange, $df_minAgeRange, $df_maxAgeRange, $vr_status, $vr_rangefrom, $vr_rangeTo){
+                                    ->where(function($vrQuery) use ($vr_schools, $vr_programs, $vr_yearlvls, $vr_genders, $vr_minAgeRange, $vr_maxAgeRange, $df_minAgeRange, $df_maxAgeRange, $dvr_delType, $vr_status, $vr_rangefrom, $vr_rangeTo){
                                         if($vr_schools != 0 OR !empty($vr_schools)){
                                             $vrQuery->where('students_tbl.School_Name', '=', $vr_schools);
                                         }
@@ -685,6 +697,17 @@ class ViolationRecordsController extends Controller
                                         }
                                         if($vr_minAgeRange != $df_minAgeRange OR $vr_maxAgeRange != $df_maxAgeRange){
                                             $vrQuery->whereBetween('students_tbl.Age', [$vr_minAgeRange, $vr_maxAgeRange]);
+                                        }
+                                        if($dvr_delType != 0 OR !empty($dvr_delType)){
+                                            if($dvr_delType == 'temp'){
+                                                $vrQuery->where('del_status', '=', 1);
+                                            }elseif($dvr_delType == 'perm'){
+                                                $vrQuery->where('del_status', '=', 0);
+                                            }else{
+                                                $vrQuery->where('del_status', '>=', 0);
+                                            }
+                                        }else{
+                                            $vrQuery->where('del_status', '>=', 0);
                                         }
                                         if($vr_status != 0 OR !empty($vr_status)){
                                             $lower_vr_status = Str::lower($vr_status);
