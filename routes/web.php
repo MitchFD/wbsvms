@@ -289,6 +289,13 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::post('offenses/process_register_new_offenses', 'App\Http\Controllers\OffensesController@process_register_new_offenses')->name('offenses.process_register_new_offenses');
 	// edit selected offense's details form
 	Route::get('offenses/edit_selected_offense_form', 'App\Http\Controllers\OffensesController@edit_selected_offense_form')->name('offenses.edit_selected_offense_form');
+
+
+	// add new offense details to selected category
+	Route::get('offenses/add_new_offense_details_to_selected_category_form', 'App\Http\Controllers\OffensesController@add_new_offense_details_to_selected_category_form')->name('offenses.add_new_offense_details_to_selected_category_form');
+	// process registration of new offense details to selected category
+	Route::post('offenses/process_register_new_offense_details_to_selected_category', 'App\Http\Controllers\OffensesController@process_register_new_offense_details_to_selected_category')->name('offenses.process_register_new_offense_details_to_selected_category');
+
 });
 
 // student handbook
