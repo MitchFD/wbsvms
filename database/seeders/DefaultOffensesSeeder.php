@@ -48,13 +48,6 @@ class DefaultOffensesSeeder extends Seeder
             [
                 'crOffense_category' => 'minor offenses',
                 'crOffense_type'     => 'default',
-                'crOffense_details'  => 'Using cellular phones and other E-gadgets while having a class',
-                'respo_user_id'      => '1',
-                'created_at'         => now()
-            ],
-            [
-                'crOffense_category' => 'minor offenses',
-                'crOffense_type'     => 'default',
                 'crOffense_details'  => 'Body Piercing',
                 'respo_user_id'      => '1',
                 'created_at'         => now()
@@ -83,7 +76,7 @@ class DefaultOffensesSeeder extends Seeder
             [
                 'crOffense_category' => 'less serious offenses',
                 'crOffense_type'     => 'default',
-                'crOffense_details'  => 'Lending His/Her ID',
+                'crOffense_details'  => 'Lending His/Her ID/Registration Form',
                 'respo_user_id'      => '1',
                 'created_at'         => now()
             ],
@@ -91,6 +84,83 @@ class DefaultOffensesSeeder extends Seeder
                 'crOffense_category' => 'less serious offenses',
                 'crOffense_type'     => 'default',
                 'crOffense_details'  => 'Smoking or Possession of Smoking Paraphernalia',
+                'respo_user_id'      => '1',
+                'created_at'         => now()
+            ],
+            [
+                'crOffense_category' => 'less serious offenses',
+                'crOffense_type'     => 'default',
+                'crOffense_details'  => 'Habitually playing truant or cutting classes',
+                'respo_user_id'      => '1',
+                'created_at'         => now()
+            ],
+            [
+                'crOffense_category' => 'less serious offenses',
+                'crOffense_type'     => 'default',
+                'crOffense_details'  => 'Unauthorized use of school facilities and properties',
+                'respo_user_id'      => '1',
+                'created_at'         => now()
+            ],
+            [
+                'crOffense_category' => 'less serious offenses',
+                'crOffense_type'     => 'default',
+                'crOffense_details'  => 'Unauthorized solicitation of donations in cash or in kind',
+                'respo_user_id'      => '1',
+                'created_at'         => now()
+            ],
+            [
+                'crOffense_category' => 'less serious offenses',
+                'crOffense_type'     => 'default',
+                'crOffense_details'  => 'Carrying, Reading, Viewing any pornographic material inside the school',
+                'respo_user_id'      => '1',
+                'created_at'         => now()
+            ],
+            [
+                'crOffense_category' => 'less serious offenses',
+                'crOffense_type'     => 'default',
+                'crOffense_details'  => 'Using cellular phones and other E-gadgets while having a class',
+                'respo_user_id'      => '1',
+                'created_at'         => now()
+            ],
+            [
+                'crOffense_category' => 'major offenses',
+                'crOffense_type'     => 'default',
+                'crOffense_details'  => 'Serious fighting inside or outside the campus',
+                'respo_user_id'      => '1',
+                'created_at'         => now()
+            ],
+            [
+                'crOffense_category' => 'major offenses',
+                'crOffense_type'     => 'default',
+                'crOffense_details'  => 'Involvement/Possession of any prohibited drugs',
+                'respo_user_id'      => '1',
+                'created_at'         => now()
+            ],
+            [
+                'crOffense_category' => 'major offenses',
+                'crOffense_type'     => 'default',
+                'crOffense_details'  => 'Carrying of any kind of deadly weapon',
+                'respo_user_id'      => '1',
+                'created_at'         => now()
+            ],
+            [
+                'crOffense_category' => 'major offenses',
+                'crOffense_type'     => 'default',
+                'crOffense_details'  => 'Bullying',
+                'respo_user_id'      => '1',
+                'created_at'         => now()
+            ],
+            [
+                'crOffense_category' => 'major offenses',
+                'crOffense_type'     => 'default',
+                'crOffense_details'  => 'Vandalism',
+                'respo_user_id'      => '1',
+                'created_at'         => now()
+            ],
+            [
+                'crOffense_category' => 'major offenses',
+                'crOffense_type'     => 'default',
+                'crOffense_details'  => 'Theft',
                 'respo_user_id'      => '1',
                 'created_at'         => now()
             ]

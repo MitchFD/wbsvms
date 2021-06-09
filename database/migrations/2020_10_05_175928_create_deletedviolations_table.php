@@ -21,6 +21,7 @@ class CreateDeletedviolationsTable extends Migration
             $table->timestamp('del_recorded_at')->format('Y-m-d H:i:s')->nullable();
             $table->string('del_violation_status'); 
             $table->tinyInteger('del_offense_count');    
+            $table->json('del_major_off')->nullable();
             $table->json('del_minor_off')->nullable();
             $table->json('del_less_serious_off')->nullable();
             $table->json('del_other_off')->nullable();

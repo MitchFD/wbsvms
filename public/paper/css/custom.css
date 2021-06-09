@@ -3633,7 +3633,9 @@ hr.hr_red{
 hr.hr_gry{
   border-color: #f5f5f5 !important;
 }
-
+hr.hr_gryv1{
+  border-color: #e7e7e7 !important;
+}
 
 /* custom radio button */
 .cust_btn_radio{

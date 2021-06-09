@@ -25,6 +25,11 @@ class DefaultOffensesCategoriesSeeder extends Seeder
                 'offCategory' => 'less serious offenses',
                 'created_by'  => '1',
                 'created_at'  => now()
+            ],
+            [
+                'offCategory' => 'major offenses',
+                'created_by'  => '1',
+                'created_at'  => now()
             ]
         ]);
     }

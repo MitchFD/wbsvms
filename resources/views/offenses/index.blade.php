@@ -64,12 +64,12 @@
             </div>
 
             {{-- buttons for adding categories and offenses --}}
-            <div class="row mb-3">
+            {{-- <div class="row mb-3">
                 <div class="col-lg-12 col-md-12 col-sm-12 text-left">
                     <button type="button" onclick="addNewCategory()" class="btn btn_svms_blue cust_bt_links shadow mr-2"><i class="nc-icon nc-simple-add mr-1" aria-hidden="true"></i> Add New Category</button>
                     <button type="button" onclick="addNewOffenses()" class="btn btn_svms_red cust_bt_links shadow"><i class="fa fa-pencil-square-o mr-1" aria-hidden="true"></i> Add New Offenses</button>
                 </div>
-            </div>
+            </div> --}}
 
             {{-- Offense Categories Cards --}}
             @if(count($query_OffensesCategory) > 0)
@@ -142,13 +142,31 @@
                                                 <div class="row">
                                                     <div class="col-lg-12 col-md-12 col-sm-12">
                                                         <div class="card-body lightBlue_cardBody">
-                                                            <span class="lightBlue_cardBody_blueTitle mb-1"><i class="fa fa-info-circle cust_info_icon mr-1" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Default {{ $offCategory_title }} are not allowed to be edited or deleted from the system."></i> Default {{ $offCategory_title}}:</span>
-                                                            @foreach ($queryAllDefault_perOffCategory as $thisDefault_perOffCategory)
+                                                            <span class="lightBlue_cardBody_blueTitle mb-1">Default {{ $offCategory_title}}: <i class="fa fa-info-circle cust_info_icon ml-1" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Default {{ $offCategory_title }} are based on the SDCA's Student Handbook A.Y. 2019-2020 and can be edited or deleted. Select {{ $offCategory_title }} you want to edit or delete."></i></span>
+                                                            {{-- @foreach ($queryAllDefault_perOffCategory as $thisDefault_perOffCategory)
                                                                 @php
                                                                     $defIndex++;
                                                                 @endphp
                                                                 <span class="lightBlue_cardBody_list"><span class="font-weight-bold mr-1">{{$defIndex}}. </span>{{ $thisDefault_perOffCategory->crOffense_details }}</span>
-                                                            @endforeach
+                                                            @endforeach --}}
+                                                            <form action="#">
+                                                                @csrf
+                                                                @foreach ($queryAllDefault_perOffCategory as $thisDefault_perOffCategory)
+                                                                    <div class="form-group mx-0 mt-0 mb-1">
+                                                                        <div class="custom-control custom-checkbox align-items-center">
+                                                                            <input type="checkbox" name="minor_offenses[]" value="{{$thisDefault_perOffCategory->crOffense_id}}" class="custom-control-input cursor_pointer" id="{{$thisDefault_perOffCategory->crOffense_id}}">
+                                                                            <label class="custom-control-label lightBlue_cardBody_chckboxLabel" for="{{$thisDefault_perOffCategory->crOffense_id}}">{{ $thisDefault_perOffCategory->crOffense_details}}</label>
+                                                                        </div>
+                                                                    </div>
+                                                                @endforeach
+                                                                <hr class="hr_gryv1">
+                                                                <div class="form-group mx-0 mt-0 mb-1">
+                                                                    <div class="custom-control custom-checkbox align-items-center">
+                                                                        <input type="checkbox" id="selectAllDefault_minorOffenses" name="selectAllDefault_minorOffenses" class="custom-control-input cursor_pointer">
+                                                                        <label class="custom-control-label lightBlue_cardBody_chckboxLabel" for="selectAllDefault_minorOffenses">Select all Default {{ $offCategory_title}}.</label>
+                                                                    </div>
+                                                                </div>
+                                                            </form>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -186,10 +204,15 @@
                                                 </div>
                                             @endif
                                         </div>
-                                        <div class="card-footer align-items-center px-0 pb-0">
-                                            <span class="cust_info_txtwicon font-weight-bold"><i class="fa fa-list-ul mr-1" aria-hidden="true"></i> {{ $txt_totalOffensesCount }} </span>  
-                                            <span class="cust_info_txtwicon"><i class="fa fa-cog mr-1" aria-hidden="true"></i> {{ $txt_totalDefaultOffensesCount }} </span>  
-                                            <span class="cust_info_txtwicon"><i class="fa fa-pencil-square-o mr-1" aria-hidden="true"></i> {{ $txt_totalCustomOffensesCount }} </span>  
+                                        <div class="card-footer d-flex justify-content-between align-items-center px-0 pb-0">
+                                            <div>
+                                                <span class="cust_info_txtwicon font-weight-bold"><i class="fa fa-list-ul mr-1" aria-hidden="true"></i> {{ $txt_totalOffensesCount }} </span>  
+                                                <span class="cust_info_txtwicon"><i class="fa fa-cog mr-1" aria-hidden="true"></i> {{ $txt_totalDefaultOffensesCount }} </span>  
+                                                <span class="cust_info_txtwicon"><i class="fa fa-pencil-square-o mr-1" aria-hidden="true"></i> {{ $txt_totalCustomOffensesCount }} </span>  
+                                            </div>
+                                            <div>
+                                                <button class="btn cust_btn_smcircle2" data-toggle="tooltip" data-placement="top" title="Edit Selected Offenses?"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

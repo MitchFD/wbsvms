@@ -31,41 +31,41 @@ class UsersTableSeeder extends Seeder
                 'user_gender'       => 'male',
                 'registered_by'     => '1',
                 'created_at'        => now()
-            ],
-            [
-                'email'             => 'security@gmail.com',
-                'email_verified_at' => now(),
-                'password'          => Hash::make('security123'),
-                'user_role'         => 'security guard',
-                'user_status'       => 'active',
-                'user_role_status'  => 'active',
-                'user_type'         => 'employee',
-                'user_sdca_id'      => '201983746',
-                // 'user_image'        => 'employee_user_image.jpg',
-                'user_image'        => null,
-                'user_lname'        => 'Wick',
-                'user_fname'        => 'John',
-                'user_gender'       => 'male',
-                'registered_by'     => '1',
-                'created_at'        => now()
-            ],
-            [
-                'email'             => 'student@gmail.com',
-                'email_verified_at' => now(),
-                'password'          => Hash::make('student123'),
-                'user_role'         => 'student',
-                'user_status'       => 'active',
-                'user_role_status'  => 'active',
-                'user_type'         => 'student',
-                'user_sdca_id'      => '20159846',
-                // 'user_image'        => 'student_user_image.jpg',
-                'user_image'        => null,
-                'user_lname'        => 'Doe',
-                'user_fname'        => 'John',
-                'user_gender'       => 'female',
-                'registered_by'     => '1',
-                'created_at'        => now()
             ]
+            // [
+            //     'email'             => 'security@gmail.com',
+            //     'email_verified_at' => now(),
+            //     'password'          => Hash::make('security123'),
+            //     'user_role'         => 'security guard',
+            //     'user_status'       => 'active',
+            //     'user_role_status'  => 'active',
+            //     'user_type'         => 'employee',
+            //     'user_sdca_id'      => '201983746',
+            //     'user_image'        => 'employee_user_image.jpg',
+            //     'user_image'        => null,
+            //     'user_lname'        => 'Wick',
+            //     'user_fname'        => 'John',
+            //     'user_gender'       => 'male',
+            //     'registered_by'     => '1',
+            //     'created_at'        => now()
+            // ],
+            // [
+            //     'email'             => 'student@gmail.com',
+            //     'email_verified_at' => now(),
+            //     'password'          => Hash::make('student123'),
+            //     'user_role'         => 'student',
+            //     'user_status'       => 'active',
+            //     'user_role_status'  => 'active',
+            //     'user_type'         => 'student',
+            //     'user_sdca_id'      => '20159846',
+            //     'user_image'        => 'student_user_image.jpg',
+            //     'user_image'        => null,
+            //     'user_lname'        => 'Doe',
+            //     'user_fname'        => 'John',
+            //     'user_gender'       => 'female',
+            //     'registered_by'     => '1',
+            //     'created_at'        => now()
+            // ]
         ]);
     }
 }

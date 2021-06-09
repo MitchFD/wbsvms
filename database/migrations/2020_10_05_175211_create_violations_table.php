@@ -18,6 +18,7 @@ class CreateViolationsTable extends Migration
             $table->timestamp('recorded_at')->format('Y-m-d H:i:s')->nullable();
             $table->string('violation_status')->default('not cleared');    
             $table->tinyInteger('offense_count');    
+            $table->json('major_off')->nullable();
             $table->json('minor_off')->nullable();
             $table->json('less_serious_off')->nullable();
             $table->json('other_off')->nullable();
