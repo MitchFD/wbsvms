@@ -19,6 +19,7 @@ class Violations extends Model
     protected $fillable = [
         'violation_status',
         'offense_count',
+        'major_off' => 'array',
         'minor_off' => 'array',
         'less_serious_off' => 'array',
         'other_off' => 'array',

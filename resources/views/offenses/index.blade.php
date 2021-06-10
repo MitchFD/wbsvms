@@ -215,7 +215,7 @@
                                             <div>
                                                 <button id="{{$this_offCategory->offCat_id}}" onclick="addNewOffensesDetails(this.id)" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Add New {{ $offCategory_title}}?"><i class="nc-icon nc-simple-add" aria-hidden="true"></i></button>
                                                 <button id="{{$this_offCategory->offCat_id}}" onclick="editSelectedOffenseDetails(this.id)" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Edit Selected {{ $offCategory_title}}?"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
-                                                <button class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Delete Selected {{ $offCategory_title}}?"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                <button id="{{$this_offCategory->offCat_id}}" onclick="tempDeleteSelectedOffenseDetails(this.id)" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Delete Selected {{ $offCategory_title}}?"><i class="fa fa-trash" aria-hidden="true"></i></button>
                                             </div>
                                         </div>
                                     </div>
@@ -314,7 +314,7 @@
             </div>
         </div>
     {{-- add new offense details to selected category end --}}
-    {{-- add new offense details to selected category --}}
+    {{-- edit selected offenses details --}}
         <div class="modal fade" id="editOffenseDetails_fromSelCategoryFormModal" tabindex="-1" role="dialog" aria-labelledby="editOffenseDetails_fromSelCategoryFormModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content cust_modal">
@@ -330,7 +330,24 @@
                 </div>
             </div>
         </div>
-    {{-- add new offense details to selected category end --}}
+    {{-- edit selected offenses details end --}}
+    {{-- temporary delete selected offense details --}}
+        <div class="modal fade" id="tempDeleteOffenseDetails_fromSelCategoryFormModal" tabindex="-1" role="dialog" aria-labelledby="tempDeleteOffenseDetails_fromSelCategoryFormModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="tempDeleteOffenseDetails_fromSelCategoryFormModalLabel">Delete Offense Details?</span>
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="tempDeleteOffenseDetails_fromSelCategoryFormModalHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{-- temporary delete selected offense details end --}}
 
 @endsection
 
@@ -681,5 +698,102 @@
         });
     </script>
 {{-- edit selected Offense details end --}}
+
+{{-- temporary delete selected Offense details --}}
+    <script>
+        function tempDeleteSelectedOffenseDetails(sel_offCategory_id){
+            var sel_offCategory_id = sel_offCategory_id;
+            var sel_offDetails_ids = [];
+            var sel_offCategoryName_txt = document.getElementById(sel_offCategory_id+'_offCategoryName_txt').value;
+            var _token = $('input[name="_token"]').val();
+
+            $('#'+sel_offCategory_id+'_offCategoryForm input:checked').each(function() {
+                sel_offDetails_ids.push($(this).attr('value'));
+            });
+
+            if(sel_offDetails_ids === undefined || sel_offDetails_ids.length === 0){
+                // console.log('____temporary delete offense details___________');
+                // console.log('selected category id: ' + sel_offCategory_id);
+                // console.log('selected offense ids: ' + sel_offDetails_ids);
+                // console.log('');
+                alert('Please Select ' + sel_offCategoryName_txt + ' first!');
+            }else{
+                // console.log('____temporary delete offense details___________');
+                // console.log('selected category id: ' + sel_offCategory_id);
+                // console.log('selected offense ids: ' + sel_offDetails_ids);
+                // console.log('');
+                $.ajax({
+                    url:"{{ route('offenses.temporary_delete_selected_offense_details_confirmation_modal') }}",
+                    method:"GET",
+                    data:{
+                        sel_offCategory_id:sel_offCategory_id,
+                        sel_offDetails_ids:sel_offDetails_ids,
+                        _token:_token
+                        },
+                    success: function(data){
+                        $('#tempDeleteOffenseDetails_fromSelCategoryFormModalHtmlData').html(data); 
+                        $('#tempDeleteOffenseDetails_fromSelCategoryFormModal').modal('show');
+                    }
+                });
+            }
+        }
+    </script>
+    <script>
+        $('#tempDeleteOffenseDetails_fromSelCategoryFormModal').on('show.bs.modal', function () {
+            var form_tempDeleteOffenseDetails  = document.querySelector("#form_tempDeleteOffenseDetails");
+            var cancel_tempDeleteOffenseDetails_btn = document.querySelector("#cancel_tempDeleteOffenseDetails_btn");
+            var process_tempDeleteOffenseDetails_btn = document.querySelector("#process_tempDeleteOffenseDetails_btn");
+            var temp_delete_offenses_reason = document.querySelector("#temp_delete_offenses_reason");
+            // option selection
+            function dis_en_submit_process_tempDeleteOffenseDetails_btn(){
+                var has_temp_deleteSingle_offense = 0;
+                $(".temp_deleteSingle_offense").each(function(){
+                    if(this.checked){
+                        has_temp_deleteSingle_offense = 1;
+                    }
+                });
+                if(temp_delete_offenses_reason.value !== "" && has_temp_deleteSingle_offense != 0){
+                    process_tempDeleteOffenseDetails_btn.disabled = false;
+                }else{
+                    process_tempDeleteOffenseDetails_btn.disabled = true;
+                }
+            }
+            $(temp_delete_offenses_reason).keyup(function(){
+                dis_en_submit_process_tempDeleteOffenseDetails_btn();
+            });
+            $("#temp_deleteAll_offenses").change(function(){
+                if(this.checked){
+                $(".temp_deleteSingle_offense").each(function(){
+                    this.checked=true;
+                })              
+                }else{
+                $(".temp_deleteSingle_offense").each(function(){
+                    this.checked=false;
+                })              
+                }
+                dis_en_submit_process_tempDeleteOffenseDetails_btn();
+            });
+            $(".temp_deleteSingle_offense").click(function () {
+                if ($(this).is(":checked")){
+                var isDeleteAllChecked = 0;
+                $(".temp_deleteSingle_offense").each(function(){
+                    if(!this.checked)
+                    isDeleteAllChecked = 1;
+                })              
+                if(isDeleteAllChecked == 0){ $("#temp_deleteAll_offenses").prop("checked", true); }     
+                }else {
+                $("#temp_deleteAll_offenses").prop("checked", false);
+                }
+                dis_en_submit_process_tempDeleteOffenseDetails_btn();
+            });
+            // disable cancel and sibmit button on submit
+            $(form_tempDeleteOffenseDetails).submit(function(){
+                process_tempDeleteOffenseDetails_btn.disabled = true;
+                cancel_tempDeleteOffenseDetails_btn.disabled = true;
+                return true;
+            });
+        });
+    </script>
+{{-- temporary delete selected Offense details --}}
 
 @endpush

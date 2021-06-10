@@ -299,6 +299,10 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('offenses/edit_selected_offense_details_form', 'App\Http\Controllers\OffensesController@edit_selected_offense_details_form')->name('offenses.edit_selected_offense_details_form');
 	// process update of selected offense details
 	Route::post('offenses/process_update_selected_offense_details', 'App\Http\Controllers\OffensesController@process_update_selected_offense_details')->name('offenses.process_update_selected_offense_details');
+	// temporary delete selected Offense details confirmation on modal
+	Route::get('offenses/temporary_delete_selected_offense_details_confirmation_modal', 'App\Http\Controllers\OffensesController@temporary_delete_selected_offense_details_confirmation_modal')->name('offenses.temporary_delete_selected_offense_details_confirmation_modal');
+	// process temporary deletion of selected offense details
+	Route::post('offenses/process_temporary_delete_selected_offense_details', 'App\Http\Controllers\OffensesController@process_temporary_delete_selected_offense_details')->name('offenses.process_temporary_delete_selected_offense_details');
 
 });
 

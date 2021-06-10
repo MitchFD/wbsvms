@@ -21,6 +21,7 @@ class Deletedviolations extends Model
         'from_viola_id',
         'del_violation_status',
         'del_offense_count',
+        'del_major_off' => 'array',
         'del_minor_off' => 'array',
         'del_less_serious_off' => 'array',
         'del_other_off' => 'array',

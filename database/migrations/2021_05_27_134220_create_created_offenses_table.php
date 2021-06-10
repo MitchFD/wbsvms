@@ -17,7 +17,7 @@ class CreateCreatedOffensesTable extends Migration
             $table->id('crOffense_id');
             $table->string('crOffense_category')->nullable();
             $table->string('crOffense_type')->default('custom');
-            $table->string('crOffense_details')->nullable();
+            $table->text('crOffense_details')->nullable();
             $table->unsignedBigInteger('respo_user_id')->nullable();
                 // $table->foreign('respo_user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamp('created_at')->format('Y-m-d H:i:s')->nullable();
