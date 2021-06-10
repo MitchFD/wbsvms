@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Userroles;
 use App\Models\OffensesCategories;
 use App\Models\CreatedOffenses;
+use App\Models\EditedOldCreatedOffenses;
+use App\Models\EditedNewCreatedOffenses;
 use Illuminate\Support\Str;
 use App\Models\Useractivites;
 
@@ -303,6 +305,7 @@ class OffensesController extends Controller
 
     }
 
+    // no longer needed functions
     // add new offense details form
     public function add_new_offense_details_form(Request $request){
         // output
@@ -561,13 +564,12 @@ class OffensesController extends Controller
             return back()->withFailedStatus('Adding New Offenses to ' . $toUcWords_NewCategoryName . ' Category has failed! please try again.');
         }
     }
-
     // edit selected offense form
     public function edit_selected_offense_form(Request $request){
         echo 'edit?';
     }
 
-
+    // updated functions
     // add new offense details to selected category
     public function add_new_offense_details_to_selected_category_form(Request $request){
         // get all request
@@ -814,5 +816,219 @@ class OffensesController extends Controller
             return back()->withFailedStatus('You have not provided any new offense details! please try again.');
         }
         
+    }
+    // edit selected Offense details form
+    public function edit_selected_offense_details_form(Request $request){
+        // get all request
+            $get_sel_offCategory_id = $request->get('sel_offCategory_id');   
+            $get_sel_offDetails_ids = json_decode(json_encode($request->get('sel_offDetails_ids')));
+        // try
+            // echo 'selected category id: ' . $get_sel_offCategory_id. '<br>';
+            // echo 'selected offense ids: <br>';
+            // if(!empty($get_sel_offDetails_ids) OR !is_null($get_sel_offDetails_ids)){
+            //     foreach($get_sel_offDetails_ids as $editThis_selOffDetailID){
+            //         echo '          - ' . $editThis_selOffDetailID . '<br>';
+            //     }
+            // }else{
+            //     echo 'No Selected Offenses!';
+            // }
+        // output
+            $output = '';
+
+            // get selected Category Name
+            $query_selOffCat_Name = OffensesCategories::select('offCategory')->where('offCat_id', '=', $get_sel_offCategory_id)->first();
+            $txt_selOffCatName = $query_selOffCat_Name->offCategory;
+            $toLower_selOffCat_Name = Str::lower($txt_selOffCatName);
+            $toUcwords_selOffCat_Name = ucwords($txt_selOffCatName);
+
+            $output .= '
+            <div class="modal-body border-0 p-0">
+                ';
+                if(!empty($get_sel_offDetails_ids) OR !is_null($get_sel_offDetails_ids)){
+                    $output .= '
+                    <form id="form_editOffenseDetails" action="'.route('offenses.process_update_selected_offense_details').'" method="POST" enctype="multipart/form-data">
+                        <div class="modal-body pt-0 pb-0">
+                            <div class="card-body lightBlue_cardBody shadow-none mt-2">
+                                <span class="lightBlue_cardBody_blueTitle">Selected ' .$txt_selOffCatName.':</span>
+                                ';
+                                $selOff_index = 1;
+                                foreach($get_sel_offDetails_ids as $editThis_selOffDetailID){
+                                    $query_selOffDetail_Info = CreatedOffenses::select('crOffense_type', 'crOffense_details')->where('crOffense_id', '=', $editThis_selOffDetailID)->first();
+                                    $query_selOffType = $query_selOffDetail_Info->crOffense_type;
+                                    $query_selOffDetail = $query_selOffDetail_Info->crOffense_details;
+                                    // selected type
+                                    $toLower_query_selOffType = Str::lower($query_selOffType);
+                                    if($toLower_query_selOffType == 'default'){
+                                        $selectedType_default = 'selected';
+                                    }else{
+                                        $selectedType_default = '';
+                                    }
+                                    if($toLower_query_selOffType != 'default'){
+                                        $selectedType_custom = 'selected';
+                                    }else{
+                                        $selectedType_custom = '';
+                                    }
+                                    $output .= '
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text txt_iptgrp_append4 font-weight-bold">'.$selOff_index++.'. </span>
+                                        </div>
+                                        <input type="text" id="addNewOffenses_input" name="edit_offense_details[]" class="form-control input_grpInpt4" value="'.$query_selOffDetail.'" placeholder="'.$query_selOffDetail.'" aria-label="'.$query_selOffDetail.'" aria-describedby="edit-offense-detail-input">
+                                        <div class="input-group-append ml-2">
+                                            <select name="edit_offense_types[]" class="form-control cust_fltr_dropdowns3 drpdwn_arrow3" id="inputGroupSelect01">
+                                                <option value="default"' . $selectedType_default.'>Default</option>
+                                                <option value="custom" ' . $selectedType_custom.'>Custom</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="selected_offDetailsIds[]" value="'.$editThis_selOffDetailID.'">
+                                    ';
+                                }
+                                $output .= '
+                            </div>
+                        </div>
+                        <div class="modal-footer border-0">
+                            <input type="hidden" name="_token" value="'.csrf_token().'">
+                            <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
+                            <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
+                            <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
+                            <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
+                            <input type="hidden" name="selected_offCategoryID" value="'.$get_sel_offCategory_id.'">
+                            <div class="btn-group" role="group" aria-label="Edit Offense Details Actions">
+                                <button id="cancel_editOffenseDetails_btn" type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                                <button id="process_editOffenseDetails_btn" type="submit" class="btn btn-round btn_svms_red btn_show_icon m-0" disabled>Save Changes <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                            </div>
+                        </div>
+                    </form>
+                    ';
+                }else{
+                    $output .= '
+                    <div class="modal-body pb-0">
+                        <div class="card-body lightRed_cardBody shadow-none">
+                            <span class="lightRed_cardBody_redTitle"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i> No Selected ' . $toUcwords_selOffCat_Name.':</span>
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <span class="cust_info_txtwicon3">Please close this modal and select ' . $toUcwords_selOffCat_Name . ' first to edit offense details.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <div class="btn-group" role="group" aria-label="Ok">
+                            <button type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal">Ok <i class="fa fa-thumbs-up btn_icon_show_right" aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                    ';
+                }
+                $output .='
+            </div>
+            ';
+
+            echo $output;
+    }
+    // process update of selected offense details
+    public function process_update_selected_offense_details(Request $request){
+        // get all request
+            $get_respo_user_id          = $request->get('respo_user_id');
+            $get_respo_user_lname       = $request->get('respo_user_lname');
+            $get_respo_user_fname       = $request->get('respo_user_fname');
+            $get_selected_offCategoryID = $request->get('selected_offCategoryID');
+            $get_selected_offDetailsIds = json_decode(json_encode($request->get('selected_offDetailsIds')), true);
+            $get_edit_offense_details   = json_decode(json_encode($request->get('edit_offense_details')), true);
+            $get_edit_offense_types     = json_decode(json_encode($request->get('edit_offense_types')), true);
+        // get selected Category Name
+            $query_selOffCat_Name = OffensesCategories::select('offCategory')->where('offCat_id', '=', $get_selected_offCategoryID)->first();
+            $txt_selOffCatName = $query_selOffCat_Name->offCategory;
+            $toLower_selOffCat_Name = Str::lower($txt_selOffCatName);
+            $toUcwords_selOffCat_Name = ucwords($txt_selOffCatName);
+            $now_timestamp  = now();
+            $sq = "'";
+        // try
+            $toArray_offIds = array();
+            $toArray_offTypes = array();
+            $toArray_offDetails = array();
+            $combine_offIdsnTypesnDetails = [];
+            foreach($get_edit_offense_types as $pushThis_offTypes){
+                array_push($toArray_offTypes, $pushThis_offTypes);
+            }
+            foreach($get_edit_offense_details as $pushThis_offDetails){
+                array_push($toArray_offDetails, $pushThis_offDetails);
+            }
+            foreach($get_selected_offDetailsIds as $pushThis_offIds){
+                array_push($toArray_offIds, $pushThis_offIds);
+            }
+            foreach(json_decode(json_encode($toArray_offIds), true) as $ix => $indexThis_offIds){
+                $combine_offIdsnTypesnDetails[] = [ $indexThis_offIds => [ $toArray_offTypes[$ix],$toArray_offDetails[$ix] ] ];
+            }
+            // echo ''. json_encode($combine_offIdsnTypesnDetails) . ' <br>';
+        // update created_offenses_tbl
+            foreach(json_decode(json_encode($combine_offIdsnTypesnDetails), true) as $this_combinedOffDetails){
+                foreach(json_decode(json_encode($this_combinedOffDetails), true) as $index => $updateThis_offDetails){
+                    // echo ''. $index . ' => '. json_encode($updateThis_offDetails) . '<br>';
+                    // get original offense details
+                    $queryOriginal_offDetails = CreatedOffenses::select('crOffense_type', 'crOffense_details')->where('crOffense_id', '=', $index)->where('crOffense_category', '=', $toLower_selOffCat_Name)->first();
+                    $org_crOffenseType = $queryOriginal_offDetails->crOffense_type;
+                    $org_crOffenseDetails = $queryOriginal_offDetails->crOffense_details;
+
+                    // save original to edited_old_created_offenses_tbl & edited_new_created_offenses_tbl
+                    $backedUpOiginal_offDetails = new EditedOldCreatedOffenses;
+                    $backedUpOiginal_offDetails->eOld_from_crOffense_id  = $index;
+                    $backedUpOiginal_offDetails->eOld_crOffense_category = $toLower_selOffCat_Name;
+                    $backedUpOiginal_offDetails->eOld_crOffense_type     = $org_crOffenseType;
+                    $backedUpOiginal_offDetails->eOld_crOffense_details  = $org_crOffenseDetails;
+                    $backedUpOiginal_offDetails->edited_by               = $get_respo_user_id;
+                    $backedUpOiginal_offDetails->edited_at               = $now_timestamp;
+                    $backedUpOiginal_offDetails->save();
+                    // if original offense details was successfully saved to edited_old_created_offenses_tbl
+                    if($backedUpOiginal_offDetails){
+                        // get latest eOld_id from edited_old_created_offenses_tbl
+                        $queryLates_eOldId = EditedOldCreatedOffenses::select('eOld_id')->where('eOld_from_crOffense_id', '=', $index)->latest('edited_at')->first();
+                        $lates_eOldID = $queryLates_eOldId->eOld_id;
+                        // save updated offense details to edited_new_created_offenses_tbl
+                        $backedUpUpdated_offDetails = new EditedNewCreatedOffenses;
+                        $backedUpUpdated_offDetails->eNew_from_eOld_id  = $lates_eOldID;
+                        $backedUpUpdated_offDetails->eNew_crOffense_category = $toLower_selOffCat_Name;
+                        $backedUpUpdated_offDetails->eNew_crOffense_type     = $updateThis_offDetails[0];
+                        $backedUpUpdated_offDetails->eNew_crOffense_details  = $updateThis_offDetails[1];
+                        $backedUpUpdated_offDetails->save();
+                        // if updated offense details was successfully saved to edited_new_created_offenses_tbl
+                        if($backedUpUpdated_offDetails){
+                            // update original details from created_offenses_tbl
+                            $saveUpdated_offDetails = CreatedOffenses::where('crOffense_id', '=', $index)
+                                                            ->where('crOffense_details', '=', $org_crOffenseDetails)
+                                                            ->update([
+                                                                'crOffense_type'    => $updateThis_offDetails[0],
+                                                                'crOffense_details' => $updateThis_offDetails[1],
+                                                                'updated_at'        => $now_timestamp
+                                                            ]);
+                            // if created_offenses_tbl was updated successfully
+                            if($saveUpdated_offDetails){
+                                // record activity
+                                $record_act = new Useractivites;
+                                $record_act->created_at             = $now_timestamp;
+                                $record_act->act_respo_user_id      = $get_respo_user_id;
+                                $record_act->act_respo_users_lname  = $get_respo_user_lname;
+                                $record_act->act_respo_users_fname  = $get_respo_user_fname;
+                                $record_act->act_type               = 'offense update';
+                                $record_act->act_details            = 'Updated ' . ucwords($org_crOffenseType) . ' ' . $toUcwords_selOffCat_Name.': ' . $org_crOffenseDetails . ' to ' . ucwords($updateThis_offDetails[0]) . ' ' . $toUcwords_selOffCat_Name.': ' . ucwords($updateThis_offDetails[1]).'.';
+                                $record_act->act_affected_id        = $lates_eOldID;
+                                $record_act->save();
+                            }else{
+                                return back()->withFailedStatus('Updating Offense Details has failed! please try again later.');
+                            }
+                        }else{
+                            return back()->withFailedStatus('Saving Updated Offense Details to Backup has failed! please try again later.');
+                        }
+                    }else{
+                        return back()->withFailedStatus('Saving Original Offense Details to Backup has failed! please try again later.');
+                    }
+                }
+            }
+            // if user's activity was recorded successfully
+            if($record_act){
+                return back()->withSuccessStatus(''.$toUcwords_selOffCat_Name . ' Details was Updated Successfully.');
+            }else{
+                return back()->withFailedStatus('Recording Your Activty for Updating ' . $toUcwords_selOffCat_Name . ' has failed! please try again later.');
+            }
     }
 }

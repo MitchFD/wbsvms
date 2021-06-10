@@ -69,7 +69,7 @@ class DefaultOffensesSeeder extends Seeder
             [
                 'crOffense_category' => 'less serious offenses',
                 'crOffense_type'     => 'default',
-                'crOffense_details'  => '"Wearing Tampered/Unauthorized ID',
+                'crOffense_details'  => 'Wearing Tampered/Unauthorized ID',
                 'respo_user_id'      => '1',
                 'created_at'         => now()
             ],

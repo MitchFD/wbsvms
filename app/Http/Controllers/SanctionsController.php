@@ -295,7 +295,7 @@ class SanctionsController extends Controller
             $count_onlyUpdated_sanctDetails = 0;
 
             // process update
-            foreach($merge_sel_crSancts as $selSanct_id =>  $selSanct_details){
+            foreach($merge_sel_crSancts as $selSanct_id => $selSanct_details){
                 // update created_sanctions_tbl
                 $update_created_sanctions_tbl = CreatedSanctions::where('crSanct_id', $selSanct_id)
                                                     ->update([

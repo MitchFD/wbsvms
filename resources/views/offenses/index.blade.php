@@ -134,93 +134,77 @@
                                     </div>
                                     <div id="{{$this_offCategory->offCat_id}}_offCategoryDisplayCollapseDiv" class="collapse gCardAccordions_collapse show cb_t0b15x25" aria-labelledby="{{$this_offCategory->offCat_id}}_offCategoryDisplayCollapseHeading" data-parent="#{{$this_offCategory->offCat_id}}_offCategoryDisplayCollapseParent">
                                         <div class="card card_gbr card_ofh shadow cb_p15 mt-0 mb-1">
-                                            @if($countDefault_perOffCategory > 0)
-                                                @php
-                                                    $queryAllDefault_perOffCategory = App\Models\CreatedOffenses::select('crOffense_id', 'crOffense_details')->where('crOffense_category', '=', $this_offCategory->offCategory)->where('crOffense_type', '=', 'default')->get();
-                                                    $defIndex = 0;
-                                                @endphp
-                                                <div class="row">
-                                                    <div class="col-lg-12 col-md-12 col-sm-12">
-                                                        <div class="card-body lightBlue_cardBody">
-                                                            <span class="lightBlue_cardBody_blueTitle mb-1">Default {{ $offCategory_title}}: <i class="fa fa-info-circle cust_info_icon ml-1" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Default {{ $offCategory_title }} are based on the SDCA's Student Handbook A.Y. 2019-2020 and can be edited or deleted. Select {{ $offCategory_title }} you want to edit or delete."></i></span>
-                                                            {{-- @foreach ($queryAllDefault_perOffCategory as $thisDefault_perOffCategory)
-                                                                @php
-                                                                    $defIndex++;
-                                                                @endphp
-                                                                <span class="lightBlue_cardBody_list"><span class="font-weight-bold mr-1">{{$defIndex}}. </span>{{ $thisDefault_perOffCategory->crOffense_details }}</span>
-                                                            @endforeach --}}
-                                                            <form action="#">
-                                                                @csrf
+                                            <form action="#" id="{{$this_offCategory->offCat_id}}_offCategoryForm">
+                                                @csrf
+                                                <input type="hidden" id="{{$this_offCategory->offCat_id}}_offCategoryName_txt" value="{{$offCategory_title}}">
+                                                @if($countDefault_perOffCategory > 0)
+                                                    @php
+                                                        $queryAllDefault_perOffCategory = App\Models\CreatedOffenses::select('crOffense_id', 'crOffense_details')->where('crOffense_category', '=', $this_offCategory->offCategory)->where('crOffense_type', '=', 'default')->get();
+                                                    @endphp
+                                                    <div class="row">
+                                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                                            <div class="card-body lightBlue_cardBody">
+                                                                <span class="lightBlue_cardBody_blueTitle mb-1">Default {{ $offCategory_title}}: <i class="fa fa-info-circle cust_info_icon ml-1" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Default {{ $offCategory_title }} are based on the SDCA's Student Handbook A.Y. 2019-2020 and can be edited or deleted. Select {{ $offCategory_title }} you want to edit or delete."></i></span>
                                                                 @foreach ($queryAllDefault_perOffCategory as $thisDefault_perOffCategory)
                                                                     <div class="form-group mx-0 mt-0 mb-1">
                                                                         <div class="custom-control custom-checkbox align-items-center">
-                                                                            <input type="checkbox" name="minor_offenses[]" value="{{$thisDefault_perOffCategory->crOffense_id}}" class="custom-control-input cursor_pointer" id="{{$thisDefault_perOffCategory->crOffense_id}}">
+                                                                            <input type="checkbox" value="{{$thisDefault_perOffCategory->crOffense_id}}" class="custom-control-input cursor_pointer" id="{{$thisDefault_perOffCategory->crOffense_id}}">
                                                                             <label class="custom-control-label lightBlue_cardBody_chckboxLabel" for="{{$thisDefault_perOffCategory->crOffense_id}}">{{ $thisDefault_perOffCategory->crOffense_details}}</label>
                                                                         </div>
                                                                     </div>
                                                                 @endforeach
-                                                                <hr class="hr_gryv1">
+                                                                {{-- <hr class="hr_gryv1">
                                                                 <div class="form-group mx-0 mt-0 mb-1">
                                                                     <div class="custom-control custom-checkbox align-items-center">
-                                                                        <input type="checkbox" id="selectAllDefault_minorOffenses" name="selectAllDefault_minorOffenses" class="custom-control-input cursor_pointer">
+                                                                        <input type="checkbox" id="selectAllDefault_minorOffenses" class="custom-control-input cursor_pointer">
                                                                         <label class="custom-control-label lightBlue_cardBody_chckboxLabel" for="selectAllDefault_minorOffenses">Select all Default {{ $offCategory_title}}.</label>
                                                                     </div>
-                                                                </div>
-                                                            </form>
+                                                                </div> --}}
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            @else
-                                                <div class="row">
-                                                    <div class="col-lg-12 col-md-12 col-sm-12">
-                                                        <div class="card-body lightBlue_cardBody">
-                                                            <span class="lightBlue_cardBody_list font-italic">No Default {{ $offCategory_title}}...</span>
+                                                @else
+                                                    <div class="row">
+                                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                                            <div class="card-body lightBlue_cardBody">
+                                                                <span class="lightBlue_cardBody_list font-italic">No Default {{ $offCategory_title}}...</span>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            @endif
-                                            @if($countCustom_perOffCategory > 0)
-                                                @php
-                                                    $queryAllCustom_perOffCategory = App\Models\CreatedOffenses::select('crOffense_id', 'crOffense_details')->where('crOffense_category', '=', $this_offCategory->offCategory)->where('crOffense_type', '!=', 'default')->get();
-                                                    $custIndex = 0;
-                                                @endphp
-                                                <div class="row mt-2">
-                                                    <div class="col-lg-12 col-md-12 col-sm-12">
-                                                        <div class="card-body lightRed_cardBody">
-                                                            <span class="lightRed_cardBody_redTitle mb-1">Custom {{ $offCategory_title}}: <i class="fa fa-info-circle cust_info_icon ml-1" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Custom {{ $offCategory_title }} are added offenses that are not based on the SDCA's Student Handbook A.Y. 2019-2020. Select {{ $offCategory_title }} you want to edit or delete."></i></span>
-                                                            {{-- @foreach ($queryAllCustom_perOffCategory as $this_Custom_perOffCategory)
-                                                                @php
-                                                                    $custIndex++;
-                                                                @endphp
-                                                                <span id="{{$this_Custom_perOffCategory->crOffense_id}}" onclick="editOffenseDetails(this.id)" class="lightRed_cardBody_list cursor_pointer hoverableSpanRed"><span class="font-weight-bold mr-1">{{$custIndex}}. </span> {{ $this_Custom_perOffCategory->crOffense_details}}</span>
-                                                            @endforeach --}}
-                                                            <form action="#">
-                                                                @csrf
+                                                @endif
+                                                @if($countCustom_perOffCategory > 0)
+                                                    @php
+                                                        $queryAllCustom_perOffCategory = App\Models\CreatedOffenses::select('crOffense_id', 'crOffense_details')->where('crOffense_category', '=', $this_offCategory->offCategory)->where('crOffense_type', '!=', 'default')->get();
+                                                    @endphp
+                                                    <div class="row mt-2">
+                                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                                            <div class="card-body lightRed_cardBody">
+                                                                <span class="lightRed_cardBody_redTitle mb-1">Custom {{ $offCategory_title}}: <i class="fa fa-info-circle cust_info_icon ml-1" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Custom {{ $offCategory_title }} are added offenses that are not based on the SDCA's Student Handbook A.Y. 2019-2020. Select {{ $offCategory_title }} you want to edit or delete."></i></span>
                                                                 @foreach ($queryAllCustom_perOffCategory as $thisCustom_perOffCategory)
                                                                     <div class="form-group mx-0 mt-0 mb-1">
                                                                         <div class="custom-control custom-checkbox align-items-center">
-                                                                            <input type="checkbox" name="minor_offenses[]" value="{{$thisCustom_perOffCategory->crOffense_id}}" class="custom-control-input cursor_pointer" id="{{$thisCustom_perOffCategory->crOffense_id}}">
+                                                                            <input type="checkbox" value="{{$thisCustom_perOffCategory->crOffense_id}}" class="custom-control-input cursor_pointer" id="{{$thisCustom_perOffCategory->crOffense_id}}">
                                                                             <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="{{$thisCustom_perOffCategory->crOffense_id}}">{{ $thisCustom_perOffCategory->crOffense_details}}</label>
                                                                         </div>
                                                                     </div>
                                                                 @endforeach
-                                                                <hr class="hr_gryv1">
+                                                                {{-- <hr class="hr_gryv1">
                                                                 <div class="form-group mx-0 mt-0 mb-1">
                                                                     <div class="custom-control custom-checkbox align-items-center">
-                                                                        <input type="checkbox" id="selectAllDefault_minorOffenses" name="selectAllDefault_minorOffenses" class="custom-control-input cursor_pointer">
+                                                                        <input type="checkbox" id="selectAllDefault_minorOffenses" class="custom-control-input cursor_pointer">
                                                                         <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="selectAllDefault_minorOffenses">Select all Cusotm {{ $offCategory_title}}.</label>
                                                                     </div>
-                                                                </div>
-                                                            </form>
+                                                                </div> --}}
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="row mt-3">
-                                                    <div class="col-lg-12 col-md-12 col-sm-12">
-                                                        <span class="cust_info_txtwicon3"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> Click on any Custom {{ $offCategory_title }} for more options.</span>  
+                                                    <div class="row mt-3">
+                                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                                            <span class="cust_info_txtwicon2"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> Click on any {{ $offCategory_title }} for more options.</span>  
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            @endif
+                                                @endif
+                                            </form>
                                         </div>
                                         <div class="card-footer d-flex justify-content-between align-items-center px-0 pb-0">
                                             <div>
@@ -230,7 +214,7 @@
                                             </div>
                                             <div>
                                                 <button id="{{$this_offCategory->offCat_id}}" onclick="addNewOffensesDetails(this.id)" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Add New {{ $offCategory_title}}?"><i class="nc-icon nc-simple-add" aria-hidden="true"></i></button>
-                                                <button class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Edit Selected {{ $offCategory_title}}?"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
+                                                <button id="{{$this_offCategory->offCat_id}}" onclick="editSelectedOffenseDetails(this.id)" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Edit Selected {{ $offCategory_title}}?"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
                                                 <button class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Delete Selected {{ $offCategory_title}}?"><i class="fa fa-trash" aria-hidden="true"></i></button>
                                             </div>
                                         </div>
@@ -259,6 +243,7 @@
     </div>
 
     {{-- modals --}}
+    {{-- no longer needed modals --}}
     {{-- add new category --}}
         <div class="modal fade" id="addNewCategoryFormModal" tabindex="-1" role="dialog" aria-labelledby="addNewCategoryFormModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -311,6 +296,7 @@
         </div>
     {{-- edit selected offense end --}}
 
+    {{-- updated modals --}}
     {{-- add new offense details to selected category --}}
         <div class="modal fade" id="addNewOffenseDetails_toSelCategoryFormModal" tabindex="-1" role="dialog" aria-labelledby="addNewOffenseDetails_toSelCategoryFormModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -328,11 +314,29 @@
             </div>
         </div>
     {{-- add new offense details to selected category end --}}
+    {{-- add new offense details to selected category --}}
+        <div class="modal fade" id="editOffenseDetails_fromSelCategoryFormModal" tabindex="-1" role="dialog" aria-labelledby="editOffenseDetails_fromSelCategoryFormModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="editOffenseDetails_fromSelCategoryFormModalLabel">Edit Offense Details?</span>
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="editOffenseDetails_fromSelCategoryFormModalHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{-- add new offense details to selected category end --}}
 
 @endsection
 
 @push('scripts')
 
+{{-- no longer needed scripts --}}
 {{-- add new Category --}}
     <script>
         function addNewCategory(){
@@ -422,7 +426,6 @@
         });
     </script>
 {{-- add new Category end --}}
-
 {{-- add new Category --}}
     <script>
         function addNewOffenses(){
@@ -512,7 +515,6 @@
         });
     </script>
 {{-- add new Category end --}}
-
 {{-- edit offense details --}}
     <script>
         function editOffenseDetails(selected_crOffenseID){
@@ -531,7 +533,7 @@
     </script>
 {{-- edit offense details end--}}
 
-
+{{-- updated scripts --}}
 {{-- add new Offense details --}}
     <script>
         function addNewOffensesDetails(sel_offCategory_id){
@@ -618,5 +620,66 @@
         });
     </script>
 {{-- add new Offense details end --}}
+
+{{-- edit selected offense details --}}
+    <script>
+        function editSelectedOffenseDetails(sel_offCategory_id){
+            var sel_offCategory_id = sel_offCategory_id;
+            var sel_offDetails_ids = [];
+            var sel_offCategoryName_txt = document.getElementById(sel_offCategory_id+'_offCategoryName_txt').value;
+            var _token = $('input[name="_token"]').val();
+
+            $('#'+sel_offCategory_id+'_offCategoryForm input:checked').each(function() {
+                sel_offDetails_ids.push($(this).attr('value'));
+            });
+
+            if(sel_offDetails_ids === undefined || sel_offDetails_ids.length === 0){
+                // console.log('____________________________________________');
+                // console.log('selected category id: ' + sel_offCategory_id);
+                // console.log('selected offense ids: ' + sel_offDetails_ids);
+                // console.log('');
+                alert('Please Select ' + sel_offCategoryName_txt + ' first!');
+            }else{
+                // console.log('____________________________________________');
+                // console.log('selected category id: ' + sel_offCategory_id);
+                // console.log('selected offense ids: ' + sel_offDetails_ids);
+                // console.log('');
+                $.ajax({
+                    url:"{{ route('offenses.edit_selected_offense_details_form') }}",
+                    method:"GET",
+                    data:{
+                        sel_offCategory_id:sel_offCategory_id,
+                        sel_offDetails_ids:sel_offDetails_ids,
+                        _token:_token
+                        },
+                    success: function(data){
+                        $('#editOffenseDetails_fromSelCategoryFormModalHtmlData').html(data); 
+                        $('#editOffenseDetails_fromSelCategoryFormModal').modal('show');
+                    }
+                });
+            }
+        }
+    </script>
+    <script>
+        $('#editOffenseDetails_fromSelCategoryFormModal').on('show.bs.modal', function () {
+            var form_editOffenseDetails  = document.querySelector("#form_editOffenseDetails");
+            var cancel_editOffenseDetails_btn = document.querySelector("#cancel_editOffenseDetails_btn");
+            var process_editOffenseDetails_btn = document.querySelector("#process_editOffenseDetails_btn");
+            // serialized form
+            $(form_editOffenseDetails).each(function(){
+                $(this).data('serialized', $(this).serialize())
+            }).on('change paste keyup select', function(){
+                $(this).find(process_editOffenseDetails_btn).prop('disabled', $(this).serialize() == $(this).data('serialized'));
+            }).find(process_editOffenseDetails_btn).prop('disabled', true);
+
+            // disable cancel and sibmit button on submit
+            $(form_editOffenseDetails).submit(function(){
+                process_editOffenseDetails_btn.disabled = true;
+                cancel_editOffenseDetails_btn.disabled = true;
+                return true;
+            });
+        });
+    </script>
+{{-- edit selected Offense details end --}}
 
 @endpush

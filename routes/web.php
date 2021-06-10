@@ -295,6 +295,10 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('offenses/add_new_offense_details_to_selected_category_form', 'App\Http\Controllers\OffensesController@add_new_offense_details_to_selected_category_form')->name('offenses.add_new_offense_details_to_selected_category_form');
 	// process registration of new offense details to selected category
 	Route::post('offenses/process_register_new_offense_details_to_selected_category', 'App\Http\Controllers\OffensesController@process_register_new_offense_details_to_selected_category')->name('offenses.process_register_new_offense_details_to_selected_category');
+	// edit selected Offense details
+	Route::get('offenses/edit_selected_offense_details_form', 'App\Http\Controllers\OffensesController@edit_selected_offense_details_form')->name('offenses.edit_selected_offense_details_form');
+	// process update of selected offense details
+	Route::post('offenses/process_update_selected_offense_details', 'App\Http\Controllers\OffensesController@process_update_selected_offense_details')->name('offenses.process_update_selected_offense_details');
 
 });
 
