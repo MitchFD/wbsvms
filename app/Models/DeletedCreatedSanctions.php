@@ -19,6 +19,8 @@ class DeletedCreatedSanctions extends Model
     protected $fillable = [
         'del_crSanct_details',
         'del_Status',
+        'del_created_by',
+        'reason_deletion',
         'deleted_by',
         'perm_deleted_by'
     ];

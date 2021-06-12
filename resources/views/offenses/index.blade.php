@@ -401,7 +401,7 @@
                                             <span class="cust_info_txtwicon font-weight-bold"><i class="fa fa-list-ul mr-1" aria-hidden="true"></i> {{ $txt_countDeletedOff }} </span>  
                                         </div>
                                         <div>
-                                            <button class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Recover All Temporary Deleted Offenses?"><i class="fa fa-external-link" aria-hidden="true"></i></button>
+                                            <button onclick="recoverAllTempDeletedOffenses()" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Recover All Temporary Deleted Offenses?"><i class="fa fa-external-link" aria-hidden="true"></i></button>
                                             <button class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Permanently Delete All Offenses?"><i class="fa fa-trash" aria-hidden="true"></i></button>
                                         </div>
                                     </div>
@@ -526,6 +526,24 @@
             </div>
         </div>
     {{-- temporary delete selected offense details end --}}
+
+    {{-- recover all temporary deleted offenses confirmaiton modal --}}
+        <div class="modal fade" id="recoverAllTempDeleteOffenses_ConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="recoverAllTempDeleteOffenses_ConfirmationModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="recoverAllTempDeleteOffenses_ConfirmationModalLabel">Recover Deleted Offenses?</span>
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="recoverAllTempDeleteOffenses_ConfirmationModalHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{-- recover all temporary deleted offenses confirmaiton modal end --}}
 
 @endsection
 
@@ -1154,5 +1172,24 @@
         }
     </script>
 {{-- table ro click - view deleted offense details end --}}
+
+{{-- recover all temporary deleted offenses confirmation on modal --}}
+    <script>
+        function recoverAllTempDeletedOffenses(){
+            var _token = $('input[name="_token"]').val();
+            $.ajax({
+                url:"{{ route('offenses.recover_all_temporary_deleted_offenses_confirmation') }}",
+                method:"GET",
+                data:{
+                    _token:_token
+                    },
+                success: function(data){
+                    $('#recoverAllTempDeleteOffenses_ConfirmationModalHtmlData').html(data); 
+                    $('#recoverAllTempDeleteOffenses_ConfirmationModal').modal('show');
+                }
+            });
+        }
+    </script>
+{{-- recover all temporary deleted offenses confirmation on modal end --}}
 
 @endpush

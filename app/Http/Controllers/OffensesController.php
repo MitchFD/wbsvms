@@ -12,6 +12,7 @@ use App\Models\EditedNewCreatedOffenses;
 use App\Models\DeletedCreatedOffenses;
 use Illuminate\Support\Str;
 use App\Models\Useractivites;
+use CreateDeletedCreatedOffensesTable;
 
 class OffensesController extends Controller
 {
@@ -1452,5 +1453,118 @@ class OffensesController extends Controller
         }else{
             return view('offenses.index');
         }
+    }
+    // recover all temporary deleted offenses confirmation on modal
+    public function recover_all_temporary_deleted_offenses_confirmation(Request $request){
+        // 
+        $output = '';
+
+        // get all temporary deleted offenses
+        $checkExist_tempDeletedOffenses = DeletedCreatedOffenses::where('del_Status', '=', 1)->count();
+
+        if($checkExist_tempDeletedOffenses > 0){
+            // query all temporary deleted offenses
+            $queryAll_tempDeletedOffenses = DeletedCreatedOffenses::where('del_Status', '=', 1)->get();
+            $output .= '
+                <div class="modal-body border-0 p-0">
+                    <form id="form_recoverAllTempDeletedOffenses" action="#" method="POST" enctype="multipart/form-data">
+                        <div class="cust_modal_body_gray">
+                            <span class="lightBlue_cardBody_blueTitle mb-2">Temporary Deleted Offenses:</span>
+                            ';
+                            foreach($queryAll_tempDeletedOffenses as $thisOption_TempDeletedOff){
+                                $output .= '
+                                <div class="accordion shadow-none cust_accordion_div1 mb-2" id="tempDelOff_SelectOption_Parent'.$thisOption_TempDeletedOff->del_id.'">
+                                    <div class="card custom_accordion_card">
+                                        <div class="card-header py10l15r10 d-flex justify-content-between align-items-center" id="tempDelOff_SelectOption_heading'.$thisOption_TempDeletedOff->del_id.'">
+                                            <div class="form-group m-0 width_90p">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox" id="'.$thisOption_TempDeletedOff->del_id.'_markThisTempDelOff_id" value="'.$thisOption_TempDeletedOff->del_id.'" name="recover_temp_deleted_offenses[]" class="custom-control-input cust_checkbox_label recoverTempDelOffSingle" checked>
+                                                    <label class="custom-control-label cust_checkbox_label" for="'.$thisOption_TempDeletedOff->del_id.'_markThisTempDelOff_id">
+                                                        <span class="li_info_titlev2"> '.$thisOption_TempDeletedOff->del_crOffense_details.'</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <button class="btn cust_btn_smcircle3" type="button" data-toggle="collapse" data-target="#tempDelOff_SelectOption'.$thisOption_TempDeletedOff->del_id.'" aria-expanded="true" aria-controls="tempDelOff_SelectOption'.$thisOption_TempDeletedOff->del_id.'">
+                                                <i class="nc-icon nc-minimal-down"></i>
+                                            </button>
+                                        </div>
+                                        <div id="tempDelOff_SelectOption'.$thisOption_TempDeletedOff->del_id.'" class="collapse cust_collapse_active cb_t0b12y15" aria-labelledby="tempDelOff_SelectOption_heading'.$thisOption_TempDeletedOff->del_id.'" data-parent="#tempDelOff_SelectOption_Parent'.$thisOption_TempDeletedOff->del_id.'">
+                                            <div class="row">
+                                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                                    <div class="card-body lightBlue_cardBody shadow-none mt-0">
+                                                        <span class="lightBlue_cardBody_blueTitle">Offense Details:</span>
+                                                        <span class="lightBlue_cardBody_notice"> <span class="font-weight-bold"> Category: </span> ' . ucwords($thisOption_TempDeletedOff->del_crOffense_category).' </span>
+                                                        <span class="lightBlue_cardBody_notice"> <span class="font-weight-bold"> Type: </span> ' . ucwords($thisOption_TempDeletedOff->del_crOffense_type).' </span>
+                                                        <hr class="hr_gryv1">
+                                                        <div class="row">
+                                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                                            <span class="lightBlue_cardBody_notice"> <i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> User (Role) </span>
+                                                            <span class="lightBlue_cardBody_notice"> <i class="fa fa-calendar mr-1" aria-hidden="true"></i> Date created </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                ';
+                            }
+                            $output .= '
+                        </div>
+                        <div class="modal-body pb-0">
+                            <div class="card-body lightBlue_cardBody shadow-none mt-2">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <div class="form-group m-0">
+                                            <div class="custom-control custom-checkbox align-items-center">
+                                                <input type="checkbox" id="recoverAll_TempDeleted" class="custom-control-input cursor_pointer" checked/>
+                                                <label class="custom-control-label lightBlue_cardBody_chckboxLabel" for="recoverAll_TempDeleted">Recover All Offenses.</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr class="hr_gryv1">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <span class="cust_info_txtwicon2"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i> This Action will recover selected temporary deleted offenses.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-0">
+                            <input type="hidden" name="_token" value="'.csrf_token().'">
+                            <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
+                            <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
+                            <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
+                            <div class="btn-group" role="group" aria-label="Recover Temporary Deleted Offense Actions">
+                                <button id="cancel_recoverTempDeletedOff_btn" type="button" class="btn btn-round btn_svms_red btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                                <button id="process_recoverTempDeletedOff_btn" type="submit" class="btn btn-round btn_svms_blue btn_show_icon m-0" disabled>Recover Selected Offenses <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            ';
+        }else{
+            $output .= '
+                <div class="modal-body py-0">
+                    <div class="card-body lightBlue_cardBody shadow-none">
+                        <span class="lightBlue_cardBody_blueTitle"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i> No Temporary Deleted Offenses:</span>
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <span class="cust_info_txtwicon2">Please close this modal and delete offenses first to access this feature.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <div class="btn-group" role="group" aria-label="Ok">
+                        <button type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal">Ok <i class="fa fa-thumbs-up btn_icon_show_right" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+            ';
+        }
+
+        echo $output;
     }
 }

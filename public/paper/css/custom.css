@@ -29,6 +29,11 @@
   font-size: 13px !important;
 }
 
+/* custom widths */
+.width_90p{
+  width: 90%;
+}
+
 
 /* login page */
 .login_bg{
@@ -1955,6 +1960,12 @@ a.text_svms_gray:hover {
   font-size: 14px;
   font-weight: bold;
   color: var(--svms_light_blue2);
+}
+.li_info_titlev2{
+  display: inline-block;
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--svms_blue);
 }
 .li_info_subtitle{
   display: block;

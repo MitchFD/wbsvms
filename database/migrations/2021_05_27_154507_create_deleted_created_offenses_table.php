@@ -19,6 +19,9 @@ class CreateDeletedCreatedOffensesTable extends Migration
             $table->string('del_crOffense_category')->nullable();
             $table->string('del_crOffense_type')->nullable();
             $table->text('del_crOffense_details')->nullable();    
+            $table->unsignedBigInteger('del_created_by')->nullable();
+                // $table->foreign('del_created_by')->references('id')->on('users')->onDelete('cascade');
+            $table->timestamp('del_created_at')->format('Y-m-d H:i:s')->nullable();
             $table->string('reason_deletion')->nullable();
             $table->unsignedBigInteger('deleted_by')->nullable();
                 // $table->foreign('deleted_by')->references('id')->on('users')->onDelete('cascade');

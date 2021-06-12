@@ -21,6 +21,7 @@ class DeletedCreatedOffenses extends Model
         'del_crOffense_category',
         'del_crOffense_type',
         'del_crOffense_details',
+        'del_created_by',
         'reason_deletion',
         'deleted_by',
         'perm_deleted_by'
