@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Users;
 use App\Models\Userroles;
 use App\Models\OffensesCategories;
 use App\Models\CreatedOffenses;
@@ -21,7 +22,9 @@ class OffensesController extends Controller
         if(in_array('sanctions', $get_uRole_access)){
             // get all offenses categories per group
             $query_OffensesCategory = OffensesCategories::select('offCat_id', 'offCategory')->get();
-            return view('offenses.index')->with(compact('query_OffensesCategory'));
+            // check if there are deleted offenses
+            $count_deletedOffenses = DeletedCreatedOffenses::count();
+            return view('offenses.index')->with(compact('query_OffensesCategory', 'count_deletedOffenses'));
         }else{
             return view('profile.access_denied');
         }
@@ -1230,6 +1233,224 @@ class OffensesController extends Controller
             }
         }else{
             return back()->withFailedStatus('There are no selected ' . $toUcwords_selOffCat_Name . ' to delete! Please select offenses first.');
+        }
+    }
+
+    // DELETED OFFENSES
+    // load deleted offenses table
+    public function load_deleted_offenses_table(Request $request){
+        if($request->ajax()){
+            // custom var
+            $do_output = '';
+            $count_tempDeletedOff = '';
+            $count_permDeletedOff = '';
+            $do_paginate = '';
+
+            // get all request
+            $do_search       = $request->get('do_search');
+            $do_numOfRows    = $request->get('do_numOfRows');
+            $do_delStatus    = $request->get('do_delStatus');
+            $do_offCategory  = $request->get('do_offCategory');
+            $do_offType      = $request->get('do_offType');
+            $do_orderByRange = $request->get('do_orderByRange');
+
+            // vars
+            // order by range
+            if(!empty($do_orderByRange) OR $do_orderByRange != 0){
+                if($do_orderByRange === 'asc'){
+                    $orderByRange_filterVal = 'ASC';
+                }else{
+                    $orderByRange_filterVal = 'DESC';
+                }
+            }else{
+                $orderByRange_filterVal = 'DESC';
+            }
+
+            // queries
+            if($do_search != ''){
+                $fltrDO_tbl = DeletedCreatedOffenses::
+                    where(function($doQuery) use ($do_search){
+                        $doQuery->orWhere('del_crOffense_category', 'like', '%'.$do_search.'%')
+                            ->orWhere('del_crOffense_type', 'like', '%'.$do_search.'%')
+                            ->orWhere('del_crOffense_details', 'like', '%'.$do_search.'%')
+                            ->orWhere('reason_deletion', 'like', '%'.$do_search.'%');
+                    })
+                    ->where(function($doQuery) use ($do_delStatus, $do_offCategory, $do_offType, $do_orderByRange){
+                        if($do_delStatus != 0 OR !empty($do_delStatus)){
+                            if($do_delStatus == 'temp'){
+                                $doQuery->where('del_Status', '=', 1);
+                            }elseif($do_delStatus == 'perm'){
+                                $doQuery->where('del_Status', '=', 0);
+                            }else{
+                                $doQuery->where('del_Status', '>=', 0);
+                            }
+                        }else{
+                            $doQuery->where('del_Status', '>=', 0);
+                        }
+                        if($do_offCategory != 0 OR !empty($do_offCategory)){
+                            $toLower_do_offCategory = Str::lower($do_offCategory);
+                            $doQuery->where('del_crOffense_category', '=', $toLower_do_offCategory);
+                        }
+                        if($do_offType != 0 OR !empty($do_offType)){
+                            $toLower_do_offType = Str::lower($do_offType);
+                            $doQuery->where('del_crOffense_type', '=', $toLower_do_offType);
+                        }
+                })
+                ->orderBy('del_id', $orderByRange_filterVal)
+                ->paginate($do_numOfRows);
+                $txt_matchedData = ' Matched Record';
+            }else{
+                $fltrDO_tbl = DeletedCreatedOffenses::where(function($doQuery) use ($do_delStatus, $do_offCategory, $do_offType, $do_orderByRange){
+                    if($do_delStatus != 0 OR !empty($do_delStatus)){
+                        if($do_delStatus == 'temp'){
+                            $doQuery->where('del_Status', '=', 1);
+                        }elseif($do_delStatus == 'perm'){
+                            $doQuery->where('del_Status', '=', 0);
+                        }else{
+                            $doQuery->where('del_Status', '>=', 0);
+                        }
+                    }else{
+                        $doQuery->where('del_Status', '>=', 0);
+                    }
+                    if($do_offCategory != 0 OR !empty($do_offCategory)){
+                        $toLower_do_offCategory = Str::lower($do_offCategory);
+                        $doQuery->where('del_crOffense_category', '=', $toLower_do_offCategory);
+                    }
+                    if($do_offType != 0 OR !empty($do_offType)){
+                        $toLower_do_offType = Str::lower($do_offType);
+                        $doQuery->where('del_crOffense_type', '=', $toLower_do_offType);
+                    }
+                })
+                ->orderBy('del_id', $orderByRange_filterVal)
+                ->paginate($do_numOfRows);
+                $txt_matchedData = ' Record';
+            }
+
+            // count result
+            $do_count_fltrDO_tbl = count($fltrDO_tbl);
+            $do_total_fltrDO_tbl = $fltrDO_tbl->total();
+            if($do_total_fltrDO_tbl > 0){
+                if($do_total_fltrDO_tbl > 1){
+                    $t_FDO_s = 's';
+                }else{
+                    $t_FDO_s = '';
+                }
+                $do_txtTotalDataFound = $fltrDO_tbl->firstItem() . ' - ' . $fltrDO_tbl->lastItem() . ' of ' . $do_total_fltrDO_tbl . ' ' . $txt_matchedData.''.$t_FDO_s;
+            }else{
+                $t_FDO_s = '';
+                $do_txtTotalDataFound = 'No ' . $txt_matchedData.'s Found';
+            }
+
+            // table results
+            if($do_count_fltrDO_tbl > 0){
+                $doIndex = 1;
+                foreach($fltrDO_tbl as $this_deletedOffense){
+                    // type of deletion
+                    if($this_deletedOffense->del_Status == 1){
+                        $txt_deletionType     = 'Temporary deleted';
+                        $dbColumn_respoUserId = 'deleted_by';
+                        $dbColumn_deletedAt   = 'deleted_at';
+                    }else if($this_deletedOffense->del_Status == 0){
+                        $txt_deletionType     = 'Permanently deleted';
+                        $dbColumn_respoUserId = 'perm_deleted_by';
+                        $dbColumn_deletedAt   = 'deleted_at';
+                    }else{
+                        $txt_deletionType     = 'Unknown';
+                        $dbColumn_respoUserId = '';
+                        $dbColumn_deletedAt   = '';
+                    }
+
+                    // get responsible user's info (for deleting violation)
+                    if(auth()->user()->id == $this_deletedOffense->$dbColumn_respoUserId){
+                        $txt_youIndicator = '<span class="sub2 font-italic">~ You</span>';
+                    }else{
+                        $txt_youIndicator = '';
+                    }
+                    $query_respoUser_DelViola = Users::select('id', 'user_fname', 'user_lname', 'user_role')->where('id', '=', $this_deletedOffense->$dbColumn_respoUserId)->first();
+                    $respoUser_FullName = ''.$query_respoUser_DelViola->user_fname . ' ' . $query_respoUser_DelViola->user_lname.'';
+                    $respoUser_Role     = ''.ucwords($query_respoUser_DelViola->user_role).'';
+
+                    // data table
+                    $do_output .= '
+                        <tr id="'.$this_deletedOffense->del_id.'" onclick="viewDeletedOffensesDetails(this.id)" class="tr_pointer">
+                            <td class="pl12">
+                                <span class="actLogs_content font-weight-bold">'. $doIndex++ . '</span>
+                            </td>
+                            <td>
+                                <span class="actLogs_content">'. $txt_deletionType . '</span>
+                            </td>
+                            <td>
+                                <div class="d-inline">
+                                    <span class="actLogs_content">'.$respoUser_FullName . ' ' . $txt_youIndicator . '</span>
+                                    <span class="actLogs_tdSubTitle sub2">'.$respoUser_Role.'</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-inline">
+                                    <span class="actLogs_content">'.date('F d, Y', strtotime($this_deletedOffense->dbColumn_deletedAt)) . ' <span class="sub2">' . date('(D - g:i A)', strtotime($this_deletedOffense->dbColumn_deletedAt)) . '</span></span>
+                                    <span class="actLogs_tdSubTitle">reason: <span class="font-italic font-weight-bold"> ' . preg_replace('/('.$do_search.')/i','<span class="red_highlight2">$1</span>', $this_deletedOffense->reason_deletion) . '</span></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-inline">
+                                    <span class="actLogs_content"><span class="font-weight-bold"> ' . preg_replace('/('.$do_search.')/i','<span class="red_highlight2">$1</span>', ucwords($this_deletedOffense->del_crOffense_category)) . ' </span> <span class="sub2"> ~ ' . preg_replace('/('.$do_search.')/i','<span class="red_highlight2">$1</span>', ucwords($this_deletedOffense->del_crOffense_type)) . '</span></span>
+                                    <span class="actLogs_tdSubTitle"> ' . preg_replace('/('.$do_search.')/i','<span class="red_highlight2">$1</span>', $this_deletedOffense->del_crOffense_details) . '</span>
+                                </div>
+                            </td>
+                        </tr>
+                    '; 
+                }
+
+            }else{
+                $do_output .='
+                <tr class="no_data_row">
+                    <td align="center" colspan="5">
+                        <div class="no_data_div2 d-flex justify-content-center align-items-center text-center flex-column">
+                            <img class="no_data_svg" src="'. asset('storage/svms/illustrations/no_deleted_records_found_red.svg').'" alt="no matching Data found">
+                            <span class="font-italic font-weight-bold">No Records Found! </span>
+                        </div>
+                    </td>
+                </tr>
+                ';
+            }
+
+            // count queries for temporary and permanently deleted offenses
+            $queryCount_tempDeletedOff = DeletedCreatedOffenses::where('del_Status', '>', 0)->count();
+            $queryCount_permDeletedOff = DeletedCreatedOffenses::where('del_Status', '<=', 0)->count();
+            if($queryCount_tempDeletedOff > 0){
+                if($queryCount_tempDeletedOff > 1){
+                    $cTDO_s = 's';
+                }else{
+                    $cTDO_s = '';
+                }
+                $txt_tempDeletedOff = ''. $queryCount_tempDeletedOff . ' Temporary Deleted Offense'.$cTDO_s.'';
+            }else{
+                $txt_tempDeletedOff = 'No Temporary Deleted Offenses';
+            }
+            if($queryCount_permDeletedOff > 0){
+                if($queryCount_permDeletedOff > 1){
+                    $cPDO_s = 's';
+                }else{
+                    $cPDO_s = '';
+                }
+                $txt_permDeletedOff = ''. $queryCount_permDeletedOff . ' Permanently Deleted Offense'.$cPDO_s.'';
+            }else{
+                $txt_permDeletedOff = 'No Permanently Deleted Offenses';
+            }
+
+            // results
+            $do_paginate .= $fltrDO_tbl->render('pagination::bootstrap-4');
+            $do_data = array(
+                'do_table'               => $do_output,
+                'do_pagination'          => $do_paginate,
+                'do_totalDataFound'      => $do_txtTotalDataFound,
+                'do_temp_deleted_result' => $txt_tempDeletedOff,
+                'do_perm_deleted_result' => $txt_permDeletedOff
+            );
+
+            echo json_encode($do_data);
+        }else{
+            return view('offenses.index');
         }
     }
 }

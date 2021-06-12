@@ -269,15 +269,6 @@
                                     <option value="500">500</option>
                                 </select>
                             </div>
-
-                            {{-- <div class="btn-group btn-group-toggle ml-3" data-toggle="buttons">
-                                <label class="btn btn_svms_blue active">
-                                    <input type="radio" name="options" id="option1" autocomplete="off" checked> <i class="fa fa-sort-amount-asc" aria-hidden="true"></i>
-                                </label>
-                                <label class="btn btn_svms_blue">
-                                    <input type="radio" name="options" id="option2" autocomplete="off"> <i class="fa fa-sort-amount-desc" aria-hidden="true"></i>
-                                </label>
-                            </div> --}}
                         </div>
                     </div>
                     <div class="row mt-3">

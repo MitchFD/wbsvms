@@ -304,6 +304,10 @@ Route::group(['middleware' => 'auth'], function () {
 	// process temporary deletion of selected offense details
 	Route::post('offenses/process_temporary_delete_selected_offense_details', 'App\Http\Controllers\OffensesController@process_temporary_delete_selected_offense_details')->name('offenses.process_temporary_delete_selected_offense_details');
 
+	// DELETED OFFENSES 
+	// load deleted offenses table
+	Route::get('offenses/load_deleted_offenses_table', 'App\Http\Controllers\OffensesController@load_deleted_offenses_table')->name('offenses.load_deleted_offenses_table');
+
 });
 
 // student handbook

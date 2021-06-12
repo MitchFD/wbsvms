@@ -234,6 +234,184 @@
                 </div>
             @endif
 
+            {{-- Deleted offenses --}}
+            @if ($count_deletedOffenses > 0)
+                @php
+                    if($count_deletedOffenses > 1){
+                        $txt_countDeletedOff = ''.$count_deletedOffenses . ' Deleted Offenses';
+                    }else{
+                        $txt_countDeletedOff = ''.$count_deletedOffenses . ' Deleted Offense';
+                    }
+                    // check if there are offenses categories
+                    $queryCheck_hasOffCategories = App\Models\OffensesCategories::count();
+                @endphp
+                <input type="hidden" id="hasDeletedOffenses" value="{{$count_deletedOffenses}}">
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="accordion gCardAccordions" id="deletedOffensesDisplayCollapseParent">
+                            <div class="card card_gbr card_ofh shadow-none p-0 card_body_bg_gray">
+                                <div class="card-header p-0" id="deletedOffensesDisplayCollapseHeading">
+                                    <button class="btn btn-link btn-block acc_collapse_cards custom_btn_collapse m-0 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#deletedOffensesDisplayCollapseDiv" aria-expanded="true" aria-controls="deletedOffensesDisplayCollapseDiv">
+                                        <div>
+                                            <span class="card_body_title">Recently Deleted Offenses</span>
+                                            <span class="card_body_subtitle">{{ $txt_countDeletedOff }}</span>
+                                        </div>
+                                        <i class="nc-icon nc-minimal-up custom_btn_collapse_icon"></i>
+                                    </button>
+                                </div>
+                                <div id="deletedOffensesDisplayCollapseDiv" class="collapse gCardAccordions_collapse show cb_t0b15x25" aria-labelledby="deletedOffensesDisplayCollapseHeading" data-parent="#deletedOffensesDisplayCollapseParent">
+                                    <div class="row mb-3">
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div class="card card_gbr card_ofh shadow-none p-0 m-0 card_body_bg_gray2">
+                                                @csrf
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-lg-4 col-md-5-col-sm-12">
+                                                            <div class="row">
+                                                                <div class="col-lg-6 col-md-6 col-sm-12">
+                                                                    <div class="form-group">
+                                                                        <select id="delOffFltr_DelStatus" name="delOffFltr_DelStatus" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
+                                                                            <option value="0" selected>All Deleted Violation</option>
+                                                                            <option value="temp">Temporary Deleted</option>
+                                                                            <option value="perm">Permanently Deleted</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-lg-6 col-md-6 col-sm-12">
+                                                                    @if ($queryCheck_hasOffCategories > 0)
+                                                                        @php
+                                                                            // query all offense categories
+                                                                            $query_OffCategoriesName = App\Models\OffensesCategories::select('offCategory')->get();
+                                                                        @endphp
+                                                                        <div class="form-group">
+                                                                            <select id="delOffFltr_DelOffCategory" name="delOffFltr_DelOffCategory" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
+                                                                                <option value="0" selected>All Offense Categories</option>
+                                                                                @foreach ($query_OffCategoriesName as $thisOption_offCategory)
+                                                                                    @php
+                                                                                        $toLower_optionOffCategory = strtolower($thisOption_offCategory->offCategory);
+                                                                                    @endphp
+                                                                                    <option value="{{$toLower_optionOffCategory}}">{{ucwords($thisOption_offCategory->offCategory)}}</option>
+                                                                                @endforeach
+                                                                            </select>
+                                                                        </div>
+                                                                    @else
+                                                                        <div class="form-group">
+                                                                            <select id="" name="" class="form-control cust_selectDropdownBox2 drpdwn_arrow" disabled>
+                                                                                <option value="0" selected disabled>No Categories Found</option>
+                                                                            </select>
+                                                                        </div>
+                                                                    @endif
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-4 col-md-4 col-sm-12">
+                                                            <div class="row">
+                                                                <div class="col-lg-6 col-md-6 col-sm-12">
+                                                                    <div class="form-group">
+                                                                        <select id="delOffFltr_DelOffType" name="delOffFltr_DelOffType" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
+                                                                            <option value="0" selected>All Offense Types</option>
+                                                                            <option value="default">Default</option>
+                                                                            <option value="custom">Custom</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-lg-6 col-md-6 col-sm-12">
+                                                                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                                                        <label id="delOffFltr_ASCOrderLabel" class="btn btn_svms_blue cust_btn_radio cbr_p" data-toggle="tooltip" data-placement="top" title="Ascending Order?">
+                                                                            <input class="m-0 p-0" type="radio" name="delOffFltr_orderByRange" id="delOffFltr_ASCOrderRadio" value="asc" autocomplete="off"> <i class="fa fa-sort-amount-asc cbr_i" aria-hidden="true"></i>
+                                                                        </label>
+                                                                        <label id="delOffFltr_DESCOrderLabel" class="btn btn_svms_blue cust_btn_radio cbr_p active" data-toggle="tooltip" data-placement="top" title="Descending Order?">
+                                                                            <input class="m-0 p-0" type="radio" name="delOffFltr_orderByRange" id="delOffFltr_DESCOrderRadio" value="desc" autocomplete="off" checked> <i class="fa fa-sort-amount-desc cbr_i" aria-hidden="true"></i>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-4 col-md-4 col-sm-12 d-flex justify-content-end align-items-center">
+                                                            <button type="button" id="resetDelOffensesFilter_btn" class="btn btn_svms_blue cust_bt_links shadow mr-3" disabled><i class="fa fa-refresh mr-1" aria-hidden="true"></i> Reset</button>
+                                                            <button type="button" id="generateDelOffenses_btn" class="btn btn-success cust_bt_links shadow"><i class="nc-icon nc-single-copy-04 mr-1" aria-hidden="true"></i> Generate Report</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div class="row">
+                                                <div class="col-lg-6 col-md-6 col-sm-8">
+                                                    <div class="input-group cust_srchInpt_div">
+                                                        <input id="delOffFltr_liveSearch" name="delOffFltr_liveSearch" type="text" class="form-control cust_srchUsersInpt_box" placeholder="Search Something..." />
+                                                        <i class="nc-icon nc-zoom-split" aria-hidden="true"></i>    
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6 col-md-6 col-sm-4 d-flex justify-content-end align-items-center">
+                                                    <span class="custom_label_subv1 mr-3">Number of Rows </span>
+                                                    <div class="form-group my-0" style="width:80px;">
+                                                        <select id="delOffFltr_numOfRows" class="form-control cust_selectDropdownBox2 drpdwn_arrow">
+                                                            <option value="5" selected>5</option>
+                                                            <option value="10">10</option>
+                                                            <option value="25">25</option>
+                                                            <option value="50">50</option>
+                                                            <option value="75">75</option>
+                                                            <option value="100">100</option>
+                                                            <option value="250">250</option>
+                                                            <option value="500">500</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <table class="table table-hover cust_table shadow">
+                                                <thead class="thead_svms_blue">
+                                                    <tr>
+                                                        <th class="pl12">#</th>
+                                                        <th>Deletion type</th>
+                                                        <th>Deleted by</th>
+                                                        <th>Date Deleted & Reason</th>
+                                                        <th>Offense Details</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="tbody_svms_white" id="do_tableTbody">
+                                                    {{-- ajax data table --}}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="row d-flex justify-content-center align-items-center">
+                                        <div class="col-lg-4 col-md-4 col-sm-12 text-left">
+                                            <span>Total Data: <span class="font-weight-bold" id="do_tableTotalData_count"> </span> </span>
+                                        </div>
+                                        <div class="col-lg-8 col-md-8 col-sm-12 d-flex justify-content-end">
+                                            @csrf
+                                            <input type="hidden" name="do_hidden_page" id="do_hidden_page" value="1" />
+                                            <div id="do_tablePagination">
+                
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr class="hr_gryv2">
+                                    <div class="card-footer d-flex justify-content-between align-items-center p-0">
+                                        <div>
+                                            <span class="cust_info_txtwicon"><i class="fa fa-trash-o mr-1" aria-hidden="true"></i> <span id="display_CountTempDeleted"> </span> </span>  
+                                            <span class="cust_info_txtwicon"><i class="fa fa-trash mr-1" aria-hidden="true"></i> <span id="display_CountPermDeleted"> </span> </span>  
+                                            <span class="cust_info_txtwicon font-weight-bold"><i class="fa fa-list-ul mr-1" aria-hidden="true"></i> {{ $txt_countDeletedOff }} </span>  
+                                        </div>
+                                        <div>
+                                            <button class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Recover All Temporary Deleted Offenses?"><i class="fa fa-external-link" aria-hidden="true"></i></button>
+                                            <button class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Permanently Delete All Offenses?"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
         @else
 
         @endif
@@ -795,5 +973,186 @@
         });
     </script>
 {{-- temporary delete selected Offense details --}}
+
+{{-- DELETED OFFENSES --}}
+{{-- load deleted offenses table --}}
+    <script>
+        $(document).ready(function(){
+            var hasDeletedOffenses = document.getElementById('hasDeletedOffenses').value;
+            if(hasDeletedOffenses > 0){
+                load_deletedOffenses_table();
+
+                function load_deletedOffenses_table(){
+                    // set pagination to page 1
+                    $('#do_hidden_page').val(1);
+
+                    // get all filtered values
+                    var do_search = document.getElementById('delOffFltr_liveSearch').value;
+                    var do_numOfRows = document.getElementById('delOffFltr_numOfRows').value;
+                    var do_delStatus = document.getElementById('delOffFltr_DelStatus').value;
+                    var do_offCategory = document.getElementById('delOffFltr_DelOffCategory').value;
+                    var do_offType = document.getElementById('delOffFltr_DelOffType').value;
+                    var do_orderByRange = document.querySelector('input[type=radio][name=delOffFltr_orderByRange]:checked').value;
+
+                    // ajax request
+                    $.ajax({
+                        url:"{{ route('offenses.load_deleted_offenses_table') }}",
+                        method:"GET",
+                        data:{
+                            do_search:do_search,
+                            do_numOfRows:do_numOfRows,
+                            do_delStatus:do_delStatus,
+                            do_offCategory:do_offCategory,
+                            do_offType:do_offType,
+                            do_orderByRange:do_orderByRange,
+                            hasDeletedOffenses:hasDeletedOffenses
+                        },
+                        dataType:'json',
+                        success:function(do_data){
+                            $('#do_tableTbody').html(do_data.do_table);
+                            $('#display_CountTempDeleted').html(do_data.do_temp_deleted_result);
+                            $('#display_CountPermDeleted').html(do_data.do_perm_deleted_result);
+                            $('#do_tableTotalData_count').html(do_data.do_totalDataFound);
+                            $('#do_tablePagination').html(do_data.do_pagination);
+                        }
+                    });
+
+                    // reset button
+                    if(do_delStatus != 0 || do_offCategory != 0 || do_offType != 0 || do_orderByRange != 'desc'){
+                        $('#resetDelOffensesFilter_btn').prop('disabled', false);
+                    }else{
+                        $('#resetDelOffensesFilter_btn').prop('disabled', true);
+                    }
+                }
+
+                // pagination
+                    $(window).on('hashchange', function() {
+                        if (window.location.hash) {
+                            var page = window.location.hash.replace('#', '');
+                            if (page == Number.NaN || page <= 0) {
+                                return false;
+                            }else{
+                                do_getData(page);
+                            }
+                        }
+                    });
+                    $('#do_tablePagination').on('click', '.pagination a', function(event){
+                        event.preventDefault();
+                        var page = $(this).attr('href').split('page=')[1];
+                        $('#do_hidden_page').val(page);
+
+                        load_deletedOffenses_table();
+                        do_getData(page);
+                        $('li.page-item').removeClass('active');
+                        $(this).parent('li.page-item').addClass('active');
+                    });
+                    function do_getData(page){
+                        $.ajax({
+                            url: '?page=' + page,
+                            type: "get",
+                            datatype: "html"
+                        }).done(function(data){
+                            location.hash = page;
+                        })
+                        .fail(function(jqXHR, ajaxOptions, thrownError){
+                            // alert('No response from server');
+                            location.hash = page;
+                        });
+                    }
+                // pagination end
+                
+                // live search filter
+                    $('#delOffFltr_liveSearch').on('keyup', function(){
+                        load_deletedOffenses_table();
+                    });
+                // live search filter end
+
+                // number of rows
+                    $('#delOffFltr_numOfRows').on('change paste keyup', function(){
+                        var selectedNumRows = $(this).val();
+                        if(selectedNumRows != 5){
+                            $(this).addClass('cust_input_hasvalue');
+                        }else{
+                            $(this).removeClass('cust_input_hasvalue');
+                        }
+                        load_deletedOffenses_table();
+                    });
+                // number of rows end
+
+                // deletion type
+                    $('#delOffFltr_DelStatus').on('change paste keyup', function(){
+                        var selectedDelOffStat = $(this).val();
+                        if(selectedDelOffStat != 0){
+                            $(this).addClass('cust_input_hasvalue');
+                        }else{
+                            $(this).removeClass('cust_input_hasvalue');
+                        }
+                        load_deletedOffenses_table();
+                    });
+                // deletion type end 
+
+                // offense categories
+                    $('#delOffFltr_DelOffCategory').on('change paste keyup', function(){
+                        var selectedDelOffCategory = $(this).val();
+                        if(selectedDelOffCategory != 0){
+                            $(this).addClass('cust_input_hasvalue');
+                        }else{
+                            $(this).removeClass('cust_input_hasvalue');
+                        }
+                        load_deletedOffenses_table();
+                    });
+                // offense categories end
+
+                // offense types
+                    $('#delOffFltr_DelOffType').on('change paste keyup', function(){
+                        var selectedDelOffType = $(this).val();
+                        if(selectedDelOffType != 0){
+                            $(this).addClass('cust_input_hasvalue');
+                        }else{
+                            $(this).removeClass('cust_input_hasvalue');
+                        }
+                        load_deletedOffenses_table();
+                    });
+                // offense types end
+
+                // filter ASC/DESC order
+                    $('input[type=radio][name=delOffFltr_orderByRange]').change(function() {
+                        load_deletedOffenses_table();
+                    });
+                // filter ASC/DESC order end
+
+                // reset filter
+                    $('#resetDelOffensesFilter_btn').on('click', function(){
+                        // disable reset button
+                        $(this).prop('disabled', true);
+                        // deletion type
+                        document.getElementById("delOffFltr_DelStatus").classList.remove("cust_input_hasvalue");
+                        $('#delOffFltr_DelStatus').val(0);
+                        // offense category
+                        document.getElementById("delOffFltr_DelOffCategory").classList.remove("cust_input_hasvalue");
+                        $('#delOffFltr_DelOffCategory').val(0);
+                        // offense type
+                        document.getElementById("delOffFltr_DelOffType").classList.remove("cust_input_hasvalue");
+                        $('#delOffFltr_DelOffType').val(0);
+                        // filter SC/DESC
+                        document.getElementById("delOffFltr_ASCOrderLabel").classList.remove("active");
+                        document.getElementById("delOffFltr_DESCOrderLabel").classList.add("active");
+                        var fltrBack_toDESC = document.getElementById('delOffFltr_DESCOrderRadio');
+                        fltrBack_toDESC.checked = true;
+                        // load table
+                        load_deletedOffenses_table();
+                    });
+                // reset filter end
+            }
+        });
+    </script>
+{{-- load deleted offenses table end --}}
+{{-- table ro click - view deleted offense details --}}
+    <script>
+        function viewDeletedOffensesDetails(sel_delID){
+            alert(sel_delID);
+        }
+    </script>
+{{-- table ro click - view deleted offense details end --}}
 
 @endpush
