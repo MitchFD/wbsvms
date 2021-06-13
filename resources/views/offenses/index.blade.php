@@ -1190,6 +1190,58 @@
             });
         }
     </script>
+    <script>
+        $('#recoverAllTempDeleteOffenses_ConfirmationModal').on('show.bs.modal', function () {
+            var form_recoverAllTempDeletedOffenses  = document.querySelector("#form_recoverAllTempDeletedOffenses");
+            var cancel_recoverTempDeletedOff_btn = document.querySelector("#cancel_recoverTempDeletedOff_btn");
+            var process_recoverTempDeletedOff_btn = document.querySelector("#process_recoverTempDeletedOff_btn");
+            // option selection
+            function dis_en_submit_process_recoverTempDeletedOff_btn(){
+                var has_recoverTempDelOffSingle = 0;
+                $(".recoverTempDelOffSingle").each(function(){
+                    if(this.checked){
+                        has_recoverTempDelOffSingle = 1;
+                    }
+                });
+                if(has_recoverTempDelOffSingle != 0){
+                    process_recoverTempDeletedOff_btn.disabled = false;
+                }else{
+                    process_recoverTempDeletedOff_btn.disabled = true;
+                }
+            }
+            $("#recoverAll_TempDeleted").change(function(){
+                if(this.checked){
+                $(".recoverTempDelOffSingle").each(function(){
+                    this.checked=true;
+                })              
+                }else{
+                $(".recoverTempDelOffSingle").each(function(){
+                    this.checked=false;
+                })              
+                }
+                dis_en_submit_process_recoverTempDeletedOff_btn();
+            });
+            $(".recoverTempDelOffSingle").click(function () {
+                if ($(this).is(":checked")){
+                var isRecoverAllChecked = 0;
+                $(".recoverTempDelOffSingle").each(function(){
+                    if(!this.checked)
+                    isRecoverAllChecked = 1;
+                })              
+                if(isRecoverAllChecked == 0){ $("#recoverAll_TempDeleted").prop("checked", true); }     
+                }else {
+                $("#recoverAll_TempDeleted").prop("checked", false);
+                }
+                dis_en_submit_process_recoverTempDeletedOff_btn();
+            });
+            // disable cancel and sibmit button on submit
+            $(form_recoverAllTempDeletedOffenses).submit(function(){
+                process_recoverTempDeletedOff_btn.disabled = true;
+                cancel_recoverTempDeletedOff_btn.disabled = true;
+                return true;
+            });
+        });
+    </script>
 {{-- recover all temporary deleted offenses confirmation on modal end --}}
 
 @endpush
