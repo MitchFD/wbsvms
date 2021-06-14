@@ -764,6 +764,9 @@ fieldset[disabled] .btn_svms_blue.active {
 .bg_E7E7E7{
   background-color: #E7E7E7 !important;
 }
+.bg_FBF1F1{
+  background-color: #FBF1F1 !important;
+}
 
 /* global border radius */
 .br_12px{
@@ -1687,6 +1690,34 @@ a.text_svms_gray:hover {
   text-transform: normal !important;
   color: var(--svms_light_blue) !important;
 } */
+
+.custom4_btn_collapse{
+  line-height: 1.5;
+  background-color: #FBF1F1;
+  padding: 15px 25px;
+  text-transform: none;
+  text-align: left !important;
+  margin: 0 !important;
+  border-radius: 15px;
+}
+.custom4_btn_collapse:hover{
+  background-color: #faeded !important;
+  overflow: hidden;
+}
+.custom4_btn_collapse:focus,
+.custom4_btn_collapse:active,
+.custom4_btn_collapse:active:focus {
+  background-color: #faeded !important;
+}
+.custom4_btn_collapse i{
+  display: block !important;
+  font-size: 12px !important;
+  font-weight: normal !important;
+  text-decoration: none !important;
+  text-transform: normal !important;
+  color: var(--svms_red) !important;
+}
+
 .accordion_title{
   display: block;
   font-size: 15px !important;
@@ -1966,6 +1997,12 @@ a.text_svms_gray:hover {
   font-size: 14px;
   font-weight: bold;
   color: var(--svms_blue);
+}
+.li_info_titlev3{
+  display: inline-block;
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--svms_red);
 }
 .li_info_subtitle{
   display: block;

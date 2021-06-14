@@ -9,6 +9,8 @@ use App\Models\Students;
 use App\Models\Users;
 use App\Models\Userroles;
 use App\Models\Useractivites;
+use App\Models\OffensesCategories;
+use App\Models\CreatedOffenses;
 use App\Models\Violations;
 use Illuminate\Mail\Mailable;
 
@@ -242,79 +244,122 @@ class ViolationEntryController extends Controller
                     </div>
                 </div>
                 <form id="form_addViolation" action="'.route('violation_entry.submit_violation_form').'" enctype="multipart/form-data" method="POST">
+                ';
+                    // queries
+                    $queryCount_hasMinorOffenses = CreatedOffenses::where('crOffense_category', '=', 'minor offenses')->count();
+                    $queryCount_hasLessSeriousOffenses = CreatedOffenses::where('crOffense_category', '=', 'less serious offenses')->count();
+                    $queryCount_hasMajorOffenses = CreatedOffenses::where('crOffense_category', '=', 'major offenses')->count();
+                $output .= '
                     <div class="row mt-3">
                         <div class="col-lg-6 col-md-6 col-sm-12 pr-0">
-                            <div class="lightRed_cardBody h-100">
-                                <span class="lightRed_cardBody_redTitle">Minor Offenses:</span>
-                                <div class="form-group mx-0 mt-2 mb-1">
-                                    <div class="custom-control custom-checkbox align-items-center">
-                                        <input type="checkbox" name="minor_offenses[]" value="Violation of Dress Code" class="custom-control-input cursor_pointer" id="mo_1">
-                                        <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="mo_1">Violation of Dress Code</label>
+                            <div class="accordion shadow-none cust_accordion_div" id="minorOffOptionsModalAccordion_Parent">
+                                <div class="card custom_accordion_card2 flex-column h-100">
+                                    <div class="card-header p-0" id="minorOffOptionsCollapse_heading">
+                                        <h2 class="mb-0 bg_F4F4F5">
+                                            <button class="btn btn-block custom4_btn_collapse cb_x12y15 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#minorOffOptionsCollapse_Div" aria-expanded="true" aria-controls="minorOffOptionsCollapse_Div">
+                                                <span class="li_info_titlev3">MINOR OFFENSES:</span>
+                                                <i class="nc-icon nc-minimal-up"></i>
+                                            </button>
+                                        </h2>
                                     </div>
-                                </div>
-                                <div class="form-group mx-0 mt-0 mb-1">
-                                    <div class="custom-control custom-checkbox align-items-center">
-                                        <input type="checkbox" name="minor_offenses[]" value="Not wearing the prescribed uniform" class="custom-control-input cursor_pointer" id="mo_2">
-                                        <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="mo_2">Not wearing the prescribed uniform</label>
-                                    </div>
-                                </div>
-                                <div class="form-group mx-0 mt-0 mb-1">
-                                    <div class="custom-control custom-checkbox align-items-center">
-                                        <input type="checkbox" name="minor_offenses[]" value="Not wearing ID" class="custom-control-input cursor_pointer" id="mo_3">
-                                        <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="mo_3">Not wearing ID</label>
-                                    </div>
-                                </div>
-                                <div class="form-group mx-0 mt-2 mb-1">
-                                    <div class="custom-control custom-checkbox align-items-center">
-                                        <input type="checkbox" name="minor_offenses[]" value="Littering" class="custom-control-input cursor_pointer" id="mo_4">
-                                        <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="mo_4">Littering</label>
-                                    </div>
-                                </div>
-                                <div class="form-group mx-0 mt-0 mb-1">
-                                    <div class="custom-control custom-checkbox align-items-center">
-                                        <input type="checkbox" name="minor_offenses[]" value="Using cellular phones and other E-gadgets while having a class" class="custom-control-input cursor_pointer" id="mo_5">
-                                        <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="mo_5">Using cellular phones and other E-gadgets while having a class</label>
-                                    </div>
-                                </div>
-                                <div class="form-group mx-0 mt-0 mb-1">
-                                    <div class="custom-control custom-checkbox align-items-center">
-                                        <input type="checkbox" name="minor_offenses[]" value="Body Piercing" class="custom-control-input cursor_pointer" id="mo_6">
-                                        <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="mo_6">Body Piercing</label>
-                                    </div>
-                                </div>
-                                <div class="form-group mx-0 mt-0 mb-1">
-                                    <div class="custom-control custom-checkbox align-items-center">
-                                        <input type="checkbox" name="minor_offenses[]" value="Indecent Public Display of Affection" class="custom-control-input cursor_pointer" id="mo_7">
-                                        <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="mo_7">Indecent Public Display of Affection</label>
+                                    <div id="minorOffOptionsCollapse_Div" class="collapse cust_collapse_active show cb_t0b12y15 bg_FBF1F1" aria-labelledby="minorOffOptionsCollapse_heading" data-parent="#minorOffOptionsModalAccordion_Parent">
+                                        <div class="row mt-0">
+                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                            ';
+                                                // display minor offenses options
+                                                if($queryCount_hasMinorOffenses > 0){
+                                                    // query all minor offenses' details
+                                                    $queryMinorOffense_details = CreatedOffenses::select('crOffense_id', 'crOffense_category', 'crOffense_details')->where('crOffense_category', '=', 'minor offenses')->get();
+                                                    foreach($queryMinorOffense_details as $thisOption_minorOff){
+                                                        $output .= '
+                                                        <div class="form-group mx-0 mt-2 mb-1">
+                                                            <div class="custom-control custom-checkbox align-items-center">
+                                                                <input type="checkbox" name="minor_offenses[]" value="'.$thisOption_minorOff->crOffense_details.'" class="custom-control-input cursor_pointer" id="'.$thisOption_minorOff->crOffense_id.'">
+                                                                <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="'.$thisOption_minorOff->crOffense_id.'">'.$thisOption_minorOff->crOffense_details.'</label>
+                                                            </div>
+                                                        </div>
+                                                        ';
+                                                    }
+                                                }
+                                            $output .= '
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-lg-6 col-md-6 col-sm-12">
-                            <div class="lightRed_cardBody h-100">
-                                <span class="lightRed_cardBody_redTitle">Less Serious Offenses:</span>
-                                <div class="form-group mx-0 mt-2 mb-1">
-                                    <div class="custom-control custom-checkbox align-items-center">
-                                        <input type="checkbox" name="less_serious_offenses[]" value="Wearing somebody else'.$sq.'s ID" class="custom-control-input cursor_pointer" id="lso_1">
-                                        <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="lso_1">Wearing somebody else'.$sq.'s ID</label>
+                            <div class="accordion shadow-none cust_accordion_div" id="lessSeriousOffOptionsModalAccordion_Parent">
+                                <div class="card custom_accordion_card2 flex-column h-100">
+                                    <div class="card-header p-0" id="lessSeriousOffOptionsCollapse_heading">
+                                        <h2 class="mb-0 bg_F4F4F5">
+                                            <button class="btn btn-block custom4_btn_collapse cb_x12y15 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#lessSeriousOffOptionsCollapse_Div" aria-expanded="true" aria-controls="lessSeriousOffOptionsCollapse_Div">
+                                                <span class="li_info_titlev3">LESS SERIOUS OFFENSES:</span>
+                                                <i class="nc-icon nc-minimal-up"></i>
+                                            </button>
+                                        </h2>
+                                    </div>
+                                    <div id="lessSeriousOffOptionsCollapse_Div" class="collapse cust_collapse_active show cb_t0b12y15 bg_FBF1F1" aria-labelledby="lessSeriousOffOptionsCollapse_heading" data-parent="#lessSeriousOffOptionsModalAccordion_Parent">
+                                        <div class="row mt-0">
+                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                            ';
+                                            // display less serious offenses options
+                                            if($queryCount_hasLessSeriousOffenses > 0){
+                                                // query all less serious offenses' details
+                                                $queryLessSeriousOffense_details = CreatedOffenses::select('crOffense_id', 'crOffense_category', 'crOffense_details')->where('crOffense_category', '=', 'less serious offenses')->get();
+                                                foreach($queryLessSeriousOffense_details as $thisOption_lessSeriousOff){
+                                                    $output .= '
+                                                    <div class="form-group mx-0 mt-2 mb-1">
+                                                        <div class="custom-control custom-checkbox align-items-center">
+                                                            <input type="checkbox" name="less_serious_offenses[]" value="'.$thisOption_lessSeriousOff->crOffense_details.'" class="custom-control-input cursor_pointer" id="'.$thisOption_lessSeriousOff->crOffense_id.'">
+                                                            <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="'.$thisOption_lessSeriousOff->crOffense_id.'">'.$thisOption_lessSeriousOff->crOffense_details.'</label>
+                                                        </div>
+                                                    </div>
+                                                    ';
+                                                }
+                                            }
+                                            $output .='
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="form-group mx-0 mt-0 mb-1">
-                                    <div class="custom-control custom-checkbox align-items-center">
-                                        <input type="checkbox" name="less_serious_offenses[]" value="Wearing Tampered/Unauthorized ID" class="custom-control-input cursor_pointer" id="lso_2">
-                                        <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="lso_2">Wearing Tampered/Unauthorized ID</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <div class="accordion shadow-none cust_accordion_div" id="majorOffOptionsModalAccordion_Parent">
+                                <div class="card custom_accordion_card2">
+                                    <div class="card-header p-0" id="majorOffOptionsCollapse_heading">
+                                        <h2 class="mb-0 bg_F4F4F5">
+                                            <button class="btn btn-block custom4_btn_collapse cb_x12y15 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#majorOffOptionsCollapse_Div" aria-expanded="true" aria-controls="majorOffOptionsCollapse_Div">
+                                                <span class="li_info_titlev3">MAJOR OFFENSES:</span>
+                                                <i class="nc-icon nc-minimal-up"></i>
+                                            </button>
+                                        </h2>
                                     </div>
-                                </div>
-                                <div class="form-group mx-0 mt-0 mb-1">
-                                    <div class="custom-control custom-checkbox align-items-center">
-                                        <input type="checkbox" name="less_serious_offenses[]" value="Lending His/Her ID" class="custom-control-input cursor_pointer" id="lso_3">
-                                        <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="lso_3">Lending His/Her ID</label>
-                                    </div>
-                                </div>
-                                <div class="form-group mx-0 mt-2 mb-1">
-                                    <div class="custom-control custom-checkbox align-items-center">
-                                        <input type="checkbox" name="less_serious_offenses[]" value="Smoking or Possession of Smoking Paraphernalia" class="custom-control-input cursor_pointer" id="lso_4">
-                                        <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="lso_4">Smoking or Possession of Smoking Paraphernalia</label>
+                                    <div id="majorOffOptionsCollapse_Div" class="collapse cb_t0b12y15 bg_FBF1F1" aria-labelledby="majorOffOptionsCollapse_heading" data-parent="#majorOffOptionsModalAccordion_Parent">
+                                        <div class="row mt-0">
+                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                            ';
+                                            // display major offenses options
+                                            if($queryCount_hasMajorOffenses > 0){
+                                                // query all major offenses' details
+                                                $queryMajorOffense_details = CreatedOffenses::select('crOffense_id', 'crOffense_category', 'crOffense_details')->where('crOffense_category', '=', 'major offenses')->get();
+                                                foreach($queryMajorOffense_details as $thisOption_majorOff){
+                                                    $output .= '
+                                                    <div class="form-group mx-0 mt-2 mb-1">
+                                                        <div class="custom-control custom-checkbox align-items-center">
+                                                            <input type="checkbox" name="major_offenses[]" value="'.$thisOption_majorOff->crOffense_details.'" class="custom-control-input cursor_pointer" id="'.$thisOption_majorOff->crOffense_id.'">
+                                                            <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="'.$thisOption_majorOff->crOffense_id.'">'.$thisOption_majorOff->crOffense_details.'</label>
+                                                        </div>
+                                                    </div>
+                                                    ';
+                                                }
+                                            }
+                                            $output .='
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -374,14 +419,15 @@ class ViolationEntryController extends Controller
     // process violation form
     public function submit_violation_form(Request $request){
         // get all request
-        $get_selected_students     = json_decode(json_encode($request->get('violator_ids')));
+        $get_selected_students     = json_decode(json_encode($request->get('violator_ids')), true);
         $get_violation_timestamp   = $request->get('violation_timestamp');
         $get_respo_user_id         = $request->get('respo_user_id');
         $get_respo_user_lname      = $request->get('respo_user_lname');
         $get_respo_user_fname      = $request->get('respo_user_fname');   
-        $get_minor_offenses        = json_decode(json_encode($request->get('minor_offenses')));
-        $get_less_serious_offenses = json_decode(json_encode($request->get('less_serious_offenses')));
-        $get_other_offenses        = json_decode(json_encode($request->get('other_offenses')));
+        $get_minor_offenses        = json_decode(json_encode($request->get('minor_offenses')), true);
+        $get_less_serious_offenses = json_decode(json_encode($request->get('less_serious_offenses')), true);
+        $get_major_offenses        = json_decode(json_encode($request->get('major_offenses')), true);
+        $get_other_offenses        = json_decode(json_encode($request->get('other_offenses')), true);
 
         // count each offenses
         if(!is_null($get_minor_offenses) OR !empty($get_minor_offenses)){
@@ -394,6 +440,11 @@ class ViolationEntryController extends Controller
         }else{
             $total_lso_count = 0;
         }
+        if(!is_null($get_major_offenses) OR !empty($get_major_offenses)){
+            $total_mjo_count = count($get_major_offenses);
+        }else{
+            $total_mjo_count = 0;
+        }
         if(!is_null($get_other_offenses) OR !empty($get_other_offenses)){
             if(in_array(null, $get_other_offenses)){
                 $total_oo_count = 0;
@@ -404,7 +455,7 @@ class ViolationEntryController extends Controller
             $total_oo_count = 0;
         }
         // total count of all offenses
-        $total_offenses_count = $total_mo_count + $total_lso_count + $total_oo_count;
+        $total_offenses_count = $total_mo_count + $total_lso_count + $total_mjo_count + $total_oo_count;
         // pluras s
         if($total_offenses_count > 1){
             $s = 's';
@@ -424,6 +475,7 @@ class ViolationEntryController extends Controller
             $get_sel_stud_course   = $get_sel_students_info->Course;
             $get_sel_stud_yrlvl    = $get_sel_students_info->YearLevel;
             $get_sel_stud_email    = $get_sel_students_info->Email;
+
             // year level
             if($get_sel_stud_yrlvl === '1'){
                 $yearLevel_txt = '1st Year';
@@ -438,6 +490,7 @@ class ViolationEntryController extends Controller
             }else{
                 $yearLevel_txt = $get_sel_stud_yrlvl . ' Year';
             }
+
             // Mr./Mrs format
             $student_gender = Str::lower($get_sel_stud_gender);
             if($student_gender == 'male'){
@@ -450,16 +503,19 @@ class ViolationEntryController extends Controller
                 $user_his_her = 'his/her';
                 $user_mr_ms   = 'Mr./Ms.';
             }
+
             // record offenses to violations_tbl
             $record_offenses = new Violations;
             $record_offenses->recorded_at      = $get_violation_timestamp;
             $record_offenses->offense_count    = $total_offenses_count;
+            // $record_offenses->major_off        = $get_major_offenses;
             $record_offenses->minor_off        = $get_minor_offenses;
             $record_offenses->less_serious_off = $get_less_serious_offenses;
             $record_offenses->other_off        = $get_other_offenses;
             $record_offenses->stud_num         = $this_violator;
             $record_offenses->respo_user_id    = $get_respo_user_id;
             $record_offenses->save();
+
             // send email
             $details = [
                 'svms_logo'           => "storage/svms/logos/svms_logo_text.png",
@@ -467,11 +523,13 @@ class ViolationEntryController extends Controller
                 'recipient'           => $user_mr_ms . ' ' .$get_sel_stud_fname . ' ' . $get_sel_stud_mname . ' ' . $get_sel_stud_lname,
                 'date_recorded'       => $get_violation_timestamp,
                 'offense_count'       => $total_offenses_count,
+                'major_off'           => $get_major_offenses,
                 'minor_off'           => $get_minor_offenses,
                 'less_serious_off'    => $get_less_serious_offenses,
                 'other_off'           => $get_other_offenses,
                 's'                   => $s
             ];
+
             // if record was a success
             if($record_offenses){
                 // get this violation id from violations_tbl

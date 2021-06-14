@@ -37,6 +37,19 @@
         </thead>
         <tbody style="background-color: #ffffff; color: #BD171B; font-size: 12px;">
             {{-- offenses --}}
+            @if(!is_null($details['major_off']) OR !empty($details['major_off']))
+                @php
+                    $mjo_i = 1;
+                @endphp
+                <tr style="line-height: 12px; margin: 7px 0 !important; border-bottom: 1px solid #FBF1F1 !important;">
+                    <td style="vertical-align-top; border-top: 0px; border-left: 0px; border: 0px !important;">
+                        <p style="margin: 10px 15px 5px 15px !important;"><strong>Major Offense{{$details['s']}}:</strong></p>
+                        @foreach($details['major_off'] as $major_offense)
+                            <p style="margin: 4px 15px 10px 15px !important;"><span><strong>{{$mjo_i++}}. </strong> </span> {{ $major_offense }}</p>
+                        @endforeach
+                    </td>
+                </tr>
+            @endif
             @if(!is_null($details['minor_off']) OR !empty($details['minor_off']))
                 @php
                     $mo_i = 1;

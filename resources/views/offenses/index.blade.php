@@ -1015,7 +1015,7 @@
     <script>
         $(document).ready(function(){
             var hasDeletedOffenses = document.getElementById('hasDeletedOffenses').value;
-            if(hasDeletedOffenses > 0){
+            if(hasDeletedOffenses > 0 || hasDeletedOffenses != null){
                 load_deletedOffenses_table();
 
                 function load_deletedOffenses_table(){

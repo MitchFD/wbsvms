@@ -29,6 +29,9 @@
         $('.custom3_btn_collapse').click(function() {
             $("i", this).toggleClass("nc-minimal-up nc-minimal-down");
         });
+        $('.custom4_btn_collapse').click(function() {
+            $("i", this).toggleClass("nc-minimal-up nc-minimal-down");
+        });
         $('.cust_btn_smcircle3').click(function() {
             $("i", this).toggleClass("nc-minimal-up nc-minimal-down");
         });
