@@ -311,6 +311,10 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('offenses/recover_all_temporary_deleted_offenses_confirmation', 'App\Http\Controllers\OffensesController@recover_all_temporary_deleted_offenses_confirmation')->name('offenses.recover_all_temporary_deleted_offenses_confirmation');
 	// process recovery of selected temporary deleted offenses
 	Route::post('offenses/process_recover_selected_teporary_deleted_offenses', 'App\Http\Controllers\OffensesController@process_recover_selected_teporary_deleted_offenses')->name('offenses.process_recover_selected_teporary_deleted_offenses');
+	// permanent delete all temporary deleted offenses confirmation on modal
+	Route::get('offenses/permanent_delete_all_temporary_deleted_offenses_confirmation', 'App\Http\Controllers\OffensesController@permanent_delete_all_temporary_deleted_offenses_confirmation')->name('offenses.permanent_delete_all_temporary_deleted_offenses_confirmation');
+	// process permanent deletion of all temporary deleted offenses
+	Route::post('offenses/process_permanent_delete_selected_teporary_deleted_offenses', 'App\Http\Controllers\OffensesController@process_permanent_delete_selected_teporary_deleted_offenses')->name('offenses.process_permanent_delete_selected_teporary_deleted_offenses');
 
 });
 

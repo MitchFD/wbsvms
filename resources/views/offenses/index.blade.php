@@ -329,7 +329,7 @@
                                                         </div>
                                                         <div class="col-lg-4 col-md-4 col-sm-12 d-flex justify-content-end align-items-center">
                                                             <button type="button" id="resetDelOffensesFilter_btn" class="btn btn_svms_blue cust_bt_links shadow mr-3" disabled><i class="fa fa-refresh mr-1" aria-hidden="true"></i> Reset</button>
-                                                            <button type="button" id="generateDelOffenses_btn" class="btn btn-success cust_bt_links shadow"><i class="nc-icon nc-single-copy-04 mr-1" aria-hidden="true"></i> Generate Report</button>
+                                                            {{-- <button type="button" id="generateDelOffenses_btn" class="btn btn-success cust_bt_links shadow"><i class="nc-icon nc-single-copy-04 mr-1" aria-hidden="true"></i> Generate Report</button> --}}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -402,7 +402,7 @@
                                         </div>
                                         <div>
                                             <button onclick="recoverAllTempDeletedOffenses()" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Recover All Temporary Deleted Offenses?"><i class="fa fa-external-link" aria-hidden="true"></i></button>
-                                            <button class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Permanently Delete All Offenses?"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                            <button onclick="permanentDelAllTempDelOffenses()" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Permanently Delete All Offenses?"><i class="fa fa-trash" aria-hidden="true"></i></button>
                                         </div>
                                     </div>
                                 </div>
@@ -544,6 +544,24 @@
             </div>
         </div>
     {{-- recover all temporary deleted offenses confirmaiton modal end --}}
+
+    {{-- permanently delete all temporary deleted offenses confirmaiton modal --}}
+        <div class="modal fade" id="PermDelAllTempDelOffenses_ConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="PermDelAllTempDelOffenses_ConfirmationModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="PermDelAllTempDelOffenses_ConfirmationModalLabel">Permanently Delete Offenses?</span>
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="PermDelAllTempDelOffenses_ConfirmationModalHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{-- permanently delete all temporary deleted offenses confirmaiton modal end --}}
 
 @endsection
 
@@ -1001,9 +1019,6 @@
                 load_deletedOffenses_table();
 
                 function load_deletedOffenses_table(){
-                    // set pagination to page 1
-                    $('#do_hidden_page').val(1);
-
                     // get all filtered values
                     var do_search = document.getElementById('delOffFltr_liveSearch').value;
                     var do_numOfRows = document.getElementById('delOffFltr_numOfRows').value;
@@ -1011,6 +1026,9 @@
                     var do_offCategory = document.getElementById('delOffFltr_DelOffCategory').value;
                     var do_offType = document.getElementById('delOffFltr_DelOffType').value;
                     var do_orderByRange = document.querySelector('input[type=radio][name=delOffFltr_orderByRange]:checked').value;
+                    var page = document.getElementById("do_hidden_page").value;
+
+                    do_numOfRows = parseInt(do_numOfRows);
 
                     // ajax request
                     $.ajax({
@@ -1023,7 +1041,8 @@
                             do_offCategory:do_offCategory,
                             do_offType:do_offType,
                             do_orderByRange:do_orderByRange,
-                            hasDeletedOffenses:hasDeletedOffenses
+                            hasDeletedOffenses:hasDeletedOffenses,
+                            page:page
                         },
                         dataType:'json',
                         success:function(do_data){
@@ -1042,8 +1061,11 @@
                         $('#resetDelOffensesFilter_btn').prop('disabled', true);
                     }
                 }
+                $(document).ready(function(){
+                    setInterval(load_deletedOffenses_table,30000);
+                });
 
-                // pagination
+                // ajax pagination
                     $(window).on('hashchange', function() {
                         if (window.location.hash) {
                             var page = window.location.hash.replace('#', '');
@@ -1093,6 +1115,8 @@
                         }else{
                             $(this).removeClass('cust_input_hasvalue');
                         }
+                        // set pagination to page 1
+                        $('#do_hidden_page').val(1);
                         load_deletedOffenses_table();
                     });
                 // number of rows end
@@ -1105,6 +1129,8 @@
                         }else{
                             $(this).removeClass('cust_input_hasvalue');
                         }
+                        // set pagination to page 1
+                        $('#do_hidden_page').val(1);
                         load_deletedOffenses_table();
                     });
                 // deletion type end 
@@ -1117,6 +1143,8 @@
                         }else{
                             $(this).removeClass('cust_input_hasvalue');
                         }
+                        // set pagination to page 1
+                        $('#do_hidden_page').val(1);
                         load_deletedOffenses_table();
                     });
                 // offense categories end
@@ -1129,12 +1157,16 @@
                         }else{
                             $(this).removeClass('cust_input_hasvalue');
                         }
+                        // set pagination to page 1
+                        $('#do_hidden_page').val(1);
                         load_deletedOffenses_table();
                     });
                 // offense types end
 
                 // filter ASC/DESC order
                     $('input[type=radio][name=delOffFltr_orderByRange]').change(function() {
+                        // set pagination to page 1
+                        $('#do_hidden_page').val(1);
                         load_deletedOffenses_table();
                     });
                 // filter ASC/DESC order end
@@ -1157,6 +1189,8 @@
                         document.getElementById("delOffFltr_DESCOrderLabel").classList.add("active");
                         var fltrBack_toDESC = document.getElementById('delOffFltr_DESCOrderRadio');
                         fltrBack_toDESC.checked = true;
+                        // set pagination to page 1
+                        $('#do_hidden_page').val(1);
                         // load table
                         load_deletedOffenses_table();
                     });
@@ -1243,5 +1277,76 @@
         });
     </script>
 {{-- recover all temporary deleted offenses confirmation on modal end --}}
+
+{{-- permanently delete all temporary deleted offenses confirmation on modal --}}
+    <script>
+        function permanentDelAllTempDelOffenses(){
+            var _token = $('input[name="_token"]').val();
+            $.ajax({
+                url:"{{ route('offenses.permanent_delete_all_temporary_deleted_offenses_confirmation') }}",
+                method:"GET",
+                data:{
+                    _token:_token
+                    },
+                success: function(data){
+                    $('#PermDelAllTempDelOffenses_ConfirmationModalHtmlData').html(data); 
+                    $('#PermDelAllTempDelOffenses_ConfirmationModal').modal('show');
+                }
+            });
+        }
+    </script>
+    <script>
+        $('#PermDelAllTempDelOffenses_ConfirmationModal').on('show.bs.modal', function () {
+            var form_permanentDelAllTempDeletedOffenses  = document.querySelector("#form_permanentDelAllTempDeletedOffenses");
+            var cancel_permanentDelAllTempDelOff_btn = document.querySelector("#cancel_permanentDelAllTempDelOff_btn");
+            var process_permanentDelAllTempDelOff_btn = document.querySelector("#process_permanentDelAllTempDelOff_btn");
+            // option selection
+            function dis_en_submit_process_permanentDelAllTempDelOff_btn(){
+                var has_permDelAllpermDelTempDelOffSingle = 0;
+                $(".permDelAllpermDelTempDelOffSingle").each(function(){
+                    if(this.checked){
+                        has_permDelAllpermDelTempDelOffSingle = 1;
+                    }
+                });
+                if(has_permDelAllpermDelTempDelOffSingle != 0){
+                    process_permanentDelAllTempDelOff_btn.disabled = false;
+                }else{
+                    process_permanentDelAllTempDelOff_btn.disabled = true;
+                }
+            }
+            $("#permDeleteAll_TempDeleted").change(function(){
+                if(this.checked){
+                $(".permDelAllpermDelTempDelOffSingle").each(function(){
+                    this.checked=true;
+                })              
+                }else{
+                $(".permDelAllpermDelTempDelOffSingle").each(function(){
+                    this.checked=false;
+                })              
+                }
+                dis_en_submit_process_permanentDelAllTempDelOff_btn();
+            });
+            $(".permDelAllpermDelTempDelOffSingle").click(function () {
+                if ($(this).is(":checked")){
+                var ispermDelAllChecked = 0;
+                $(".permDelAllpermDelTempDelOffSingle").each(function(){
+                    if(!this.checked)
+                    ispermDelAllChecked = 1;
+                })              
+                if(ispermDelAllChecked == 0){ $("#permDeleteAll_TempDeleted").prop("checked", true); }     
+                }else {
+                $("#permDeleteAll_TempDeleted").prop("checked", false);
+                }
+                dis_en_submit_process_permanentDelAllTempDelOff_btn();
+            });
+            // disable cancel and sibmit button on submit
+            $(form_permanentDelAllTempDeletedOffenses).submit(function(){
+                process_permanentDelAllTempDelOff_btn.disabled = true;
+                cancel_permanentDelAllTempDelOff_btn.disabled = true;
+                return true;
+            });
+        });
+    </script>
+{{-- permanently delete all temporary deleted offenses confirmation on modal end --}}
 
 @endpush

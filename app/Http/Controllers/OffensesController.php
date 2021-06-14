@@ -1458,7 +1458,7 @@ class OffensesController extends Controller
     }
     // recover all temporary deleted offenses confirmation on modal
     public function recover_all_temporary_deleted_offenses_confirmation(Request $request){
-        // 
+        // custom var
         $output = '';
 
         // get all temporary deleted offenses
@@ -1610,6 +1610,7 @@ class OffensesController extends Controller
             $sq = "'";
             // count
             $count_get_recover_temp_deleted_offenses = count($get_recover_temp_deleted_offenses);
+            // process
             foreach($get_recover_temp_deleted_offenses as $recoverThis_tempDelOffense){
                 // get offense details from deleted_created_offenses_tbl
                 $queryInfo_tempDelOffense         = DeletedCreatedOffenses::where('del_id', '=', $recoverThis_tempDelOffense)->first();
@@ -1672,6 +1673,212 @@ class OffensesController extends Controller
                 return back()->withSuccessStatus(''. $count_get_recover_temp_deleted_offenses . ' Temporary Deleted Offenses was Recovered Successfully.');
             }else{
                 return back()->withFailedStatus('Recording Your Activty for Recovering ' . $count_get_recover_temp_deleted_offenses . ' Temporary Deleted Offenses has failed! please try again later.');
+            }
+        }else{
+            return back()->withFailedStatus('There are no selected "Temporary Deleted Offenses" to recover! Please select deleted offenses first.');
+        }
+    }
+    // permanent delete all temporary deleted offenses confirmation on modal
+    public function permanent_delete_all_temporary_deleted_offenses_confirmation(Request $request){
+        // custom var
+        $output = '';
+
+        // get all temporary deleted offenses
+        $checkExist_tempDeletedOffenses = DeletedCreatedOffenses::where('del_Status', '=', 1)->count();
+
+        if($checkExist_tempDeletedOffenses > 0){
+            // query all temporary deleted offenses
+            $queryAll_tempDeletedOffenses = DeletedCreatedOffenses::where('del_Status', '=', 1)->get();
+            $output .= '
+                <div class="modal-body border-0 p-0">
+                    <form id="form_permanentDelAllTempDeletedOffenses" action="'.route('offenses.process_permanent_delete_selected_teporary_deleted_offenses').'" method="POST" enctype="multipart/form-data">
+                        <div class="cust_modal_body_gray">
+                            <span class="lightBlue_cardBody_blueTitle mb-2">Temporary Deleted Offenses:</span>
+                            ';
+                            foreach($queryAll_tempDeletedOffenses as $thisOption_TempDeletedOff){
+                                // get responsible user's info who created this offense & date created at
+                                $queryUser_createdThisOffense   = Users::select('user_fname', 'user_lname', 'user_role')->where('id', '=', $thisOption_TempDeletedOff->del_created_by)->first();
+                                $txt_FullNameUserCreatedThisOff = ''.$queryUser_createdThisOffense->user_fname . ' ' . $queryUser_createdThisOffense->user_lname.'';
+                                $txt_RoleUserCreatedThisOff     = ''.ucwords($queryUser_createdThisOffense->user_role).'';
+                                $txt_OffenseCreatedAt           = ''.date('F d, Y ~ (D - g:i A)', strtotime($thisOption_TempDeletedOff->del_created_at)).'';
+
+                                // get responsible user's info who temporary deleted this offense & date created at
+                                $queryUser_deletedThisOffense   = Users::select('user_fname', 'user_lname', 'user_role')->where('id', '=', $thisOption_TempDeletedOff->deleted_by)->first();
+                                $txt_FullNameUserDeletedThisOff = ''.$queryUser_deletedThisOffense->user_fname . ' ' . $queryUser_deletedThisOffense->user_lname.'';
+                                $txt_RoleUserDeletedThisOff     = ''.ucwords($queryUser_deletedThisOffense->user_role).'';
+                                $txt_OffenseDeletedAt           = ''.date('F d, Y ~ (D - g:i A)', strtotime($thisOption_TempDeletedOff->deleted_at)).'';
+                                $output .= '
+                                <div class="accordion shadow-none cust_accordion_div1 mb-2" id="permDeltempDelOff_SelectOption_Parent'.$thisOption_TempDeletedOff->del_id.'">
+                                    <div class="card custom_accordion_card">
+                                        <div class="card-header py10l15r10 d-flex justify-content-between align-items-center" id="permDeltempDelOff_SelectOption_heading'.$thisOption_TempDeletedOff->del_id.'">
+                                            <div class="form-group m-0 width_90p">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox" id="'.$thisOption_TempDeletedOff->del_id.'_markThispermDelTempDelOff_id" value="'.$thisOption_TempDeletedOff->del_id.'" name="permanent_delete_tempdel_offenses[]" class="custom-control-input cust_checkbox_label permDelAllpermDelTempDelOffSingle" checked>
+                                                    <label class="custom-control-label cust_checkbox_label" for="'.$thisOption_TempDeletedOff->del_id.'_markThispermDelTempDelOff_id">
+                                                        <span class="li_info_titlev2"> '.$thisOption_TempDeletedOff->del_crOffense_details.'</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <button class="btn cust_btn_smcircle3" type="button" data-toggle="collapse" data-target="#permDeltempDelOff_SelectOption'.$thisOption_TempDeletedOff->del_id.'" aria-expanded="true" aria-controls="permDeltempDelOff_SelectOption'.$thisOption_TempDeletedOff->del_id.'">
+                                                <i class="nc-icon nc-minimal-down"></i>
+                                            </button>
+                                        </div>
+                                        <div id="permDeltempDelOff_SelectOption'.$thisOption_TempDeletedOff->del_id.'" class="collapse cust_collapse_active cb_t0b12y15" aria-labelledby="permDeltempDelOff_SelectOption_heading'.$thisOption_TempDeletedOff->del_id.'" data-parent="#permDeltempDelOff_SelectOption_Parent'.$thisOption_TempDeletedOff->del_id.'">
+                                            <div class="row mb-2">
+                                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                                    <div class="card-body lightBlue_cardBody shadow-none mt-0">
+                                                        <span class="lightBlue_cardBody_blueTitle">Offense Details:</span>
+                                                        <span class="lightBlue_cardBody_notice"> <span class="font-weight-bold"> Category: </span> ' . ucwords($thisOption_TempDeletedOff->del_crOffense_category).' </span>
+                                                        <span class="lightBlue_cardBody_notice"> <span class="font-weight-bold"> Type: </span> ' . ucwords($thisOption_TempDeletedOff->del_crOffense_type).' </span>
+                                                        <hr class="hr_gryv1">
+                                                        <div class="row cursor_pointer" data-toggle="tooltip" data-placement="top" title="Created by and the date this offense was created.">
+                                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                                            <span class="lightBlue_cardBody_notice"> <i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> ' . $txt_FullNameUserCreatedThisOff . ' <span class="font-italic"> ('.$txt_RoleUserCreatedThisOff.') </span> </span>
+                                                            <span class="lightBlue_cardBody_notice"> <i class="fa fa-calendar mr-1" aria-hidden="true"></i> ' . $txt_OffenseCreatedAt . ' </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2 cursor_pointer" data-toggle="tooltip" data-placement="top" title="Reason behind deletion, Deleted by, and the date this offense was deleted at.">
+                                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                                    <div class="card-body lightRed_cardBody shadow-none mt-0">
+                                                        <span class="lightRed_cardBody_redTitle">Deletion Details:</span>
+                                                        <div class="row">
+                                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                                            <span class="lightRed_cardBody_notice"> <span class="font-weight-bold"> Reason: </span> ' . $thisOption_TempDeletedOff->reason_deletion.' </span>
+                                                            <hr class="hr_red">
+                                                            <span class="lightRed_cardBody_notice"> <i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> ' . $txt_FullNameUserDeletedThisOff . ' <span class="font-italic"> ('.$txt_RoleUserDeletedThisOff.') </span> </span>
+                                                            <span class="lightRed_cardBody_notice"> <i class="fa fa-trash-o mr-1" aria-hidden="true"></i> ' . $txt_OffenseDeletedAt . ' </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                ';
+                            }
+                            $output .= '
+                        </div>
+                        <div class="modal-body pb-0">
+                            <div class="card-body lightRed_cardBody shadow-none mt-2">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <div class="form-group m-0">
+                                            <div class="custom-control custom-checkbox align-items-center">
+                                                <input type="checkbox" id="permDeleteAll_TempDeleted" class="custom-control-input cursor_pointer" checked/>
+                                                <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="permDeleteAll_TempDeleted">Permanently Delete All Offenses.</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr class="hr_red">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <span class="cust_info_txtwicon3"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i> This Action will permanenty delete all selected temporary deleted offenses.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-0">
+                            <input type="hidden" name="_token" value="'.csrf_token().'">
+                            <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
+                            <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
+                            <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
+                            <div class="btn-group" role="group" aria-label="Recover Temporary Deleted Offense Actions">
+                                <button id="cancel_permanentDelAllTempDelOff_btn" type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
+                                <button id="process_permanentDelAllTempDelOff_btn" type="submit" class="btn btn-round btn_svms_red btn_show_icon m-0">Permanently Delete <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            ';
+        }else{
+            $output .= '
+                <div class="modal-body py-0">
+                    <div class="card-body lightBlue_cardBody shadow-none">
+                        <span class="lightBlue_cardBody_blueTitle"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i> No Temporary Deleted Offenses:</span>
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <span class="cust_info_txtwicon2">Please close this modal and delete offenses first to access this feature.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <div class="btn-group" role="group" aria-label="Ok">
+                        <button type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal">Ok <i class="fa fa-thumbs-up btn_icon_show_right" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+            ';
+        }
+
+        echo $output;
+    }
+    // process permanent deletion of all selected temporary deleted offenses
+    public function process_permanent_delete_selected_teporary_deleted_offenses(Request $request){
+        // get all request
+        $get_respo_user_id                     = $request->get('respo_user_id');
+        $get_respo_user_lname                  = $request->get('respo_user_lname');
+        $get_respo_user_fname                  = $request->get('respo_user_fname');
+        $get_permanent_delete_tempdel_offenses = json_decode(json_encode($request->get('permanent_delete_tempdel_offenses')), true);
+
+        // try
+        if(!is_null($get_permanent_delete_tempdel_offenses) OR !empty($get_permanent_delete_tempdel_offenses)){
+            // custom values
+            $now_timestamp  = now();
+            $sq = "'";
+            $zero = 0;
+            // count
+            $count_get_permanent_delete_tempdel_offenses = count($get_permanent_delete_tempdel_offenses);
+            if($count_get_permanent_delete_tempdel_offenses > 1){
+                $cSTDO_s = 's';
+            }else{
+                $cSTDO_s = '';
+            }
+            // process
+            foreach($get_permanent_delete_tempdel_offenses as $permDelThis_tempDelOffense){
+                // get offense details from deleted_created_offenses_tbl
+                $queryInfo_tempDelOffense         = DeletedCreatedOffenses::where('del_id', '=', $permDelThis_tempDelOffense)->first();
+                $queryInfo_del_crOffense_category = $queryInfo_tempDelOffense->del_crOffense_category;
+                $queryInfo_del_crOffense_type     = $queryInfo_tempDelOffense->del_crOffense_type;
+                $queryInfo_del_crOffense_details  = $queryInfo_tempDelOffense->del_crOffense_details;
+                $queryInfo_del_created_by         = $queryInfo_tempDelOffense->del_created_by;
+                $queryInfo_del_created_at         = $queryInfo_tempDelOffense->del_created_at;
+                $queryInfo_reason_deletion        = $queryInfo_tempDelOffense->reason_deletion;
+                $queryInfo_deleted_by             = $queryInfo_tempDelOffense->deleted_by;
+                $queryInfo_deleted_at             = $queryInfo_tempDelOffense->deleted_at;
+
+                // update del_status of the selected temporary deleted offense from deleted_created_offenses_tbl
+                $updateDelStatus_tempDelOff = DeletedCreatedOffenses::where('del_id', '=', $permDelThis_tempDelOffense)
+                                                ->update([
+                                                    'del_Status' => $zero,
+                                                    'perm_deleted_by' => $get_respo_user_id,
+                                                    'perm_deleted_at' => $now_timestamp
+                                                ]);
+                // if update was a success
+                if($updateDelStatus_tempDelOff){
+                    // record activity
+                    $record_act = new Useractivites;
+                        $record_act->created_at             = $now_timestamp;
+                        $record_act->act_respo_user_id      = $get_respo_user_id;
+                        $record_act->act_respo_users_lname  = $get_respo_user_lname;
+                        $record_act->act_respo_users_fname  = $get_respo_user_fname;
+                        $record_act->act_type               = 'offense deletion';
+                        $record_act->act_details            = 'Permenently Deleted ' . ucwords($queryInfo_del_crOffense_type) . ' ' . ucwords($queryInfo_del_crOffense_category).': ' . $queryInfo_del_crOffense_details.'.';
+                        $record_act->act_affected_id        = $permDelThis_tempDelOffense;
+                        $record_act->save();
+                }else{
+                    return back()->withFailedStatus('Permanent Deletion of selected "Temporary Deleted Offenses" has failed! Please try again later.');
+                }
+            }
+            // if user's activity was recorded successfully
+            if($record_act){
+                return back()->withSuccessStatus(''. $count_get_permanent_delete_tempdel_offenses . ' Temporary Deleted Offense'.$cSTDO_s . ' was Permanently Deleted Successfully.');
+            }else{
+                return back()->withFailedStatus('Permanent Deletion of ' . $count_get_permanent_delete_tempdel_offenses . ' Temporary Deleted Offense'.$cSTDO_s . ' has failed! please try again later.');
             }
         }else{
             return back()->withFailedStatus('There are no selected "Temporary Deleted Offenses" to recover! Please select deleted offenses first.');
