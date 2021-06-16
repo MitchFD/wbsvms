@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use App\Models\Students;
+use App\Models\OffensesCategories;
 use App\Models\Violations;
 use App\Models\Deletedviolations;
 use App\Models\CreatedSanctions;
@@ -241,6 +242,11 @@ class ViolationRecordsController extends Controller
                                     // set new array value
                                     $to_array_allOffenses = array();
                                     // merge all offenses to $to_array_allOffenses
+                                    if(!is_null($this_violator->major_off) OR !empty($this_violator->major_off)){
+                                        foreach(json_decode($this_violator->major_off, true) as $this_mjo){
+                                            array_push($to_array_allOffenses, $this_mjo);
+                                        }
+                                    }
                                     if(!is_null($this_violator->minor_off) OR !empty($this_violator->minor_off)){
                                         foreach(json_decode($this_violator->minor_off, true) as $this_mo){
                                             array_push($to_array_allOffenses, $this_mo);
@@ -6622,6 +6628,13 @@ class ViolationRecordsController extends Controller
             $Vhim_her = 'him/her';
         }
 
+        // email remarks
+        if($studHas_Recorded_offenses == $studHas_Cleared_offenses){
+            $default_remarks = 'Kindly report to the Student Discipline Office within three (3) working days for signing your Clearance Form.';
+        }else{
+            $default_remarks = 'Kindly report to the Student Discipline Office within three (3) working days for clearing your offenses.';
+        }
+
         // output
         $output .= '
             <div class="cust_modal_body_gray">
@@ -6765,7 +6778,7 @@ class ViolationRecordsController extends Controller
                             }
                             $output .= '
                         </div>
-                        <div class="card-body lightBlue_cardBody shadow-none mt-3">
+                        <div class="card-body lightBlue_cardBody shadow-none mt-2">
                             <span class="lightBlue_cardBody_blueTitle">'.$txt_noticetitle . ' </span>
                             <span class="lightBlue_cardBody_notice"><i class="fa fa-info-circle text_svms_blue mr-1" aria-hidden="true"></i> ' . $txt_noticeSubTitle . '  </span>
                             <div class="input-group mt-3">
@@ -6777,6 +6790,19 @@ class ViolationRecordsController extends Controller
                                 <input id="violator_email" name="violator_email" type="email" value="'.$emailInput_value.'" class="form-control" placeholder="'.$emailInput_placeholder.'" required>
                             </div>
                         </div>
+                        <div class="card-body lightBlue_cardBody shadow-none mt-2">
+                            <span class="lightBlue_cardBody_blueTitle">Remarks:</span>
+                            <span class="lightBlue_cardBody_notice"><i class="fa fa-commenting-o text_svms_blue mr-1" aria-hidden="true"></i> Note a closing remarks in the email.  </span>
+                            <div class="form-group mt-2">
+                                <textarea class="form-control" id="violator_email_remarks" name="violator_email_remarks" rows="3" placeholder="'.$default_remarks.'">'.$default_remarks.'</textarea>
+                            </div>
+                            <div class="form-group mx-0 mt-2 mb-1">
+                                <div class="custom-control custom-checkbox align-items-center">
+                                    <input type="checkbox" name="include_emailRemarks" value="1" class="custom-control-input cursor_pointer" id="includeEmailRemarksChkbx">
+                                    <label class="custom-control-label lightBlue_cardBody_chckboxLabel" for="includeEmailRemarksChkbx">Don'.$sq.'t inlcude remarks. </label>
+                                </div>
+                            </div>
+                        </div>  
                     </div>
                     <div class="modal-footer border-0 px-0">
                         <input type="hidden" name="_token" value="'.csrf_token().'">
@@ -6785,6 +6811,7 @@ class ViolationRecordsController extends Controller
                         <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
 
                         <input type="hidden" name="sel_Student_Number" value="'.$sel_Student_Number.'">
+                        <input type="hidden" name="default_email_remarks" value="'.$default_remarks.'">
 
                         <div class="btn-group" role="group" aria-label="Notify Violator Action Buttons">
                             <button id="cancel_notifyViolator_btn" type="button" class="btn btn-round btn-success btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
@@ -6843,12 +6870,35 @@ class ViolationRecordsController extends Controller
     // process sending notification to violator
     public function process_send_notification_to_violator(Request $request){
         // get all request
-        $sel_Student_Number = $request->get('sel_Student_Number');
-        $sel_Student_Email  = $request->get('violator_email');
+        $sel_Student_Number         = $request->get('sel_Student_Number');
+        $sel_Student_Email          = $request->get('violator_email');
+        $get_violator_email_remarks = $request->get('violator_email_remarks');
+        $get_include_emailRemarks   = $request->get('include_emailRemarks');
+        $get_default_email_remarks  = $request->get('default_email_remarks');
 
         $respo_user_id      = $request->get('respo_user_id');
         $respo_user_lname   = $request->get('respo_user_lname');
-        $respo_user_fname   = $request->get('respo_user_fname');  
+        $respo_user_fname   = $request->get('respo_user_fname'); 
+        
+        // email remarks
+        // custom
+        if(!empty($get_include_emailRemarks) OR !is_null($get_include_emailRemarks)){
+            if($get_include_emailRemarks == 1){
+                $emailRemarks = '';
+            }else{
+                if(!empty($get_violator_email_remarks) OR !is_null($get_violator_email_remarks)){
+                    $emailRemarks = ''.$get_violator_email_remarks.'';
+                }else{
+                    $emailRemarks = ''.$get_default_email_remarks.'';
+                }
+            }
+        }else{
+            if(!empty($get_violator_email_remarks) OR !is_null($get_violator_email_remarks)){
+                $emailRemarks = ''.$get_violator_email_remarks.'';
+            }else{
+                $emailRemarks = ''.$get_default_email_remarks.'';
+            }
+        }
 
         // query violator's name
         $query_violatorInfo = Students::select('First_Name', 'Middle_Name', 'Last_Name')->where('Student_Number', '=', $sel_Student_Number)->first();
@@ -6870,7 +6920,8 @@ class ViolationRecordsController extends Controller
             $details = [
                 'svms_logo'          => "storage/svms/logos/svms_logo_text.png",
                 'title'              => 'Student Offenses Record',
-                'sel_Student_Number' => $sel_Student_Number
+                'sel_Student_Number' => $sel_Student_Number,
+                'email_remarks'      => $emailRemarks
             ];
             \Mail::to('mfodesierto2@gmail.com')->send(new \App\Mail\NotifyViolatorMail($details));
 

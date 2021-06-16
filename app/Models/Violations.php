@@ -30,6 +30,7 @@ class Violations extends Model
         'notified'
     ];
     protected $casts = [
+        'major_off' => 'array',
         'minor_off' => 'array',
         'less_serious_off' => 'array',
         'other_off' => 'array'

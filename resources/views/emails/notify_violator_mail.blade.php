@@ -247,6 +247,19 @@
                                 <tr style="line-height: 12px;">
                                     <td style="vertical-align-top; border: 0 !important;">
                                         <br>
+                                        @if(!is_null($this_violation->major_off) OR !empty($this_violation->major_off))
+                                            @php
+                                                $mjo_i = 0;
+                                            @endphp
+                                            <p style="margin: 6px 15px 5px 15px !important;"><strong>Major Offenses:</strong></p>
+                                            @foreach (json_decode(json_encode($this_violation->major_off), true) as $this_majorOff)
+                                                @php
+                                                    $mjo_i++;
+                                                @endphp
+                                                <p style="margin: 6px 15px 6px 15px !important;"><span><strong>{{$mjo_i}}. </strong> </span> {{ $this_majorOff }}</p>
+                                            @endforeach
+                                            <br>
+                                        @endif
                                         @if(!is_null($this_violation->minor_off) OR !empty($this_violation->minor_off))
                                             @php
                                                 $mo_i = 0;
@@ -258,6 +271,7 @@
                                                 @endphp
                                                 <p style="margin: 6px 15px 6px 15px !important;"><span><strong>{{$mo_i}}. </strong> </span> {{ $this_minorOff }}</p>
                                             @endforeach
+                                            <br>
                                         @endif
                                         @if(!is_null($this_violation->less_serious_off) OR !empty($this_violation->less_serious_off))
                                             @php
@@ -270,6 +284,7 @@
                                                 @endphp
                                                 <p style="margin: 6px 15px 6px 15px !important;"><span><strong>{{$lso_i}}. </strong> </span> {{ $this_lessSeriousOff }}</p>
                                             @endforeach
+                                            <br>
                                         @endif
                                         @if(!is_null($this_violation->other_off) OR !empty($this_violation->other_off))
                                             @if(!in_array(null, json_decode(json_encode($this_violation->other_off), true)))
@@ -283,6 +298,7 @@
                                                     @endphp
                                                     <p style="margin: 6px 15px 6px 15px !important;"><span><strong>{{$oo_i}}. </strong> </span> {{ $this_OthersOff }}</p>
                                                 @endforeach
+                                                <br>
                                             @endif
                                         @endif
                                         <br>
@@ -368,7 +384,7 @@
                                     <tr style="line-height: 12px;">
                                         <td style="vertical-align-top; border: 0 !important;">
                                             <p style="margin: 10px 15px !important;">
-                                                <strong>Sanctions Status: {{ $txt_Completed }}</strong>
+                                                <strong>Sanctions Status: {{ $txt_Completed }} ({{ date('F d, Y ~ D - g:i A', strtotime($this_violation->cleared_at)) }})</strong>
                                             </p>
                                         </td>
                                     </tr>
@@ -394,6 +410,19 @@
                                 <tr style="line-height: 12px;">
                                     <td style="vertical-align-top; border: 0 !important;">
                                         <br>
+                                        @if(!is_null($this_violation->major_off) OR !empty($this_violation->major_off))
+                                            @php
+                                                $mjo_i = 0;
+                                            @endphp
+                                            <p style="margin: 6px 15px 5px 15px !important;"><strong>Major Offenses:</strong></p>
+                                            @foreach (json_decode(json_encode($this_violation->major_off), true) as $this_majorOff)
+                                                @php
+                                                    $mjo_i++;
+                                                @endphp
+                                                <p style="margin: 6px 15px 6px 15px !important;"><span><strong>{{$mjo_i}}. </strong> </span> {{ $this_majorOff }}</p>
+                                            @endforeach
+                                            <br>
+                                        @endif
                                         @if(!is_null($this_violation->minor_off) OR !empty($this_violation->minor_off))
                                             @php
                                                 $mo_i = 0;
@@ -405,6 +434,7 @@
                                                 @endphp
                                                 <p style="margin: 6px 15px 6px 15px !important;"><span><strong>{{$mo_i}}. </strong> </span> {{ $this_minorOff }}</p>
                                             @endforeach
+                                            <br>
                                         @endif
                                         @if(!is_null($this_violation->less_serious_off) OR !empty($this_violation->less_serious_off))
                                             @php
@@ -417,6 +447,7 @@
                                                 @endphp
                                                 <p style="margin: 6px 15px 6px 15px !important;"><span><strong>{{$lso_i}}. </strong> </span> {{ $this_lessSeriousOff }}</p>
                                             @endforeach
+                                            <br>
                                         @endif
                                         @if(!is_null($this_violation->other_off) OR !empty($this_violation->other_off))
                                             @if(!in_array(null, json_decode(json_encode($this_violation->other_off), true)))
@@ -430,6 +461,7 @@
                                                     @endphp
                                                     <p style="margin: 6px 15px 6px 15px !important;"><span><strong>{{$oo_i}}. </strong> </span> {{ $this_OthersOff }}</p>
                                                 @endforeach
+                                                <br>
                                             @endif
                                         @endif
                                         <br>
@@ -564,17 +596,17 @@
                 </table>
                 @if(count($query_allViolations) == $count_allClearedViolations)
                     <p>You have Cleared all the <strong> {{ $sumAll_Offenses }} Offense{{$sAO_s }} </strong> you have committed.</p>
-                    <p>Kindly report to the Student Discipline Office within three (3) working days for signing your Clearance Form..</p>
+                    <p>{{ $details['email_remarks'] }}</p>
                 @else
-                    <p>Kindly report to the Student Discipline Office within three (3) working days for clearing your offenses.</p>
+                    <p>{{ $details['email_remarks'] }}</p>
                 @endif
             @else
                 <p>This email is to notify you that you are Cleared for Clearance for not having any Offenses committed against the policies, guidelines, rules, and regulations of St. Dominic College of Asia.</p>
-                <p>Kindly report to the Student Discipline Office within three (3) working days for signing your Clearance Form.</p>
+                <p>{{ $details['email_remarks'] }}</p>
             @endif
         @else
             <p>This email is to notify you that you are Cleared for Clearance for not having any Offenses committed against the policies, guidelines, rules, and regulations of St. Dominic College of Asia.</p>
-            <p>Kindly report to the Student Discipline Office within three (3) working days for signing your Clearance Form.</p>
+            <p>{{ $details['email_remarks'] }}</p>
         @endif
 
         <p>Thank you for your time, and have a good day.</p>

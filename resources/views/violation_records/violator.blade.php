@@ -572,6 +572,17 @@
                                                                                         </h2>
                                                                                     </div>
                                                                                     <div id="v{{$date_offense->viola_id}}Collapse_Div" class="collapse violaAccordions_collapse show cb_t0b12y15" aria-labelledby="v{{$date_offense->viola_id}}Collapse_heading" data-parent="#v{{$date_offense->viola_id}}Accordion_Parent">
+                                                                                        @if(!is_null($date_offense->major_off) OR !empty($date_offense->major_off))
+                                                                                            @php
+                                                                                                $mjo_x = 1;
+                                                                                            @endphp
+                                                                                            <div class="card-body {{ $light_cardBody }} mb-2">
+                                                                                                <span class="{{$light_cardBody_title }} mb-1">Major Offenses:</span>
+                                                                                                @foreach(json_decode(json_encode($date_offense->major_off), true) as $major_offenses)
+                                                                                                <span class="{{$light_cardBody_list }}"><span class="font-weight-bold mr-1">{{$mjo_x++}}.</span> {{$major_offenses}}</span>
+                                                                                                @endforeach
+                                                                                            </div>
+                                                                                        @endif
                                                                                         @if(!is_null($date_offense->minor_off) OR !empty($date_offense->minor_off))
                                                                                             @php
                                                                                                 $mo_x = 1;
@@ -1394,12 +1405,18 @@
 {{-- recording new offenses for the student --}}
     <script>
         function addViolationToStudent(sel_Student_Number){
-            var violator_id = sel_Student_Number;
+            var sel_Student_Number = sel_Student_Number;
+            var existing_violators_ids = [];
+            // $(sel_Student_Number).each(function(){
+                existing_violators_ids.push(sel_Student_Number);
+            // });
+            var violators_ids = JSON.stringify(existing_violators_ids);
+            console.log(violators_ids);
             var _token = $('input[name="_token"]').val();
             $.ajax({
-                url:"{{ route('violation_records.new_violation_form_modal') }}",
+                url:"{{ route('violation_entry.open_violation_form_modal') }}",
                 method:"GET",
-                data:{violator_id:violator_id, _token:_token},
+                data:{violators_ids:violators_ids, _token:_token},
                 success: function(data){
                     $('#newViolationEntryModalHtmlData').html(data);
                     $('#newViolationEntryModal').modal('show');
@@ -1409,16 +1426,16 @@
     </script>
     <script>
         $('#newViolationEntryModal').on('show.bs.modal', function () {
-            var newViolationEntry_form  = document.querySelector("#form_addNewViolation");
-            var btn_submitNewViolationEntry = document.querySelector("#submit_newViolationForm_btn");
-            var btn_cancelNewViolationEntry = document.querySelector("#cancel_newViolationForm_btn");
-            var otherOffenses_input  = document.querySelector("#addOtherOffensesNew_input");
+            var form_addViolation  = document.querySelector("#form_addViolation");
+            var btn_submitNewViolationEntry = document.querySelector("#submit_violationForm_btn");
+            var btn_cancelNewViolationEntry = document.querySelector("#cancel_violationForm_btn");
+            var otherOffenses_input  = document.querySelector("#addOtherOffenses_input");
             var otherOffensesAdd_Btn = document.querySelector("#btn_addAnother_input");
-            var addedNewOtherOff_field = $('.addedNewOtherOff_field').filter(function() {
+            var addedOtherOff_field = $('.addedOtherOff_field').filter(function() {
                 return this.value != '';
             });
             // disable cancel and submit button on form submit
-            $(newViolationEntry_form).submit(function(){
+            $(form_addViolation).submit(function(){
                 btn_cancelNewViolationEntry.disabled = true;
                 btn_submitNewViolationEntry.disabled = true;
                 return true;
@@ -1429,7 +1446,7 @@
                 if(otherOffenses_input.value !== ""){
                     otherOffensesAdd_Btn.disabled = false;
                 }else{
-                    if (addedNewOtherOff_field.length == 0) {
+                    if (addedOtherOff_field.length == 0) {
                         btn_submitNewViolationEntry.disabled = true;
                     }else{
                         btn_submitNewViolationEntry.disabled = false;
@@ -1440,19 +1457,19 @@
             // appending new input field
             function addOtherOffNewIndexing(){
                 i = 1;
-                $(".addOtherOffIndexNew").each(function(){
+                $(".addOtherOffIndex").each(function(){
                     $(this).html(i+1 + '.');
                     i++;
                 });
             }
 
             var maxField = 10;
-            var addedInputFieldsNew_div = document.querySelector('.addedInputFieldsNew_div');
+            var addedInputFields_div = document.querySelector('.addedInputFields_div');
             var newInputField = '<div class="input-group mb-2"> ' +
                                     '<div class="input-group-append"> ' +
-                                        '<span class="input-group-text txt_iptgrp_append2 addOtherOffIndexNew font-weight-bold">1. </span> ' +
+                                        '<span class="input-group-text txt_iptgrp_append2 addOtherOffIndex font-weight-bold">1. </span> ' +
                                     '</div> ' +
-                                    '<input type="text" name="other_offenses[]" class="form-control input_grpInpt2 addedNewOtherOff_field" placeholder="Type Other Offense" aria-label="Type Other Offense" aria-describedby="other-offenses-input" required /> ' +
+                                    '<input type="text" name="other_offenses[]" class="form-control input_grpInpt2 addedOtherOff_field" placeholder="Type Other Offense" aria-label="Type Other Offense" aria-describedby="other-offenses-input" required /> ' +
                                     '<div class="input-group-append"> ' +
                                         '<button class="btn btn_svms_blue m-0 btn_deleteAnother_input" type="button"><i class="nc-icon nc-simple-remove font-weight-bold" aria-hidden="true"></i></button> ' +
                                     '</div> ' +
@@ -1461,12 +1478,12 @@
             $(otherOffensesAdd_Btn).click(function(){
                 if(x < maxField){
                     x++;
-                    $(addedInputFieldsNew_div).append(newInputField);
+                    $(addedInputFields_div).append(newInputField);
                     // console.log(x);
                 }
                 addOtherOffNewIndexing();
             });
-            $(addedInputFieldsNew_div).on('click', '.btn_deleteAnother_input', function(e){
+            $(addedInputFields_div).on('click', '.btn_deleteAnother_input', function(e){
                 e.preventDefault();
                 $(this).closest('.input_grpInpt2').value = '';
                 $(this).closest('.input-group').last().remove();
@@ -1476,11 +1493,11 @@
             });
             
             // serialized form
-            $('#form_addNewViolation').each(function(){
+            $('#form_addViolation').each(function(){
                 $(this).data('serialized', $(this).serialize())
             }).on('change input', function(){
-                $(this).find('#submit_newViolationForm_btn').prop('disabled', $(this).serialize() == $(this).data('serialized'));
-            }).find('#submit_newViolationForm_btn').prop('disabled', true);
+                $(this).find('#submit_violationForm_btn').prop('disabled', $(this).serialize() == $(this).data('serialized'));
+            }).find('#submit_violationForm_btn').prop('disabled', true);
         });
     </script>
 {{-- recording new offenses for the student end --}}
