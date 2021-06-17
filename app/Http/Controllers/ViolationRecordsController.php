@@ -6485,6 +6485,15 @@ class ViolationRecordsController extends Controller
             if($studHas_Corresponding_sanctions > 0){
                 $output .= '
                 <form id="form_confirmGenerateViolatorOffensesReport" target="_blank" action="'.route('violation_records.violator_records_pdf').'" method="POST" enctype="multipart/form-data">
+                    <div class="modal-body border-0 pt-0">
+                        <div class="card-body lightBlue_cardBody shadow-none mt-2">
+                            <span class="lightBlue_cardBody_blueTitle">Remarks:</span>
+                            <span class="lightBlue_cardBody_notice"><i class="fa fa-commenting-o text_svms_blue mr-1" aria-hidden="true"></i> Note a closing remarks in the report.  </span>
+                            <div class="form-group mt-2">
+                                <textarea class="form-control" id="violator_report_remarks" name="violator_report_remarks" rows="3" placeholder="Type remarks"></textarea>
+                            </div>
+                        </div>  
+                    </div>    
                     <div class="modal-footer border-0">
                         <input type="hidden" name="_token" value="'.csrf_token().'">
                         <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
@@ -6538,6 +6547,7 @@ class ViolationRecordsController extends Controller
         $respo_user_id      = $request->get('respo_user_id');
         $respo_user_lname   = $request->get('respo_user_lname');
         $respo_user_fname   = $request->get('respo_user_fname');  
+        $get_report_remarks = $request->get('violator_report_remarks');  
 
         // query responsible user's info
         $query_respo_user = Users::select('user_role','user_lname', 'user_fname')->where('id', $respo_user_id)->first();
@@ -6556,7 +6566,7 @@ class ViolationRecordsController extends Controller
         // Generate PDF
         $pdf = \App::make('dompdf.wrapper');
         // $pdf->loadHTML($output);
-        $pdf = PDF::loadView('reports/violator_records_pdf', compact('now_timestamp', 'query_respo_user', 'query_selViolator_info', 'query_selViolator_Offenses', 'countAll_Uncleared_offenses', 'countAll_Cleared_offenses', 'countTotal_offenses'));
+        $pdf = PDF::loadView('reports/violator_records_pdf', compact('now_timestamp', 'query_respo_user', 'get_report_remarks', 'query_selViolator_info', 'query_selViolator_Offenses', 'countAll_Uncleared_offenses', 'countAll_Cleared_offenses', 'countTotal_offenses'));
         $pdf->setPaper('A4');
         $pdf->getDomPDF()->set_option("enable_php", true);
         return $pdf->stream('reports/violator_records_pdf.pdf');

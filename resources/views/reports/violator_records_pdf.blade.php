@@ -722,6 +722,23 @@
                 <br>
             @endif
 
+            @if(!empty($get_report_remarks) OR !is_null($get_report_remarks))
+                <table id="contentsInfo_table" class="b_1">
+                    <tbody>
+                        <tr>
+                            <td class="txt_right">
+                                <span class="font-weight-bold">Note: </span>
+                                <br>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="txt_right mb_2">{{$get_report_remarks}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br>
+            @endif
+            
             <table id="contentsInfo_table" class="b_1">
                 <tbody>
                     <tr>
