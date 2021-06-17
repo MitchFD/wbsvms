@@ -17,42 +17,27 @@ class DefaultSanctionsSeeder extends Seeder
     {
         DB::table('created_sanctions_tbl')->insert([
             [
-                'crSanct_details' => '3 hours duty in a department',
+                'crSanct_details' => 'Written Reprimand',
                 'respo_user_id'   => 1,
                 'created_at'      => now()
             ],
             [
-                'crSanct_details' => '6 hours duty in a department',
+                'crSanct_details' => 'Conference with the Student Discipline Officer',
                 'respo_user_id'   => 1,
                 'created_at'      => now()
             ],
             [
-                'crSanct_details' => '9 hours duty or Community service',
+                'crSanct_details' => 'Conference with the Discipline Committee',
                 'respo_user_id'   => 1,
                 'created_at'      => now()
             ],
             [
-                'crSanct_details' => 'Community Service',
+                'crSanct_details' => 'Non-Readmission',
                 'respo_user_id'   => 1,
                 'created_at'      => now()
             ],
             [
-                'crSanct_details' => '1-day suspension',
-                'respo_user_id'   => 1,
-                'created_at'      => now()
-            ],
-            [
-                'crSanct_details' => '2-day suspension',
-                'respo_user_id'   => 1,
-                'created_at'      => now()
-            ],
-            [
-                'crSanct_details' => '7-day suspension',
-                'respo_user_id'   => 1,
-                'created_at'      => now()
-            ],
-            [
-                'crSanct_details' => '10-day suspension and no re-admission the following semester',
+                'crSanct_details' => 'Dismissal',
                 'respo_user_id'   => 1,
                 'created_at'      => now()
             ]

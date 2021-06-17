@@ -17,6 +17,11 @@ class DefaultOffensesCategoriesSeeder extends Seeder
     {
         OffensesCategories::insert([
             [
+                'offCategory' => 'major offenses',
+                'created_by'  => '1',
+                'created_at'  => now()
+            ],
+            [
                 'offCategory' => 'minor offenses',
                 'created_by'  => '1',
                 'created_at'  => now()
@@ -26,11 +31,6 @@ class DefaultOffensesCategoriesSeeder extends Seeder
                 'created_by'  => '1',
                 'created_at'  => now()
             ],
-            [
-                'offCategory' => 'major offenses',
-                'created_by'  => '1',
-                'created_at'  => now()
-            ]
         ]);
     }
 }

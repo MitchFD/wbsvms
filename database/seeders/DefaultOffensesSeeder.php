@@ -18,132 +18,6 @@ class DefaultOffensesSeeder extends Seeder
         $sq = "'";
         CreatedOffenses::insert([
             [
-                'crOffense_category' => 'minor offenses',
-                'crOffense_type'     => 'default',
-                'crOffense_details'  => 'Violation of Dress Code',
-                'respo_user_id'      => '1',
-                'created_at'         => now()
-            ],
-            [
-                'crOffense_category' => 'minor offenses',
-                'crOffense_type'     => 'default',
-                'crOffense_details'  => 'Not wearing the prescribed uniform',
-                'respo_user_id'      => '1',
-                'created_at'         => now()
-            ],
-            [
-                'crOffense_category' => 'minor offenses',
-                'crOffense_type'     => 'default',
-                'crOffense_details'  => 'Not wearing ID',
-                'respo_user_id'      => '1',
-                'created_at'         => now()
-            ],
-            [
-                'crOffense_category' => 'minor offenses',
-                'crOffense_type'     => 'default',
-                'crOffense_details'  => 'Littering',
-                'respo_user_id'      => '1',
-                'created_at'         => now()
-            ],
-            [
-                'crOffense_category' => 'minor offenses',
-                'crOffense_type'     => 'default',
-                'crOffense_details'  => 'Body Piercing',
-                'respo_user_id'      => '1',
-                'created_at'         => now()
-            ],
-            [
-                'crOffense_category' => 'minor offenses',
-                'crOffense_type'     => 'default',
-                'crOffense_details'  => 'Indecent Public Display of Affection',
-                'respo_user_id'      => '1',
-                'created_at'         => now()
-            ],
-            [
-                'crOffense_category' => 'less serious offenses',
-                'crOffense_type'     => 'default',
-                'crOffense_details'  => 'Wearing somebody else'.$sq.'s ID',
-                'respo_user_id'      => '1',
-                'created_at'         => now()
-            ],
-            [
-                'crOffense_category' => 'less serious offenses',
-                'crOffense_type'     => 'default',
-                'crOffense_details'  => 'Wearing Tampered/Unauthorized ID',
-                'respo_user_id'      => '1',
-                'created_at'         => now()
-            ],
-            [
-                'crOffense_category' => 'less serious offenses',
-                'crOffense_type'     => 'default',
-                'crOffense_details'  => 'Lending His/Her ID/Registration Form',
-                'respo_user_id'      => '1',
-                'created_at'         => now()
-            ],
-            [
-                'crOffense_category' => 'less serious offenses',
-                'crOffense_type'     => 'default',
-                'crOffense_details'  => 'Smoking or Possession of Smoking Paraphernalia',
-                'respo_user_id'      => '1',
-                'created_at'         => now()
-            ],
-            [
-                'crOffense_category' => 'less serious offenses',
-                'crOffense_type'     => 'default',
-                'crOffense_details'  => 'Habitually playing truant or cutting classes',
-                'respo_user_id'      => '1',
-                'created_at'         => now()
-            ],
-            [
-                'crOffense_category' => 'less serious offenses',
-                'crOffense_type'     => 'default',
-                'crOffense_details'  => 'Unauthorized use of school facilities and properties',
-                'respo_user_id'      => '1',
-                'created_at'         => now()
-            ],
-            [
-                'crOffense_category' => 'less serious offenses',
-                'crOffense_type'     => 'default',
-                'crOffense_details'  => 'Unauthorized solicitation of donations in cash or in kind',
-                'respo_user_id'      => '1',
-                'created_at'         => now()
-            ],
-            [
-                'crOffense_category' => 'less serious offenses',
-                'crOffense_type'     => 'default',
-                'crOffense_details'  => 'Carrying, Reading, Viewing any pornographic material inside the school',
-                'respo_user_id'      => '1',
-                'created_at'         => now()
-            ],
-            [
-                'crOffense_category' => 'less serious offenses',
-                'crOffense_type'     => 'default',
-                'crOffense_details'  => 'Using cellular phones and other E-gadgets while having a class',
-                'respo_user_id'      => '1',
-                'created_at'         => now()
-            ],
-            [
-                'crOffense_category' => 'major offenses',
-                'crOffense_type'     => 'default',
-                'crOffense_details'  => 'Serious fighting inside or outside the campus',
-                'respo_user_id'      => '1',
-                'created_at'         => now()
-            ],
-            [
-                'crOffense_category' => 'major offenses',
-                'crOffense_type'     => 'default',
-                'crOffense_details'  => 'Involvement/Possession of any prohibited drugs',
-                'respo_user_id'      => '1',
-                'created_at'         => now()
-            ],
-            [
-                'crOffense_category' => 'major offenses',
-                'crOffense_type'     => 'default',
-                'crOffense_details'  => 'Carrying of any kind of deadly weapon',
-                'respo_user_id'      => '1',
-                'created_at'         => now()
-            ],
-            [
                 'crOffense_category' => 'major offenses',
                 'crOffense_type'     => 'default',
                 'crOffense_details'  => 'Bullying',
@@ -153,14 +27,189 @@ class DefaultOffensesSeeder extends Seeder
             [
                 'crOffense_category' => 'major offenses',
                 'crOffense_type'     => 'default',
-                'crOffense_details'  => 'Vandalism',
+                'crOffense_details'  => 'Falsification of official documents.',
                 'respo_user_id'      => '1',
                 'created_at'         => now()
             ],
             [
                 'crOffense_category' => 'major offenses',
                 'crOffense_type'     => 'default',
-                'crOffense_details'  => 'Theft',
+                'crOffense_details'  => 'Gross misconduct',
+                'respo_user_id'      => '1',
+                'created_at'         => now()
+            ],
+            [
+                'crOffense_category' => 'major offenses',
+                'crOffense_type'     => 'default',
+                'crOffense_details'  => 'Lying to school authority',
+                'respo_user_id'      => '1',
+                'created_at'         => now()
+            ],
+            // [
+            //     'crOffense_category' => 'major offenses',
+            //     'crOffense_type'     => 'default',
+            //     'crOffense_details'  => 'Offensive behavior',
+            //     'respo_user_id'      => '1',
+            //     'created_at'         => now()
+            // ],
+            // [
+            //     'crOffense_category' => 'major offenses',
+            //     'crOffense_type'     => 'default',
+            //     'crOffense_details'  => 'Offensive language',
+            //     'respo_user_id'      => '1',
+            //     'created_at'         => now()
+            // ],
+            [
+                'crOffense_category' => 'major offenses',
+                'crOffense_type'     => 'default',
+                'crOffense_details'  => 'Threatening behavior',
+                'respo_user_id'      => '1',
+                'created_at'         => now()
+            ],
+            [
+                'crOffense_category' => 'major offenses',
+                'crOffense_type'     => 'default',
+                'crOffense_details'  => 'Defiance to authority',
+                'respo_user_id'      => '1',
+                'created_at'         => now()
+            ],
+            [
+                'crOffense_category' => 'minor offenses',
+                'crOffense_type'     => 'default',
+                'crOffense_details'  => 'Violation of Dress Code',
+                'respo_user_id'      => '1',
+                'created_at'         => now()
+            ],
+            // [
+            //     'crOffense_category' => 'minor offenses',
+            //     'crOffense_type'     => 'default',
+            //     'crOffense_details'  => 'Disrespect to Authority',
+            //     'respo_user_id'      => '1',
+            //     'created_at'         => now()
+            // ],
+            // [
+            //     'crOffense_category' => 'minor offenses',
+            //     'crOffense_type'     => 'default',
+            //     'crOffense_details'  => 'Indecent Public Display of Affection (PDA)',
+            //     'respo_user_id'      => '1',
+            //     'created_at'         => now()
+            // ],
+            // [
+            //     'crOffense_category' => 'minor offenses',
+            //     'crOffense_type'     => 'default',
+            //     'crOffense_details'  => 'Pranking/ Trolling during online class',
+            //     'respo_user_id'      => '1',
+            //     'created_at'         => now()
+            // ],
+            [
+                'crOffense_category' => 'minor offenses',
+                'crOffense_type'     => 'default',
+                'crOffense_details'  => 'Unauthorized sharing of official online classes links',
+                'respo_user_id'      => '1',
+                'created_at'         => now()
+            ],
+            [
+                'crOffense_category' => 'minor offenses',
+                'crOffense_type'     => 'default',
+                'crOffense_details'  => 'Unauthorized sharing of learning materials',
+                'respo_user_id'      => '1',
+                'created_at'         => now()
+            ],
+            [
+                'crOffense_category' => 'minor offenses',
+                'crOffense_type'     => 'default',
+                'crOffense_details'  => 'Online scheming',
+                'respo_user_id'      => '1',
+                'created_at'         => now()
+            ],
+            [
+                'crOffense_category' => 'minor offenses',
+                'crOffense_type'     => 'default',
+                'crOffense_details'  => 'Defiance to authority',
+                'respo_user_id'      => '1',
+                'created_at'         => now()
+            ],
+            // [
+            //     'crOffense_category' => 'minor offenses',
+            //     'crOffense_type'     => 'default',
+            //     'crOffense_details'  => 'Cheating',
+            //     'respo_user_id'      => '1',
+            //     'created_at'         => now()
+            // ],
+            // [
+            //     'crOffense_category' => 'minor offenses',
+            //     'crOffense_type'     => 'default',
+            //     'crOffense_details'  => 'Plagiarism',
+            //     'respo_user_id'      => '1',
+            //     'created_at'         => now()
+            // ],
+            [
+                'crOffense_category' => 'less serious offenses',
+                'crOffense_type'     => 'default',
+                'crOffense_details'  => 'Defaming or tarnishing the name/reputation of another student',
+                'respo_user_id'      => '1',
+                'created_at'         => now()
+            ],
+            // [
+            //     'crOffense_category' => 'less serious offenses',
+            //     'crOffense_type'     => 'default',
+            //     'crOffense_details'  => 'Bad manners.',
+            //     'respo_user_id'      => '1',
+            //     'created_at'         => now()
+            // ],
+            // [
+            //     'crOffense_category' => 'less serious offenses',
+            //     'crOffense_type'     => 'default',
+            //     'crOffense_details'  => 'Taking pictures without consent of the subject',
+            //     'respo_user_id'      => '1',
+            //     'created_at'         => now()
+            // ],
+            // [
+            //     'crOffense_category' => 'less serious offenses',
+            //     'crOffense_type'     => 'default',
+            //     'crOffense_details'  => 'Unauthorized solicitation of donations in cash or in kind',
+            //     'respo_user_id'      => '1',
+            //     'created_at'         => now()
+            // ],
+            // [
+            //     'crOffense_category' => 'less serious offenses',
+            //     'crOffense_type'     => 'default',
+            //     'crOffense_details'  => 'Unauthorized alteration or erasure of official announcements',
+            //     'respo_user_id'      => '1',
+            //     'created_at'         => now()
+            // ],
+            // [
+            //     'crOffense_category' => 'less serious offenses',
+            //     'crOffense_type'     => 'default',
+            //     'crOffense_details'  => 'Scandalous acts either verbal or non-verbal whether in writing or thru electronic',
+            //     'respo_user_id'      => '1',
+            //     'created_at'         => now()
+            // ],
+            [
+                'crOffense_category' => 'less serious offenses',
+                'crOffense_type'     => 'default',
+                'crOffense_details'  => 'Malicious/ Scandalous posting thru social networking sites',
+                'respo_user_id'      => '1',
+                'created_at'         => now()
+            ],
+            [
+                'crOffense_category' => 'less serious offenses',
+                'crOffense_type'     => 'default',
+                'crOffense_details'  => 'Unauthorized access to somebody’s account',
+                'respo_user_id'      => '1',
+                'created_at'         => now()
+            ],
+            [
+                'crOffense_category' => 'less serious offenses',
+                'crOffense_type'     => 'default',
+                'crOffense_details'  => 'Intentionally entering an online class without permission',
+                'respo_user_id'      => '1',
+                'created_at'         => now()
+            ],
+            [
+                'crOffense_category' => 'less serious offenses',
+                'crOffense_type'     => 'default',
+                'crOffense_details'  => 'Using the school’s online platform for personal gain',
                 'respo_user_id'      => '1',
                 'created_at'         => now()
             ]

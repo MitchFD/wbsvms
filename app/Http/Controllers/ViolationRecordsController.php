@@ -297,7 +297,7 @@ class ViolationRecordsController extends Controller
 
                                     // count all merged offenses
                                     $count_allOffenses = json_encode(count($to_array_allOffenses));
-                                    $x = 0;
+                                    $x = 1;
 
                                     // display 4 badge
                                     // foreach(json_decode($toJson, true) as $all_offense){
@@ -313,7 +313,7 @@ class ViolationRecordsController extends Controller
                                     // }
                                     foreach(json_decode($toJson, true) as $all_offense){
                                         if($count_allOffenses <= 4){
-                                            $vr_output .= ''.Str::limit($all_offense, $limit=35, $end='...').', ';
+                                            $vr_output .= ''.Str::limit($all_offense, $limit=30, $end='...').', ';
                                         }else{
                                             $vr_output .= ''.Str::limit($all_offense, $limit=15, $end='...').', ';
                                         }
@@ -329,7 +329,7 @@ class ViolationRecordsController extends Controller
                                     //     $vr_output .= ' <span class="badge '.$badge_stat.'"> '. $sub_moreOffense_count . ' more...</span> ';
                                     // }
                                     if($count_allOffenses > 4){
-                                        $sub_moreOffense_count = $count_allOffenses - 5;
+                                        $sub_moreOffense_count = $count_allOffenses - 4;
                                         $vr_output .= '<span class="font-weight-bold"> ' . $sub_moreOffense_count . ' more...</span>';
                                     }
 
