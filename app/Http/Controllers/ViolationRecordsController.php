@@ -193,15 +193,37 @@ class ViolationRecordsController extends Controller
                         // violation status classes
                         if($this_violator->violation_status === 'cleared'){
                             $violator_img = 'default_cleared_student_img.jpg';
-                            $violation_statTxt = ' <span class="text-success font-italic"> ~ Cleared</span>';
+                            $violation_statTxt = ' <span class="text-success font-italic font-weight-bold"> ~ Cleared</span>';
                             $badge_stat = 'cust_badge_grn';
                             $img_class = 'display_violator_image3';
                         }else{
                             $violator_img = 'default_student_img.jpg';
-                            $violation_statTxt = ' <span class="text_svms_red font-italic"> ~ Not Cleared</span>';
+                            $violation_statTxt = ' <span class="text_svms_red font-italic font-weight-bold"> ~ Not Cleared</span>';
                             $badge_stat = 'cust_badge_red';
                             $img_class = 'display_violator_image2';
                         }
+                        // if has sanctions
+                        if($this_violator->has_sanction == 1){
+                            if($this_violator->has_sanct_count > 1){
+                                $hsC_s = 's'; 
+                            }else{
+                                $hsC_s = '';
+                            }
+                            $txt_HasSanction = '<span class="badge cust_badge_grn"> '.$this_violator->has_sanct_count.' Sanction'.$hsC_s . ' </span> ';
+                        }else{
+                            $hsC_s = '';
+                            $txt_HasSanction = '<span class="badge cust_badge_red"> 0 Sanctions </span> ';
+                        }
+                        // recorded by
+                        $query_respoUser_RecViola = Users::select('id', 'user_fname', 'user_lname', 'user_role')->where('id', '=', $this_violator->respo_user_id)->first();
+                        $respoUser_FullName = ''.$query_respoUser_RecViola->user_fname . ' ' . $query_respoUser_RecViola->user_lname.'';
+                        $respoUser_Role     = ''.ucwords($query_respoUser_RecViola->user_role).'';
+                        if(auth()->user()->id == $this_violator->respo_user_id){
+                            $txt_youIndicator = '<span class="sub2 font-italic">~ You</span>';
+                        }else{
+                            $txt_youIndicator = '';
+                        }
+
                         $vr_output .= '
                         <tr id="'.$this_violator->Student_Number.'" onclick="viewStudentOffenses(this.id)" class="tr_pointer">
                             <td class="pl12 d-flex justify-content-start align-items-center">
@@ -236,11 +258,16 @@ class ViolationRecordsController extends Controller
                             </td>
                             <td>
                                 <div class="d-inline">
-                                    <span class="actLogs_content">'.$this_violator->offense_count.' Offense'.$oc_s . ' ' . $violation_statTxt.'</span>
-                                    <span class="actLogs_tdSubTitle sub2">
+                                    <span class="actLogs_content">
+                                        <span class="badge '.$badge_stat.'"> '.$this_violator->offense_count.' Offense'.$oc_s . ' </span> 
+                                        ' . $txt_HasSanction . '
+                                        '.$violation_statTxt.'
+                                    </span>
+                                    <span class="actLogs_tdSubTitle">
                                     ';
                                     // set new array value
                                     $to_array_allOffenses = array();
+
                                     // merge all offenses to $to_array_allOffenses
                                     if(!is_null($this_violator->major_off) OR !empty($this_violator->major_off)){
                                         foreach(json_decode($this_violator->major_off, true) as $this_mjo){
@@ -264,28 +291,48 @@ class ViolationRecordsController extends Controller
                                             }
                                         }
                                     }
+
                                     // convert $to_array_allOffenses to json
                                     $toJson = json_encode($to_array_allOffenses);
+
                                     // count all merged offenses
                                     $count_allOffenses = json_encode(count($to_array_allOffenses));
                                     $x = 0;
+
                                     // display 4 badge
+                                    // foreach(json_decode($toJson, true) as $all_offense){
+                                    //     if($count_allOffenses <= 3){
+                                    //         $vr_output .= ' <span class="badge '.$badge_stat.'"> '.Str::limit($all_offense, $limit=20, $end='...').' </span> ';
+                                    //     }else{
+                                    //         $vr_output .= ' <span class="badge '.$badge_stat.'"> '.Str::limit($all_offense, $limit=15, $end='...').' </span> ';
+                                    //     }
+                                    //     $x++;
+                                    //     if($x == 4){
+                                    //         break;
+                                    //     }
+                                    // }
                                     foreach(json_decode($toJson, true) as $all_offense){
-                                        if($count_allOffenses <= 3){
-                                            $vr_output .= ' <span class="badge '.$badge_stat.'"> '.Str::limit($all_offense, $limit=20, $end='...').' </span> ';
+                                        if($count_allOffenses <= 4){
+                                            $vr_output .= ''.Str::limit($all_offense, $limit=35, $end='...').', ';
                                         }else{
-                                            $vr_output .= ' <span class="badge '.$badge_stat.'"> '.Str::limit($all_offense, $limit=15, $end='...').' </span> ';
+                                            $vr_output .= ''.Str::limit($all_offense, $limit=15, $end='...').', ';
                                         }
                                         $x++;
-                                        if($x == 4){
+                                        if($x == 5){
                                             break;
                                         }
                                     }
+
                                     // display more count if offenses count > 4
+                                    // if($count_allOffenses > 4){
+                                    //     $sub_moreOffense_count = $count_allOffenses - 4;
+                                    //     $vr_output .= ' <span class="badge '.$badge_stat.'"> '. $sub_moreOffense_count . ' more...</span> ';
+                                    // }
                                     if($count_allOffenses > 4){
-                                        $sub_moreOffense_count = $count_allOffenses - 4;
-                                        $vr_output .= ' <span class="badge '.$badge_stat.'"> '. $sub_moreOffense_count . ' more...</span> ';
+                                        $sub_moreOffense_count = $count_allOffenses - 5;
+                                        $vr_output .= '<span class="font-weight-bold"> ' . $sub_moreOffense_count . ' more...</span>';
                                     }
+
                                     $vr_output .= '
                                     </span>
                                 </div>
@@ -755,12 +802,12 @@ class ViolationRecordsController extends Controller
                         // violation status classes
                         if($this_violator->del_violation_status === 'cleared'){
                             $violator_img = 'default_cleared_student_img.jpg';
-                            $violation_statTxt = ' <span class="text-success font-italic"> ~ Cleared</span>';
+                            $violation_statTxt = ' <span class="text-success font-italic font-weight-bold"> ~ Cleared</span>';
                             $badge_stat = 'cust_badge_grn';
                             $img_class = 'display_violator_image3';
                         }else{
                             $violator_img = 'default_student_img.jpg';
-                            $violation_statTxt = ' <span class="text_svms_red font-italic"> ~ Not Cleared</span>';
+                            $violation_statTxt = ' <span class="text_svms_red font-italic font-weight-bold"> ~ Not Cleared</span>';
                             $badge_stat = 'cust_badge_red';
                             $img_class = 'display_violator_image2';
                         }

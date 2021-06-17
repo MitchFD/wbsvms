@@ -316,6 +316,8 @@ Route::group(['middleware' => 'auth'], function () {
 	// process permanent deletion of all temporary deleted offenses
 	Route::post('offenses/process_permanent_delete_selected_teporary_deleted_offenses', 'App\Http\Controllers\OffensesController@process_permanent_delete_selected_teporary_deleted_offenses')->name('offenses.process_permanent_delete_selected_teporary_deleted_offenses');
 
+	// view deleted offense's details on modal
+	Route::get('offenses/view_deleted_offense_details_modal', 'App\Http\Controllers\OffensesController@view_deleted_offense_details_modal')->name('offenses.view_deleted_offense_details_modal');
 });
 
 // student handbook

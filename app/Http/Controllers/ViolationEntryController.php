@@ -274,7 +274,7 @@ class ViolationEntryController extends Controller
                                                         $output .= '
                                                         <div class="form-group mx-0 mt-2 mb-1">
                                                             <div class="custom-control custom-checkbox align-items-center">
-                                                                <input type="checkbox" name="minor_offenses[]" value="'.$thisOption_minorOff->crOffense_details.'" class="custom-control-input cursor_pointer" id="'.$thisOption_minorOff->crOffense_id.'">
+                                                                <input type="checkbox" name="minor_offenses[]" value="'.$thisOption_minorOff->crOffense_details.'" class="custom-control-input cursor_pointer" id="'.$thisOption_minorOff->crOffense_id.'" autocomplete="off">
                                                                 <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="'.$thisOption_minorOff->crOffense_id.'">'.$thisOption_minorOff->crOffense_details.'</label>
                                                             </div>
                                                         </div>
@@ -311,7 +311,7 @@ class ViolationEntryController extends Controller
                                                     $output .= '
                                                     <div class="form-group mx-0 mt-2 mb-1">
                                                         <div class="custom-control custom-checkbox align-items-center">
-                                                            <input type="checkbox" name="less_serious_offenses[]" value="'.$thisOption_lessSeriousOff->crOffense_details.'" class="custom-control-input cursor_pointer" id="'.$thisOption_lessSeriousOff->crOffense_id.'">
+                                                            <input type="checkbox" name="less_serious_offenses[]" value="'.$thisOption_lessSeriousOff->crOffense_details.'" class="custom-control-input cursor_pointer" id="'.$thisOption_lessSeriousOff->crOffense_id.'" autocomplete="off">
                                                             <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="'.$thisOption_lessSeriousOff->crOffense_id.'">'.$thisOption_lessSeriousOff->crOffense_details.'</label>
                                                         </div>
                                                     </div>
@@ -350,7 +350,7 @@ class ViolationEntryController extends Controller
                                                     $output .= '
                                                     <div class="form-group mx-0 mt-2 mb-1">
                                                         <div class="custom-control custom-checkbox align-items-center">
-                                                            <input type="checkbox" name="major_offenses[]" value="'.$thisOption_majorOff->crOffense_details.'" class="custom-control-input cursor_pointer" id="'.$thisOption_majorOff->crOffense_id.'">
+                                                            <input type="checkbox" name="major_offenses[]" value="'.$thisOption_majorOff->crOffense_details.'" class="custom-control-input cursor_pointer" id="'.$thisOption_majorOff->crOffense_id.'" autocomplete="off">
                                                             <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="'.$thisOption_majorOff->crOffense_id.'">'.$thisOption_majorOff->crOffense_details.'</label>
                                                         </div>
                                                     </div>

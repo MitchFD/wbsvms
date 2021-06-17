@@ -279,6 +279,7 @@
                                         <th class="pl12">~ Students</th>
                                         <th>Date</th>
                                         <th>Offenses</th>
+                                        {{-- <th>Recorded by</th> --}}
                                     </tr>
                                 </thead>
                                 <tbody class="tbody_svms_white" id="vr_tableTbody">

@@ -215,7 +215,7 @@
                                             <div>
                                                 <button id="{{$this_offCategory->offCat_id}}" onclick="addNewOffensesDetails(this.id)" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Add New {{ $offCategory_title}}?"><i class="nc-icon nc-simple-add" aria-hidden="true"></i></button>
                                                 <button id="{{$this_offCategory->offCat_id}}" onclick="editSelectedOffenseDetails(this.id)" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Edit Selected {{ $offCategory_title}}?"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
-                                                <button id="{{$this_offCategory->offCat_id}}" onclick="tempDeleteSelectedOffenseDetails(this.id)" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Delete Selected {{ $offCategory_title}}?"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                <button id="{{$this_offCategory->offCat_id}}" onclick="tempDeleteSelectedOffenseDetails(this.id)" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Delete Selected {{ $offCategory_title}}?"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
                                             </div>
                                         </div>
                                     </div>
@@ -562,6 +562,24 @@
             </div>
         </div>
     {{-- permanently delete all temporary deleted offenses confirmaiton modal end --}}
+
+    {{-- view deleted offense details on modal modal --}}
+        <div class="modal fade" id="viewDeletedOffenseDeetailsModal" tabindex="-1" role="dialog" aria-labelledby="viewDeletedOffenseDeetailsModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cust_modal">
+                    <div class="modal-header border-0">
+                        <span class="modal-title cust_modal_title" id="viewDeletedOffenseDeetailsModalLabel">Permanently Delete Offenses?</span>
+                        <button type="button" class="close cust_close_modal_btn" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="viewDeletedOffenseDeetailsModalHtmlData">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{-- view deleted offense details on modal modal end --}}
 
 @endsection
 
@@ -1202,8 +1220,43 @@
 {{-- table ro click - view deleted offense details --}}
     <script>
         function viewDeletedOffensesDetails(sel_delID){
-            alert(sel_delID);
+            var sel_delID = sel_delID;
+            var _token = $('input[name="_token"]').val();
+            $.ajax({
+                url:"{{ route('offenses.view_deleted_offense_details_modal') }}",
+                method:"GET",
+                data:{
+                    sel_delID:sel_delID,
+                    _token:_token
+                    },
+                success: function(data){
+                    $('#viewDeletedOffenseDeetailsModalHtmlData').html(data); 
+                    $('#viewDeletedOffenseDeetailsModal').modal('show');
+                }
+            });
         }
+    </script>
+    <script>
+        $('#viewDeletedOffenseDeetailsModal').on('show.bs.modal', function () {
+            var form_singleRecoveryOffense = document.querySelector("#form_singleRecoveryOffense");
+            var form_singlePermDeletionOffense = document.querySelector("#form_singlePermDeletionOffense");
+            var submit_singleRecoveryOffense_btn = document.querySelector("#submit_singleRecoveryOffense_btn");
+            var submit_singlePermDeletetionOffense_btn = document.querySelector("#submit_singlePermDeletetionOffense_btn");
+            var close_singlePermDelnRecoveryOffense_btn = document.querySelector("#close_singlePermDelnRecoveryOffense_btn");
+            // disable close and submit buttons
+            $(form_singleRecoveryOffense).submit(function(){
+                submit_singlePermDeletetionOffense_btn.disabled = true;
+                submit_singleRecoveryOffense_btn.disabled = true;
+                close_singlePermDelnRecoveryOffense_btn.disabled = true;
+                return true;
+            });
+            $(form_singlePermDeletionOffense).submit(function(){
+                submit_singlePermDeletetionOffense_btn.disabled = true;
+                submit_singleRecoveryOffense_btn.disabled = true;
+                close_singlePermDelnRecoveryOffense_btn.disabled = true;
+                return true;
+            });
+        });
     </script>
 {{-- table ro click - view deleted offense details end --}}
 

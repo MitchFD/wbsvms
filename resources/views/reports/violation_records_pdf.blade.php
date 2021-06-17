@@ -445,6 +445,11 @@
                                 }
                                 // merge offenses
                                 $to_array_allOffenses = array();
+                                if(!is_null($violator->major_off) OR !empty($violator->major_off)){
+                                    foreach(json_decode($violator->major_off, true) as $this_mjo){
+                                        array_push($to_array_allOffenses, $this_mjo);
+                                    }
+                                }
                                 if(!is_null($violator->minor_off) OR !empty($violator->minor_off)){
                                     foreach(json_decode($violator->minor_off, true) as $this_mo){
                                         array_push($to_array_allOffenses, $this_mo);

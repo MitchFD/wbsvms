@@ -697,7 +697,7 @@
                                                                                                     <span class="{{$info_textClass }} font-weight-bold"><i class="{{$info_iconClass }} mr-1" aria-hidden="true"></i> {{$date_offense->offense_count}} Offense{{$oC_s}}</span> 
                                                                                                     <span class="cust_info_txtwicon"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> {{ $recBy }}</span>  
                                                                                                 </div>
-                                                                                                <button id="{{$date_offense->viola_id}}" onclick="deleteThisViolation(this.id)" class="btn cust_btn_smcircle2" data-toggle="tooltip" data-placement="top" title="Delete recorded Offenses?"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                                                                <button id="{{$date_offense->viola_id}}" onclick="deleteThisViolation(this.id)" class="btn cust_btn_smcircle2" data-toggle="tooltip" data-placement="top" title="Delete recorded Offenses?"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
@@ -721,7 +721,7 @@
                                                                             @if ($countAll_MonthlyRecViola_wNoSanct > 0)
                                                                                 <button id="{{$yearly_monthlyVal_tc}}" onclick="addSanctions_allMonthlyViolations(this.id, {{$this_yearVal_tc}})" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Add Sanctions to all recorded Offenses for the Month of {{ $monthName }} {{ $this_yearVal_tc }} with No Corresponding Sanctions?"><i class="fa fa-pencil" aria-hidden="true"></i></button>
                                                                             @endif
-                                                                            <button id="{{$yearly_monthlyVal_tc}}" onclick="delete_allMonthlyViolations(this.id, {{$this_yearVal_tc}})" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Delete all recorded Offenses for the Month of {{ $monthName }} {{ $this_yearVal_tc}}?"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                                            <button id="{{$yearly_monthlyVal_tc}}" onclick="delete_allMonthlyViolations(this.id, {{$this_yearVal_tc}})" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Delete all recorded Offenses for the Month of {{ $monthName }} {{ $this_yearVal_tc}}?"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
                                                                         </div>
                                                                     </div> 
                                                                 </div>
@@ -745,7 +745,7 @@
                                                         @if ($countAll_YearlyRecViola_wNoSanct > 0)
                                                             <button id="{{$this_yearVal_tc}}" onclick="addSanctions_allYearlyViolations(this.id)" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Add Sanctions to all recorded Offenses for the Month of {{ $monthName }} {{ $this_yearVal_tc }} with No Corresponding Sanctions?"><i class="fa fa-pencil" aria-hidden="true"></i></button>
                                                         @endif
-                                                        <button style="margin-right: 25px;" id="{{$this_yearVal_tc}}" onclick="delete_allYearlyViolations(this.id)" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Delete all recorded Offenses for the Year {{ $this_yearVal_tc}}?"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                        <button style="margin-right: 25px;" id="{{$this_yearVal_tc}}" onclick="delete_allYearlyViolations(this.id)" class="btn cust_btn_smcircle5" data-toggle="tooltip" data-placement="top" title="Delete all recorded Offenses for the Year {{ $this_yearVal_tc}}?"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
                                                     </div>
                                                 </div> 
                                             </div>

@@ -1113,7 +1113,7 @@ class OffensesController extends Controller
                         <input type="hidden" name="selected_offCategoryID" value="'.$get_sel_offCategory_id.'">
                         <div class="btn-group" role="group" aria-label="Edit Offense Details Actions">
                             <button id="cancel_tempDeleteOffenseDetails_btn" type="button" class="btn btn-round btn_svms_red btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
-                            <button id="process_tempDeleteOffenseDetails_btn" type="submit" class="btn btn-round btn_svms_blue btn_show_icon m-0" disabled>Delete Selected ' . $toUcwords_selOffCat_Name. ' <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                            <button id="process_tempDeleteOffenseDetails_btn" type="submit" class="btn btn-round btn_svms_blue btn_show_icon m-0" disabled>Delete Selected ' . $toUcwords_selOffCat_Name. ' <i class="fa fa-trash-o btn_icon_show_right" aria-hidden="true"></i></button>
                         </div>
                     </div>
                 </form>
@@ -1567,7 +1567,7 @@ class OffensesController extends Controller
                             <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
                             <div class="btn-group" role="group" aria-label="Recover Temporary Deleted Offense Actions">
                                 <button id="cancel_recoverTempDeletedOff_btn" type="button" class="btn btn-round btn_svms_red btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
-                                <button id="process_recoverTempDeletedOff_btn" type="submit" class="btn btn-round btn_svms_blue btn_show_icon m-0">Recover Selected Offenses <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                                <button id="process_recoverTempDeletedOff_btn" type="submit" class="btn btn-round btn_svms_blue btn_show_icon m-0">Recover Selected Offenses <i class="fa fa-external-link btn_icon_show_right" aria-hidden="true"></i></button>
                             </div>
                         </div>
                     </form>
@@ -1789,7 +1789,7 @@ class OffensesController extends Controller
                             <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
                             <div class="btn-group" role="group" aria-label="Recover Temporary Deleted Offense Actions">
                                 <button id="cancel_permanentDelAllTempDelOff_btn" type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
-                                <button id="process_permanentDelAllTempDelOff_btn" type="submit" class="btn btn-round btn_svms_red btn_show_icon m-0">Permanently Delete <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                                <button id="process_permanentDelAllTempDelOff_btn" type="submit" class="btn btn-round btn_svms_red btn_show_icon m-0">Permanently Delete <i class="fa fa-trash btn_icon_show_right" aria-hidden="true"></i></button>
                             </div>
                         </div>
                     </form>
@@ -1883,5 +1883,195 @@ class OffensesController extends Controller
         }else{
             return back()->withFailedStatus('There are no selected "Temporary Deleted Offenses" to recover! Please select deleted offenses first.');
         }
+    }
+
+    // view deleted offense's details on modal
+    public function view_deleted_offense_details_modal(Request $request){
+        // get all requests
+        $get_sel_delID = $request->get('sel_delID');
+
+        // custom
+        $output = '';
+        $sq = "'";
+
+        // check if the selected "deleted offense" exists in deleted_created_offenses_tbl
+        $checkExist_selDelID = DeletedCreatedOffenses::where('del_id', '=', $get_sel_delID)->count();
+
+        if($checkExist_selDelID > 0){
+            // get selected deleted offense's details from deleted_created_offenses_tbl
+            $queryDetails_selDelOff = DeletedCreatedOffenses::where('del_id', '=', $get_sel_delID)->first();
+            $get_del_Status             = $queryDetails_selDelOff->del_Status;
+            $get_del_crOffense_category = $queryDetails_selDelOff->del_crOffense_category;
+            $get_del_crOffense_type     = $queryDetails_selDelOff->del_crOffense_type;
+            $get_del_crOffense_details  = $queryDetails_selDelOff->del_crOffense_details;
+            $get_del_created_by         = $queryDetails_selDelOff->del_created_by;
+            $get_del_created_at         = $queryDetails_selDelOff->del_created_at;
+            $get_reason_deletion        = $queryDetails_selDelOff->reason_deletion;
+            $get_deleted_by             = $queryDetails_selDelOff->deleted_by;
+            $get_deleted_at             = $queryDetails_selDelOff->deleted_at;
+            $get_perm_deleted_by        = $queryDetails_selDelOff->perm_deleted_by;  
+            $get_perm_deleted_at        = $queryDetails_selDelOff->perm_deleted_at;  
+
+            // deleted_by/perm_deleted_by & deleted_at/perm_deleted_at
+            if($get_del_Status == 1){
+                $delByColumn = 'deleted_by';
+                $delAtColumn = 'deleted_at';
+            }else if($get_del_Status == 0){
+                $delByColumn = 'perm_deleted_by';
+                $delAtColumn = 'perm_deleted_at';
+            }else{
+                $delByColumn = '';
+                $delAtColumn = '';
+            }
+
+            // get responsible user's info who created this offense & date created at
+            $queryUser_createdThisOffense   = Users::select('user_fname', 'user_lname', 'user_role')->where('id', '=', $get_del_created_by)->first();
+            $txt_FullNameUserCreatedThisOff = ''.$queryUser_createdThisOffense->user_fname . ' ' . $queryUser_createdThisOffense->user_lname.'';
+            $txt_RoleUserCreatedThisOff     = ''.ucwords($queryUser_createdThisOffense->user_role).'';
+            $txt_OffenseCreatedAt           = ''.date('F d, Y ~ (D - g:i A)', strtotime($get_del_created_at)).'';
+
+            // get responsible user's info who temporary deleted this offense & date created at
+            $queryUser_deletedThisOffense   = Users::select('user_fname', 'user_lname', 'user_role')->where('id', '=', $queryDetails_selDelOff->$delByColumn)->first();
+            $txt_FullNameUserDeletedThisOff = ''.$queryUser_deletedThisOffense->user_fname . ' ' . $queryUser_deletedThisOffense->user_lname.'';
+            $txt_RoleUserDeletedThisOff     = ''.ucwords($queryUser_deletedThisOffense->user_role).'';
+            $txt_OffenseDeletedAt           = ''.date('F d, Y ~ (D - g:i A)', strtotime($queryDetails_selDelOff->$delAtColumn)).'';
+
+            $output .= '
+                <div class="modal-body border-0 p-0">
+                    <div class="cust_modal_body_gray">
+                        <div class="accordion shadow cust_accordion_div" id="delOffDetails'.$get_sel_delID.'Accordion_Parent">
+                            <div class="card custom_accordion_card">
+                                <div class="card-header p-0" id="delOffDetails'.$get_sel_delID.'Collapse_heading">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-block custom2_btn_collapse cb_x12y15 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#delOffDetails'.$get_sel_delID.'Collapse_Div" aria-expanded="true" aria-controls="delOffDetails'.$get_sel_delID.'Collapse_Div">
+                                            <div class="information_div2">
+                                                <span class="li_info_title">'.Str::limit($get_del_crOffense_details, $limit=45, $end='...').'</span>
+                                            </div>
+                                            <i class="nc-icon nc-minimal-up"></i>
+                                        </button>
+                                    </h2>
+                                </div>
+                                <div id="delOffDetails'.$get_sel_delID.'Collapse_Div" class="collapse show cust_collapse_active cb_t0b12y15" aria-labelledby="delOffDetails'.$get_sel_delID.'Collapse_heading" data-parent="#delOffDetails'.$get_sel_delID.'Accordion_Parent">
+                                    <div class="row mb-2">
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div class="card-body lightBlue_cardBody shadow-none mt-0">
+                                                <span class="lightBlue_cardBody_blueTitle">Offense Details:</span>
+                                                <span class="lightBlue_cardBody_notice"> <span class="font-weight-bold"> Details: </span> ' . $get_del_crOffense_details.' </span>
+                                                <span class="lightBlue_cardBody_notice"> <span class="font-weight-bold"> Category: </span> ' . ucwords($get_del_crOffense_category).' </span>
+                                                <span class="lightBlue_cardBody_notice"> <span class="font-weight-bold"> Type: </span> ' . ucwords($get_del_crOffense_type).' </span>
+                                                <hr class="hr_gryv1">
+                                                <div class="row cursor_pointer" data-toggle="tooltip" data-placement="top" title="Created by and the date this offense was created.">
+                                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                                    <span class="lightBlue_cardBody_notice"> <i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> ' . $txt_FullNameUserCreatedThisOff . ' <span class="font-italic"> ('.$txt_RoleUserCreatedThisOff.') </span> </span>
+                                                    <span class="lightBlue_cardBody_notice"> <i class="fa fa-calendar mr-1" aria-hidden="true"></i> ' . $txt_OffenseCreatedAt . ' </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2 cursor_pointer" data-toggle="tooltip" data-placement="top" title="Reason behind deletion, Deleted by, and the date this offense was deleted at.">
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div class="card-body lightRed_cardBody shadow-none mt-0">
+                                                <span class="lightRed_cardBody_redTitle">Deletion Details:</span>
+                                                <div class="row">
+                                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                                    <span class="lightRed_cardBody_notice"> <span class="font-weight-bold"> Reason: </span> ' . $get_reason_deletion.' </span>
+                                                    <hr class="hr_red">
+                                                    <span class="lightRed_cardBody_notice"> <i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> ' . $txt_FullNameUserDeletedThisOff . ' <span class="font-italic"> ('.$txt_RoleUserDeletedThisOff.') </span> </span>
+                                                    <span class="lightRed_cardBody_notice"> <i class="fa fa-trash-o mr-1" aria-hidden="true"></i> ' . $txt_OffenseDeletedAt . ' </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-body pb-0">
+                    ';
+                    if($get_del_Status == 1){
+                        $output .= '
+                        <div class="modal-body p-0">
+                            <div class="card-body lightBlue_cardBody shadow-none">
+                                <div class="row">
+                                    <form id="form_singleRecoveryOffense" action="'.route('offenses.process_recover_selected_teporary_deleted_offenses').'" method="POST" enctype="multipart/form-data">
+                                        <input type="hidden" name="_token" value="'.csrf_token().'">
+                                        <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
+                                        <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
+                                        <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
+                                        <input type="hidden" name="recover_temp_deleted_offenses[]" value="'.$get_sel_delID.'">
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <span class="cust_info_txtwicon2"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i> This action will recover the deleted offense. </span>
+                                            <button type="submit" id="submit_singleRecoveryOffense_btn" class="btn btn_svms_blue cust_bt_links shadow mt-2">Recover This Offense <i class="fa fa-external-link ml-1" aria-hidden="true"></i></button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="card-body lightRed_cardBody shadow-none mt-2">
+                                <div class="row">
+                                    <form id="form_singlePermDeletionOffense" action="'.route('offenses.process_permanent_delete_selected_teporary_deleted_offenses').'" method="POST" enctype="multipart/form-data">
+                                        <input type="hidden" name="_token" value="'.csrf_token().'">
+                                        <input type="hidden" name="respo_user_id" value="'.auth()->user()->id.'">
+                                        <input type="hidden" name="respo_user_lname" value="'.auth()->user()->user_lname.'">
+                                        <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
+                                        <input type="hidden" name="permanent_delete_tempdel_offenses[]" value="'.$get_sel_delID.'">
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <span class="cust_info_txtwicon3"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i> This action will permanently delete this offense and cannot be undone or recovered. </span>
+                                            <button type="submit" id="submit_singlePermDeletetionOffense_btn" class="btn btn_svms_red cust_bt_links shadow mt-2">Permanently delete this Offense <i class="fa fa-trash ml-1" aria-hidden="true"></i></button>
+                                        </div>
+                                    </form> 
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-0 px-0">
+                            <div class="btn-group" role="group" aria-label="Secret">
+                                <button id="close_singlePermDelnRecoveryOffense_btn" type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal">Close <i class="nc-icon nc-simple-remove btn_icon_show_right" aria-hidden="true"></i></button>
+                            </div>
+                        </div>
+                        ';
+                    }else{
+                        $output .= '
+                            <div class="modal-body p-0">
+                                <div class="card-body lightRed_cardBody shadow-none">
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <span class="cust_info_txtwicon3"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i> This offense was permanently deleted from the system and cannot be recovered. </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer border-0 px-0">
+                                <div class="btn-group" role="group" aria-label="Ok">
+                                    <button type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal">Close <i class="fa fa-thumbs-up btn_icon_show_right" aria-hidden="true"></i></button>
+                                </div>
+                            </div>
+                        ';
+                    }
+                    $output .= '
+                    </div>
+                </div>
+            ';
+        }else{
+            $output .= '
+                <div class="modal-body py-0">
+                    <div class="card-body lightRed_cardBody shadow-none">
+                        <span class="lightRed_cardBody_redTitle"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i> No Selected Deleted Offense:</span>
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <span class="cust_info_txtwicon3">The selected "Recently Deleted Offense Details" doesn'.$sq.'t exist from the system. Please close this modal and try again.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <div class="btn-group" role="group" aria-label="Ok">
+                        <button type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal">Ok <i class="fa fa-thumbs-up btn_icon_show_right" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+            ';
+        }
+
+        echo $output;
     }
 }
