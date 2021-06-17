@@ -1107,6 +1107,7 @@ class ViolationRecordsController extends Controller
             $get_viola_recorded_at      = $get_viola_info->recorded_at;
             $get_viola_status           = $get_viola_info->violation_status;
             $get_viola_offense_count    = $get_viola_info->offense_count;
+            $get_viola_major_off        = $get_viola_info->major_off;
             $get_viola_minor_off        = $get_viola_info->minor_off;
             $get_viola_less_serious_off = $get_viola_info->less_serious_off;
             $get_viola_other_off        = $get_viola_info->other_off;
@@ -1165,6 +1166,19 @@ class ViolationRecordsController extends Controller
                                 </div>
                                 <div id="sv'.$sel_viola_id.'Collapse_Div" class="collapse show cust_collapse_active cb_t0b12y15" aria-labelledby="sv'.$sel_viola_id.'Collapse_heading" data-parent="#sv'.$sel_viola_id.'Accordion_Parent">
                                     ';
+                                    if(!is_null(json_decode(json_encode($get_viola_major_off), true)) OR !empty(json_decode(json_encode($get_viola_major_off), true))){
+                                        $vmjo_x = 1;
+                                        $output .= '
+                                        <div class="card-body '.  $light_cardBody  .' mb-2">
+                                            <span class="'. $light_cardBody_title  .' mb-1">Major Offenses:</span>
+                                            ';
+                                            foreach(json_decode(json_encode($get_viola_major_off), true) as $viola_major_offenses){
+                                                $output .= '<span class="'. $light_cardBody_list  .'"><span class="font-weight-bold mr-1">'. $vmjo_x++ .'.</span> '. $viola_major_offenses .'</span>';
+                                            }
+                                            $output .='
+                                        </div>
+                                        ';
+                                    }
                                     if(!is_null(json_decode(json_encode($get_viola_minor_off), true)) OR !empty(json_decode(json_encode($get_viola_minor_off), true))){
                                         $vmo_x = 1;
                                         $output .= '
@@ -1405,6 +1419,7 @@ class ViolationRecordsController extends Controller
             $get_viola_recorded_at      = $get_viola_info->recorded_at;
             $get_viola_status           = $get_viola_info->violation_status;
             $get_viola_offense_count    = $get_viola_info->offense_count;
+            $get_viola_major_off        = $get_viola_info->major_off;
             $get_viola_minor_off        = $get_viola_info->minor_off;
             $get_viola_less_serious_off = $get_viola_info->less_serious_off;
             $get_viola_other_off        = $get_viola_info->other_off;
@@ -1499,6 +1514,19 @@ class ViolationRecordsController extends Controller
                                 </div>
                                 <div id="sv'.$sel_viola_id.'Collapse_Div" class="collapse show cust_collapse_active cb_t0b12y15" aria-labelledby="sv'.$sel_viola_id.'Collapse_heading" data-parent="#sv'.$sel_viola_id.'Accordion_Parent">
                                     ';
+                                    if(!is_null(json_decode(json_encode($get_viola_major_off), true)) OR !empty(json_decode(json_encode($get_viola_major_off), true))){
+                                        $vmjo_x = 1;
+                                        $output .= '
+                                        <div class="card-body '.  $light_cardBody  .' mb-2">
+                                            <span class="'. $light_cardBody_title  .' mb-1">Major Offenses:</span>
+                                            ';
+                                            foreach(json_decode(json_encode($get_viola_major_off), true) as $viola_major_offenses){
+                                                $output .= '<span class="'. $light_cardBody_list  .'"><span class="font-weight-bold mr-1">'. $vmjo_x++ .'.</span> '. $viola_major_offenses .'</span>';
+                                            }
+                                            $output .='
+                                        </div>
+                                        ';
+                                    }
                                     if(!is_null(json_decode(json_encode($get_viola_minor_off), true)) OR !empty(json_decode(json_encode($get_viola_minor_off), true))){
                                         $vmo_x = 1;
                                         $output .= '
@@ -2402,6 +2430,7 @@ class ViolationRecordsController extends Controller
                             $get_viola_recorded_at      = $query_this_viola_info->recorded_at;
                             $get_viola_status           = $query_this_viola_info->violation_status;
                             $get_viola_offense_count    = $query_this_viola_info->offense_count;
+                            $get_viola_major_off        = $query_this_viola_info->major_off;
                             $get_viola_minor_off        = $query_this_viola_info->minor_off;
                             $get_viola_less_serious_off = $query_this_viola_info->less_serious_off;
                             $get_viola_other_off        = $query_this_viola_info->other_off;
@@ -2481,6 +2510,19 @@ class ViolationRecordsController extends Controller
                                     </div>
                                     <div id="addSanctionsAllMonthlyViola_SelectOption'.$get_viola_id.'" class="collapse cust_collapse_active cb_t0b12y20" aria-labelledby="addSanctionsAllMonthlyViola_SelectOption_heading'.$get_viola_id.'" data-parent="#addSanctionsAllMonthlyViola_SelectOption_Parent'.$get_viola_id.'">
                                     ';
+                                    if(!is_null(json_decode(json_encode($get_viola_major_off), true)) OR !empty(json_decode(json_encode($get_viola_major_off), true))){
+                                        $vmjo_x = 1;
+                                        $output .= '
+                                        <div class="card-body '.  $light_cardBody  .' mb-2">
+                                            <span class="'. $light_cardBody_title  .' mb-1">Major Offenses:</span>
+                                            ';
+                                            foreach(json_decode(json_encode($get_viola_major_off), true) as $viola_major_offenses){
+                                                $output .= '<span class="'. $light_cardBody_list  .'"><span class="font-weight-bold mr-1">'. $vmjo_x++ .'.</span> '. $viola_major_offenses .'</span>';
+                                            }
+                                            $output .='
+                                        </div>
+                                        ';
+                                    }
                                     if(!is_null(json_decode(json_encode($get_viola_minor_off), true)) OR !empty(json_decode(json_encode($get_viola_minor_off), true))){
                                         $vmo_x = 1;
                                         $output .= '
@@ -2719,6 +2761,7 @@ class ViolationRecordsController extends Controller
                             $get_viola_recorded_at      = $query_this_viola_info->recorded_at;
                             $get_viola_status           = $query_this_viola_info->violation_status;
                             $get_viola_offense_count    = $query_this_viola_info->offense_count;
+                            $get_viola_major_off        = $query_this_viola_info->major_off;
                             $get_viola_minor_off        = $query_this_viola_info->minor_off;
                             $get_viola_less_serious_off = $query_this_viola_info->less_serious_off;
                             $get_viola_other_off        = $query_this_viola_info->other_off;
@@ -2798,6 +2841,19 @@ class ViolationRecordsController extends Controller
                                     </div>
                                     <div id="addSanctionsAllMonthlyViola_SelectOption'.$get_viola_id.'" class="collapse cust_collapse_active cb_t0b12y20" aria-labelledby="addSanctionsAllMonthlyViola_SelectOption_heading'.$get_viola_id.'" data-parent="#addSanctionsAllMonthlyViola_SelectOption_Parent'.$get_viola_id.'">
                                     ';
+                                    if(!is_null(json_decode(json_encode($get_viola_major_off), true)) OR !empty(json_decode(json_encode($get_viola_major_off), true))){
+                                        $vmjo_x = 1;
+                                        $output .= '
+                                        <div class="card-body '.  $light_cardBody  .' mb-2">
+                                            <span class="'. $light_cardBody_title  .' mb-1">Major Offenses:</span>
+                                            ';
+                                            foreach(json_decode(json_encode($get_viola_major_off), true) as $viola_major_offenses){
+                                                $output .= '<span class="'. $light_cardBody_list  .'"><span class="font-weight-bold mr-1">'. $vmjo_x++ .'.</span> '. $viola_major_offenses .'</span>';
+                                            }
+                                            $output .='
+                                        </div>
+                                        ';
+                                    }
                                     if(!is_null(json_decode(json_encode($get_viola_minor_off), true)) OR !empty(json_decode(json_encode($get_viola_minor_off), true))){
                                         $vmo_x = 1;
                                         $output .= '
@@ -3159,6 +3215,7 @@ class ViolationRecordsController extends Controller
             $get_viola_recorded_at      = $get_viola_info->recorded_at;
             $get_viola_status           = $get_viola_info->violation_status;
             $get_viola_offense_count    = $get_viola_info->offense_count;
+            $get_viola_major_off        = $get_viola_info->major_off;
             $get_viola_minor_off        = $get_viola_info->minor_off;
             $get_viola_less_serious_off = $get_viola_info->less_serious_off;
             $get_viola_other_off        = $get_viola_info->other_off;
@@ -3253,6 +3310,19 @@ class ViolationRecordsController extends Controller
                             </div>
                             <div id="sv'.$sel_viola_id.'Collapse_Div" class="collapse show cust_collapse_active cb_t0b12y15" aria-labelledby="sv'.$sel_viola_id.'Collapse_heading" data-parent="#sv'.$sel_viola_id.'Accordion_Parent">
                                 ';
+                                if(!is_null(json_decode(json_encode($get_viola_major_off), true)) OR !empty(json_decode(json_encode($get_viola_major_off), true))){
+                                    $vmjo_x = 1;
+                                    $output .= '
+                                    <div class="card-body '.  $light_cardBody  .' mb-2">
+                                        <span class="'. $light_cardBody_title  .' mb-1">Major Offenses:</span>
+                                        ';
+                                        foreach(json_decode(json_encode($get_viola_major_off), true) as $viola_major_offenses){
+                                            $output .= '<span class="'. $light_cardBody_list  .'"><span class="font-weight-bold mr-1">'. $vmjo_x++ .'.</span> '. $viola_major_offenses .'</span>';
+                                        }
+                                        $output .='
+                                    </div>
+                                    ';
+                                }
                                 if(!is_null(json_decode(json_encode($get_viola_minor_off), true)) OR !empty(json_decode(json_encode($get_viola_minor_off), true))){
                                     $vmo_x = 1;
                                     $output .= '
@@ -3449,6 +3519,7 @@ class ViolationRecordsController extends Controller
                             $get_viola_recorded_at      = $query_this_viola_info->recorded_at;
                             $get_viola_status           = $query_this_viola_info->violation_status;
                             $get_viola_offense_count    = $query_this_viola_info->offense_count;
+                            $get_viola_major_off        = $query_this_viola_info->major_off;
                             $get_viola_minor_off        = $query_this_viola_info->minor_off;
                             $get_viola_less_serious_off = $query_this_viola_info->less_serious_off;
                             $get_viola_other_off        = $query_this_viola_info->other_off;
@@ -3528,6 +3599,19 @@ class ViolationRecordsController extends Controller
                                     </div>
                                     <div id="delAllViola_SelectOption'.$get_viola_id.'" class="collapse cust_collapse_active cb_t0b12y20" aria-labelledby="delAllViola_SelectOption_heading'.$get_viola_id.'" data-parent="#delAllViola_SelectOption_Parent'.$get_viola_id.'">
                                     ';
+                                    if(!is_null(json_decode(json_encode($get_viola_major_off), true)) OR !empty(json_decode(json_encode($get_viola_major_off), true))){
+                                        $vmjo_x = 1;
+                                        $output .= '
+                                        <div class="card-body '.  $light_cardBody  .' mb-2">
+                                            <span class="'. $light_cardBody_title  .' mb-1">Major Offenses:</span>
+                                            ';
+                                            foreach(json_decode(json_encode($get_viola_major_off), true) as $viola_major_offenses){
+                                                $output .= '<span class="'. $light_cardBody_list  .'"><span class="font-weight-bold mr-1">'. $vmjo_x++ .'.</span> '. $viola_major_offenses .'</span>';
+                                            }
+                                            $output .='
+                                        </div>
+                                        ';
+                                    }
                                     if(!is_null(json_decode(json_encode($get_viola_minor_off), true)) OR !empty(json_decode(json_encode($get_viola_minor_off), true))){
                                         $vmo_x = 1;
                                         $output .= '
@@ -3739,6 +3823,7 @@ class ViolationRecordsController extends Controller
                             $get_viola_recorded_at      = $query_this_viola_info->recorded_at;
                             $get_viola_status           = $query_this_viola_info->violation_status;
                             $get_viola_offense_count    = $query_this_viola_info->offense_count;
+                            $get_viola_major_off        = $query_this_viola_info->major_off;
                             $get_viola_minor_off        = $query_this_viola_info->minor_off;
                             $get_viola_less_serious_off = $query_this_viola_info->less_serious_off;
                             $get_viola_other_off        = $query_this_viola_info->other_off;
@@ -3818,6 +3903,19 @@ class ViolationRecordsController extends Controller
                                     </div>
                                     <div id="delAllYearlyViola_SelectOption'.$get_viola_id.'" class="collapse cust_collapse_active cb_t0b12y20" aria-labelledby="delAllYearlyViola_SelectOption_heading'.$get_viola_id.'" data-parent="#delAllYearlyViola_SelectOption_Parent'.$get_viola_id.'">
                                     ';
+                                    if(!is_null(json_decode(json_encode($get_viola_major_off), true)) OR !empty(json_decode(json_encode($get_viola_major_off), true))){
+                                        $vmjo_x = 1;
+                                        $output .= '
+                                        <div class="card-body '.  $light_cardBody  .' mb-2">
+                                            <span class="'. $light_cardBody_title  .' mb-1">Major Offenses:</span>
+                                            ';
+                                            foreach(json_decode(json_encode($get_viola_major_off), true) as $viola_major_offenses){
+                                                $output .= '<span class="'. $light_cardBody_list  .'"><span class="font-weight-bold mr-1">'. $vmjo_x++ .'.</span> '. $viola_major_offenses .'</span>';
+                                            }
+                                            $output .='
+                                        </div>
+                                        ';
+                                    }
                                     if(!is_null(json_decode(json_encode($get_viola_minor_off), true)) OR !empty(json_decode(json_encode($get_viola_minor_off), true))){
                                         $vmo_x = 1;
                                         $output .= '
@@ -4001,6 +4099,7 @@ class ViolationRecordsController extends Controller
             $org_Vrecorded_at      = $get_org_viola_data->recorded_at;
             $org_Vviolation_status = $get_org_viola_data->violation_status;
             $org_Voffense_count    = $get_org_viola_data->offense_count;
+            $org_Vmajor_off        = $get_org_viola_data->major_off;
             $org_Vminor_off        = $get_org_viola_data->minor_off;
             $org_Vless_serious_off = $get_org_viola_data->less_serious_off;
             $org_Vother_off        = $get_org_viola_data->other_off;
@@ -4015,6 +4114,7 @@ class ViolationRecordsController extends Controller
             $backup_violation->del_recorded_at      = $org_Vrecorded_at;
             $backup_violation->del_violation_status = $org_Vviolation_status;
             $backup_violation->del_offense_count    = $org_Voffense_count;
+            $backup_violation->del_major_off        = $org_Vmajor_off;
             $backup_violation->del_minor_off        = $org_Vminor_off;
             $backup_violation->del_less_serious_off = $org_Vless_serious_off;
             $backup_violation->del_other_off        = $org_Vother_off;
@@ -4184,6 +4284,7 @@ class ViolationRecordsController extends Controller
                 $org_Vrecorded_at      = $get_org_viola_data->recorded_at;
                 $org_Vviolation_status = $get_org_viola_data->violation_status;
                 $org_Voffense_count    = $get_org_viola_data->offense_count;
+                $org_Vmajor_off        = $get_org_viola_data->major_off;
                 $org_Vminor_off        = $get_org_viola_data->minor_off;
                 $org_Vless_serious_off = $get_org_viola_data->less_serious_off;
                 $org_Vother_off        = $get_org_viola_data->other_off;
@@ -4207,6 +4308,7 @@ class ViolationRecordsController extends Controller
                 $backup_violation->del_recorded_at      = $org_Vrecorded_at;
                 $backup_violation->del_violation_status = $org_Vviolation_status;
                 $backup_violation->del_offense_count    = $org_Voffense_count;
+                $backup_violation->del_major_off        = $org_Vmajor_off;
                 $backup_violation->del_minor_off        = $org_Vminor_off;
                 $backup_violation->del_less_serious_off = $org_Vless_serious_off;
                 $backup_violation->del_other_off        = $org_Vother_off;
@@ -4348,6 +4450,7 @@ class ViolationRecordsController extends Controller
             $get_viola_recorded_at      = $get_viola_info->del_recorded_at;
             $get_viola_status           = $get_viola_info->del_violation_status;
             $get_viola_offense_count    = $get_viola_info->del_offense_count;
+            $get_viola_major_off        = $get_viola_info->del_major_off;
             $get_viola_minor_off        = $get_viola_info->del_minor_off;
             $get_viola_less_serious_off = $get_viola_info->del_less_serious_off;
             $get_viola_other_off        = $get_viola_info->del_other_off;
@@ -4457,6 +4560,19 @@ class ViolationRecordsController extends Controller
                             </div>
                             <div id="sv'.$sel_viola_id.'Collapse_Div" class="collapse show cust_collapse_active cb_t0b12y15" aria-labelledby="sv'.$sel_viola_id.'Collapse_heading" data-parent="#sv'.$sel_viola_id.'Accordion_Parent">
                                 ';
+                                if(!is_null(json_decode(json_encode($get_viola_major_off), true)) OR !empty(json_decode(json_encode($get_viola_major_off), true))){
+                                    $vmjo_x = 1;
+                                    $output .= '
+                                    <div class="card-body '.  $light_cardBody  .' mb-2">
+                                        <span class="'. $light_cardBody_title  .' mb-1">Major Offenses:</span>
+                                        ';
+                                        foreach(json_decode(json_encode($get_viola_major_off), true) as $viola_major_offenses){
+                                            $output .= '<span class="'. $light_cardBody_list  .'"><span class="font-weight-bold mr-1">'. $vmjo_x++ .'.</span> '. $viola_major_offenses .'</span>';
+                                        }
+                                        $output .='
+                                    </div>
+                                    ';
+                                }
                                 if(!is_null(json_decode(json_encode($get_viola_minor_off), true)) OR !empty(json_decode(json_encode($get_viola_minor_off), true))){
                                     $vmo_x = 1;
                                     $output .= '
@@ -4609,7 +4725,7 @@ class ViolationRecordsController extends Controller
                         <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
                         <div class="btn-group" role="group" aria-label="delete sanctions actions">
                             <button id="cancel_permDeleteViolationRecBtn" type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
-                            <button id="submit_permDeleteViolationRecBtn" type="submit" class="btn btn-round btn_svms_red btn_show_icon m-0"> Delete Forever <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                            <button id="submit_permDeleteViolationRecBtn" type="submit" class="btn btn-round btn_svms_red btn_show_icon m-0"> Delete Permanently <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
                         </div>
                     </div>
                 </form>
@@ -4786,6 +4902,7 @@ class ViolationRecordsController extends Controller
                             $get_viola_del_recorded_at      = $query_this_viola_info->del_recorded_at;
                             $get_viola_del_status           = $query_this_viola_info->del_violation_status;
                             $get_viola_del_offense_count    = $query_this_viola_info->del_offense_count;
+                            $get_viola_del_major_off        = $query_this_viola_info->del_major_off;
                             $get_viola_del_minor_off        = $query_this_viola_info->del_minor_off;
                             $get_viola_del_less_serious_off = $query_this_viola_info->del_less_serious_off;
                             $get_viola_del_other_off        = $query_this_viola_info->del_other_off;
@@ -4880,6 +4997,19 @@ class ViolationRecordsController extends Controller
                                     </div>
                                     <div id="permDelAllViola_SelectOption'.$this_viola_id.'" class="collapse cust_collapse_active cb_t0b12y20" aria-labelledby="permDelAllViola_SelectOption_heading'.$this_viola_id.'" data-parent="#permDelAllViola_SelectOption_Parent'.$this_viola_id.'">
                                     ';
+                                    if(!is_null(json_decode(json_encode($get_viola_del_major_off), true)) OR !empty(json_decode(json_encode($get_viola_del_major_off), true))){
+                                        $vmjo_x = 1;
+                                        $output .= '
+                                        <div class="card-body '.  $light_cardBody  .' mb-2">
+                                            <span class="'. $light_cardBody_title  .' mb-1">Major Offenses:</span>
+                                            ';
+                                            foreach(json_decode(json_encode($get_viola_del_major_off), true) as $viola_major_offenses){
+                                                $output .= '<span class="'. $light_cardBody_list  .'"><span class="font-weight-bold mr-1">'. $vmjo_x++ .'.</span> '. $viola_major_offenses .'</span>';
+                                            }
+                                            $output .='
+                                        </div>
+                                        ';
+                                    }
                                     if(!is_null(json_decode(json_encode($get_viola_del_minor_off), true)) OR !empty(json_decode(json_encode($get_viola_del_minor_off), true))){
                                         $vmo_x = 1;
                                         $output .= '
@@ -5043,7 +5173,7 @@ class ViolationRecordsController extends Controller
                         <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
                         <div class="btn-group" role="group" aria-label="delete sanctions actions">
                             <button id="cancel_permDeleteAllViolationRecBtn" type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
-                            <button id="submit_permDeleteAllViolationRecBtn" type="submit" class="btn btn-round btn_svms_red btn_show_icon m-0"> Delete Violations Forever <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                            <button id="submit_permDeleteAllViolationRecBtn" type="submit" class="btn btn-round btn_svms_red btn_show_icon m-0"> Delete Violations Permanently <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
                         </div>
                     </div>
                 </form>
@@ -5063,6 +5193,7 @@ class ViolationRecordsController extends Controller
             $get_viola_recorded_at      = $get_viola_info->del_recorded_at;
             $get_viola_status           = $get_viola_info->del_violation_status;
             $get_viola_offense_count    = $get_viola_info->del_offense_count;
+            $get_viola_major_off        = $get_viola_info->del_major_off;
             $get_viola_minor_off        = $get_viola_info->del_minor_off;
             $get_viola_less_serious_off = $get_viola_info->del_less_serious_off;
             $get_viola_other_off        = $get_viola_info->del_other_off;
@@ -5172,6 +5303,19 @@ class ViolationRecordsController extends Controller
                             </div>
                             <div id="sv'.$sel_viola_id.'Collapse_Div" class="collapse show cust_collapse_active cb_t0b12y15" aria-labelledby="sv'.$sel_viola_id.'Collapse_heading" data-parent="#sv'.$sel_viola_id.'Accordion_Parent">
                                 ';
+                                if(!is_null(json_decode(json_encode($get_viola_major_off), true)) OR !empty(json_decode(json_encode($get_viola_major_off), true))){
+                                    $vmjo_x = 1;
+                                    $output .= '
+                                    <div class="card-body '.  $light_cardBody  .' mb-2">
+                                        <span class="'. $light_cardBody_title  .' mb-1">Major Offenses:</span>
+                                        ';
+                                        foreach(json_decode(json_encode($get_viola_major_off), true) as $viola_major_offenses){
+                                            $output .= '<span class="'. $light_cardBody_list  .'"><span class="font-weight-bold mr-1">'. $vmjo_x++ .'.</span> '. $viola_major_offenses .'</span>';
+                                        }
+                                        $output .='
+                                    </div>
+                                    ';
+                                }
                                 if(!is_null(json_decode(json_encode($get_viola_minor_off), true)) OR !empty(json_decode(json_encode($get_viola_minor_off), true))){
                                     $vmo_x = 1;
                                     $output .= '
@@ -5379,6 +5523,7 @@ class ViolationRecordsController extends Controller
                             $get_viola_del_recorded_at      = $query_this_viola_info->del_recorded_at;
                             $get_viola_del_status           = $query_this_viola_info->del_violation_status;
                             $get_viola_del_offense_count    = $query_this_viola_info->del_offense_count;
+                            $get_viola_del_major_off        = $query_this_viola_info->del_major_off;
                             $get_viola_del_minor_off        = $query_this_viola_info->del_minor_off;
                             $get_viola_del_less_serious_off = $query_this_viola_info->del_less_serious_off;
                             $get_viola_del_other_off        = $query_this_viola_info->del_other_off;
@@ -5473,6 +5618,19 @@ class ViolationRecordsController extends Controller
                                     </div>
                                     <div id="recoverDelAllViola_SelectOption'.$this_viola_id.'" class="collapse cust_collapse_active cb_t0b12y20" aria-labelledby="recoverDelAllViola_SelectOption_heading'.$this_viola_id.'" data-parent="#recoverDelAllViola_SelectOption_Parent'.$this_viola_id.'">
                                     ';
+                                    if(!is_null(json_decode(json_encode($get_viola_del_major_off), true)) OR !empty(json_decode(json_encode($get_viola_del_major_off), true))){
+                                        $vmjo_x = 1;
+                                        $output .= '
+                                        <div class="card-body '.  $light_cardBody  .' mb-2">
+                                            <span class="'. $light_cardBody_title  .' mb-1">Major Offenses:</span>
+                                            ';
+                                            foreach(json_decode(json_encode($get_viola_del_major_off), true) as $viola_major_offenses){
+                                                $output .= '<span class="'. $light_cardBody_list  .'"><span class="font-weight-bold mr-1">'. $vmjo_x++ .'.</span> '. $viola_major_offenses .'</span>';
+                                            }
+                                            $output .='
+                                        </div>
+                                        ';
+                                    }
                                     if(!is_null(json_decode(json_encode($get_viola_del_minor_off), true)) OR !empty(json_decode(json_encode($get_viola_del_minor_off), true))){
                                         $vmo_x = 1;
                                         $output .= '
@@ -5687,6 +5845,7 @@ class ViolationRecordsController extends Controller
                 $get_del_recorded_at        = $query_deletedRecord->del_recorded_at;
                 $get_del_violation_status   = $query_deletedRecord->del_violation_status;
                 $get_del_offense_count      = $query_deletedRecord->del_offense_count;
+                $get_del_major_off          = $query_deletedRecord->del_major_off;
                 $get_del_minor_off          = $query_deletedRecord->del_minor_off;
                 $get_del_serious_off        = $query_deletedRecord->del_less_serious_off;
                 $get_del_other_off          = $query_deletedRecord->del_other_off;
@@ -5702,6 +5861,7 @@ class ViolationRecordsController extends Controller
                 $recover_deletedRecord->recorded_at      = $get_del_recorded_at;
                 $recover_deletedRecord->violation_status = $get_del_violation_status;
                 $recover_deletedRecord->offense_count    = $get_del_offense_count;
+                $recover_deletedRecord->major_off        = $get_del_major_off;
                 $recover_deletedRecord->minor_off        = $get_del_minor_off;
                 $recover_deletedRecord->less_serious_off = $get_del_serious_off;
                 $recover_deletedRecord->other_off        = $get_del_other_off;

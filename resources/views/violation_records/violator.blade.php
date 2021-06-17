@@ -923,6 +923,28 @@
                                                                     </h2>
                                                                 </div>
                                                                 <div id="vD{{$deleted_violation->from_viola_id}}Collapse_Div" class="hidden_violaAccordions_collapse collapse cb_t0b12y15" aria-labelledby="v{{$deleted_violation->from_viola_id}}Collapse_heading" data-parent="#v{{$deleted_violation->from_viola_id}}Accordion_Parent">
+                                                                    {{-- @if(!is_null($deleted_violation->del_minor_off) OR !empty($deleted_violation->del_minor_off))
+                                                                        @php
+                                                                            $mo_x = 1;
+                                                                        @endphp
+                                                                        <div class="card-body {{ $light_cardBody }} mb-2">
+                                                                            <span class="{{$light_cardBody_title }} mb-1">Minor Offenses:</span>
+                                                                            @foreach(json_decode(json_encode($deleted_violation->del_minor_off), true) as $minor_offenses)
+                                                                            <span class="{{$light_cardBody_list }}"><span class="font-weight-bold mr-1">{{$mo_x++}}.</span> {{$minor_offenses}}</span>
+                                                                            @endforeach
+                                                                        </div>
+                                                                    @endif --}}
+                                                                    @if(!is_null($deleted_violation->del_major_off) OR !empty($deleted_violation->del_major_off))
+                                                                        @php
+                                                                            $mjo_x = 1;
+                                                                        @endphp
+                                                                        <div class="card-body {{ $light_cardBody }} mb-2">
+                                                                            <span class="{{$light_cardBody_title }} mb-1">Major Offenses:</span>
+                                                                            @foreach(json_decode(json_encode($deleted_violation->del_major_off), true) as $major_offenses)
+                                                                            <span class="{{$light_cardBody_list }}"><span class="font-weight-bold mr-1">{{$mjo_x++}}.</span> {{$major_offenses}}</span>
+                                                                            @endforeach
+                                                                        </div>
+                                                                    @endif
                                                                     @if(!is_null($deleted_violation->del_minor_off) OR !empty($deleted_violation->del_minor_off))
                                                                         @php
                                                                             $mo_x = 1;

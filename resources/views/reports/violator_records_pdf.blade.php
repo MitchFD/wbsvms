@@ -568,9 +568,26 @@
                                 <td class="{{ $tr_bg }} {{ $txt_title }}">Date Committed: {{ date('F d, Y (D - g:i A)', strtotime($violator_Offense->recorded_at))}}</td>
                                 <td class="{{ $s_tr_bg }} {{ $s_txt_title }}"></td>
                             </tr>
+                            <tr>
+                                <td class="{{ $tr_bg1 }}""></td>
+                                <td class="{{ $s_tr_bg1 }}"></td>
+                            </tr>
                             <tr class="va_top">
                                 {{-- offenses --}}
                                 <td class="{{$tr_bg1}}">
+                                    @if(!is_null($violator_Offense->major_off) OR !empty($violator_Offense->major_off))
+                                        @php
+                                            $mjo_index = 0;
+                                        @endphp
+                                        <span class="d-block mb_2 {{ $txt_title }}">Major Offenses:</span>
+                                        @foreach(json_decode(json_encode($violator_Offense->major_off), true) as $vo_majorOff)
+                                            @php
+                                                $mjo_index++;
+                                            @endphp
+                                            <span class="d-block mb_2"><span class="{{ $txt_title }}">{{$mjo_index}}. </span> <span class="{{ $txt_subTitle }}">{{ $vo_majorOff}}</span></span>
+                                        @endforeach
+                                        <br>
+                                    @endif
                                     @if(!is_null($violator_Offense->minor_off) OR !empty($violator_Offense->minor_off))
                                         @php
                                             $mo_index = 0;

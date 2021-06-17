@@ -34,6 +34,7 @@ class Deletedviolations extends Model
         'perm_deleted_by'
     ];
     protected $casts = [
+        'del_major_off' => 'array',
         'del_minor_off' => 'array',
         'del_less_serious_off' => 'array',
         'del_other_off' => 'array'
