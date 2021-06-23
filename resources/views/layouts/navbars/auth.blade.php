@@ -147,12 +147,32 @@
                         </a>
                     </li>
                 @endif
-                @if(in_array('student handbook', $get_uRole_access))
-                    <li class="{{ $elementActive == 'student_handbook' ? 'active' : '' }}">
-                        <a href="{{ route('student_handbook.index', 'student_handbook') }}">
+                
+                @if(in_array('disciplinary policies', $get_uRole_access))
+                    <li class="{{ $elementActive == 'student_handbook' || $elementActive == 'online_class_policies' ? 'active' : '' }}">
+                        <a data-toggle="collapse" aria-expanded="false" href="#disciplinaryPoliciesCollapse">
                             <i class="nc-icon nc-book-bookmark"></i>
-                            <p>{{ __('Student Handbook') }}</p>
+                            <p>
+                                {{ __('DISCIPLINARY POLICIES') }}
+                                <b class="caret"></b>
+                            </p>
                         </a>
+                        <div class="collapse" id="disciplinaryPoliciesCollapse">
+                            <ul class="nav">
+                                <li class="{{ $elementActive == 'student_handbook' ? 'active' : '' }}">
+                                    <a style="padding-left: 25px !important;" href="{{ route('disciplinary_policies.student_handbook', 'student_handbook') }}">
+                                        <i class="nc-icon nc-minimal-right sidebar-mini-icon"></i>
+                                        <span class="sidebar-normal">{{ __(' Student Handbook ') }}</span>
+                                    </a>
+                                </li>
+                                <li class="{{ $elementActive == 'online_class_policies' ? 'active' : '' }}">
+                                    <a style="padding-left: 25px !important;" href="{{ route('disciplinary_policies.online_class_policies', 'online_class_policies') }}">
+                                        <i class="nc-icon nc-minimal-right sidebar-mini-icon"></i>
+                                        <span class="sidebar-normal">{{ __(' Online Class ') }}</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </li>
                 @endif
                 {{-- <li class="{{ $elementActive == 'user' || $elementActive == 'profile' ? 'active' : '' }}">

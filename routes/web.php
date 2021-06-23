@@ -320,9 +320,13 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('offenses/view_deleted_offense_details_modal', 'App\Http\Controllers\OffensesController@view_deleted_offense_details_modal')->name('offenses.view_deleted_offense_details_modal');
 });
 
-// student handbook
+// disciplinary policies
 Route::group(['middleware' => 'auth'], function () {
-	Route::get('student_handbook/index', ['as' => 'student_handbook.index', 'uses' => 'App\Http\Controllers\StudentHandbookController@index']);
+	// sdca student hand book
+	Route::get('disciplinary_policies/student_handbook', ['as' => 'disciplinary_policies.student_handbook', 'uses' => 'App\Http\Controllers\DisciplinaryPoliciesController@student_handbook']);
+
+	// online class policies
+	Route::get('disciplinary_policies/online_class_policies', ['as' => 'disciplinary_policies.online_class_policies', 'uses' => 'App\Http\Controllers\DisciplinaryPoliciesController@online_class_policies']);
 });
 
 // pages

@@ -175,40 +175,40 @@ class PageController extends Controller
                     $format_Yeartimestamp = date('Y', strtotime($this_merge_mY));
                     $format_Monthtimestamp = date('m', strtotime($this_merge_mY));
                     $format_merge_my[] = $format_timestamp;
-                    $query_violatorCountsSBCS = DB::table('violations_tbl')
-                                    ->join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
-                                    ->whereYear('recorded_at', '=', $format_Yeartimestamp)
-                                    ->whereMonth('recorded_at', '=', $format_Monthtimestamp)
+                    $query_violatorCountsSBCS = Violations::join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
                                     ->where('students_tbl.School_Name', 'like', '%'.'SBCS'.'%')
-                                    ->distinct()
-                                    ->count('violations_tbl.stud_num');
+                                    ->whereYear('violations_tbl.recorded_at', '=', $format_Yeartimestamp)
+                                    ->whereMonth('violations_tbl.recorded_at', '=', $format_Monthtimestamp)
+                                    // ->groupBy('violations_tbl.stud_num')
+                                    ->distinct('violations_tbl.stud_num')
+                                    ->count();
                     $sbcs_monthlyViolatorDataset[] = $query_violatorCountsSBCS;
 
-                    $query_violatorCountsSASE = DB::table('violations_tbl')
-                                    ->join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
-                                    ->whereYear('recorded_at', '=', $format_Yeartimestamp)
-                                    ->whereMonth('recorded_at', '=', $format_Monthtimestamp)
+                    $query_violatorCountsSASE = Violations::join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
                                     ->where('students_tbl.School_Name', 'like', '%'.'SASE'.'%')
-                                    ->distinct()
-                                    ->count('violations_tbl.stud_num');
+                                    ->whereYear('violations_tbl.recorded_at', '=', $format_Yeartimestamp)
+                                    ->whereMonth('violations_tbl.recorded_at', '=', $format_Monthtimestamp)
+                                    // ->groupBy('violations_tbl.stud_num')
+                                    ->distinct('violations_tbl.stud_num')
+                                    ->count();
                     $sase_monthlyViolatorDataset[] = $query_violatorCountsSASE;
 
-                    $query_violatorCountsSIHTM = DB::table('violations_tbl')
-                                    ->join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
-                                    ->whereYear('recorded_at', '=', $format_Yeartimestamp)
-                                    ->whereMonth('recorded_at', '=', $format_Monthtimestamp)
+                    $query_violatorCountsSIHTM = Violations::join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
                                     ->where('students_tbl.School_Name', 'like', '%'.'SIHTM'.'%')
-                                    ->distinct()
-                                    ->count('violations_tbl.stud_num');
+                                    ->whereYear('violations_tbl.recorded_at', '=', $format_Yeartimestamp)
+                                    ->whereMonth('violations_tbl.recorded_at', '=', $format_Monthtimestamp)
+                                    // ->groupBy('violations_tbl.stud_num')
+                                    ->distinct('violations_tbl.stud_num')
+                                    ->count();
                     $sihtm_monthlyViolatorDataset[] = $query_violatorCountsSIHTM;
 
-                    $query_violatorCountsSHSP = DB::table('violations_tbl')
-                                    ->join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
-                                    ->whereYear('recorded_at', '=', $format_Yeartimestamp)
-                                    ->whereMonth('recorded_at', '=', $format_Monthtimestamp)
+                    $query_violatorCountsSHSP = Violations::join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
                                     ->where('students_tbl.School_Name', 'like', '%'.'SHSP'.'%')
-                                    ->distinct()
-                                    ->count('violations_tbl.stud_num');
+                                    ->whereYear('violations_tbl.recorded_at', '=', $format_Yeartimestamp)
+                                    ->whereMonth('violations_tbl.recorded_at', '=', $format_Monthtimestamp)
+                                    // ->groupBy('violations_tbl.stud_num')
+                                    ->distinct('violations_tbl.stud_num')
+                                    ->count();
                     $shsp_monthlyViolatorDataset[] = $query_violatorCountsSHSP;
                 }
 
