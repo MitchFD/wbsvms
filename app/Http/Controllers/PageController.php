@@ -44,93 +44,80 @@ class PageController extends Controller
     public function load_contents(Request $request){
         if($request->ajax()){
             // total count of violators 
-                $query_total_violators = Violations::join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
-                            ->select('violations_tbl.stud_num')
-                            ->groupBy('violations_tbl.stud_num')
-                            ->get();
-                if(count($query_total_violators) > 0){
-                    $count_total_violators = count($query_total_violators);
+                $count_total_violators = Violations::all()->groupBy('stud_num')->count();  
+                if($count_total_violators > 0){
                     if($count_total_violators > 1){
                         $total_S = $count_total_violators . ' total violators found';
                     }else{
                         $total_S = $count_total_violators . ' total violator found';
                     }
                 }else{
-                    $count_total_violators = 0;
                     $total_S = $count_total_violators . ' violator found';
                 }
             // total count of violators end
 
             // SBCS Violators count
-                $count_SBCS_violators = Violations::join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
-                            ->where('students_tbl.School_Name', '=', 'SBCS')
-                            ->groupBy('violations_tbl.stud_num')
-                            ->count();
-                if($count_SBCS_violators > 0){
-                    // $count_SBCS_violators = $count_SBCS_violators;
-                    if($count_SBCS_violators > 1){
-                        $sbcs_S = $count_SBCS_violators . ' violators found';
-                    }else{
-                        $sbcs_S = $count_SBCS_violators . ' violator found';
-                    }
-                }else{
-                    // $count_SBCS_violators = 0;
-                    $sbcs_S = $count_SBCS_violators . ' violator found';
-                }
+                // $count_SBCS_violators = Violations::join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
+                //             ->where('students_tbl.School_Name', '=', 'SBCS')
+                //             ->groupBy('violations_tbl.stud_num')
+                //             ->count();
+                // if($count_SBCS_violators > 0){
+                //     if($count_SBCS_violators > 1){
+                //         $sbcs_S = $count_SBCS_violators . ' violators found';
+                //     }else{
+                //         $sbcs_S = $count_SBCS_violators . ' violator found';
+                //     }
+                // }else{
+                //     $sbcs_S = $count_SBCS_violators . ' violator found';
+                // }
             // SBCS Violators count end
 
             // SHSP Violators count
-                $count_SHSP_violators = Violations::join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
-                            ->where('students_tbl.School_Name', '=', 'SHSP')
-                            ->groupBy('violations_tbl.stud_num')
-                            ->count();
-                if($count_SHSP_violators > 0){
-                    // $count_SHSP_violators = $count_SHSP_violators;
-                    if($count_SHSP_violators > 1){
-                        $shsp_S = $count_SHSP_violators . ' violators found';
-                    }else{
-                        $shsp_S = $count_SHSP_violators . ' violator found';
-                    }
-                }else{
-                    // $count_SHSP_violators = 0;
-                    $shsp_S = $count_SHSP_violators . ' violator found';
-                }
+                // $count_SHSP_violators = Violations::join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
+                //             ->groupBy('violations_tbl.stud_num')
+                //             ->where('students_tbl.School_Name', '=', 'SHSP')
+                //             ->count();
+                // if($count_SHSP_violators > 0){
+                //     if($count_SHSP_violators > 1){
+                //         $shsp_S = $count_SHSP_violators . ' violators found';
+                //     }else{
+                //         $shsp_S = $count_SHSP_violators . ' violator found';
+                //     }
+                // }else{
+                //     $shsp_S = $count_SHSP_violators . ' violator found';
+                // }
             // SHSP Violators count end
 
             // SIHTM Violators count
-                $count_SIHTM_violators = Violations::join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
-                            ->where('students_tbl.School_Name', '=', 'SIHTM')
-                            ->groupBy('violations_tbl.stud_num')
-                            ->count();
-                if($count_SIHTM_violators > 0){
-                    // $count_SIHTM_violators = $count_SIHTM_violators;
-                    if($count_SIHTM_violators > 1){
-                        $sihtm_S = $count_SIHTM_violators . ' violators found';
-                    }else{
-                        $sihtm_S = $count_SIHTM_violators . ' violator found';
-                    }
-                }else{
-                    // $count_SIHTM_violators = 0;
-                    $sihtm_S = $count_SIHTM_violators . ' violator found';
-                }
+                // $count_SIHTM_violators = Violations::join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
+                //             ->where('students_tbl.School_Name', '=', 'SIHTM')
+                //             ->groupBy('violations_tbl.stud_num')
+                //             ->count();
+                // if($count_SIHTM_violators > 0){
+                //     if($count_SIHTM_violators > 1){
+                //         $sihtm_S = $count_SIHTM_violators . ' violators found';
+                //     }else{
+                //         $sihtm_S = $count_SIHTM_violators . ' violator found';
+                //     }
+                // }else{
+                //     $sihtm_S = $count_SIHTM_violators . ' violator found';
+                // }
             // SIHTM Violators count end 
 
             // SASE Violators count
-                $count_SASE_violators = Violations::join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
-                            ->where('students_tbl.School_Name', '=', 'SASE')
-                            ->groupBy('violations_tbl.stud_num')
-                            ->count();
-                if($count_SASE_violators > 0){
-                    // $count_SASE_violators = $count_SASE_violators;
-                    if($count_SASE_violators > 1){
-                        $sase_S = $count_SASE_violators . ' violators found';
-                    }else{
-                        $sase_S = $count_SASE_violators . ' violator found';
-                    }
-                }else{
-                    // $count_SASE_violators = 0;
-                    $sase_S = $count_SASE_violators . ' violator found';
-                }
+                // $count_SASE_violators = Violations::join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
+                //             ->where('students_tbl.School_Name', '=', 'SASE')
+                //             ->groupBy('violations_tbl.stud_num')
+                //             ->count();
+                // if($count_SASE_violators > 0){
+                //     if($count_SASE_violators > 1){
+                //         $sase_S = $count_SASE_violators . ' violators found';
+                //     }else{
+                //         $sase_S = $count_SASE_violators . ' violator found';
+                //     }
+                // }else{
+                //     $sase_S = $count_SASE_violators . ' violator found';
+                // }
             // SASE Violators count end
 
             // get all years with recorded violations
@@ -188,51 +175,85 @@ class PageController extends Controller
                     $format_Yeartimestamp = date('Y', strtotime($this_merge_mY));
                     $format_Monthtimestamp = date('m', strtotime($this_merge_mY));
                     $format_merge_my[] = $format_timestamp;
-                    $query_violatorCountsSBCS = Violations::join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
+                    $query_violatorCountsSBCS = DB::table('violations_tbl')
+                                    ->join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
                                     ->whereYear('recorded_at', '=', $format_Yeartimestamp)
                                     ->whereMonth('recorded_at', '=', $format_Monthtimestamp)
-                                    ->where('students_tbl.School_Name', '=', 'SBCS')
-                                    ->groupBy('violations_tbl.stud_num')
-                                    ->count();
+                                    ->where('students_tbl.School_Name', 'like', '%'.'SBCS'.'%')
+                                    ->distinct()
+                                    ->count('violations_tbl.stud_num');
                     $sbcs_monthlyViolatorDataset[] = $query_violatorCountsSBCS;
 
-                    $query_violatorCountsSASE = Violations::join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
+                    $query_violatorCountsSASE = DB::table('violations_tbl')
+                                    ->join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
                                     ->whereYear('recorded_at', '=', $format_Yeartimestamp)
                                     ->whereMonth('recorded_at', '=', $format_Monthtimestamp)
-                                    ->where('students_tbl.School_Name', '=', 'SASE')
-                                    ->groupBy('violations_tbl.stud_num')
-                                    ->count();
+                                    ->where('students_tbl.School_Name', 'like', '%'.'SASE'.'%')
+                                    ->distinct()
+                                    ->count('violations_tbl.stud_num');
                     $sase_monthlyViolatorDataset[] = $query_violatorCountsSASE;
 
-                    $query_violatorCountsSIHTM = Violations::join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
+                    $query_violatorCountsSIHTM = DB::table('violations_tbl')
+                                    ->join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
                                     ->whereYear('recorded_at', '=', $format_Yeartimestamp)
                                     ->whereMonth('recorded_at', '=', $format_Monthtimestamp)
-                                    ->where('students_tbl.School_Name', '=', 'SIHTM')
-                                    ->groupBy('violations_tbl.stud_num')
-                                    ->count();
+                                    ->where('students_tbl.School_Name', 'like', '%'.'SIHTM'.'%')
+                                    ->distinct()
+                                    ->count('violations_tbl.stud_num');
                     $sihtm_monthlyViolatorDataset[] = $query_violatorCountsSIHTM;
 
-                    $query_violatorCountsSHSP = Violations::join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
+                    $query_violatorCountsSHSP = DB::table('violations_tbl')
+                                    ->join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
                                     ->whereYear('recorded_at', '=', $format_Yeartimestamp)
                                     ->whereMonth('recorded_at', '=', $format_Monthtimestamp)
-                                    ->where('students_tbl.School_Name', '=', 'SHSP')
-                                    ->groupBy('violations_tbl.stud_num')
-                                    ->count();
+                                    ->where('students_tbl.School_Name', 'like', '%'.'SHSP'.'%')
+                                    ->distinct()
+                                    ->count('violations_tbl.stud_num');
                     $shsp_monthlyViolatorDataset[] = $query_violatorCountsSHSP;
                 }
+
+                // SBCS violators count
+                $sumSBCS_violators = collect($sbcs_monthlyViolatorDataset)->sum();
+                if($sumSBCS_violators > 1){
+                    $infoSBCS = $sumSBCS_violators . '  violators found.';
+                }else{
+                    $infoSBCS = $sumSBCS_violators . '  violator found.';
+                }
+                // SHSP violators count
+                $sumSHSP_violators = collect($shsp_monthlyViolatorDataset)->sum();
+                if($sumSHSP_violators > 1){
+                    $infoSHSP = $sumSHSP_violators . '  violators found.';
+                }else{
+                    $infoSHSP = $sumSHSP_violators . '  violator found.';
+                }
+                // SIHTM violators count
+                $sumSIHTM_violators = collect($sihtm_monthlyViolatorDataset)->sum();
+                if($sumSIHTM_violators > 1){
+                    $infoSIHTM = $sumSIHTM_violators . '  violators found.';
+                }else{
+                    $infoSIHTM = $sumSIHTM_violators . '  violator found.';
+                }
+                // SASE violators count
+                $sumSASE_violators = collect($sase_monthlyViolatorDataset)->sum();
+                if($sumSASE_violators > 1){
+                    $infoSASE = $sumSASE_violators . '  violators found.';
+                }else{
+                    $infoSASE = $sumSASE_violators . '  violator found.';
+                }
+
                 
             // data 
                 $data = array(
                     'total_violators_count' => $count_total_violators,
                     'total_S'               => $total_S,
-                    'sbcs_violators_count'  => $count_SBCS_violators,
-                    'sbcs_S'                => $sbcs_S,
-                    'shsp_violators_count'  => $count_SHSP_violators,
-                    'shsp_S'                => $shsp_S,
-                    'sihtm_violators_count' => $count_SIHTM_violators,
-                    'sihtm_S'               => $sihtm_S,
-                    'sase_violators_count'  => $count_SASE_violators,
-                    'sase_S'                => $sase_S,
+                    'sbcs_violators_count'  => $sumSBCS_violators,
+                    'sbcs_S'                => $infoSBCS,
+                    'shsp_violators_count'  => $sumSHSP_violators,
+                    'shsp_S'                => $infoSHSP,
+                    'sihtm_violators_count' => $sumSIHTM_violators,
+                    'sihtm_S'               => $infoSIHTM,
+                    'sase_violators_count'  => $sumSASE_violators,
+                    'sase_S'                => $infoSASE,
                     'years'                 => $ext_toJson_arrayYearlyViolators,
                     'months'                => $monthly_ViolatorsArray,
                     'months_byNumbers'      => $merge_mY,
