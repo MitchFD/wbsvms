@@ -52,7 +52,7 @@ class PageController extends Controller
                         $total_S = $count_total_violators . ' total violator found';
                     }
                 }else{
-                    $total_S = $count_total_violators . ' violator found';
+                    $total_S = $count_total_violators . ' violators found';
                 }
             // total count of violators end
 
@@ -68,7 +68,7 @@ class PageController extends Controller
                 //         $sbcs_S = $count_SBCS_violators . ' violator found';
                 //     }
                 // }else{
-                //     $sbcs_S = $count_SBCS_violators . ' violator found';
+                //     $sbcs_S = $count_SBCS_violators . ' violators found';
                 // }
             // SBCS Violators count end
 
@@ -84,7 +84,7 @@ class PageController extends Controller
                 //         $shsp_S = $count_SHSP_violators . ' violator found';
                 //     }
                 // }else{
-                //     $shsp_S = $count_SHSP_violators . ' violator found';
+                //     $shsp_S = $count_SHSP_violators . ' violators found';
                 // }
             // SHSP Violators count end
 
@@ -100,7 +100,7 @@ class PageController extends Controller
                 //         $sihtm_S = $count_SIHTM_violators . ' violator found';
                 //     }
                 // }else{
-                //     $sihtm_S = $count_SIHTM_violators . ' violator found';
+                //     $sihtm_S = $count_SIHTM_violators . ' violators found';
                 // }
             // SIHTM Violators count end 
 
@@ -116,7 +116,7 @@ class PageController extends Controller
                 //         $sase_S = $count_SASE_violators . ' violator found';
                 //     }
                 // }else{
-                //     $sase_S = $count_SASE_violators . ' violator found';
+                //     $sase_S = $count_SASE_violators . ' violators found';
                 // }
             // SASE Violators count end
 
@@ -175,13 +175,14 @@ class PageController extends Controller
                     $format_Yeartimestamp = date('Y', strtotime($this_merge_mY));
                     $format_Monthtimestamp = date('m', strtotime($this_merge_mY));
                     $format_YearMonthtimestamp = date('Y-m', strtotime($this_merge_mY));
-                    $format_merge_my[] = $format_timestamp;
+                    // $format_merge_my[] = $format_timestamp;
+                    $format_merge_my[] = $format_YearMonthtimestamp;
                     $query_violatorCountsSBCS = Violations::join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
                                     ->where('students_tbl.School_Name', '=', 'SBCS')
                                     ->whereYear('violations_tbl.recorded_at', '=', $format_Yeartimestamp)
                                     ->whereMonth('violations_tbl.recorded_at', '=', $format_Monthtimestamp)
-                                    // ->groupBy('violations_tbl.stud_num')
-                                    ->distinct('violations_tbl.stud_num')
+                                    ->groupBy('violations_tbl.stud_num')
+                                    // ->distinct('violations_tbl.stud_num')
                                     ->count();
                     $sbcs_monthlyViolatorDataset[] = $query_violatorCountsSBCS;
 
@@ -207,8 +208,8 @@ class PageController extends Controller
                                     ->where('students_tbl.School_Name', '=', 'SHSP')
                                     ->whereYear('violations_tbl.recorded_at', '=', $format_Yeartimestamp)
                                     ->whereMonth('violations_tbl.recorded_at', '=', $format_Monthtimestamp)
-                                    // ->groupBy('violations_tbl.stud_num')
-                                    ->distinct('violations_tbl.stud_num')
+                                    ->groupBy('violations_tbl.stud_num')
+                                    // ->distinct('violations_tbl.stud_num')
                                     ->count();
                     $shsp_monthlyViolatorDataset[] = $query_violatorCountsSHSP;
                 }
