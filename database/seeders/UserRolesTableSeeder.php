@@ -19,30 +19,12 @@ class UserRolesTableSeeder extends Seeder
             [
                 'uRole_status'   => 'active',
                 'uRole_type'     => 'employee',
-                'uRole'          => 'administrator',
+                'uRole'          => 'Administrator',
                 'uRole_access'   => json_encode(["profile", "dashboard", "users management", "violation entry", "violation records", "offenses", "sanctions", "disciplinary policies"]),
                 'assUsers_count' => 1,
                 'created_by'     => 1,
                 'created_at'     => now()
             ]
-            // [
-            //     'uRole_status' => 'active',
-            //     'uRole_type'   => 'employee',
-            //     'uRole'        => 'security guard',
-            //     'uRole_access' => json_encode(["profile", "violation entry", "student handbook"]),
-            //     'assUsers_count' => 1,
-            //     'created_by'   => 1,
-            //     'created_at'   => now()
-            // ],
-            // [
-            //     'uRole_status' => 'active',
-            //     'uRole_type'   => 'student',
-            //     'uRole'        => 'student',
-            //     'uRole_access' => json_encode(["profile", "violation entry", "violation records", "student handbook"]),
-            //     'assUsers_count' => 1,
-            //     'created_by'   => 1,
-            //     'created_at'   => now()
-            // ]
         ]);
     }
 }

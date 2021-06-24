@@ -118,7 +118,7 @@
                                                             </div>
                                                             <div class="information_div ml-3 text-left">
                                                                 <span class="li_info_title">{{$active_user->user_fname }} {{ $active_user->user_lname }} @if(auth()->user()->id === $active_user->id) <span class="youIndicator"> ~ you </span> @endif</span>
-                                                                <span class="li_info_subtitle">{{ucwords($active_user->user_role)}}</span>
+                                                                <span class="li_info_subtitle">{{$active_user->user_role}}</span>
                                                             </div>
                                                         </div>
                                                         @if(auth()->user()->id == $active_user->id)
@@ -188,7 +188,7 @@
                                                             </div>
                                                             <div class="information_div ml-3 text-left">
                                                                 <span class="li_info_title_gray">{{$deactivated_user->user_fname }} {{ $deactivated_user->user_lname }} @if(auth()->user()->id === $deactivated_user->id) <span class="youIndicator"> ~ you </span> @endif</span>
-                                                                <span class="li_info_subtitle_gray">{{ucwords($deactivated_user->user_role)}}</span>
+                                                                <span class="li_info_subtitle_gray">{{$deactivated_user->user_role}}</span>
                                                             </div>
                                                         </div>
                                                         <a href="#" class="btn cust_btn_smcircle2" data-toggle="tooltip" data-placement="top" title="@if(auth()->user()->id === $deactivated_user->id) View your profile? @else View {{ $deactivated_user->user_lname}}'s Account Information? @endif"><i class="fa fa-eye" aria-hidden="true"></i></a>

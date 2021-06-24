@@ -404,7 +404,7 @@ class SanctionsController extends Controller
                         <hr class="hr_red">
                         <div class="row mt-3">
                             <div class="col-lg-12 col-md-12 col-sm-12">
-                            <span class="cust_info_txtwicon3"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i> Deleteing the Selected Sanctions will also delete the "Corresponding Sanctions" that has been applied to "Recorded Violations". You will never be able to recover deleted Sanctions.</span>
+                            <span class="cust_info_txtwicon3"><i class="fa fa-info-circle mr-1" aria-hidden="true"></i> This action will permanently delete selected sanctions and cannot be undone.</span>
                             </div>
                         </div>
                     </div>
@@ -459,9 +459,18 @@ class SanctionsController extends Controller
 
             // process delete
             foreach($get_selected_sanctions as $selSanct_details){
+                // get selected sanction's original information
+                $queryOrg_CrSanction     = CreatedSanctions::where('crSanct_details', '=', $selSanct_details)->first();
+                $queryOrg_CrSanctDetails = $queryOrg_CrSanction->crSanct_details;
+                $queryOrg_respo_user_id  = $queryOrg_CrSanction->respo_user_id;
+                $queryOrg_created_at     = $queryOrg_CrSanction->created_at;
+
                 // save selected sanctions to deleted_created_sanctions_tbl
                 $save_deletedSanctions = new DeletedCreatedSanctions;
                 $save_deletedSanctions->del_crSanct_details = $selSanct_details;
+                $save_deletedSanctions->del_created_by      = $queryOrg_respo_user_id;
+                $save_deletedSanctions->del_created_at      = $queryOrg_created_at;
+                $save_deletedSanctions->reason_deletion     = 'secret';
                 $save_deletedSanctions->deleted_by          = $get_respo_user_id;
                 $save_deletedSanctions->deleted_at          = $now_timestamp;
                 $save_deletedSanctions->save();
@@ -470,6 +479,7 @@ class SanctionsController extends Controller
                 if($save_deletedSanctions){
                     // update created_sanctions_tbl
                     $delete_created_sanctions_tbl = CreatedSanctions::where('crSanct_details', '=', $selSanct_details)->delete();
+                    
                     // if delete was a success
                     if($delete_created_sanctions_tbl){
                         // query del_id from deleted_created_sanctions (recentyl deleted)
@@ -486,80 +496,80 @@ class SanctionsController extends Controller
                         $record_act->act_affected_id        = $recDelId_crSanct;
                         $record_act->save();
                         // if recording user's activity was a success
-                        if($record_act){
-                            // query andbackup corresponding sanctions
-                            $checkExist_selSanct = Sanctions::where('sanct_details', '=', $selSanct_details)->count();
-                            if($checkExist_selSanct > 0){
-                                // get all same sanctions and backup to deleted_sanctions_tbl
-                                $getAll_sameSanctions_info = Sanctions::select('sanct_id', 'stud_num', 'for_viola_id', 'sanct_status', 'sanct_details', 'respo_user_id', 'created_at', 'completed_at')
-                                            ->where('sanct_details', '=', $selSanct_details)
-                                            ->get();
-                                $count_getAll_sameSanctions_info = count($getAll_sameSanctions_info);
-                                if($count_getAll_sameSanctions_info > 0){
-                                    foreach($getAll_sameSanctions_info as $backThis_delSanct){
-                                        // for deleted_sanctions_tbl
-                                        $backupSame_deleted = new Deletedsanctions;
-                                        $backupSame_deleted->del_from_sanct_id = $backThis_delSanct->sanct_id;
-                                        $backupSame_deleted->del_by_user_id    = $get_respo_user_id;
-                                        $backupSame_deleted->deleted_at        = $now_timestamp;
-                                        $backupSame_deleted->reason_deletion   = 'reason';
-                                        $backupSame_deleted->del_stud_num      = $backThis_delSanct->stud_num;
-                                        $backupSame_deleted->del_sanct_status  = $backThis_delSanct->sanct_status;
-                                        $backupSame_deleted->del_sanct_details = $backThis_delSanct->sanct_details;
-                                        $backupSame_deleted->del_for_viola_id  = $backThis_delSanct->for_viola_id;
-                                        $backupSame_deleted->del_respo_user_id = $backThis_delSanct->respo_user_id;
-                                        $backupSame_deleted->del_created_at    = $backThis_delSanct->created_at;
-                                        $backupSame_deleted->del_completed_at  = $backThis_delSanct->completed_at;
-                                        $backupSame_deleted->save();
+                        // if($record_act){
+                        //     // query andbackup corresponding sanctions
+                        //     $checkExist_selSanct = Sanctions::where('sanct_details', '=', $selSanct_details)->count();
+                        //     if($checkExist_selSanct > 0){
+                        //         // get all same sanctions and backup to deleted_sanctions_tbl
+                        //         $getAll_sameSanctions_info = Sanctions::select('sanct_id', 'stud_num', 'for_viola_id', 'sanct_status', 'sanct_details', 'respo_user_id', 'created_at', 'completed_at')
+                        //                     ->where('sanct_details', '=', $selSanct_details)
+                        //                     ->get();
+                        //         $count_getAll_sameSanctions_info = count($getAll_sameSanctions_info);
+                        //         if($count_getAll_sameSanctions_info > 0){
+                        //             foreach($getAll_sameSanctions_info as $backThis_delSanct){
+                        //                 // for deleted_sanctions_tbl
+                        //                 $backupSame_deleted = new Deletedsanctions;
+                        //                 $backupSame_deleted->del_from_sanct_id = $backThis_delSanct->sanct_id;
+                        //                 $backupSame_deleted->del_by_user_id    = $get_respo_user_id;
+                        //                 $backupSame_deleted->deleted_at        = $now_timestamp;
+                        //                 $backupSame_deleted->reason_deletion   = 'reason';
+                        //                 $backupSame_deleted->del_stud_num      = $backThis_delSanct->stud_num;
+                        //                 $backupSame_deleted->del_sanct_status  = $backThis_delSanct->sanct_status;
+                        //                 $backupSame_deleted->del_sanct_details = $backThis_delSanct->sanct_details;
+                        //                 $backupSame_deleted->del_for_viola_id  = $backThis_delSanct->for_viola_id;
+                        //                 $backupSame_deleted->del_respo_user_id = $backThis_delSanct->respo_user_id;
+                        //                 $backupSame_deleted->del_created_at    = $backThis_delSanct->created_at;
+                        //                 $backupSame_deleted->del_completed_at  = $backThis_delSanct->completed_at;
+                        //                 $backupSame_deleted->save();
 
-                                        // for violations_tbl
-                                        // check if there are violations with selected sanctions
-                                        $query_from_violations_tbl = Violations::where('viola_id', $backThis_delSanct->for_viola_id)
-                                                                            ->where('stud_num', $backThis_delSanct->stud_num)->count();
-                                        if($query_from_violations_tbl > 0){
-                                            $query_from_violations_tbl = Violations::select('violation_status', 'has_sanction', 'has_sanct_count')
-                                                                            ->where('viola_id', $backThis_delSanct->for_viola_id)
-                                                                            ->where('stud_num', $backThis_delSanct->stud_num)
-                                                                            ->first();
-                                            $fromViola_violaStatus   = $query_from_violations_tbl->violation_status;
-                                            $fromViola_hasSanct      = $query_from_violations_tbl->has_sanction;
-                                            $fromViola_hasSanctCount = $query_from_violations_tbl->has_sanct_count;
+                        //                 // for violations_tbl
+                        //                 // check if there are violations with selected sanctions
+                        //                 $query_from_violations_tbl = Violations::where('viola_id', $backThis_delSanct->for_viola_id)
+                        //                                                     ->where('stud_num', $backThis_delSanct->stud_num)->count();
+                        //                 if($query_from_violations_tbl > 0){
+                        //                     $query_from_violations_tbl = Violations::select('violation_status', 'has_sanction', 'has_sanct_count')
+                        //                                                     ->where('viola_id', $backThis_delSanct->for_viola_id)
+                        //                                                     ->where('stud_num', $backThis_delSanct->stud_num)
+                        //                                                     ->first();
+                        //                     $fromViola_violaStatus   = $query_from_violations_tbl->violation_status;
+                        //                     $fromViola_hasSanct      = $query_from_violations_tbl->has_sanction;
+                        //                     $fromViola_hasSanctCount = $query_from_violations_tbl->has_sanct_count;
 
-                                            $new_hasSanctCount = 0;
-                                            if($fromViola_hasSanctCount > 0){
-                                                $new_hasSanctCount = $fromViola_hasSanctCount - 1;
-                                            }else{
-                                                $new_hasSanctCount = 0;
-                                            }
+                        //                     $new_hasSanctCount = 0;
+                        //                     if($fromViola_hasSanctCount > 0){
+                        //                         $new_hasSanctCount = $fromViola_hasSanctCount - 1;
+                        //                     }else{
+                        //                         $new_hasSanctCount = 0;
+                        //                     }
 
-                                            if($new_hasSanctCount > 0){
-                                                $update_violations_tbl = Violations::where('viola_id', $backThis_delSanct->for_viola_id)
-                                                        ->where('stud_num', $backThis_delSanct->stud_num)
-                                                        ->update([
-                                                            'violation_status' => $fromViola_violaStatus,
-                                                            'has_sanction'     => 1,
-                                                            'has_sanct_count'  => $new_hasSanctCount,
-                                                            'updated_at'       => $now_timestamp
-                                                        ]);
-                                            }else{
-                                                $update_violations_tbl = Violations::where('viola_id', $backThis_delSanct->for_viola_id)
-                                                        ->where('stud_num', $backThis_delSanct->stud_num)
-                                                        ->update([
-                                                            'violation_status' => 'not cleared',
-                                                            'has_sanction'     => 0,
-                                                            'has_sanct_count'  => 0,
-                                                            'updated_at'       => $now_timestamp
-                                                        ]);
-                                            }
-                                        }
-                                    }
-                                }
-                                // delete corresponding sanctions from sanctions_tbl
-                                $delete_corresponding_sanctions_tbl = Sanctions::where('sanct_details', '=', $selSanct_details)->delete();
-                            }
-                        }else{
-                            return back()->withFailedStatus('Recording User'.$sq.'s Activity for deleting Created Sanctions has failed!' );
-                        }
+                        //                     if($new_hasSanctCount > 0){
+                        //                         $update_violations_tbl = Violations::where('viola_id', $backThis_delSanct->for_viola_id)
+                        //                                 ->where('stud_num', $backThis_delSanct->stud_num)
+                        //                                 ->update([
+                        //                                     'violation_status' => $fromViola_violaStatus,
+                        //                                     'has_sanction'     => 1,
+                        //                                     'has_sanct_count'  => $new_hasSanctCount,
+                        //                                     'updated_at'       => $now_timestamp
+                        //                                 ]);
+                        //                     }else{
+                        //                         $update_violations_tbl = Violations::where('viola_id', $backThis_delSanct->for_viola_id)
+                        //                                 ->where('stud_num', $backThis_delSanct->stud_num)
+                        //                                 ->update([
+                        //                                     'violation_status' => 'not cleared',
+                        //                                     'has_sanction'     => 0,
+                        //                                     'has_sanct_count'  => 0,
+                        //                                     'updated_at'       => $now_timestamp
+                        //                                 ]);
+                        //                     }
+                        //                 }
+                        //             }
+                        //         }
+                        //         // delete corresponding sanctions from sanctions_tbl
+                        //         $delete_corresponding_sanctions_tbl = Sanctions::where('sanct_details', '=', $selSanct_details)->delete();
+                        //     }
+                        // }else{
+                        //     return back()->withFailedStatus('Recording User'.$sq.'s Activity for deleting Created Sanctions has failed!' );
+                        // }
                     }else{
                         return back()->withFailedStatus('Deleting Selected Sanctions has failed!');
                     }
@@ -567,7 +577,7 @@ class SanctionsController extends Controller
                     return back()->withFailedStatus('Backup Deleted Sanctions has failed!');
                 }
             }
-            if($delete_corresponding_sanctions_tbl){
+            if($record_act){
                 return back()->withSuccessStatus($count_sel_crSanct_ids. ' Sanction'.$ss_S.' was Deleted Successfully.');
             }else{
                 return back()->withFailedStatus('Deleting Corresponding Sancitons has failed!' );

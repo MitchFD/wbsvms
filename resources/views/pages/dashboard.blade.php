@@ -494,6 +494,7 @@
                             console.log('SIHTM: ' + data.sihtm_monthlyViolatorDataset);
                             console.log('SHSP: ' + data.shsp_monthlyViolatorDataset)
                             console.log(data.format_merge_my);
+                            console.log(data.secret);
 
                             // chart
                             let shoolsViolatorsChart = document.getElementById('shoolsViolatorsChart').getContext('2d');

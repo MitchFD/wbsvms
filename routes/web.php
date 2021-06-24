@@ -90,8 +90,6 @@ Route::group(['middleware' => 'auth'], function () {
 
 	// load system users table
 	Route::get('user_management/load_system_users_table', 'App\Http\Controllers\UserManagementController@load_system_users_table')->name('user_management.load_system_users_table');
-	// live search filter for (system users)'s table
-	Route::get('user_management/live_search_users_filter', 'App\Http\Controllers\UserManagementController@live_search_users_filter')->name('user_management.live_search_users_filter');
 
 	// for activate/deactivate system roles
 	Route::post('user_management/create_new_system_role', 'App\Http\Controllers\UserManagementController@create_new_system_role')->name('user_management.create_new_system_role');

@@ -174,9 +174,10 @@ class PageController extends Controller
                     $format_timestamp = date('Y-m-d H:i:s', strtotime($this_merge_mY));
                     $format_Yeartimestamp = date('Y', strtotime($this_merge_mY));
                     $format_Monthtimestamp = date('m', strtotime($this_merge_mY));
+                    $format_YearMonthtimestamp = date('Y-m', strtotime($this_merge_mY));
                     $format_merge_my[] = $format_timestamp;
                     $query_violatorCountsSBCS = Violations::join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
-                                    ->where('students_tbl.School_Name', 'like', '%'.'SBCS'.'%')
+                                    ->where('students_tbl.School_Name', '=', 'SBCS')
                                     ->whereYear('violations_tbl.recorded_at', '=', $format_Yeartimestamp)
                                     ->whereMonth('violations_tbl.recorded_at', '=', $format_Monthtimestamp)
                                     // ->groupBy('violations_tbl.stud_num')
@@ -185,7 +186,7 @@ class PageController extends Controller
                     $sbcs_monthlyViolatorDataset[] = $query_violatorCountsSBCS;
 
                     $query_violatorCountsSASE = Violations::join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
-                                    ->where('students_tbl.School_Name', 'like', '%'.'SASE'.'%')
+                                    ->where('students_tbl.School_Name', '=', 'SASE')
                                     ->whereYear('violations_tbl.recorded_at', '=', $format_Yeartimestamp)
                                     ->whereMonth('violations_tbl.recorded_at', '=', $format_Monthtimestamp)
                                     // ->groupBy('violations_tbl.stud_num')
@@ -194,7 +195,7 @@ class PageController extends Controller
                     $sase_monthlyViolatorDataset[] = $query_violatorCountsSASE;
 
                     $query_violatorCountsSIHTM = Violations::join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
-                                    ->where('students_tbl.School_Name', 'like', '%'.'SIHTM'.'%')
+                                    ->where('students_tbl.School_Name', '=', 'SIHTM')
                                     ->whereYear('violations_tbl.recorded_at', '=', $format_Yeartimestamp)
                                     ->whereMonth('violations_tbl.recorded_at', '=', $format_Monthtimestamp)
                                     // ->groupBy('violations_tbl.stud_num')
@@ -203,7 +204,7 @@ class PageController extends Controller
                     $sihtm_monthlyViolatorDataset[] = $query_violatorCountsSIHTM;
 
                     $query_violatorCountsSHSP = Violations::join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
-                                    ->where('students_tbl.School_Name', 'like', '%'.'SHSP'.'%')
+                                    ->where('students_tbl.School_Name', '=', 'SHSP')
                                     ->whereYear('violations_tbl.recorded_at', '=', $format_Yeartimestamp)
                                     ->whereMonth('violations_tbl.recorded_at', '=', $format_Monthtimestamp)
                                     // ->groupBy('violations_tbl.stud_num')
@@ -244,6 +245,7 @@ class PageController extends Controller
                 
             // data 
                 $data = array(
+                    'secret' => $format_YearMonthtimestamp,
                     'total_violators_count' => $count_total_violators,
                     'total_S'               => $total_S,
                     'sbcs_violators_count'  => $sumSBCS_violators,

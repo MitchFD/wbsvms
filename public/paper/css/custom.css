@@ -3814,9 +3814,13 @@ hr.hr_gryv2{
   background-color: #242333 !important;
   color: #fff !important;
 }
+
 .cbr_i{
   margin-top: 6px !important;
 }
 .cbr_p{
-  padding: 10px 18.5px !important;
+  padding: 11px 18.5px !important;
+}
+.cbr_pV1{
+  padding: 15px 18.5px !important;
 }

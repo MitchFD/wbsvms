@@ -87,7 +87,7 @@
                                                                     @endphp
                                                                     @if($count_queryAllRoles > 0)
                                                                         @foreach($query_all_roles as $role_option)
-                                                                            <option value="{{Str::lower($role_option->uRole)}}" data-role-type="{{Str::lower($role_option->uRole_type)}}">{{ucwords($role_option->uRole)}}</option>
+                                                                            <option value="{{Str::lower($role_option->uRole)}}" data-role-type="{{Str::lower($role_option->uRole_type)}}">{{$role_option->uRole}}</option>
                                                                         @endforeach
                                                                     @endif
                                                                 </select>
@@ -714,33 +714,6 @@
 @endsection
 
 @push('scripts')
-{{-- live search users --}}
-    {{-- <script>
-        $(document).ready(function(){
-            fetch_searchUsers_results();
-
-            function fetch_searchUsers_results(users_query = ''){
-                $.ajax({
-                    url:"{{ route('user_management.live_search_users_filter') }}",
-                    method:"GET",
-                    data:{users_query:users_query},
-                    dataType:'json',
-                    success:function(data){
-                        $('#sys_users_tbl').html(data.sys_users_tbl_data);
-                        $('#total_data_count').text(data.total_data_count);
-                        $('#search_query').text(data.search_query);
-                        $('#matched_searches').text(data.matched_searches);
-                    }
-                });
-            }
-            $(document).on('keyup', '#search_user', function(){
-                var user_query = $(this).val();
-                fetch_searchUsers_results(user_query);
-            });
-        });
-    </script> --}}
-{{-- live search users end --}}
-    
 {{-- filter system users table --}}
     <script>
         $(document).ready(function(){

@@ -82,9 +82,20 @@
                             <div class="d-flex align-items-center">
                                 <form action="#" class="mr-4">
                                     @csrf
+                                    <div class="btn-group btn-group-toggle mr-4" data-toggle="buttons">
+                                        <label class="btn btn_svms_blue cust_btn_radio cbr_pV1 active" data-toggle="tooltip" data-placement="top" title="Display All Role Types?">
+                                            <input class="m-0 p-0" type="radio" name="systemRolesFilterTypes" id="systemRolesFilterTypes_allURoles" value="all_types" autocomplete="off" checked> All Role Types
+                                        </label>
+                                        <label class="btn btn_svms_blue cust_btn_radio cbr_pV1" data-toggle="tooltip" data-placement="top" title="Display Employee Type Roles Only?">
+                                            <input class="m-0 p-0" type="radio" name="systemRolesFilterTypes" id="systemRolesFilterTypes_employeeURoles" value="employee" autocomplete="off"> Employee
+                                        </label>
+                                        <label class="btn btn_svms_blue cust_btn_radio cbr_pV1" data-toggle="tooltip" data-placement="top" title="Display Student Type Roles Only?">
+                                            <input class="m-0 p-0" type="radio" name="systemRolesFilterTypes" id="systemRolesFilterTypes_studentURoles" value="student" autocomplete="off"> Student
+                                        </label>
+                                    </div>
                                     <div class="btn-group btn-group-toggle" data-toggle="buttons">
                                         <label class="btn btn_svms_blue cust_btn_radio cbr_p active" data-toggle="tooltip" data-placement="top" title="Display All Roles?">
-                                            <input class="m-0 p-0" type="radio" name="systemRolesFilterStatus" id="systemRolesFilterStatus_allURoles" value="all" autocomplete="off" checked> <i class="fa fa-list-ul cbr_i" aria-hidden="true"></i>
+                                            <input class="m-0 p-0" type="radio" name="systemRolesFilterStatus" id="systemRolesFilterStatus_allURoles" value="all_status" autocomplete="off" checked> <i class="fa fa-list-ul cbr_i" aria-hidden="true"></i>
                                         </label>
                                         <label class="btn btn_svms_blue cust_btn_radio cbr_p" data-toggle="tooltip" data-placement="top" title="Display Active Roles Only?">
                                             <input class="m-0 p-0" type="radio" name="systemRolesFilterStatus" id="systemRolesFilterStatus_activeURoles" value="active" autocomplete="off"> <i class="fa fa-toggle-on cbr_i" aria-hidden="true"></i>
@@ -153,7 +164,7 @@
                                             }else{
                                                 $queryUser_createdBy   = App\Models\Users::select('id', 'user_fname', 'user_lname', 'user_role')->where('id', '=', $this_deletedRole->del_created_by)->first();
                                                 $txtRole_createdByName = ''.$queryUser_createdBy->user_fname . ' ' . $queryUser_createdBy->user_lname.'';
-                                                $txtRole_createdByRole = '('.ucwords($queryUser_createdBy->user_role).')';
+                                                $txtRole_createdByRole = '('.$queryUser_createdBy->user_role.')';
                                             }
 
                                             // get responsible user who deleted this role
@@ -163,7 +174,7 @@
                                             }else{
                                                 $queryUser_deletedBy   = App\Models\Users::select('id', 'user_fname', 'user_lname', 'user_role')->where('id', '=', $this_deletedRole->deleted_by)->first();
                                                 $txtRole_deletedByName = ''.$queryUser_deletedBy->user_fname . ' ' . $queryUser_deletedBy->user_lname.'';
-                                                $txtRole_deletedByRole = '('.ucwords($queryUser_deletedBy->user_role).')';
+                                                $txtRole_deletedByRole = '('.$queryUser_deletedBy->user_role.')';
                                             }
                                         @endphp
                                         <div class="col-lg-4 col-md-4 col-sm-12 mt-4">
@@ -174,8 +185,8 @@
                                                             <button class="btn btn-block custom2_btn_collapse cb_x12y15 d-flex justify-content-between align-items-center" type="button" data-toggle="collapse" data-target="#dsr{{$this_deletedRole->del_uRole_id}}Collapse_Div" aria-expanded="true" aria-controls="dsr{{$this_deletedRole->del_uRole_id}}Collapse_Div">
                                                                 <div class="d-flex justify-content-start align-items-center">
                                                                     <div class="information_div2">
-                                                                        <span class="li_info_titlev1">{{ucwords($this_deletedRole->del_uRole) }}</span>
-                                                                        <span class="li_info_subtitle3" data-toggle="tooltip" data-placement="top" title="Date the {{ ucwords($this_deletedRole->del_uRole) }} Role was deleted:">{{ date('F d, Y (D ~ g:i A)', strtotime($this_deletedRole->deleted_at))}} </span>
+                                                                        <span class="li_info_titlev1">{{ $this_deletedRole->del_uRole }}</span>
+                                                                        <span class="li_info_subtitle3" data-toggle="tooltip" data-placement="top" title="Date the {{ $this_deletedRole->del_uRole }} Role was deleted:">{{ date('F d, Y (D ~ g:i A)', strtotime($this_deletedRole->deleted_at))}} </span>
                                                                     </div>
                                                                 </div>
                                                                 <i class="nc-icon nc-minimal-up"></i>
@@ -188,9 +199,9 @@
                                                             <div class="row">
                                                                 <div class="col-lg-12 col-md-12 col-sm-12">
                                                                     <div class="card-body lightBlue_cardBody mb-2">
-                                                                        <span class="lightBlue_cardBody_blueTitlev1 mb-1">Access Controls: <i class="fa fa-info-circle cust_info_icon mx-1" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Pages Accessible to {{ ucwords($this_deletedRole->del_uRole) }} Role."></i></span>
+                                                                        <span class="lightBlue_cardBody_blueTitlev1 mb-1">Access Controls: <i class="fa fa-info-circle cust_info_icon mx-1" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Pages Accessible to {{ $this_deletedRole->del_uRole }} Role."></i></span>
                                                                         @foreach(json_decode(json_encode($this_deletedRole->del_uRole_access), true) as $this_uRoleAccess)
-                                                                        <span class="lightBlue_cardBody_list"><i class="fa fa-check-square-o font-weight-bold mr-1"></i> {{ ucwords($this_uRoleAccess) }}</span>
+                                                                        <span class="lightBlue_cardBody_list"><i class="fa fa-check-square-o font-weight-bold mr-1"></i> {{ $this_uRoleAccess }}</span>
                                                                         @endforeach
                                                                     </div>
                                                                 </div>
@@ -218,12 +229,12 @@
                                                         {{-- footer --}}
                                                         <div class="row mt-3">
                                                             <div class="col-lg-12 col-md-12 col-sm-12 d-flex justify-content-between align-items-center">
-                                                                <div class="cursor_default" data-toggle="tooltip" data-placement="top" title="Date the {{ ucwords($this_deletedRole->del_uRole) }} Role was created and created by:">
+                                                                <div class="cursor_default" data-toggle="tooltip" data-placement="top" title="Date the {{ $this_deletedRole->del_uRole }} Role was created and created by:">
                                                                     <span class="cust_info_txtwicon mb-1"><i class="fa fa-calendar-plus-o mr-1" aria-hidden="true"></i>{{ date('F d, Y (D ~ g:i A)', strtotime($this_deletedRole->del_created_at)) }}</span> 
                                                                     <span class="cust_info_txtwicon"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> {{ $txtRole_createdByName }} <span class="font-italic"> {{ $txtRole_createdByRole }} </span></span> 
                                                                 </div> 
                                                                 <div class="d-flex align-items-end">
-                                                                    <button id="{{$this_deletedRole->del_uRole_id}}" onclick="recoverDeletedSystemRole(this.id)" class="btn cust_btn_smcircle2" data-toggle="tooltip" data-placement="top" title="Recover {{ ucwords($this_deletedRole->del_uRole) }} Role?"><i class="fa fa-external-link" aria-hidden="true"></i></button>
+                                                                    <button id="{{$this_deletedRole->del_uRole_id}}" onclick="recoverDeletedSystemRole(this.id)" class="btn cust_btn_smcircle2" data-toggle="tooltip" data-placement="top" title="Recover {{ $this_deletedRole->del_uRoles }} Role?"><i class="fa fa-external-link" aria-hidden="true"></i></button>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -234,7 +245,7 @@
                                                                     <span class="cust_info_txtwicon text_svms_red"><i class="nc-icon nc-tap-01 mr-1" aria-hidden="true"></i> {{ $txtRole_deletedByName }} <span class="font-italic"> {{ $txtRole_deletedByRole }} </span></span> 
                                                                 </div> 
                                                                 <div class="d-flex align-items-end">
-                                                                    <button id="{{$this_deletedRole->del_uRole_id}}" onclick="permanentDeleteSystemRole(this.id)" class="btn cust_btn_smcircle2" data-toggle="tooltip" data-placement="top" title="Delete {{ ucwords($this_deletedRole->del_uRole) }} Role Permanently?"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                                    <button id="{{$this_deletedRole->del_uRole_id}}" onclick="permanentDeleteSystemRole(this.id)" class="btn cust_btn_smcircle2" data-toggle="tooltip" data-placement="top" title="Delete {{ $this_deletedRole->del_uRole }} Role Permanently?"><i class="fa fa-trash" aria-hidden="true"></i></button>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -315,8 +326,8 @@
                                 </div>
                                 <div class="form-group mx-0 mt-0 mb-1">
                                     <div class="custom-control custom-checkbox align-items-center">
-                                        <input type="checkbox" name="create_role_access[]" value="student handbook" class="custom-control-input cursor_pointer" id="student_handbook_mod" checked>
-                                        <label class="custom-control-label lightGreen_cardBody_chckboxLabel" for="student_handbook_mod">Student Handbook</label>
+                                        <input type="checkbox" name="create_role_access[]" value="disciplinary policies" class="custom-control-input cursor_pointer" id="disciplinary_policies_mod" checked>
+                                        <label class="custom-control-label lightGreen_cardBody_chckboxLabel" for="disciplinary_policies_mod">Disciplinary Policies</label>
                                     </div>
                                 </div>
                             </div>
@@ -339,6 +350,12 @@
                                     <div class="custom-control custom-checkbox align-items-center">
                                         <input type="checkbox" name="create_role_access[]" value="violation records" class="custom-control-input cursor_pointer" id="violation_record_mod">
                                         <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="violation_record_mod">Violation Records</label>
+                                    </div>
+                                </div>
+                                <div class="form-group mx-0 mt-0 mb-1">
+                                    <div class="custom-control custom-checkbox align-items-center">
+                                        <input type="checkbox" name="create_role_access[]" value="offenses" class="custom-control-input cursor_pointer" id="offenses_mod">
+                                        <label class="custom-control-label lightRed_cardBody_chckboxLabel" for="offenses_mod">Offenses</label>
                                     </div>
                                 </div>
                                 <div class="form-group mx-0 mt-0 mb-1">
@@ -494,23 +511,32 @@
             load_systemRoles_cards();
 
             function load_systemRoles_cards(){
+                var selectURoles_types = document.querySelector('input[type=radio][name=systemRolesFilterTypes]:checked').value;  
                 var selectURoles_status = document.querySelector('input[type=radio][name=systemRolesFilterStatus]:checked').value;  
 
+                console.log('Selected Role Type: ' + selectURoles_types);
                 console.log('Selected Role Status: ' + selectURoles_status);
 
                 $.ajax({
                     url:"{{ route('user_management.load_system_roles_cards') }}",
                     method:"GET",
-                    data:{selectURoles_status:selectURoles_status},
+                    data:{
+                        selectURoles_status:selectURoles_status,
+                        selectURoles_types:selectURoles_types
+                    },
                     dataType:'json',
                     success:function(sr_data){
                         $('#parent_SystemRoles_cards').html(sr_data.system_roles_cards);
-                        $('#totalURoles_found').html(sr_data.total_roles_found)
+                        $('#totalURoles_found').html(sr_data.total_roles_found);
+                        $('[data-toggle="tooltip"]').tooltip();
                     }
                 });
             }
 
             $('input[type=radio][name=systemRolesFilterStatus]').change(function() {
+                load_systemRoles_cards();
+            });
+            $('input[type=radio][name=systemRolesFilterTypes]').change(function() {
                 load_systemRoles_cards();
             });
         });
