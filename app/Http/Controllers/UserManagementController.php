@@ -3498,7 +3498,7 @@ class UserManagementController extends Controller
                     <input type="hidden" name="respo_user_fname" value="'.auth()->user()->user_fname.'">
                     <div class="btn-group" role="group" aria-label="Permanent Delettion of System Role actions">
                         <button id="cancel_permDeleteSystemRole_btn" type="button" class="btn btn-round btn_svms_blue btn_show_icon m-0" data-dismiss="modal"><i class="nc-icon nc-simple-remove btn_icon_show_left" aria-hidden="true"></i> Cancel</button>
-                        <button id="process_permDeleteSystemRole_btn" type="submit" class="btn btn-round btn_svms_red btn_show_icon m-0">Delete Forever <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
+                        <button id="process_permDeleteSystemRole_btn" type="submit" class="btn btn-round btn_svms_red btn_show_icon m-0">Delete Permanently <i class="nc-icon nc-check-2 btn_icon_show_right" aria-hidden="true"></i></button>
                     </div>
                 </div>
             </form>

@@ -68,7 +68,7 @@ class LoginController extends Controller
             $user_role        = $user->user_role;
         // redirect based on user's and user's role status
             if($user_status == 'active' AND $user_role_status == 'active'){
-                if($user_role == 'administrator'){
+                if($user_role == 'Administrator'){
                     // record login to activity
                     $record_act = new Useractivites;
                     $record_act->created_at            = $now_timestamp;
