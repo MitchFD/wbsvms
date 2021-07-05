@@ -118,13 +118,13 @@
                                 <li class="{{ $elementActive == 'violation_records' ? 'active' : '' }}">
                                     <a style="padding-left: 25px !important;" href="{{ route('violation_records.index', 'violation_records') }}">
                                         <i class="nc-icon nc-minimal-right sidebar-mini-icon"></i>
-                                        <span class="sidebar-normal">{{ __(' Violation Records ') }}</span>
+                                        <span class="sidebar-normal">{{ __(' Recorded Offenses ') }}</span>
                                     </a>
                                 </li>
                                 <li class="{{ $elementActive == 'deleted_violation_records' ? 'active' : '' }}">
                                     <a style="padding-left: 25px !important;" href="{{ route('violation_records.deleted_violation_records', 'deleted_violation_records') }}">
                                         <i class="nc-icon nc-minimal-right sidebar-mini-icon"></i>
-                                        <span class="sidebar-normal">{{ __(' Deleted Violations ') }}</span>
+                                        <span class="sidebar-normal">{{ __(' Deleted Offenses ') }}</span>
                                     </a>
                                 </li>
                             </ul>

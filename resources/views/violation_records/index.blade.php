@@ -34,7 +34,7 @@
         {{-- directory link --}}
         <div class="row mb-3">
             <div class="col-lg-12 col-md-12 col-sm-12">
-                <a href="{{ route('violation_records.index', 'violation_records') }}" class="directory_active_link">Violation Records</a>
+                <a href="{{ route('violation_records.index', 'violation_records') }}" class="directory_active_link">Recorded Offenses</a>
             </div>
         </div>
 
@@ -276,8 +276,8 @@
                             <table class="table table-hover cust_table shadow">
                                 <thead class="thead_svms_blue">
                                     <tr>
-                                        <th class="pl12">~ Students</th>
-                                        <th>Date</th>
+                                        <th class="pl12">~ Violator</th>
+                                        <th>Date Recorded</th>
                                         <th>Offenses</th>
                                         {{-- <th>Recorded by</th> --}}
                                     </tr>

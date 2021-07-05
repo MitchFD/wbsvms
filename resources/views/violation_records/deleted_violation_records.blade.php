@@ -312,7 +312,7 @@
                                         <th data-toggle="tooltip" data-placement="top" title="Below Columns are the system users responsible for deletion.">Deleted By</th>
                                         <th data-toggle="tooltip" data-placement="top" title="Below Columns are the dates which the recorded violation has been deleted and the reason behind deletion.">Date Deleted & Reason</th>
                                         <th data-toggle="tooltip" data-placement="top" title="Below Columns are Violator's information.">Violator</th>
-                                        <th data-toggle="tooltip" data-placement="top" title="Below Columns shows the Date a violation has been committed, offense count, and the status of the recorded violations.">Offense Details</th>
+                                        <th data-toggle="tooltip" data-placement="top" title="Below Columns shows the Date a violation has been committed, offense count, and the status of the recorded violations.">Offenses</th>
                                     </tr>
                                 </thead>
                                 <tbody class="tbody_svms_white" id="delVr_tableTbody">

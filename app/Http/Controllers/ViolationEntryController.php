@@ -11,6 +11,8 @@ use App\Models\Userroles;
 use App\Models\Useractivites;
 use App\Models\OffensesCategories;
 use App\Models\CreatedOffenses;
+use App\Models\Useremployees;
+use App\Models\Userstudents;
 use App\Models\Violations;
 use Illuminate\Mail\Mailable;
 
@@ -504,6 +506,21 @@ class ViolationEntryController extends Controller
                 $user_mr_ms   = 'Mr./Ms.';
             }
 
+            // responsible user's name and job description
+            // get user type first
+            $query_respoUserInfo   = Users::select('user_role', 'user_type', 'user_sdca_id')->where('id', '=', $get_respo_user_id)->first();
+            $toLower_respoUserType = Str::lower($query_respoUserInfo->user_type);
+            $respoUserSDCAID       = $query_respoUserInfo->user_sdca_id;
+            $respoUserRole         = $query_respoUserInfo->user_role;
+            if($toLower_respoUserType == 'employee'){
+                $query_respoJobDesc = Useremployees::select('uEmp_job_desc')->where('uEmp_id', '=', $respoUserSDCAID)->first();
+                $respoUserPosition  = $query_respoJobDesc->uEmp_job_desc;
+            }else if($toLower_respoUserType == 'student'){
+                $respoUserPosition = $respoUserRole;
+            }else{
+
+            }
+
             // record offenses to violations_tbl
             $record_offenses = new Violations;
             $record_offenses->recorded_at      = $get_violation_timestamp;
@@ -527,7 +544,9 @@ class ViolationEntryController extends Controller
                 'minor_off'           => $get_minor_offenses,
                 'less_serious_off'    => $get_less_serious_offenses,
                 'other_off'           => $get_other_offenses,
-                's'                   => $s
+                's'                   => $s,
+                'respo_userFullName'  => ''.$get_respo_user_fname . ' ' . $get_respo_user_lname.'',
+                'respo_userPosition'  => $respoUserPosition
             ];
 
             // if record was a success
