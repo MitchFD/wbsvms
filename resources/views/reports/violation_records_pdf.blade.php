@@ -446,29 +446,29 @@
                                 // merge offenses
                                 $to_array_allOffenses = array();
                                 if(!is_null($violator->major_off) OR !empty($violator->major_off)){
-                                    foreach(json_decode($violator->major_off, true) as $this_mjo){
+                                    foreach(json_decode(json_encode($violator->major_off), true) as $this_mjo){
                                         array_push($to_array_allOffenses, $this_mjo);
                                     }
                                 }
                                 if(!is_null($violator->minor_off) OR !empty($violator->minor_off)){
-                                    foreach(json_decode($violator->minor_off, true) as $this_mo){
+                                    foreach(json_decode(json_encode($violator->minor_off), true) as $this_mo){
                                         array_push($to_array_allOffenses, $this_mo);
                                     }
                                 }
                                 if(!is_null($violator->less_serious_off) OR !empty($violator->less_serious_off)){
-                                    foreach(json_decode($violator->less_serious_off, true) as $this_lso){
+                                    foreach(json_decode(json_encode($violator->less_serious_off), true) as $this_lso){
                                         array_push($to_array_allOffenses, $this_lso);
                                     }
                                 }
                                 if(!is_null($violator->other_off) OR !empty($violator->other_off)){
-                                    if(!in_array(null, json_decode($violator->other_off, true))){
-                                        foreach(json_decode($violator->other_off, true) as $this_oo){
+                                    if(!in_array(null, json_decode(json_encode($violator->other_off), true))){
+                                        foreach(json_decode(json_encode($violator->other_off), true) as $this_oo){
                                             array_push($to_array_allOffenses, $this_oo);
                                         }
                                     }
                                 }
                                 $toJson = json_encode($to_array_allOffenses);
-                                $count_allOffenses = json_encode(count($to_array_allOffenses));
+                                $count_allOffenses = count($to_array_allOffenses);
                                 $o_x = 0;
 
                                 // course trunc
@@ -541,7 +541,7 @@
             
             <p class="notice_1">-- end of table <span class="cg"> (Recorded Violations Table) </span> --</p>
             
-            <br>
+            {{-- <br>
 
             @if (count($query_violation_records) > 5)
                 <table id="contentsInfo_table">
@@ -596,7 +596,7 @@
                             <td class="br_1 pb_10" style="padding-bottom: 15px !important;">
                                 <span class="font-weight-bold">Age Range: </span> {{ $txt_AgeRange }}
                             </td>
-                            {{-- @if($filter_SearchInput != '' OR !empty($filter_SearchInput))
+                            @if($filter_SearchInput != '' OR !empty($filter_SearchInput))
                                 <td class="br_1" style="padding-bottom: 15px !important;">
                                     <em>{{ $filter_SearchInput }}...</em>
                                 </td>
@@ -604,7 +604,7 @@
                                 <td style="padding-bottom: 15px !important;">
 
                                 </td>
-                            @endif --}}
+                            @endif
                             <td style="padding-bottom: 15px !important;">
 
                             </td>
@@ -641,7 +641,7 @@
                 </table>
 
                 <br>
-            @endif
+            @endif --}}
 
         </div>
     </body>

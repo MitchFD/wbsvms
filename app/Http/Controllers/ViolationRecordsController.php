@@ -77,8 +77,7 @@ class ViolationRecordsController extends Controller
                 }
     
                 if($vr_search != ''){
-                    $fltr_VR_tbl = DB::table('violations_tbl')
-                                    ->join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
+                    $fltr_VR_tbl = Violations::join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
                                     ->select('violations_tbl.*', 'students_tbl.*')
                                     ->where(function($vrQuery) use ($vr_search) {
                                         $vrQuery->orWhere('students_tbl.Student_Number', 'like', '%'.$vr_search.'%')
@@ -127,8 +126,7 @@ class ViolationRecordsController extends Controller
                                     ->paginate(intval($vr_numRows));
                     $matched_result_txt = ' Matched Records';
                 }else{
-                    $fltr_VR_tbl = DB::table('violations_tbl')
-                                    ->join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
+                    $fltr_VR_tbl = Violations::join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
                                     ->select('violations_tbl.*', 'students_tbl.*')
                                     ->where(function($vrQuery) use ($vr_schools, $vr_programs, $vr_yearlvls, $vr_genders, $vr_minAgeRange, $vr_maxAgeRange, $df_minAgeRange, $df_maxAgeRange, $vr_status, $vr_hasSanctions, $vr_rangefrom, $vr_rangeTo){
                                         if($vr_schools != 0 OR !empty($vr_schools)){
@@ -270,23 +268,23 @@ class ViolationRecordsController extends Controller
 
                                     // merge all offenses to $to_array_allOffenses
                                     if(!is_null($this_violator->major_off) OR !empty($this_violator->major_off)){
-                                        foreach(json_decode($this_violator->major_off, true) as $this_mjo){
+                                        foreach(json_decode(json_encode($this_violator->major_off), true) as $this_mjo){
                                             array_push($to_array_allOffenses, $this_mjo);
                                         }
                                     }
                                     if(!is_null($this_violator->minor_off) OR !empty($this_violator->minor_off)){
-                                        foreach(json_decode($this_violator->minor_off, true) as $this_mo){
+                                        foreach(json_decode(json_encode($this_violator->minor_off), true) as $this_mo){
                                             array_push($to_array_allOffenses, $this_mo);
                                         }
                                     }
                                     if(!is_null($this_violator->less_serious_off) OR !empty($this_violator->less_serious_off)){
-                                        foreach(json_decode($this_violator->less_serious_off, true) as $this_lso){
+                                        foreach(json_decode(json_encode($this_violator->less_serious_off), true) as $this_lso){
                                             array_push($to_array_allOffenses, $this_lso);
                                         }
                                     }
                                     if(!is_null($this_violator->other_off) OR !empty($this_violator->other_off)){
-                                        if(!in_array(null, json_decode($this_violator->other_off, true))){
-                                            foreach(json_decode($this_violator->other_off, true) as $this_oo){
+                                        if(!in_array(null, json_decode(json_encode($this_violator->other_off), true))){
+                                            foreach(json_decode(json_encode($this_violator->other_off), true) as $this_oo){
                                                 array_push($to_array_allOffenses, $this_oo);
                                             }
                                         }
@@ -296,7 +294,7 @@ class ViolationRecordsController extends Controller
                                     $toJson = json_encode($to_array_allOffenses);
 
                                     // count all merged offenses
-                                    $count_allOffenses = json_encode(count($to_array_allOffenses));
+                                    $count_allOffenses = count($to_array_allOffenses);
                                     $x = 1;
 
                                     // display 4 badge
@@ -312,13 +310,14 @@ class ViolationRecordsController extends Controller
                                     //     }
                                     // }
                                     foreach(json_decode($toJson, true) as $all_offense){
-                                        if($count_allOffenses <= 4){
-                                            $vr_output .= ''.Str::limit($all_offense, $limit=30, $end='...').', ';
+                                        if($count_allOffenses <= 2){
+                                            $lNum = 35;
                                         }else{
-                                            $vr_output .= ''.Str::limit($all_offense, $limit=15, $end='...').', ';
+                                            $lNum = 20;
                                         }
+                                        $vr_output .= '<span class="font-weight-bold">'.$x.'. </span> ' . Str::limit($all_offense, $limit=$lNum, $end='...').', ';
                                         $x++;
-                                        if($x == 5){
+                                        if($x == 4){
                                             break;
                                         }
                                     }
@@ -328,8 +327,8 @@ class ViolationRecordsController extends Controller
                                     //     $sub_moreOffense_count = $count_allOffenses - 4;
                                     //     $vr_output .= ' <span class="badge '.$badge_stat.'"> '. $sub_moreOffense_count . ' more...</span> ';
                                     // }
-                                    if($count_allOffenses > 4){
-                                        $sub_moreOffense_count = $count_allOffenses - 4;
+                                    if($count_allOffenses > 3){
+                                        $sub_moreOffense_count = $count_allOffenses - 3;
                                         $vr_output .= '<span class="font-weight-bold"> ' . $sub_moreOffense_count . ' more...</span>';
                                     }
 
@@ -676,8 +675,7 @@ class ViolationRecordsController extends Controller
                 }
     
                 if($vr_search != ''){
-                    $fltr_VR_tbl = DB::table('deleted_violations_tbl')
-                                    ->join('students_tbl', 'deleted_violations_tbl.del_stud_num', '=', 'students_tbl.Student_Number')
+                    $fltr_VR_tbl = Deletedviolations::join('students_tbl', 'deleted_violations_tbl.del_stud_num', '=', 'students_tbl.Student_Number')
                                     ->select('deleted_violations_tbl.*', 'students_tbl.*')
                                     ->where(function($vrQuery) use ($vr_search) {
                                         $vrQuery->orWhere('students_tbl.Student_Number', 'like', '%'.$vr_search.'%')
@@ -731,8 +729,7 @@ class ViolationRecordsController extends Controller
                                     ->paginate(intval($vr_numRows));
                     $matched_result_txt = ' Matched Records';
                 }else{
-                    $fltr_VR_tbl = DB::table('deleted_violations_tbl')
-                                    ->join('students_tbl', 'deleted_violations_tbl.del_stud_num', '=', 'students_tbl.Student_Number')
+                    $fltr_VR_tbl = Deletedviolations::join('students_tbl', 'deleted_violations_tbl.del_stud_num', '=', 'students_tbl.Student_Number')
                                     ->select('deleted_violations_tbl.*', 'students_tbl.*')
                                     ->where(function($vrQuery) use ($vr_schools, $vr_programs, $vr_yearlvls, $vr_genders, $vr_minAgeRange, $vr_maxAgeRange, $df_minAgeRange, $df_maxAgeRange, $dvr_delType, $vr_status, $vr_rangefrom, $vr_rangeTo){
                                         if($vr_schools != 0 OR !empty($vr_schools)){
@@ -1137,9 +1134,41 @@ class ViolationRecordsController extends Controller
     }
     // view deleted offenses' information on modal
     public function view_deleted_offenses_information_modal(Request $request){
-        $get_del_id = $request->get('del_id');
+        // get del_id
+            $get_del_id = $request->get('del_id');
+        // get all data
+            $query_DelViolaInfo = Deletedviolations::where('del_id', '=', $get_del_id)->first();
+            $getDel_status          = $query_DelViolaInfo->del_status;
+            $getDel_fromViolaID     = $query_DelViolaInfo->from_viola_id;
+            $getDel_recordedAt      = $query_DelViolaInfo->del_recorded_at;
+            $getDel_violaStatus     = $query_DelViolaInfo->del_violation_status;
+            $getDel_offenseCount    = $query_DelViolaInfo->del_offense_count;
+            $getDel_majorOffense    = $query_DelViolaInfo->del_major_off;
+            $getDel_minorOffense    = $query_DelViolaInfo->del_minor_off;
+            $getDel_lessSeriOffense = $query_DelViolaInfo->del_less_serious_off;
+            $getDel_othersOffense   = $query_DelViolaInfo->del_other_off;
+            $getDel_studentNumber   = $query_DelViolaInfo->del_stud_num;
+            $getDel_hasSanction     = $query_DelViolaInfo->del_has_sanction;
+            $getDel_hasSanctCount   = $query_DelViolaInfo->del_has_sanct_count;
+            $getDel_respoUserID     = $query_DelViolaInfo->del_respo_user_id;
+            $getDel_clearedAt       = $query_DelViolaInfo->del_cleared_at;
+            $getDel_reasonDeletion  = $query_DelViolaInfo->reason_deletion;
+            $getDel_tempDeletedBy   = $query_DelViolaInfo->respo_user_id;
+            $getDel_tempDeletedAt   = $query_DelViolaInfo->deleted_at;
+            $getDel_permDeletedAt   = $query_DelViolaInfo->perm_deleted_at;
+            $getDel_permDeletedBy   = $query_DelViolaInfo->perm_deleted_by;
+        // get violator's information
+            $query_violatorInfo = Students::where('Student_Number', '=', $getDel_studentNumber)->first();
+            $getStud_FirstName  = $query_violatorInfo->First_Name;
+            $getStud_MiddleName = $query_violatorInfo->Middle_Name;
+            $getStud_LastName   = $query_violatorInfo->Last_Name;
+            $getStud_Gender     = $query_violatorInfo->Gender;
+            $getStud_Age        = $query_violatorInfo->Age;
+            $getStud_SchoolName = $query_violatorInfo->School_Name;
+            $getStud_Course     = $query_violatorInfo->Course;
+            $getStud_YearLevel  = $query_violatorInfo->YearLevel;
+            $getStud_StudImage  = $query_violatorInfo->Student_Image;
         $output = '';
-        $output .= 'Deleted ID: ' . $get_del_id.'';
         echo $output;
     }
 
@@ -1430,8 +1459,7 @@ class ViolationRecordsController extends Controller
                 $to_Json_sanct_ids = json_encode($to_array_sanct_ids);
                 $ext_jsonSanct_ids = str_replace(array( '{', '}', '"', ':', 'sanct_id' ), '', $to_Json_sanct_ids);
             // update selected violation's "has_sanction"
-                $update_sel_viol_tbl = DB::table('violations_tbl')
-                    ->where('viola_id', $get_for_viola_id)
+                $update_sel_viol_tbl = Violations::where('viola_id', $get_for_viola_id)
                     ->update([
                         'has_sanction'    => 1,
                         'has_sanct_count' => $new_hasSanctCount,
@@ -2018,8 +2046,7 @@ class ViolationRecordsController extends Controller
             // all are marked
             if($marked_sanct_count == $reg_sanct_count){
                 foreach($get_marked_sanctions as $updated_sanction){
-                    $update_sanct_statuses = DB::table('sanctions_tbl')
-                    ->where('sanct_id', $updated_sanction)
+                    $update_sanct_statuses = Sanctions::where('sanct_id', $updated_sanction)
                     ->update([
                         'sanct_status' => $completed_txt,
                         'completed_at' => $now_timestamp,
@@ -2028,8 +2055,7 @@ class ViolationRecordsController extends Controller
                 }
                 if($update_sanct_statuses){
                     // update violation's status
-                    $update_violation_stat = DB::table('violations_tbl')
-                                ->where('viola_id', $get_for_viola_id)
+                    $update_violation_stat = Violations::where('viola_id', $get_for_viola_id)
                                 ->update([
                                     'violation_status' => $cleared_txt,
                                     'cleared_at'       => $now_timestamp,
@@ -2050,7 +2076,7 @@ class ViolationRecordsController extends Controller
                     }
                 }
                 $to_Json_marked_sanct_ids = json_encode($to_array_marked_sanctions);
-                $count_not_selected = DB::table('sanctions_tbl')->select('sanct_id', 'sanct_status', 'sanct_details')
+                $count_not_selected = Sanctions::select('sanct_id', 'sanct_status', 'sanct_details')
                                         ->where('for_viola_id', $get_for_viola_id)
                                         ->where('stud_num', $get_sel_stud_num)
                                         ->whereNotIn('sanct_id', $to_array_marked_sanctions)
@@ -2058,7 +2084,7 @@ class ViolationRecordsController extends Controller
                                         ->limit($get_reg_sanctions)
                                         ->count();
                 if($count_not_selected > 0){
-                    $get_all_not_selected = DB::table('sanctions_tbl')->select('sanct_id')
+                    $get_all_not_selected = Sanctions::select('sanct_id')
                                             ->where('for_viola_id', $get_for_viola_id)
                                             ->where('stud_num', $get_sel_stud_num)
                                             ->whereNotIn('sanct_id', $to_array_marked_sanctions)
@@ -2066,8 +2092,7 @@ class ViolationRecordsController extends Controller
                                             ->limit($count_not_selected)
                                             ->get();
                     foreach($get_all_not_selected as $not_slected_sanction){
-                        $update_sanct_statuses = DB::table('sanctions_tbl')
-                            ->where('sanct_id', $not_slected_sanction->sanct_id)
+                        $update_sanct_statuses = Sanctions::where('sanct_id', $not_slected_sanction->sanct_id)
                             ->update([
                                 'sanct_status' => $not_completed_txt,
                                 'completed_at' => $now_timestamp,
@@ -2078,16 +2103,14 @@ class ViolationRecordsController extends Controller
                 if($update_sanct_statuses){
                     // update violation's status
                     if($marked_sanct_count == $reg_sanct_count){
-                        $update_violation_stat = DB::table('violations_tbl')
-                            ->where('viola_id', $get_for_viola_id)
+                        $update_violation_stat = Violations::where('viola_id', $get_for_viola_id)
                             ->update([
                                 'violation_status' => $cleared_txt,
                                 'cleared_at'       => $now_timestamp,
                                 'updated_at'       => $now_timestamp
                             ]); 
                     }else{
-                        $update_violation_stat = DB::table('violations_tbl')
-                            ->where('viola_id', $get_for_viola_id)
+                        $update_violation_stat = Violations::where('viola_id', $get_for_viola_id)
                             ->update([
                                 'violation_status' => $not_cleared_txt,
                                 'updated_at'       => $now_timestamp
@@ -2102,8 +2125,7 @@ class ViolationRecordsController extends Controller
             // mark is > completed
             if($marked_sanct_count > $completed_reg_sanct){
                 foreach($get_marked_sanctions as $new_marked_sanction){
-                    $update_newMarksanct_statuses = DB::table('sanctions_tbl')
-                    ->where('sanct_id', $new_marked_sanction)
+                    $update_newMarksanct_statuses = Sanctions::where('sanct_id', $new_marked_sanction)
                     ->update([
                         'sanct_status' => $completed_txt,
                         'completed_at' => $now_timestamp,
@@ -2113,16 +2135,14 @@ class ViolationRecordsController extends Controller
                 if($update_newMarksanct_statuses){
                     // update violation's status
                     if($marked_sanct_count == $reg_sanct_count){
-                        $update_violation_stat = DB::table('violations_tbl')
-                            ->where('viola_id', $get_for_viola_id)
+                        $update_violation_stat = Violations::where('viola_id', $get_for_viola_id)
                             ->update([
                                 'violation_status' => $cleared_txt,
                                 'cleared_at'       => $now_timestamp,
                                 'updated_at'       => $now_timestamp
                             ]); 
                     }else{
-                        $update_violation_stat = DB::table('violations_tbl')
-                            ->where('viola_id', $get_for_viola_id)
+                        $update_violation_stat = Violations::where('viola_id', $get_for_viola_id)
                             ->update([
                                 'violation_status' => $not_cleared_txt,
                                 'updated_at'       => $now_timestamp
@@ -2230,8 +2250,7 @@ class ViolationRecordsController extends Controller
                 $to_Json_new_sanct_ids = json_encode($to_array_new_sanct_ids);
                 $ext_jsonNewSanct_ids  = str_replace(array( '{', '}', '"', ':', 'sanct_id' ), '', $to_Json_new_sanct_ids);
             // update selected violation's "has_sanction"
-                $update_sel_viol_tbl = DB::table('violations_tbl')
-                    ->where('viola_id', $get_for_viola_id)
+                $update_sel_viol_tbl = Violations::where('viola_id', $get_for_viola_id)
                     ->update([
                         'violation_status' => 'not cleared',
                         'has_sanction'     => 1,
@@ -2383,8 +2402,7 @@ class ViolationRecordsController extends Controller
                             $new_has_sanct_count = $new_sanct_count;
                         }
                     }
-                    $update_sel_viol_tbl = DB::table('violations_tbl')
-                            ->where('viola_id', $get_for_viola_id)
+                    $update_sel_viol_tbl = Violations::where('viola_id', $get_for_viola_id)
                             ->update([
                                 'violation_status' => $violation_status,
                                 'has_sanction'     => $new_has_sanction,
@@ -3194,8 +3212,7 @@ class ViolationRecordsController extends Controller
                         $to_Json_sanct_ids = json_encode($to_array_sanct_ids);
                         $ext_jsonSanct_ids = str_replace(array( '{', '}', '"', ':', 'sanct_id' ), '', $to_Json_sanct_ids);
                         // update selected violation's "has_sanction"
-                        $update_sel_viol_tbl = DB::table('violations_tbl')
-                            ->where('viola_id', $this_ViolaId)
+                        $update_sel_viol_tbl = Violations::where('viola_id', $this_ViolaId)
                             ->update([
                                 'has_sanction'    => 1,
                                 'has_sanct_count' => $new_hasSanctCount,
@@ -4819,8 +4836,7 @@ class ViolationRecordsController extends Controller
             
             // update del_status from deleted_violations_tbl
             foreach($sel_viola_ids as $this_sel_viola_id){
-                $perm_delete_status = DB::table('deleted_violations_tbl')
-                            ->where('from_viola_id', $this_sel_viola_id)
+                $perm_delete_status = Deletedviolations::where('from_viola_id', $this_sel_viola_id)
                             ->where('del_stud_num', $sel_stud_num)
                             ->update([
                                 'del_status'      => $zero,
@@ -6391,8 +6407,7 @@ class ViolationRecordsController extends Controller
 
         // query
             if($filter_SearchInput != ''){
-                $query_violation_records = DB::table('violations_tbl')
-                                ->join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
+                $query_violation_records = Violations::join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
                                 ->select('violations_tbl.*', 'students_tbl.*')
                                 ->where(function($vrQuery) use ($filter_SearchInput) {
                                     $vrQuery->orWhere('students_tbl.Student_Number', 'like', '%'.$filter_SearchInput.'%')
@@ -6440,8 +6455,7 @@ class ViolationRecordsController extends Controller
                                 ->orderBy('violations_tbl.'.$orderBy_filterVal, $orderByRange_filterVal)
                                 ->get();
             }else{
-                $query_violation_records = DB::table('violations_tbl')
-                                ->join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
+                $query_violation_records = Violations::join('students_tbl', 'violations_tbl.stud_num', '=', 'students_tbl.Student_Number')
                                 ->select('violations_tbl.*', 'students_tbl.*')
                                 ->where(function($vrQuery) use ($filter_SchoolName, $filter_Programs, $filter_YearLevels, $filter_Genders, $filter_MinAgeRange, $filter_MaxAgeRange, $default_MinAgeRange, $default_MaxAgeRange, $filter_ViolationStat, $filter_ViolationSanct, $filter_FromDateRange, $filter_ToDateRange){
                                     if($filter_SchoolName != 0 OR !empty($filter_SchoolName)){

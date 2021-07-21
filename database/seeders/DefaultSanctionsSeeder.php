@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use App\Models\CreatedSanctions;
 
 class DefaultSanctionsSeeder extends Seeder
 {
@@ -15,7 +16,7 @@ class DefaultSanctionsSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('created_sanctions_tbl')->insert([
+        CreatedSanctions::insert([
             [
                 'crSanct_details' => 'Written Reprimand',
                 'respo_user_id'   => 1,

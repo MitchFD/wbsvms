@@ -1082,7 +1082,7 @@
 {{-- verify my old password --}}
     <script>
         $(document).ready(function(){
-            $('#my_oldPass_input').blur(function(){
+            $('#my_oldPass_input').on('keyup', function(){
                 var my_id = $('#selected_user_own_id').val();
                 var my_old_pass = $('#my_oldPass_input').val();
                 var _token = $('input[name="_token"]').val();

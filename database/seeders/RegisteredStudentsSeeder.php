@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Students;
 
 class RegisteredStudentsSeeder extends Seeder
 {
@@ -15,7 +16,7 @@ class RegisteredStudentsSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('students_tbl')->insert([
+        Students::insert([
             [
                 'Student_Number' => '20150348',
                 'First_Name'     => 'Mitch Frankein',

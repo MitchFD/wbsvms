@@ -870,7 +870,7 @@ class UserManagementController extends Controller
                 // order by 
                 if($logs_orderBy != 0 OR !empty($logs_orderBy)){
                     if($logs_orderBy == 1){
-                        $orderBy_filterVal = 'users.user_sdca_id';
+                        $orderBy_filterVal = 'users_tbl.user_sdca_id';
                     }else{
                         $orderBy_filterVal = 'users_activity_tbl.created_at';
                     }
@@ -889,14 +889,13 @@ class UserManagementController extends Controller
                 }
     
                 if($logs_search != ''){
-                    $filter_user_logs_table = DB::table('users_activity_tbl')
-                                            ->join('users', 'users_activity_tbl.act_respo_user_id', '=', 'users.id')
-                                            ->select('users_activity_tbl.*', 'users.id', 'users.user_role', 'users.user_status', 'users.user_role_status', 'users.user_type', 'users.user_sdca_id', 'users.user_image', 'users.user_gender')
+                    $filter_user_logs_table = Useractivites::join('users_tbl', 'users_activity_tbl.act_respo_user_id', '=', 'users_tbl.id')
+                                            ->select('users_activity_tbl.*', 'users_tbl.id', 'users_tbl.user_role', 'users_tbl.user_status', 'users_tbl.user_role_status', 'users_tbl.user_type', 'users_tbl.user_sdca_id', 'users_tbl.user_image', 'users_tbl.user_gender')
                                             ->where(function($query) use ($logs_search) {
-                                                $query->orWhere('users.user_sdca_id', 'like', '%'.$logs_search.'%')
-                                                            ->orWhere('users.user_role', 'like', '%'.$logs_search.'%')
-                                                            ->orWhere('users.user_type', 'like', '%'.$logs_search.'%')
-                                                            ->orWhere('users.user_gender', 'like', '%'.$logs_search.'%')
+                                                $query->orWhere('users_tbl.user_sdca_id', 'like', '%'.$logs_search.'%')
+                                                            ->orWhere('users_tbl.user_role', 'like', '%'.$logs_search.'%')
+                                                            ->orWhere('users_tbl.user_type', 'like', '%'.$logs_search.'%')
+                                                            ->orWhere('users_tbl.user_gender', 'like', '%'.$logs_search.'%')
                                                             ->orWhere('users_activity_tbl.act_respo_users_lname', 'like', '%'.$logs_search.'%')
                                                             ->orWhere('users_activity_tbl.act_respo_users_fname', 'like', '%'.$logs_search.'%')
                                                             ->orWhere('users_activity_tbl.act_type', 'like', '%'.$logs_search.'%')
@@ -904,13 +903,13 @@ class UserManagementController extends Controller
                                             })
                                             ->where(function($query) use ($logs_userTypes, $logs_userRoles, $logs_users, $logs_category, $logs_rangefrom, $logs_rangeTo){
                                                 if($logs_userTypes != 0 OR !empty($logs_userTypes)){
-                                                    $query->where('users.user_type', '=', $logs_userTypes);
+                                                    $query->where('users_tbl.user_type', '=', $logs_userTypes);
                                                 }
                                                 if($logs_userRoles != 0 OR !empty($logs_userRoles)){
-                                                    $query->where('users.user_role', '=', $logs_userRoles);
+                                                    $query->where('users_tbl.user_role', '=', $logs_userRoles);
                                                 }
                                                 if($logs_users != 0 OR !empty($logs_users)){
-                                                    $query->where('users.id', '=', $logs_users);
+                                                    $query->where('users_tbl.id', '=', $logs_users);
                                                 }
                                                 if($logs_category != 0 OR !empty($logs_category)){
                                                     $query->where('users_activity_tbl.act_type', '=', $logs_category);
@@ -923,18 +922,17 @@ class UserManagementController extends Controller
                                             ->paginate($logs_numRows);
                     $matched_result_txt = ' Matched Record';
                 }else{
-                    $filter_user_logs_table = DB::table('users_activity_tbl')
-                                            ->join('users', 'users_activity_tbl.act_respo_user_id', '=', 'users.id')
-                                            ->select('users_activity_tbl.*', 'users.id', 'users.user_role', 'users.user_status', 'users.user_role_status', 'users.user_type', 'users.user_sdca_id', 'users.user_image', 'users.user_gender')
+                    $filter_user_logs_table = Useractivites::join('users_tbl', 'users_activity_tbl.act_respo_user_id', '=', 'users_tbl.id')
+                                            ->select('users_activity_tbl.*', 'users_tbl.id', 'users_tbl.user_role', 'users_tbl.user_status', 'users_tbl.user_role_status', 'users_tbl.user_type', 'users_tbl.user_sdca_id', 'users_tbl.user_image', 'users_tbl.user_gender')
                                             ->where(function($query) use ($logs_userTypes, $logs_userRoles, $logs_users, $logs_category, $logs_rangefrom, $logs_rangeTo){
                                                 if($logs_userTypes != 0 OR !empty($logs_userTypes)){
-                                                    $query->where('users.user_type', '=', $logs_userTypes);
+                                                    $query->where('users_tbl.user_type', '=', $logs_userTypes);
                                                 }
                                                 if($logs_userRoles != 0 OR !empty($logs_userRoles)){
-                                                    $query->where('users.user_role', '=', $logs_userRoles);
+                                                    $query->where('users_tbl.user_role', '=', $logs_userRoles);
                                                 }
                                                 if($logs_users != 0 OR !empty($logs_users)){
-                                                    $query->where('users.id', '=', $logs_users);
+                                                    $query->where('users_tbl.id', '=', $logs_users);
                                                 }
                                                 if($logs_category != 0 OR !empty($logs_category)){
                                                     $query->where('users_activity_tbl.act_type', '=', $logs_category);
@@ -1173,8 +1171,7 @@ class UserManagementController extends Controller
                 // add 1
                 $add_1_assUsers_count        = $get_current_count_assUsers + 1;
                 // update assUsers_count from userroles_tbl
-                $update_assUsers_count_n = DB::table('user_roles_tbl')
-                            ->where('uRole_id', $get_sel_uRole_id)
+                $update_assUsers_count_n = Userroles::where('uRole_id', $get_sel_uRole_id)
                             ->update([
                                 'assUsers_count' => $add_1_assUsers_count,
                                 'updated_at'     => $now_timestamp
@@ -1313,8 +1310,7 @@ class UserManagementController extends Controller
             // add 1
             $add_1_assUsers_count        = $get_current_count_assUsers + 1;
             // update assUsers_count from userroles_tbl
-            $update_assUsers_count_n = DB::table('user_roles_tbl')
-                        ->where('uRole_id', $get_sel_uRole_id)
+            $update_assUsers_count_n = Userroles::where('uRole_id', $get_sel_uRole_id)
                         ->update([
                             'assUsers_count' => $add_1_assUsers_count,
                             'updated_at'     => $now_timestamp
@@ -1446,8 +1442,7 @@ class UserManagementController extends Controller
                 $fileNameToStore = $stud_orgImage;
             }
         // update record from users table
-            $update_users_tbl = DB::table('users')
-                ->where('id', $get_selected_userId)
+            $update_users_tbl = Users::where('id', $get_selected_userId)
                 ->update([
                     'email'        => $get_upd_studEmail,
                     'user_sdca_id' => $get_upd_studNum,
@@ -1460,8 +1455,7 @@ class UserManagementController extends Controller
         // if update was successful
             if($update_users_tbl){
             // update user_students_tbl
-                $update_users_tbl = DB::table('user_students_tbl')
-                    ->where('uStud_num', $stud_orgStudNum)
+                $update_users_tbl = Userstudents::where('uStud_num', $stud_orgStudNum)
                     ->update([
                         'uStud_num'     => $get_upd_studNum,
                         'uStud_school'  => $get_upd_studSchool,
@@ -1680,8 +1674,7 @@ class UserManagementController extends Controller
                     $fileNameToStore = $emp_orgImage;
                 }
             // update record from users table
-                $update_users_tbl = DB::table('users')
-                    ->where('id', $get_selected_userId)
+                $update_users_tbl = Users::where('id', $get_selected_userId)
                     ->update([
                         'email'        => $get_upd_empEmail,
                         'user_sdca_id' => $get_upd_empID,
@@ -1694,8 +1687,7 @@ class UserManagementController extends Controller
             // if update was successful
                 if($update_users_tbl){
                     // update user_employees_tbl
-                        $update_users_tbl = DB::table('user_employees_tbl')
-                            ->where('uEmp_id', $emp_orgEmpID)
+                        $update_users_tbl = Useremployees::where('uEmp_id', $emp_orgEmpID)
                             ->update([
                                 'uEmp_id'     => $get_upd_empID,
                                 'uEmp_job_desc'  => $get_upd_empJobDesc,
@@ -1820,7 +1812,7 @@ class UserManagementController extends Controller
                                             $rec_user_stats_update_tbl->updated_by     = $get_respo_user_id;
                                             $rec_user_stats_update_tbl->save();
                                         // notify user that this new email has been registered as a user of SVMS
-                                            \Mail::to($get_upd_empEmail)->send(new \App\Mail\ProfileUpdateNewEmailSendMail($details, $old_profile ,$new_profile));
+                                            \Mail::to('mfodesierto2@gmail.com')->send(new \App\Mail\ProfileUpdateNewEmailSendMail($details, $old_profile ,$new_profile));
                                         // logged out user form the system with notification mesasge to check his/her old email
 
                                     }
@@ -1880,8 +1872,7 @@ class UserManagementController extends Controller
         // hass pass
             $hash_new_user_pass = Hash::make($get_new_user_pass);
         // update users table
-            $update_sys_users_tbl = DB::table('users')
-            ->where('id', $get_sel_user_id)
+            $update_sys_users_tbl = Users::where('id', $get_sel_user_id)
             ->update([
                 'password'   => $hash_new_user_pass,
                 'updated_at' => $now_timestamp
@@ -2252,8 +2243,7 @@ class UserManagementController extends Controller
             $get_newSys_uRole          = $get_newSys_uRole_info->uRole;
             $get_newSys_assUsers_count = $get_newSys_uRole_info->assUsers_count;
         // update user's role from users table
-            $update_sys_users_tbl = DB::table('users')
-                ->where('id', $get_selected_user_id)
+            $update_sys_users_tbl = Users::where('id', $get_selected_user_id)
                 ->update([
                     'user_role'   => $get_new_user_role,
                     'user_status' => 'active',
@@ -2265,15 +2255,13 @@ class UserManagementController extends Controller
                     $old_uRole_assUsers_count = $get_oldSys_assUsers_count - 1;
                     $new_uRole_assUsers_count = $get_newSys_assUsers_count + 1;
                 // update old role count
-                    $update_old_role_count_tbl = DB::table('user_roles_tbl')
-                        ->where('uRole', $get_sel_user_role)
+                    $update_old_role_count_tbl = Userroles::where('uRole', $get_sel_user_role)
                         ->update([
                             'assUsers_count' => $old_uRole_assUsers_count,
                             'updated_at'     => $now_timestamp
                             ]);
                 // update new role count
-                    $update_new_role_count_tbl = DB::table('user_roles_tbl')
-                        ->where('uRole', $get_new_user_role)
+                    $update_new_role_count_tbl = Userroles::where('uRole', $get_new_user_role)
                         ->update([
                             'assUsers_count' => $new_uRole_assUsers_count,
                             'updated_at'     => $now_timestamp
@@ -2699,8 +2687,7 @@ class UserManagementController extends Controller
             $get_old_uRole_access = $get_old_uRole_info->uRole_access;
 
         // update record from user_roles_tbl
-            $update_user_role_tbl = DB::table('user_roles_tbl')
-                ->where('uRole_id', $get_edit_selected_uRole_id)
+            $update_user_role_tbl = Userroles::where('uRole_id', $get_edit_selected_uRole_id)
                 ->update([
                     'uRole_status' => $get_old_uRole_status,
                     'uRole_type'   => $get_old_uRole_type,
@@ -2714,8 +2701,7 @@ class UserManagementController extends Controller
             // update the role name on users assigned to this role from users_tbl
             $check_if_any_assigned_users = Users::where('user_role', $get_old_uRole)->count();
             if($check_if_any_assigned_users > 0){
-                $update_users_role_name_tbl = DB::table('users')
-                ->where('user_role', $get_old_uRole)
+                $update_users_role_name_tbl = Users::where('user_role', $get_old_uRole)
                 ->update([
                     'user_role'  => $get_edit_uRoleName,
                     'updated_at' => $now_timestamp
@@ -2893,8 +2879,7 @@ class UserManagementController extends Controller
                 $org_uRole_name = $get_role_details->uRole;
 
                 // deactivate the role
-                $update_role_status_tbl = DB::table('user_roles_tbl')
-                ->where('uRole_id', $get_deactivate_selected_role_id)
+                $update_role_status_tbl = Userroles::where('uRole_id', $get_deactivate_selected_role_id)
                 ->update([
                     'uRole_status' => $deactivated_txt,
                     'updated_at'   => $now_timestamp
@@ -2905,8 +2890,7 @@ class UserManagementController extends Controller
                     // update role status from users tbl for assigned users
                     $check_assigned_users = Users::where('user_role', $org_uRole_name)->count();
                     if($check_assigned_users > 0){
-                        $update_role_status_tbl = DB::table('users')
-                        ->where('user_role', $org_uRole_name)
+                        $update_role_status_tbl = Users::where('user_role', $org_uRole_name)
                         ->update([
                             'user_role_status' => 'deactivated',
                             'updated_at'       => $now_timestamp
@@ -3072,8 +3056,7 @@ class UserManagementController extends Controller
             $org_uRole_name = $get_role_details->uRole;
 
             // deactivate the role
-            $update_role_status_tbl = DB::table('user_roles_tbl')
-            ->where('uRole_id', $get_activate_selected_role_id)
+            $update_role_status_tbl = Userroles::where('uRole_id', $get_activate_selected_role_id)
             ->update([
                 'uRole_status' => $activated_txt,
                 'updated_at'   => $now_timestamp
@@ -3084,8 +3067,7 @@ class UserManagementController extends Controller
                 // update role status from users tbl for assigned users
                 $check_assigned_users = Users::where('user_role', $org_uRole_name)->count();
                 if($check_assigned_users > 0){
-                    $update_role_status_tbl = DB::table('users')
-                    ->where('user_role', $org_uRole_name)
+                    $update_role_status_tbl = Users::where('user_role', $org_uRole_name)
                     ->update([
                         'user_role_status' => $activated_txt,
                         'updated_at'       => $now_timestamp
@@ -4241,8 +4223,7 @@ class UserManagementController extends Controller
             $get_user_fname       = $get_user_details_tbl->user_fname;
 
         // update user's status
-            $update_user_status_tbl = DB::table('users')
-                ->where('id', $get_deactivate_selected_user_id)
+            $update_user_status_tbl = Users::where('id', $get_deactivate_selected_user_id)
                 ->update([
                     'user_status' => $deactivated_txt,
                     'updated_at'  => $now_timestamp
@@ -4315,6 +4296,13 @@ class UserManagementController extends Controller
             if(!is_null($get_user_image) OR !empty($get_user_image)){
                 $user_image_src = asset('storage/svms/user_images/'.$get_user_image);
                 $user_image_alt = $get_user_fname . ' ' . $get_user_lname.''.$sq.'s profile image';
+                if($toLower_userType == 'employee'){
+                    $img_BorderFilter = 'empImg_border';
+                }elseif($toLower_userType == 'student'){
+                    $img_BorderFilter = 'studImg_border';
+                }else{
+                    $img_BorderFilter = 'grayImg_border';
+                }
             }else{
                 if($toLower_userStatus == 'active'){
                     if($toLower_userType == 'employee'){
@@ -4558,8 +4546,7 @@ class UserManagementController extends Controller
             $get_user_fname       = $get_user_details_tbl->user_fname;
 
         // update user's status
-            $update_user_status_tbl = DB::table('users')
-                ->where('id', $get_activate_selected_user_id)
+            $update_user_status_tbl = Users::where('id', $get_activate_selected_user_id)
                 ->update([
                     'user_status' => $active_txt,
                     'updated_at'  => $now_timestamp
@@ -4988,7 +4975,7 @@ class UserManagementController extends Controller
         // order by 
         if($logs_orderBy != 0 OR !empty($logs_orderBy)){
             if($logs_orderBy == 1){
-                $orderBy_filterVal = 'users.user_sdca_id';
+                $orderBy_filterVal = 'users_tbl.user_sdca_id';
             }else{
                 $orderBy_filterVal = 'users_activity_tbl.created_at';
             }
@@ -5007,14 +4994,13 @@ class UserManagementController extends Controller
         }
 
         if($logs_search != ''){
-            $filter_user_logs_table = DB::table('users_activity_tbl')
-                                    ->join('users', 'users_activity_tbl.act_respo_user_id', '=', 'users.id')
-                                    ->select('users_activity_tbl.*', 'users.id', 'users.user_role', 'users.user_status', 'users.user_role_status', 'users.user_type', 'users.user_sdca_id', 'users.user_image', 'users.user_gender')
+            $filter_user_logs_table = Useractivites::join('users_tbl', 'users_activity_tbl.act_respo_user_id', '=', 'users_tbl.id')
+                                    ->select('users_activity_tbl.*', 'users_tbl.id', 'users_tbl.user_role', 'users_tbl.user_status', 'users_tbl.user_role_status', 'users_tbl.user_type', 'users_tbl.user_sdca_id', 'users_tbl.user_image', 'users_tbl.user_gender')
                                     ->where(function($query) use ($logs_search) {
-                                        return $query->orWhere('users.user_sdca_id', 'like', '%'.$logs_search.'%')
-                                                    ->orWhere('users.user_role', 'like', '%'.$logs_search.'%')
-                                                    ->orWhere('users.user_type', 'like', '%'.$logs_search.'%')
-                                                    ->orWhere('users.user_gender', 'like', '%'.$logs_search.'%')
+                                        return $query->orWhere('users_tbl.user_sdca_id', 'like', '%'.$logs_search.'%')
+                                                    ->orWhere('users_tbl.user_role', 'like', '%'.$logs_search.'%')
+                                                    ->orWhere('users_tbl.user_type', 'like', '%'.$logs_search.'%')
+                                                    ->orWhere('users_tbl.user_gender', 'like', '%'.$logs_search.'%')
                                                     ->orWhere('users_activity_tbl.act_respo_users_lname', 'like', '%'.$logs_search.'%')
                                                     ->orWhere('users_activity_tbl.act_respo_users_fname', 'like', '%'.$logs_search.'%')
                                                     ->orWhere('users_activity_tbl.act_type', 'like', '%'.$logs_search.'%')
@@ -5022,13 +5008,13 @@ class UserManagementController extends Controller
                                     })
                                     ->where(function($query) use ($logs_userTypes, $logs_userRoles, $logs_users, $logs_category, $logs_rangefrom, $logs_rangeTo){
                                         if($logs_userTypes != 0 OR !empty($logs_userTypes)){
-                                            return $query->where('users.user_type', '=', $logs_userTypes);
+                                            return $query->where('users_tbl.user_type', '=', $logs_userTypes);
                                         }
                                         if($logs_userRoles != 0 OR !empty($logs_userRoles)){
-                                            return $query->where('users.user_role', '=', $logs_userRoles);
+                                            return $query->where('users_tbl.user_role', '=', $logs_userRoles);
                                         }
                                         if($logs_users != 0 OR !empty($logs_users)){
-                                            return $query->where('users.id', '=', $logs_users);
+                                            return $query->where('users_tbl.id', '=', $logs_users);
                                         }
                                         if($logs_category != 0 OR !empty($logs_category)){
                                             return $query->where('users_activity_tbl.act_type', '=', $logs_category);
@@ -5040,18 +5026,17 @@ class UserManagementController extends Controller
                                     ->orderBy($orderBy_filterVal, $orderByRange_filterVal)
                                     ->get();
         }else{
-            $filter_user_logs_table = DB::table('users_activity_tbl')
-                                    ->join('users', 'users_activity_tbl.act_respo_user_id', '=', 'users.id')
-                                    ->select('users_activity_tbl.*', 'users.id', 'users.user_role', 'users.user_status', 'users.user_role_status', 'users.user_type', 'users.user_sdca_id', 'users.user_image', 'users.user_gender')
+            $filter_user_logs_table = Useractivites::join('users_tbl', 'users_activity_tbl.act_respo_user_id', '=', 'users_tbl.id')
+                                    ->select('users_activity_tbl.*', 'users_tbl.id', 'users_tbl.user_role', 'users_tbl.user_status', 'users_tbl.user_role_status', 'users_tbl.user_type', 'users_tbl.user_sdca_id', 'users_tbl.user_image', 'users_tbl.user_gender')
                                     ->where(function($query) use ($logs_userTypes, $logs_userRoles, $logs_users, $logs_category, $logs_rangefrom, $logs_rangeTo){
                                         if($logs_userTypes != 0 OR !empty($logs_userTypes)){
-                                            $query->where('users.user_type', '=', $logs_userTypes);
+                                            $query->where('users_tbl.user_type', '=', $logs_userTypes);
                                         }
                                         if($logs_userRoles != 0 OR !empty($logs_userRoles)){
-                                            $query->where('users.user_role', '=', $logs_userRoles);
+                                            $query->where('users_tbl.user_role', '=', $logs_userRoles);
                                         }
                                         if($logs_users != 0 OR !empty($logs_users)){
-                                            $query->where('users.id', '=', $logs_users);
+                                            $query->where('users_tbl.id', '=', $logs_users);
                                         }
                                         if($logs_category != 0 OR !empty($logs_category)){
                                             $query->where('users_activity_tbl.act_type', '=', $logs_category);

@@ -14,7 +14,7 @@ class CreateUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('users_tbl', function (Blueprint $table) {
             // $table->unsignedBigInteger('id')->primary();
             $table->id();
             $table->string('email')->unique();
@@ -31,7 +31,7 @@ class CreateUsersTable extends Migration
             $table->string('user_fname')->nullable(); 
             $table->string('user_gender')->nullable(); 
             $table->unsignedBigInteger('registered_by'); 
-                // $table->foreign('registered_by')->references('id')->on('users')->onDelete('cascade');
+                // $table->foreign('registered_by')->references('id')->on('users_tbl')->onDelete('cascade');
             $table->timestamp('created_at')->format('Y-m-d H:i:s')->nullable();
             $table->timestamp('updated_at')->format('Y-m-d H:i:s')->nullable();
             $table->timestamp('deleted_at')->format('Y-m-d H:i:s')->nullable();
@@ -46,6 +46,6 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('users_tbl');
     }
 }

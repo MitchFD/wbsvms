@@ -439,7 +439,7 @@
                 </tbody>
             </table>
 
-            <br>
+            {{-- <br> --}}
             
             <p class="notice_1">-- end of table <span class="cg"> (Users Logs Table) </span> --</p>
             

@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Userroles;
 
 class UserRolesTableSeeder extends Seeder
 {
@@ -15,7 +16,7 @@ class UserRolesTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('user_roles_tbl')->insert([
+        Userroles::insert([
             [
                 'uRole_status'   => 'active',
                 'uRole_type'     => 'employee',

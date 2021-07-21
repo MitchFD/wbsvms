@@ -9,7 +9,7 @@
         @if (session('success_status'))
             <div class="row d-flex justify-content-center">
                 <div class="col-lg-12 col-md-12 col-sm-12 align-items-center mx-auto">
-                    <div class="alert alert-success alert-dismissible login_alert fade show" role="alert">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
                         <button type="button" aria-hidden="true" class="close" data-dismiss="alert" aria-label="Close">
                             <i class="nc-icon nc-simple-remove"></i>
                         </button>
@@ -21,7 +21,7 @@
         @if (session('failed_status'))
             <div class="row d-flex justify-content-center">
                 <div class="col-lg-12 col-md-12 col-sm-12 align-items-center mx-auto">
-                    <div class="alert alert_smvs_danger alert-dismissible login_alert fade show" role="alert">
+                    <div class="alert alert_smvs_danger alert-dismissible fade show" role="alert">
                         <button type="button" aria-hidden="true" class="close" data-dismiss="alert" aria-label="Close">
                             <i class="nc-icon nc-simple-remove"></i>
                         </button>

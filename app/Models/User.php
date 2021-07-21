@@ -16,10 +16,21 @@ class User extends Authenticatable
      *
      * @var array
      */
+    protected $table = 'users_tbl';
+    
     protected $fillable = [
-        'name',
         'email',
         'password',
+        'user_role',
+        'user_status',
+        'user_role_status',
+        'user_type',
+        'user_sdca_id',
+        'user_image',
+        'user_lname',
+        'user_fname',
+        'user_gender',
+        'registered_by',
     ];
 
     /**
@@ -31,6 +42,9 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    public $primaryKey = 'id';
+    public $timestamps = false;
 
     /**
      * The attributes that should be cast to native types.

@@ -262,8 +262,7 @@ class ProfileController extends Controller
                 $fileNameToStore = $emp_org_empImage;
             }
         // update record from users table
-            $update_users_tbl = DB::table('users')
-                ->where('id', $get_selected_userId)
+            $update_users_tbl = Users::where('id', $get_selected_userId)
                 ->update([
                     'email' => $get_upd_empEmail,
                     'user_sdca_id' => $get_upd_empId,
@@ -277,8 +276,7 @@ class ProfileController extends Controller
         // if update was successful
             if($update_users_tbl){
                 // update user_employees_tbl
-                    $update_users_tbl = DB::table('user_employees_tbl')
-                        ->where('uEmp_id', $emp_org_empID)
+                    $update_users_tbl = Useremployees::where('uEmp_id', $emp_org_empID)
                         ->update([
                             'uEmp_id'       => $get_upd_empId,
                             'uEmp_job_desc' => $get_upd_empJobdesc,
@@ -499,8 +497,7 @@ class ProfileController extends Controller
             // echo 'Phone Number: ' .$get_upd_studPhnum. ' === ' .$stud_orgPhnum. '  <br/>'; 
             // echo 'Email: ' .$get_upd_studEmail. ' === ' .$stud_orgEmail. '  <br/>';
         // update record from users table
-            $update_users_tbl = DB::table('users')
-                ->where('id', $get_selected_userId)
+            $update_users_tbl = Users::where('id', $get_selected_userId)
                 ->update([
                     'email'        => $get_upd_studEmail,
                     'user_sdca_id' => $get_upd_studNum,
@@ -514,8 +511,7 @@ class ProfileController extends Controller
         // if update was successful
             if($update_users_tbl){
                 // update user_students_tbl
-                    $update_users_tbl = DB::table('user_students_tbl')
-                        ->where('uStud_num', $stud_orgStudNum)
+                    $update_users_tbl = Userstudents::where('uStud_num', $stud_orgStudNum)
                         ->update([
                             'uStud_num'     => $get_upd_studNum,
                             'uStud_school'  => $get_upd_studSchool,
@@ -700,8 +696,7 @@ class ProfileController extends Controller
         // hass pass
             $hash_my_new_pass = Hash::make($get_my_new_pass);
         // update users table
-            $update_sys_users_tbl = DB::table('users')
-            ->where('id', $get_my_id)
+            $update_sys_users_tbl = Users::where('id', $get_my_id)
             ->update([
                 'password'   => $hash_my_new_pass,
                 'updated_at' => $now_timestamp

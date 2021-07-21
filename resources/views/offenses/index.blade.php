@@ -51,9 +51,8 @@
                         <div class="card-body card_intro">
                             <div class="page_intro">
                                 <span class="page_intro_title">Offenses</span>
-                                <span class="page_intro_subtitle">Create Custom Offenses as default options to ease your task for typing "Other Offenses" to record violations.
-                                    You will be able to Add new Offense Details, Edit Custom Offense/s, and/or Delete the custom Offense/s 
-                                    you have registered.</span>
+                                <span class="page_intro_subtitle">Create New Offense Details as options to be displayed on the "Violation Form" to ease the selection of offenses instead of typing "Other Offenses".
+                                    You will be able to Add new Offense Details, Edit and/or Delete the existing Offense details.</span>
                             </div>
                             <div class="page_illustration">
                                 <img class="illustration_svg" src="{{ asset('storage/svms/illustrations/offenses_illustration.svg') }}" alt="...">
